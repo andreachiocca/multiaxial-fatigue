@@ -55,7 +55,7 @@ class MKBM:
         # Shear strain range
         d_gam_a = float(E0r[0, 2] - E1r[0, 2])
         d_gam_b = float(E0r[1, 2] - E1r[1, 2])
-        d_gam = float(np.hypot(d_gam_a, d_gam_b))
+        d_gam = 2.0 * float(np.hypot(d_gam_a, d_gam_b))
 
         dmg = float(0.5 * d_gam + (1.0 + sig_n_max / Sy) * (0.5 * d_eps))
         metric = float(d_gam)  # maximum shear strain plane

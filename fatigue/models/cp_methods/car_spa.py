@@ -18,6 +18,8 @@ class CarSpa:
         params: Mapping[str, float]
     ) -> CPPlaneResult:
  
+        from fatigue.models.references import ensure_enabled
+        ensure_enabled("CARSPA")
         sigm1 = float(params["Sigm1"])
         taum1 = float(params["Taum1"])
  

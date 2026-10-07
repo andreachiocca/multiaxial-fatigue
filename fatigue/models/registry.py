@@ -17,13 +17,12 @@ from typing import Iterable
 
 from .cp_adapter import CPModelAdapter
 from .base import FatigueModel
+from .references import ensure_enabled, method_reference
 
 # CP (critical-plane) plane-level methods
 from .cp_methods.fs import FatemiSocie
 from .cp_methods.fin import Findley
 from .cp_methods.swt import SWT
-from .cp_methods.dangvan import DangVan
-from .cp_methods.car_spa import CarSpa
 from .cp_methods.matake import Matake
 from .cp_methods.mcdiarmid import McDiarmid
 
@@ -40,11 +39,8 @@ from .cp_methods.gse import GSE
 from .cp_methods.gsa import GSA
 
 # Invariant methods
-from .invariant_methods.ottosen import OttosenReduced
 
 # Energy and integral methods
-from .energy_based_methods.swtd import SWTD
-from .energy_based_methods.zhu_edp import ZhuEDP
 from .integral_methods.bohme_papuga import BohmePapuga
 from .integral_methods.caim import CAIM
 
@@ -55,8 +51,6 @@ def _available_cp_methods():
         "FS": FatemiSocie(),
         "FIN": Findley(),
         "SWT": SWT(),
-        "DANGVAN": DangVan(),
-        "CARSPA": CarSpa(),
         "MATAKE": Matake(),
         "MCD": McDiarmid(),
 
@@ -78,9 +72,6 @@ def _available_direct_models():
     """Instantiate all available non-CP (direct / invariant) models."""
 
     return {
-        "OTT": OttosenReduced(),
-        "SWTD": SWTD(),
-        "ZHU_EDP": ZhuEDP(),
         "BP": BohmePapuga(),
         "CAIM": CAIM(),
         # "TRESCA": TrescaEqvStressAmp(),
@@ -95,8 +86,8 @@ def get_models(names: Iterable[str]):
     ----------
     names:
         Iterable of model names. Can contain:
-          - CP method names: "FS", "FIN", "SWT", "DANGVAN", "CARSPA"
-          - direct model names: "VM", "SWTD" (and future direct models)
+          - CP method names: "FS", "FIN", "SWT", "MATAKE"
+          - direct model names: "BP", "CAIM"
 
     Returns
     -------
@@ -114,6 +105,7 @@ def get_models(names: Iterable[str]):
 
     out: list[FatigueModel] = []
     for n in names:
+        ensure_enabled(n)
         if n in direct:
             out.append(direct[n])
         elif n in cp:
@@ -124,4 +116,6 @@ def get_models(names: Iterable[str]):
                 f"Direct={list(direct.keys())}, CP={list(cp.keys())}"
             )
 
+    for model in out:
+        model.reference = method_reference(model.name)
     return out

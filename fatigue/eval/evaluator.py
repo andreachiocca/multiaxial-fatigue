@@ -5,6 +5,7 @@ from typing import Mapping, Tuple
 import numpy as np
 import math
 from fatigue.models.base import CriticalPlaneMethod
+from fatigue.models.utils.plane_history import shear_maximum, split_strain_ranges
 
 def cp_rot(
     S0: np.ndarray,
@@ -70,6 +71,9 @@ def best_cp_for_case(
     best_metric = -np.inf
     best_by_metric = np.nan
 
+    if len(R_list) == 0:
+        raise ValueError("Critical-plane evaluation requires at least one plane")
+
     for Ri in R_list:
         S0r, E0r, S1r, E1r = cp_rot(S0, E0, S1, E1, Ri)
 
@@ -81,7 +85,7 @@ def best_cp_for_case(
         # so that methods that rely on shear RANGE computed as:
         #   Δτ = sqrt((ΔSxz)^2 + (ΔSyz)^2)
         # automatically get an ellipse-aware equivalent range.
-        # Normal quantities (e.g. Szz, Ezz) remain the legacy 2-step values.
+        # Normal scalar extrema are also reconstructed from their harmonics.
         if S_sin is not None and S_cos is not None:
             S_sin_r = Ri.T @ np.asarray(S_sin, dtype=float) @ Ri
             S_cos_r = Ri.T @ np.asarray(S_cos, dtype=float) @ Ri
@@ -118,16 +122,32 @@ def best_cp_for_case(
                 idx=(2, 2),
             )
 
+        # Only methods needing full-path quantities consume this internal data.
+        # Never infer shear maxima or elastic/plastic strains from independently
+        # synthesized normal/shear extrema: these do not form a physical tensor.
+        plane_params = dict(params)
+        if method.name in {"MGSE_YU", "MGSE_ZHU", "GSE", "GSA"} and S_sin is not None and S_cos is not None:
+            mean_r = Ri.T @ (0.5 * (np.asarray(S0) + np.asarray(S1))) @ Ri
+            plane_params["_tau_max"] = shear_maximum(mean_r, S_sin_r, S_cos_r)
+        if method.name in {"GSE", "GSA"} and all(x is not None for x in (S_sin, S_cos, E_sin, E_cos)):
+            plane_params["_strain_ranges"] = split_strain_ranges(
+                S_sin_r, S_cos_r, E_sin_r, E_cos_r, float(params["E"]), float(params["nu"]))
+
         r = method.evaluate_on_plane(
             S0r=S0r, E0r=E0r,
             S1r=S1r, E1r=E1r,
-            params=params,
+            params=plane_params,
         )
+
+        if not (math.isfinite(r.damage) and math.isfinite(r.metric)):
+            raise ValueError(f"{method.name}: nonfinite plane damage or selection metric")
 
         if r.damage > best_ext:
             best_ext = r.damage
 
-        if r.metric > best_metric:
+        if (r.metric > best_metric and not math.isclose(r.metric, best_metric, rel_tol=1e-10, abs_tol=1e-14)) or (
+            math.isclose(r.metric, best_metric, rel_tol=1e-10, abs_tol=1e-14) and r.damage > best_by_metric
+        ):
             best_metric = r.metric
             best_by_metric = r.damage
 
@@ -188,8 +208,15 @@ def _override_plane_shear_components(
     T0r = np.asarray(T0r, dtype=float).copy()
     T1r = np.asarray(T1r, dtype=float).copy()
 
-    if not np.isfinite(delta_eq) or abs(delta_eq) <= eps:
-        # Nothing to do (or degenerate)
+    if not np.isfinite(delta_eq):
+        raise ValueError("Nonfinite harmonic shear range")
+    if abs(delta_eq) <= eps:
+        # A zero physical range can coexist with nonzero legacy component-wise
+        # endpoints (e.g. cancelling antiphase loads). Encode the mean exactly.
+        for idx in (a, b):
+            mean = 0.5 * (T0r[idx] + T1r[idx])
+            T0r[idx] = T1r[idx] = mean
+            T0r[idx[::-1]] = T1r[idx[::-1]] = mean
         return T0r, T1r
 
     v_sin = np.array([float(T_sin_r[a]), float(T_sin_r[b])], dtype=float)

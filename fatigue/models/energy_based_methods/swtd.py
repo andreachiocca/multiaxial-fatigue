@@ -39,6 +39,8 @@ class SWTD:
         R_list=None,
         harmonics=None,
     ) -> CaseResult:
+        from fatigue.models.references import ensure_enabled
+        ensure_enabled("SWTD")
         # IMPORTANT:
         # Here we assume: loadstep 0 = MAX, loadstep 1 = MIN (your stated convention).
         Smax_dev = _dev(S0)

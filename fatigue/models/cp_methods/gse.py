@@ -80,18 +80,20 @@ class GSE:
         # --- shear stress max magnitude ---
         tau0 = float(np.hypot(S0r[0, 2], S0r[1, 2]))
         tau1 = float(np.hypot(S1r[0, 2], S1r[1, 2]))
-        tau_max = max(tau0, tau1)
+        tau_max = float(params.get("_tau_max", max(tau0, tau1)))
 
         # stress ranges
         d_tau = float(np.hypot(S0r[0, 2] - S1r[0, 2], S0r[1, 2] - S1r[1, 2]))
         d_sig_n = abs(float(S0r[2, 2] - S1r[2, 2]))
 
         # strain ranges (elastic/plastic)
-        d_gam_e = float(np.hypot(Ee0[0, 2] - Ee1[0, 2], Ee0[1, 2] - Ee1[1, 2]))
-        d_gam_p = float(np.hypot(Ep0[0, 2] - Ep1[0, 2], Ep0[1, 2] - Ep1[1, 2]))
+        d_gam_e = 2.0 * float(np.hypot(Ee0[0, 2] - Ee1[0, 2], Ee0[1, 2] - Ee1[1, 2]))
+        d_gam_p = 2.0 * float(np.hypot(Ep0[0, 2] - Ep1[0, 2], Ep0[1, 2] - Ep1[1, 2]))
 
         d_eps_e = abs(float(Ee0[2, 2] - Ee1[2, 2]))
         d_eps_p = abs(float(Ep0[2, 2] - Ep1[2, 2]))
+        if "_strain_ranges" in params:
+            d_gam_e, d_gam_p, d_eps_e, d_eps_p = params["_strain_ranges"]
 
         # GSE (energy-like) damage
         gse = (

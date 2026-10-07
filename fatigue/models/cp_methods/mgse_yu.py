@@ -52,7 +52,7 @@ class MGSE_Yu:
         # Shear stress magnitude at max/min load step
         tau0 = float(np.hypot(S0r[0, 2], S0r[1, 2]))
         tau1 = float(np.hypot(S1r[0, 2], S1r[1, 2]))
-        tau_max = max(abs(tau0), abs(tau1))
+        tau_max = float(params.get("_tau_max", max(tau0, tau1)))
 
         # Normal strain range on plane
         d_eps = abs(float(E0r[2, 2] - E1r[2, 2]))
@@ -60,7 +60,7 @@ class MGSE_Yu:
         # Shear strain range on plane
         d_gam_a = float(E0r[0, 2] - E1r[0, 2])
         d_gam_b = float(E0r[1, 2] - E1r[1, 2])
-        d_gam = float(np.hypot(d_gam_a, d_gam_b))
+        d_gam = 2.0 * float(np.hypot(d_gam_a, d_gam_b))
 
         damage = float(tau_max * (0.5 * d_gam) + sig_n_max * (0.5 * d_eps))
         # In Yu's work the plane is chosen near maximum shear; in practice we

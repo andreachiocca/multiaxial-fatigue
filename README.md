@@ -19,7 +19,7 @@ python -m pip install -r requirements.txt
 3. Run `python 2_compare_results.py` to compare CSV results and generate figures and tables in `Results/Comparison/`.
 4. Optionally run `python 0_calibrate_material_params.py` to print suggested material parameters. This does not modify the workbooks.
 
-The existing CSV files in `Results/` are example outputs from the supplied archive. `Results/Comparison/` contains generated plots and is excluded from Git.
+The existing CSV files in `Results/` are historical outputs from the supplied archive. They predate the numerical audit and are excluded from current comparisons by default; `--include-legacy` explicitly includes retained methods' historical outputs. `Results/Comparison/` contains generated plots and is excluded from Git.
 
 ## Add a fatigue method
 
@@ -43,4 +43,21 @@ Both implementations support single-harmonic stress histories and compute shear 
 | `Experimental_Data/` | Supplied material workbooks |
 | `Results/` | Supplied result CSVs and new output |
 
-This is the supplied v7.2 implementation with repository metadata added. Numerical methods and experimental data have not been changed.
+The experimental workbooks and historical CSVs are preserved. Numerical corrections and disabled-method decisions are recorded in the [method audit](docs/method-audit.md); original articles are mapped in the [bibliography](docs/bibliography.md).
+
+## Audited runs and damage-space comparison
+
+The default model is `FS_ext`. `CARSPA`, `DANGVAN`, `OTT`, `SWTD`, and `ZHU_EDP` are disabled with reasons in the audit. Each retained model has an original-source reference, and generated CSVs record its source and implementation revision.
+
+```bash
+python 1_run_material.py --model CAIM --material AISI316L --results-dir Results/current --no-plots
+python 1_run_material.py --model BP --material AISI316L --results-dir Results/current --no-plots
+python 2_compare_results.py --results_dir Results/current --out_dir Results/Comparison
+python -m unittest discover -s tests -v
+# Optional full material sweep (64 runs; writes into a separate directory):
+python tests/run_material_validation.py /tmp/fatigue-audit
+```
+
+Every run includes `Error_log10_dp = log10(DP_e/DP)`, including flat and shallow master curves. Here `DP_e` is `DP_fit`, the fitted curve evaluated at the experimental life. Damage-space plots and statistics now include all slopes. Life predictions remain suppressed where curve inversion is unreliable. Legacy natural-log columns retain their previous definitions.
+
+Recalibrate model constants affected by equation corrections before interpreting new method rankings. The audit identifies provisional source checks and the limits of the elastic/harmonic workflow.

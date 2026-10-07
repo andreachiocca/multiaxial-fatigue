@@ -9,6 +9,8 @@ from typing import Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 from matplotlib import cm, colors as mcolors
+from fatigue.eval.metrics import log10_dp_ratio
+from fatigue.models.references import DISABLED_METHODS, IMPLEMENTATION_REVISION
 import numpy as np
 import pandas as pd
 
@@ -456,8 +458,6 @@ def read_results_csv(csv_path: Path) -> Optional[pd.DataFrame]:
 
     df = df.rename(columns=rename)
 
-    # Numeric conversions
-
     # Ensure method family exists
     if "Method_family" not in df.columns:
         df["Method_family"] = "UNKNOWN"
@@ -470,8 +470,11 @@ def read_results_csv(csv_path: Path) -> Optional[pd.DataFrame]:
     else:
         df["Metric_mode"] = df["Metric_mode"].fillna("Nf").astype(str)
 
+    if "Error_log10_dp" not in df:
+        df["Error_log10_dp"] = np.nan
+
     # Numeric conversions
-    for c in ["Nf_exp", "Nf_expected", "CP_value", "DP_fit", "Error_ln", "Error_ln_dp", "Error_dp", "Flag"]:
+    for c in ["Nf_exp", "Nf_expected", "CP_value", "DP_fit", "Error_ln", "Error_ln_dp", "Error_log10_dp", "Error_dp", "Flag"]:
         if c in df.columns:
             df[c] = pd.to_numeric(df[c], errors="coerce")
 
@@ -487,6 +490,7 @@ def read_results_csv(csv_path: Path) -> Optional[pd.DataFrame]:
     if "DP_fit" in df.columns and "CP_value" in df.columns:
         m = np.isfinite(df["DP_fit"]) & np.isfinite(df["CP_value"]) & (df["DP_fit"] > 0.0) & (df["CP_value"] > 0.0)
         df.loc[m, "Error_ln_dp"] = np.log(df.loc[m, "CP_value"] / df.loc[m, "DP_fit"])
+        df["Error_log10_dp"] = log10_dp_ratio(df["DP_fit"], df["CP_value"])
 
     # Legacy: compute difference-based Error_dp only if present (or requested by older CSVs)
     if "Error_dp" not in df.columns:
@@ -582,8 +586,10 @@ def plot_boxplot_errors(
     methods = sorted(df_mat["Method"].dropna().unique().tolist())
 
     if ylabel is None:
-        if error_col == "Error_ln_dp":
-            ylabel = r"$Error_{\ln,dp}=\ln\left(\frac{DP}{DP_{fit}}\right)$"
+        if error_col == "Error_log10_dp":
+            ylabel = r"$\log_{10}\left(\frac{DP_e}{DP}\right)$"
+        elif error_col == "Error_ln_dp":
+            ylabel = r"$\ln(DP/DP_{fit})$"
         else:
             ylabel = r"$Error_{\ln}=\ln\left(\frac{N_f}{N_{f,e}}\right)$"
 
@@ -719,7 +725,7 @@ def plot_normal_curves(
     error_col: str = "Error_ln",
     xlabel: Optional[str] = None,
 ) -> None:
-    """
+    r"""
     Plot Normal PDF curves of an error metric for each method (mean/std from data).
 
     Requirements:
@@ -733,14 +739,23 @@ def plot_normal_curves(
             \begin{axis}[
     """
     if xlabel is None:
-        if error_col == "Error_ln_dp":
-            xlabel = r"$Error_{\ln,dp}=\ln\left(\frac{DP}{DP_{fit}}\right)$"
+        if error_col == "Error_log10_dp":
+            xlabel = r"$\log_{10}\left(\frac{DP_e}{DP}\right)$"
+        elif error_col == "Error_ln_dp":
+            xlabel = r"$\ln(DP/DP_{fit})$"
         else:
             xlabel = r"$Error_{\ln}=\ln\left(\frac{N_f}{N_{f,e}}\right)$"
 
     if error_col not in df_mat.columns:
         print(f"[WARN] Missing {error_col} for normal curves: {material_label}")
         return
+
+    # Damage labels are neutral and keep the requested ratio's sign.
+    negative_label, positive_label = "Not-safe", "Safe"
+    if error_col == "Error_log10_dp":
+        negative_label, positive_label = r"$DP_e < DP$", r"$DP_e > DP$"
+    elif error_col == "Error_ln_dp":
+        negative_label, positive_label = r"$DP < DP_e$", r"$DP > DP_e$"
 
     # Required paper style: all PDF curves use opacity=0.1
     pdf_alpha = 0.1
@@ -788,8 +803,8 @@ def plot_normal_curves(
         ylab = 0.56 * ymax
         x_safe = xmax * 0.72 if xmax > 0 else xmax * 0.92
         x_not = xmin * 0.72 if xmin < 0 else xmin * 0.92
-        ax.text(x_not, ylab, "Not-safe", ha="center", va="center")
-        ax.text(x_safe, ylab, "Safe", ha="center", va="center")
+        ax.text(x_not, ylab, negative_label, ha="center", va="center")
+        ax.text(x_safe, ylab, positive_label, ha="center", va="center")
 
     fig.tight_layout()
     fig.savefig(out_png, dpi=200)
@@ -853,8 +868,8 @@ def plot_normal_curves(
         ylab = 0.56 * ymax
         x_safe = xmax * 0.72 if xmax > 0 else xmax * 0.92
         x_not = xmin * 0.72 if xmin < 0 else xmin * 0.92
-        tex += rf"\node[anchor=south] at (axis cs:{x_not:.6g},{ylab:.6g}) {{Not-safe}};" + "\n"
-        tex += rf"\node[anchor=south] at (axis cs:{x_safe:.6g},{ylab:.6g}) {{Safe}};" + "\n"
+        tex += rf"\node[anchor=south] at (axis cs:{x_not:.6g},{ylab:.6g}) {{{negative_label}}};" + "\n"
+        tex += rf"\node[anchor=south] at (axis cs:{x_safe:.6g},{ylab:.6g}) {{{positive_label}}};" + "\n"
 
     tex += r"""\end{axis}
 \end{tikzpicture}
@@ -1141,7 +1156,7 @@ def plot_dp_point_vs_fit(
     factors: List[float],
     show_method_legends: bool,
 ) -> None:
-    """DP parity plot for DP_DIFF mode.
+    """DP parity plot for all slope/metric modes.
 
     Plots:
       y = DP_point (damage parameter from model evaluation)
@@ -1179,7 +1194,7 @@ def plot_dp_point_vs_fit(
     lo = 10 ** (logmin - pad)
     hi = 10 ** (logmax + pad)
 
-    # Safe / Not-safe labels (DP-point higher than fit -> conservative)
+    # Neutral DP labels also apply when the master curve is flat.
     x_safe = 10 ** (logmin + 0.20 * span)
     y_safe = 10 ** (logmin + 0.80 * span)
     x_not = 10 ** (logmin + 0.80 * span)
@@ -1236,8 +1251,8 @@ def plot_dp_point_vs_fit(
         ax.plot(xs, f * xs, linestyle=ls, color=g, linewidth=1.3, label=f_label)
         ax.plot(xs, xs / f, linestyle=ls, color=g, linewidth=1.3, label="_nolegend_")
 
-    ax.text(x_safe, y_safe, "Safe", rotation=45, color="black", fontsize=11, ha="left", va="top")
-    ax.text(x_not, y_not, "Not-safe", rotation=45, color="black", fontsize=11, ha="right", va="bottom")
+    ax.text(x_safe, y_safe, r"$DP > DP_e$", rotation=45, color="black", fontsize=11, ha="left", va="top")
+    ax.text(x_not, y_not, r"$DP < DP_e$", rotation=45, color="black", fontsize=11, ha="right", va="bottom")
 
     ax.set_xlabel(r"Calibration best-fit damage parameter - $DP_{fit}$")
     ax.set_ylabel(r"Damage parameter from loading conditions - $DP$")
@@ -1370,13 +1385,13 @@ def plot_dp_point_vs_fit(
         + f"{x_safe:.6e}"
         + ","
         + f"{y_safe:.6e}"
-        + r") {Safe};"
+        + r") {$DP > DP_e$};"
         "\n"
         r"\node[rotate=45, anchor=south east] at (axis cs:"
         + f"{x_not:.6e}"
         + ","
         + f"{y_not:.6e}"
-        + r") {Not-safe};"
+        + r") {$DP < DP_e$};"
         "\n"
     )
 
@@ -1388,39 +1403,24 @@ def plot_dp_point_vs_fit(
 
 
 def compute_stats_table(df: pd.DataFrame) -> pd.DataFrame:
-    """Compute per-(material, method) error statistics.
-
-    The error metric depends on the CSV flag Metric_mode:
-      - Metric_mode != 'DP_DIFF'  -> Error_ln
-      - Metric_mode == 'DP_DIFF'  -> Error_ln_dp
-    """
-    rows = []
-    if "Metric_mode" not in df.columns:
-        df = df.copy()
+    """DP log10 statistics for all slopes, plus life errors where meaningful."""
+    df = df.copy()
+    if "Metric_mode" not in df:
         df["Metric_mode"] = "Nf"
-
+    if "DP_fit" in df and "CP_value" in df:
+        df["Error_log10_dp"] = log10_dp_ratio(df["DP_fit"], df["CP_value"])
+    rows = []
     for (mat, meth, mode), g in df.groupby(["Material", "Method", "Metric_mode"], dropna=False):
-        mode_s = str(mode or "Nf")
-        if mode_s.strip().upper() == "DP_DIFF":
-            metric = "Error_ln_dp"
-            err = pd.to_numeric(g.get("Error_ln_dp"), errors="coerce").to_numpy(dtype=float)
-        else:
-            metric = "Error_ln"
-            err = pd.to_numeric(g.get("Error_ln"), errors="coerce").to_numpy(dtype=float)
-
-        err = err[np.isfinite(err)]
-        rows.append(
-            {
-                "Material": mat,
-                "Method": meth,
-                "Metric": metric,
-                "n": int(err.size),
-                "Error_mean": float(np.mean(err)) if err.size else np.nan,
-                "Error_std": float(np.std(err, ddof=1)) if err.size > 1 else np.nan,
-            }
-        )
-
-    return pd.DataFrame(rows).sort_values(["Material", "Method", "Metric"])
+        metrics = ["Error_log10_dp"]
+        if str(mode).strip().upper() != "DP_DIFF":
+            metrics.append("Error_ln")
+        for metric in metrics:
+            err = pd.to_numeric(g.get(metric, pd.Series(np.nan, index=g.index)), errors="coerce").to_numpy(dtype=float)
+            err = err[np.isfinite(err)]
+            rows.append(dict(Material=mat, Method=meth, Metric=metric, n=int(err.size),
+                             Error_mean=float(np.mean(err)) if err.size else np.nan,
+                             Error_std=float(np.std(err, ddof=1)) if err.size > 1 else np.nan))
+    return pd.DataFrame(rows, columns=["Material", "Method", "Metric", "n", "Error_mean", "Error_std"]).sort_values(["Material", "Method", "Metric"])
 
 
 def write_stats_table_with_styles(
@@ -1435,7 +1435,7 @@ def write_stats_table_with_styles(
       - associated color + marker per method (consistent with plots)
       - mean/std of the active error metric per (material, method)
         * Metric='Error_ln' -> Error_ln = ln(Nf / Nf,e)
-        * Metric='Error_ln_dp' -> Error_ln_dp = ln(DP / DP_{fit})
+        * Metric='Error_log10_dp' -> log10(DP_e / DP), all slopes
     """
     stats = stats.copy()
     stats["Style_id"] = stats["Method"].map(lambda m: method_styles.get(m, {}).get("id", ""))
@@ -1481,7 +1481,9 @@ def write_stats_table_with_styles(
         meth_raw = str(r["Method"])
         is_ext = meth_raw.endswith("_ext")
         metric_raw = str(r.get("Metric", "Error_ln"))
-        if metric_raw == "Error_ln_dp":
+        if metric_raw == "Error_log10_dp":
+            metric_cell = r"$\log_{10}(DP_e/DP)$"
+        elif metric_raw == "Error_ln_dp":
             metric_cell = r"$Error_{\ln,dp}$"
         else:
             metric_cell = r"$Error_{\ln}$"
@@ -1524,6 +1526,7 @@ def main(argv=None) -> None:
     ap = argparse.ArgumentParser(allow_abbrev=False)  # IMPORTANT for Jupyter (-f kernel.json)
     ap.add_argument("--results_dir", type=str, default="Results")
     ap.add_argument("--out_dir", type=str, default="Results/Comparison")
+    ap.add_argument("--include-legacy", action="store_true", help="Include pre-audit results explicitly; disabled methods are still excluded.")
     ap.add_argument("--flag_filter", type=str, default="all", choices=["all", "design", "other"])
 
     # scatter opacity (clustering visibility)
@@ -1551,6 +1554,18 @@ def main(argv=None) -> None:
     factors = [float(f) for f in (args.factors or []) if np.isfinite(f) and f > 1.0]
 
     df = collect_all_results(results_dir)
+    disabled = df["Method"].astype(str).str.removesuffix("_ext").isin(DISABLED_METHODS)
+    if disabled.any():
+        print(f"[WARN] Excluding {int(disabled.sum())} rows from disabled methods; see docs/method-audit.md")
+    df = df.loc[~disabled].copy()
+    revision = df.get("Implementation_revision", pd.Series("legacy", index=df.index))
+    legacy = revision != IMPLEMENTATION_REVISION
+    if legacy.any():
+        print(f"[WARN] {int(legacy.sum())} rows predate this audit; regenerate results to apply equation corrections.")
+        if not args.include_legacy:
+            df = df.loc[~legacy].copy()
+    if df.empty:
+        raise RuntimeError("No current results. Run 1_run_material.py, or explicitly use --include-legacy for historical outputs.")
 
     # Minimal required columns (support both Nf-based and DP-based modes)
     for needed in ["Material", "Method", "Nf_exp"]:
@@ -1576,6 +1591,7 @@ def main(argv=None) -> None:
     if "DP_fit" in df.columns:
         m = np.isfinite(df["DP_fit"]) & np.isfinite(df["CP_value"]) & (df["DP_fit"] > 0.0) & (df["CP_value"] > 0.0)
         df.loc[m, "Error_ln_dp"] = np.log(df.loc[m, "CP_value"] / df.loc[m, "DP_fit"])
+        df["Error_log10_dp"] = log10_dp_ratio(df["DP_fit"], df["CP_value"])
 
     if "Error_dp" not in df.columns:
         df["Error_dp"] = np.nan
@@ -1619,7 +1635,8 @@ def main(argv=None) -> None:
         # Split by metric mode
         mode_u = df_mat["Metric_mode"].astype(str).str.strip().str.upper()
         df_nf = df_mat[mode_u != "DP_DIFF"].copy()
-        df_dp = df_mat[mode_u == "DP_DIFF"].copy()
+        # All slopes participate in damage-space comparisons.
+        df_dp = df_mat.copy()
 
         safe_mat = _safe_name(mat)
         mat_dir = out_dir / safe_mat
@@ -1674,7 +1691,7 @@ def main(argv=None) -> None:
             )
 
         # -------------------------
-        # DP-based plots (DP_DIFF)
+        # DP-based plots (all slopes)
         # -------------------------
         if not df_dp.empty:
             plot_boxplot_errors(
@@ -1684,8 +1701,8 @@ def main(argv=None) -> None:
                 data_dir=tikz_dp,
                 material_label=mat,
                 method_styles=method_styles,
-                error_col="Error_ln_dp",
-                ylabel=r"$Error_{\ln,dp}=\ln\left(\frac{DP}{DP_{fit}}\right)$",
+                error_col="Error_log10_dp",
+                ylabel=r"$\log_{10}\left(\frac{DP_e}{DP}\right)$",
             )
 
             plot_normal_curves(
@@ -1698,8 +1715,8 @@ def main(argv=None) -> None:
                 pdf_lw=pdf_lw,
                 pdf_alpha=pdf_alpha,
                 show_method_legends=args.show_method_legends,
-                error_col="Error_ln_dp",
-                xlabel=r"$Error_{\ln,dp}=\ln\left(\frac{DP}{DP_{fit}}\right)$",
+                error_col="Error_log10_dp",
+                xlabel=r"$\log_{10}\left(\frac{DP_e}{DP}\right)$",
             )
 
             plot_dp_point_vs_fit(

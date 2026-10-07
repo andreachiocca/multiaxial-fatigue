@@ -53,18 +53,15 @@ class LI:
         # Normal stress max (tension only)
         sig_n_max = max(float(S0r[2, 2]), float(S1r[2, 2]), 0.0)
 
-        # Shear stress magnitudes at the two load steps
-        tau0 = float(np.hypot(S0r[0, 2], S0r[1, 2]))
-        tau1 = float(np.hypot(S1r[0, 2], S1r[1, 2]))
-
         # Mean shear stress magnitude (Li uses |τ_m| and notes both signs are detrimental)
-        tau_m = 0.5 * (tau0 + tau1)
+        tau_m = float(np.hypot(0.5 * (S0r[0, 2] + S1r[0, 2]),
+                               0.5 * (S0r[1, 2] + S1r[1, 2])))
 
         # Shear stress range magnitude
         d_tau = float(np.hypot(S0r[0, 2] - S1r[0, 2], S0r[1, 2] - S1r[1, 2]))
 
         # Shear strain range magnitude ("Δγ_max" in the paper)
-        d_gam = float(np.hypot(E0r[0, 2] - E1r[0, 2], E0r[1, 2] - E1r[1, 2]))
+        d_gam = 2.0 * float(np.hypot(E0r[0, 2] - E1r[0, 2], E0r[1, 2] - E1r[1, 2]))
 
         # Normal strain range
         d_eps_n = abs(float(E0r[2, 2] - E1r[2, 2]))
@@ -74,6 +71,6 @@ class LI:
         damage = float(shear_term + normal_term)
 
         # Plane selection: prioritize the maximum shear strain energy density plane;
-        # use a tiny tie-break towards larger normal energy.
-        metric = float(shear_term + 1e-12 * normal_term)
+        # ties are resolved by damage in the case-level evaluator.
+        metric = float(shear_term)
         return CPPlaneResult(damage=damage, metric=metric)

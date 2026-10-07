@@ -18,3 +18,5 @@ The user-facing method name is registered in `fatigue/models/registry.py`. The r
 If a method needs a new material parameter, add it to the Excel `Summary` sheet, update the mapping in `fatigue/imp/experimental_data.py`, pass it in the runner's `params` dictionary, and declare it in `required_params()`.
 
 For a new method family, update `_family_cmap_name()` in `2_compare_results.py` if the plots need a distinct color palette. If calibration produces NaN, check the method's values on the design subset and its required parameters first.
+
+Register each method's original citation in `fatigue/models/references.py` and add analytical tests. Document any departure from the original plane rule or loading-history assumptions in `docs/method-audit.md`. Do not restore a disabled method without resolving its recorded numerical issue.

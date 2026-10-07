@@ -1,49 +1,37 @@
-# fatigue/eval/fitting.py
+"""Power-law calibration with a stable damage-space survival shift."""
 from __future__ import annotations
 import numpy as np
-from typing import Dict, Any, Tuple
 
-def fit_power_law_with_survival_std(N: np.ndarray, CP: np.ndarray, stdnum: float = 0.0) -> Dict[str, float]:
+
+def fit_power_law_with_survival_std(N, CP, stdnum=0.0):
+    """Fit DP=A*N**b without inverting flat or shallow curves.
+
+    STD is scatter in ln(N), undefined for non-decreasing/flat fits.
+    STD_ln_DP is always computed in ln(DP). For negative slopes the
+    downward DP shift is algebraically identical to the legacy life shift.
+    Flat/positive slopes use the same downward DP-space convention; they
+    must not be interpreted as a life survival probability.
     """
-    Fit CP = A * N^b (median) and return a 'survival shifted' intercept using stdnum.
-
-    Residual definition matches your old script:
-      1) Fit ln(CP) = ln(A) + b ln(N)
-      2) N_fit = (CP/A)^(1/b)
-      3) residual = ln(N) - ln(N_fit)
-      4) STD = std(residual)
-      5) ln(A_surv) = ln(A) + b * stdnum * STD  -> A_surv = A * exp(b*stdnum*STD)
-    """
-    N = np.asarray(N, dtype=float)
-    CP = np.asarray(CP, dtype=float)
-
-    m = np.isfinite(N) & np.isfinite(CP) & (N > 0) & (CP > 0)
-    N = N[m]
-    CP = CP[m]
-
-    if N.size < 2:
-        return {"A": np.nan, "b": np.nan, "STD": np.nan, "A_surv": np.nan, "n": int(N.size), "R2_log": np.nan}
-
-    x = np.log(N)
-    y = np.log(CP)
-
-    # y = c + b x
+    N, CP = np.asarray(N, dtype=float).ravel(), np.asarray(CP, dtype=float).ravel()
+    if N.shape != CP.shape:
+        raise ValueError("N and CP must have equal lengths")
+    if not np.isfinite(stdnum) or stdnum < 0:
+        raise ValueError("stdnum must be finite and nonnegative")
+    mask = np.isfinite(N) & np.isfinite(CP) & (N > 0) & (CP > 0)
+    N, CP = N[mask], CP[mask]
+    invalid = dict(A=np.nan, b=np.nan, STD=np.nan, A_surv=np.nan,
+                   STD_ln_DP=np.nan, n=int(N.size), R2_log=np.nan)
+    if N.size < 2 or np.ptp(np.log(N)) < 1e-12:
+        return invalid
+    x, y = np.log(N), np.log(CP)
     b, c = np.polyfit(x, y, 1)
-    A = float(np.exp(c))
-
-    # residuals in ln(N) space (your old approach)
-    N_fit = (CP / A) ** (1.0 / b)
-    residual = np.log(N) - np.log(N_fit)
-    STD = float(np.std(residual, ddof=1)) if residual.size > 1 else 0.0
-
-    # survival shift
-    A_surv = float(np.exp(c + b * stdnum * STD))
-
-    # R2 in log-space (median fit)
-    yhat = c + b * x
-    ss_res = float(np.sum((y - yhat) ** 2))
-    ss_tot = float(np.sum((y - np.mean(y)) ** 2))
-    R2 = 1.0 - ss_res / ss_tot if ss_tot > 0 else np.nan
-
-    return {"A": A, "b": float(b), "STD": STD, "A_surv": A_surv, "n": int(N.size), "R2_log": float(R2)}
-
+    if abs(b) < 1e-12:
+        b, c = 0.0, float(np.mean(y))
+    residual_dp = y-(c+b*x)
+    std_dp = float(np.std(residual_dp, ddof=1))
+    std_life = std_dp/abs(b) if b < 0 else np.nan
+    ss_tot = float(np.sum((y-np.mean(y))**2))
+    r2 = 1-float(np.sum(residual_dp**2))/ss_tot if ss_tot > 1e-24 else np.nan
+    return dict(A=float(np.exp(c)), b=float(b), STD=std_life,
+                STD_ln_DP=std_dp, A_surv=float(np.exp(c-stdnum*std_dp)),
+                n=int(N.size), R2_log=r2)

@@ -43,7 +43,8 @@ class MSWT:
         E1r = _as33("E1r", E1r)
 
         a = float(get_param(params, "a_MSWT", default=0.5, context=self.name))
-        a = min(max(a, 0.0), 1.0)
+        if not np.isfinite(a) or not 0.0 <= a <= 1.0:
+            raise ValueError("a_MSWT must be finite and in [0, 1]")
 
         # sigma_max on plane (MacCauley bracket)
         sig0 = float(S0r[2, 2])
@@ -57,7 +58,7 @@ class MSWT:
         # shear strain range
         d_gam_a = float(E0r[0, 2] - E1r[0, 2])
         d_gam_b = float(E0r[1, 2] - E1r[1, 2])
-        d_gam = float(np.hypot(d_gam_a, d_gam_b))
+        d_gam = 2.0 * float(np.hypot(d_gam_a, d_gam_b))
 
         # shear stress range
         d_tau_a = float(S0r[0, 2] - S1r[0, 2])

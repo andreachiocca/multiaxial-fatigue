@@ -134,6 +134,8 @@ class OttosenReduced:
         R_list=None,
         harmonics=None,
     ) -> CaseResult:
+        from fatigue.models.references import ensure_enabled
+        ensure_enabled("OTT")
         # ---------
         # Harmonics
         # ---------

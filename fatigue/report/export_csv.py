@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Optional
 
 import numpy as np
+from fatigue.eval.metrics import log10_dp_ratio
+from fatigue.models.references import method_reference, IMPLEMENTATION_REVISION
 
 
 def _strip_variant(method_name: str) -> str:
@@ -138,7 +140,7 @@ def save_fatigue_csv(
     loading_type_design=None,
     method_family: Optional[str] = None,
     metric_mode: str = "Nf",
-    # Optional DP-based metric columns (used when metric_mode == 'DP_DIFF')
+    # Optional DP columns, available for every slope and metric mode
     DP_fit=None,
     Error_ln_dp=None,
     # Deprecated aliases kept for backward compatibility (ignored in favor of Error_ln_dp)
@@ -155,13 +157,16 @@ def save_fatigue_csv(
     Output columns:
       Material, Method_family, Method, Metric_mode, Loading_type,
       Nf_exp, CP_value, Nf_expected, DP_fit,
-      Flag, Error_ln, Error_ln_dp
+      Flag, Error_ln, Error_ln_dp, Error_log10_dp, Implementation_revision, Method_reference
 
     Flag convention:
       0 = design points (if provided)
       1 = other points
 
-    Error definitions:
+    Error_log10_dp = log10(DP_fit / CP_value), for every metric mode.
+    DP_fit is DP_e (expected damage at experimental life).
+
+    Legacy error definitions:
       - Nf mode:   Error_ln = ln(Nf_exp / Nf_expected)
       - DP_DIFF:   Error_ln_dp = ln(DP_point / DP_fit), where DP_fit is the calibration best-fit evaluated at Nf_exp.
 
@@ -172,6 +177,7 @@ def save_fatigue_csv(
     filename = f"{method_name}_{material_name}.csv"
     path = os.path.join(out_dir, filename)
 
+    reference = method_reference(method_name)
     family = (method_family or infer_method_family(method_name)).strip() or "UNKNOWN"
 
     mode = str(metric_mode or "Nf").strip() or "Nf"
@@ -244,7 +250,7 @@ def save_fatigue_csv(
         den = np.asarray(den, dtype=float)
         out = np.full_like(num, np.nan, dtype=float)
         m = np.isfinite(num) & np.isfinite(den) & (num > 0.0) & (den > 0.0)
-        out[m] = np.log(num[m] / den[m])
+        out[m] = np.log(num[m]) - np.log(den[m])
         return out
 
     if Error_ln_dp is None and DP_fit is not None:
@@ -291,6 +297,9 @@ def save_fatigue_csv(
                 "Flag",
                 "Error_ln",
                 "Error_ln_dp",
+                "Error_log10_dp",
+                "Implementation_revision",
+                "Method_reference",
             ]
         )
 
@@ -312,6 +321,9 @@ def save_fatigue_csv(
                         0,
                         float(err),
                         edp_i,
+                        float(log10_dp_ratio(dp_fit_i, cp)),
+                        IMPLEMENTATION_REVISION,
+                        reference["url"] or reference["citation"],
                     ]
                 )
 
@@ -332,6 +344,9 @@ def save_fatigue_csv(
                     1,
                     float(err),
                     edp_i,
+                    float(log10_dp_ratio(dp_fit_i, cp)),
+                    IMPLEMENTATION_REVISION,
+                    reference["url"] or reference["citation"],
                 ]
             )
 

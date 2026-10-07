@@ -23,10 +23,10 @@ def _findley_plane_value(
 
     Same conventions as your previous cp_fun.cp_FIN:
       - Plane normal = local z-axis
-      - Normal stress = Szz (clipped at 0 when taking the maximum)
+      - Normal stress = Szz (signed maximum, including compression)
       - Shear stress range uses Sxz and Syz
 
-    Returns: (damage, metric) where metric = DeltaTau.
+    Returns: (damage, metric) where metric = damage.
     """
     S0r = _as33("S0r", S0r)
     S1r = _as33("S1r", S1r)
@@ -35,9 +35,9 @@ def _findley_plane_value(
     if k_FI < 0.0:
         raise ValueError(f"k_FI must be >= 0. Got k_FI={k_FI}")
 
-    # sigma_nn = Szz (clipped at 0)
-    sig0 = max(float(S0r[2, 2]), 0.0)
-    sig1 = max(float(S1r[2, 2]), 0.0)
+    # Signed maximum normal stress, as used in the Findley expression.
+    sig0 = float(S0r[2, 2])
+    sig1 = float(S1r[2, 2])
     smax = max(sig0, sig1)
 
     # tau_a = Sxz, tau_b = Syz
@@ -46,7 +46,7 @@ def _findley_plane_value(
     delta_tau = float(np.sqrt(dtau_a**2 + dtau_b**2))
 
     fin_value = float(delta_tau / 2.0 + k_FI * smax)
-    metric = float(delta_tau)
+    metric = fin_value
     return fin_value, metric
 
 

@@ -51,12 +51,14 @@ class Liu2021:
         nu = float(params["nu"])
         if E <= 0:
             raise ValueError(f"E must be > 0. Got E={E}")
-        if not (0.0 < nu < 0.6):
+        if not (-1.0 < nu < 0.5):
             raise ValueError(f"nu not plausible. Got nu={nu}")
         G = E / (2.0 * (1.0 + nu))
 
-        shear_props = ensure_shear_fatigue_props(params)
-        tau_f = float(shear_props.tau_f)
+        tau_f = params.get("tau_f")
+        if tau_f is None:
+            tau_f = ensure_shear_fatigue_props(params).tau_f
+        tau_f = float(tau_f)
         if tau_f <= 0:
             raise ValueError(f"tau_f must be > 0. Got tau_f={tau_f}")
 
@@ -71,20 +73,11 @@ class Liu2021:
         # Shear strain range Δγ
         d_gam_a = float(E0r[0, 2] - E1r[0, 2])
         d_gam_b = float(E0r[1, 2] - E1r[1, 2])
-        d_gam = float(np.hypot(d_gam_a, d_gam_b))
+        d_gam = 2.0 * float(np.hypot(d_gam_a, d_gam_b))
 
-        if d_gam <= 1e-16:
-            # Degenerate case: no shear range => no damage for this model
-            return CPPlaneResult(damage=0.0, metric=0.0)
-
-        # Eq.(27) term
-        rad = sig_n_max * E * d_eps
-        rad = max(rad, 0.0)
-        num = sig_n_max * math.sqrt(rad)
-        den = 2.0 * G * d_gam * tau_f
-        factor = 1.0 + (num / den if den > 1e-16 else 0.0)
-
-        gamma_star_over2 = 0.5 * d_gam * factor
+        # Algebraically expanded Eq. (27), including its zero-shear limit.
+        rad = max(sig_n_max * E * d_eps, 0.0)
+        gamma_star_over2 = 0.5*d_gam + sig_n_max*math.sqrt(rad)/(4.0*G*tau_f)
 
         metric = d_gam
         return CPPlaneResult(damage=float(gamma_star_over2), metric=float(metric))

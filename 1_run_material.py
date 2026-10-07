@@ -19,12 +19,13 @@ DATA_FOLDER = "Experimental_Data"
 RESULTS_DIR = "Results"
 
 MATERIAL_NAME = "AISI316L"   # e.g. "42CrMo4_QT", "AISI316L", "Al7075_T6", "Ti6Al4V_andrea_(AXIAL)"
-MODEL_NAME = "CARSPA_ext"              # e.g. "FS", "FIN", "FIN_ext", "SWT", "VM", "TRESCA", "W_MAX"
+MODEL_NAME = "FS_ext"              # e.g. "FS", "FIN", "SWT", "BP", "CAIM"
 
 
 DCMESH_N1 = 20
 DCMESH_N2 = 2 * DCMESH_N1
 STDNUM = 0
+MAKE_PLOTS = True
 
 def _variant_from_model_name(name: str) -> tuple[str, str]:
     """
@@ -232,6 +233,8 @@ def main():
     A = fit.get("A", None)
     b = fit["b"]
     As = fit["A_surv"]
+    if not (np.isfinite(As) and As > 0 and np.isfinite(b)):
+        raise ValueError("Invalid master-curve fit: at least two distinct positive experimental lives are required")
 
     # ----------------------------
     # 5b) Decide error metric (Nf prediction vs DP difference)
@@ -331,7 +334,7 @@ def main():
             dp_fit_i = float(As) * (Nf ** float(b))
 
         # Metric branch
-        if metric_mode == "Nf":
+        if metric_mode == "Nf" and np.isfinite(F) and F > 0:
             N_pred = fatc.fatigue_cycles(F, As, b)
         else:
             N_pred = np.nan
@@ -352,7 +355,7 @@ def main():
     # 7) Plot (same call/signature as MAIN)
     # ----------------------------
     # Plot only in Nf mode (parity plot requires meaningful N_pred)
-    if metric_mode == "Nf":
+    if metric_mode == "Nf" and MAKE_PLOTS:
         fatc.fatigue_plots(
             values, Nexp, Npred,
             A=As, B=b,
@@ -410,4 +413,13 @@ def main():
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", default=MODEL_NAME)
+    parser.add_argument("--material", default=MATERIAL_NAME)
+    parser.add_argument("--results-dir", default=RESULTS_DIR)
+    parser.add_argument("--no-plots", action="store_true")
+    args = parser.parse_args()
+    MODEL_NAME, MATERIAL_NAME, RESULTS_DIR = args.model, args.material, args.results_dir
+    MAKE_PLOTS = not args.no_plots
     main()

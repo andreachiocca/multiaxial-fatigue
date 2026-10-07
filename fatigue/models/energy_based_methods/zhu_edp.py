@@ -54,6 +54,8 @@ class ZhuEDP:
         R_list=None,
         harmonics=None,
     ) -> CaseResult:
+        from fatigue.models.references import ensure_enabled
+        ensure_enabled("ZHU_EDP")
         if harmonics is None:
             raise ValueError(f"{self.name}: harmonics are required to build the strain path")
 

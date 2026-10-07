@@ -26,7 +26,7 @@ from typing import Mapping
 import numpy as np
 
 from ..base import CPPlaneResult
-from ..utils.fatigue_estimation import ensure_axial_fatigue_props, ensure_shear_fatigue_props
+from ..utils.fatigue_estimation import ensure_axial_fatigue_props
 
 
 def _as33(name: str, A: np.ndarray) -> np.ndarray:
@@ -64,10 +64,13 @@ class GSA:
             raise ValueError(f"{self.name}: nu must be in (-1,0.5). Got nu={nu}")
 
         # Ensure fatigue properties
-        axial = ensure_axial_fatigue_props(params)
-        shear = ensure_shear_fatigue_props(params)
-        sigma_f = float(axial.sigma_f)
-        tau_f = float(shear.tau_f)
+        sigma_f = params.get("sigma_f")
+        tau_f = params.get("tau_f")
+        if sigma_f is None:
+            sigma_f = ensure_axial_fatigue_props(params).sigma_f
+        if tau_f is None:
+            tau_f = float(sigma_f) / np.sqrt(3.0)
+        sigma_f, tau_f = float(sigma_f), float(tau_f)
         if sigma_f <= 0.0 or tau_f <= 0.0:
             raise ValueError(f"{self.name}: invalid fatigue strength coefficients sigma_f={sigma_f}, tau_f={tau_f}")
 
@@ -81,13 +84,15 @@ class GSA:
         sig_n_max = max(float(S0r[2, 2]), float(S1r[2, 2]), 0.0)
         tau0 = float(np.hypot(S0r[0, 2], S0r[1, 2]))
         tau1 = float(np.hypot(S1r[0, 2], S1r[1, 2]))
-        tau_max = max(tau0, tau1)
+        tau_max = float(params.get("_tau_max", max(tau0, tau1)))
 
         # elastic/plastic strain ranges
-        d_gam_e = float(np.hypot(Ee0[0, 2] - Ee1[0, 2], Ee0[1, 2] - Ee1[1, 2]))
-        d_gam_p = float(np.hypot(Ep0[0, 2] - Ep1[0, 2], Ep0[1, 2] - Ep1[1, 2]))
+        d_gam_e = 2.0 * float(np.hypot(Ee0[0, 2] - Ee1[0, 2], Ee0[1, 2] - Ee1[1, 2]))
+        d_gam_p = 2.0 * float(np.hypot(Ep0[0, 2] - Ep1[0, 2], Ep0[1, 2] - Ep1[1, 2]))
         d_eps_e = abs(float(Ee0[2, 2] - Ee1[2, 2]))
         d_eps_p = abs(float(Ep0[2, 2] - Ep1[2, 2]))
+        if "_strain_ranges" in params:
+            d_gam_e, d_gam_p, d_eps_e, d_eps_p = params["_strain_ranges"]
 
         gsa = (
             (tau_max / tau_f) * (0.5 * d_gam_e)

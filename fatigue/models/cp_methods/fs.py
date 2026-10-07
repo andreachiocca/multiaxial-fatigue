@@ -55,7 +55,7 @@ def _fatemi_socie_plane_value(
     sig1 = max(float(S1r[2, 2]), 0.0)
     smax = max(sig0, sig1)
 
-    # Shear strain range in the plane: gamma_a = Exz, gamma_b = Eyz
+    # Tensor shear RANGE equals engineering shear AMPLITUDE (gamma = 2*epsilon).
     dgam_a = float(E0r[0, 2] - E1r[0, 2])
     dgam_b = float(E0r[1, 2] - E1r[1, 2])
     delta_gamma = float(np.sqrt(dgam_a**2 + dgam_b**2))

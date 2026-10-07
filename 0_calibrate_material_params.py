@@ -9,8 +9,7 @@ Extended (per your request) to also calibrate additional material parameters:
 - L_LI     (Li 2021 CP method)
 - k_MGSE   (MGSE_ZHU CP method)
 - a_MSWT   (MSWT CP method)
-- alpha_w  (ZhuEDP case-level model)
-- xi_ZHU   (ZhuEDP case-level model)
+ZHU_EDP calibration was removed by the numerical audit; see docs/method-audit.md.
 
 Repository conventions (v6)
 --------------------------
@@ -18,7 +17,6 @@ Repository conventions (v6)
 - Plane sampling: fatigue.planes.sampling (dcmesh_xyz, gentang)
 - Critical-plane evaluation: fatigue.eval.evaluator.best_cp_for_case
 - CP methods: fatigue.models.cp_methods
-- Case-level model: fatigue.models.energy_based_methods.zhu_edp.ZhuEDP
 
 Calibration objective
 ---------------------
@@ -35,11 +33,6 @@ Datasets
 - FS, FIN, LI, MGSE_ZHU, MSWT:
     use uniaxial axial + uniaxial torsion points (target R=-1 with fallbacks).
     This matches the legacy calibration intent.
-
-- ZhuEDP (alpha_w, xi_ZHU):
-    uses *multiaxial* cases where both axial and shear strain amplitudes are
-    non-negligible (based on the harmonic representation). If such cases are
-    not present, the script falls back to all cases (with a warning).
 
 Notes
 -----
@@ -68,7 +61,7 @@ from fatigue.models.cp_methods.fin import Findley
 from fatigue.models.cp_methods.li import LI
 from fatigue.models.cp_methods.mgse_zhu import MGSE_Zhu
 from fatigue.models.cp_methods.mswt import MSWT
-from fatigue.models.energy_based_methods.zhu_edp import ZhuEDP
+
 
 
 # -----------------------------
@@ -84,6 +77,8 @@ def minimize_1d_grid_refine(
 ) -> Tuple[float, float]:
     """Minimize objective(x) over [lo, hi] via repeated grid search."""
     lo, hi = float(bounds[0]), float(bounds[1])
+    if n_grid < 2 or n_refine < 1:
+        raise ValueError("Calibration requires n_grid >= 2 and n_refine >= 1")
     if not (hi > lo):
         raise ValueError("bounds must satisfy hi > lo")
 
@@ -94,7 +89,9 @@ def minimize_1d_grid_refine(
         xs = np.linspace(lo, hi, int(n_grid))
         fs = np.array([objective(float(x)) for x in xs], dtype=float)
 
-        j = int(np.nanargmin(fs))
+        if not np.any(np.isfinite(fs)):
+            raise ValueError("No finite calibration objective: check design data and master-curve slope")
+        j = int(np.argmin(np.where(np.isfinite(fs), fs, np.inf)))
         x_best = float(xs[j])
         f_best = float(fs[j])
 
@@ -108,53 +105,6 @@ def minimize_1d_grid_refine(
     return x_best, f_best
 
 
-def minimize_2d_grid_refine(
-    objective: Callable[[float, float], float],
-    bounds_x: Tuple[float, float],
-    bounds_y: Tuple[float, float],
-    *,
-    n_grid_x: int = 21,
-    n_grid_y: int = 21,
-    n_refine: int = 5,
-) -> Tuple[float, float, float]:
-    """Minimize objective(x,y) with a coarse 2D grid + iterative window shrinking."""
-    x_lo, x_hi = float(bounds_x[0]), float(bounds_x[1])
-    y_lo, y_hi = float(bounds_y[0]), float(bounds_y[1])
-    if not (x_hi > x_lo and y_hi > y_lo):
-        raise ValueError("bounds must satisfy hi > lo for both variables")
-
-    x_best = np.nan
-    y_best = np.nan
-    f_best = np.inf
-
-    for _ in range(int(n_refine)):
-        xs = np.linspace(x_lo, x_hi, int(n_grid_x))
-        ys = np.linspace(y_lo, y_hi, int(n_grid_y))
-
-        for x in xs:
-            for y in ys:
-                f = float(objective(float(x), float(y)))
-                if np.isfinite(f) and f < f_best:
-                    f_best, x_best, y_best = f, float(x), float(y)
-
-        # shrink window around best
-        x_step = (x_hi - x_lo) / max(1, (len(xs) - 1))
-        y_step = (y_hi - y_lo) / max(1, (len(ys) - 1))
-
-        x_lo = max(bounds_x[0], x_best - 2.0 * x_step)
-        x_hi = min(bounds_x[1], x_best + 2.0 * x_step)
-        y_lo = max(bounds_y[0], y_best - 2.0 * y_step)
-        y_hi = min(bounds_y[1], y_best + 2.0 * y_step)
-
-        if (x_hi - x_lo) < 1e-10 and (y_hi - y_lo) < 1e-10:
-            break
-
-    return float(x_best), float(y_best), float(f_best)
-
-
-# -----------------------------
-# Dataset selection (uniaxial tension / torsion)
-# -----------------------------
 
 def _dominance_ratio(other_max: float, main_max: float, *, atol: float, rtol: float) -> bool:
     return other_max <= (rtol * abs(main_max) + atol)
@@ -314,15 +264,6 @@ class CalibrationResult1D:
     series: Dict[str, np.ndarray]
 
 
-@dataclass(frozen=True)
-class CalibrationResult2D:
-    param_names: Tuple[str, str]
-    p_opt: Tuple[float, float]
-    scatter_STD: float
-    fit: Dict[str, float]
-    series: Dict[str, np.ndarray]
-
-
 def _build_R_list(*, n1: int = 20, n2: int = 40) -> np.ndarray:
     xyz = dcmesh_xyz(a1=np.pi, n1=int(n1), a2=2 * np.pi, n2=int(n2))
     xyz = np.unique(np.round(xyz, 12), axis=0)
@@ -361,74 +302,6 @@ def _calibrate_1d(
     )
 
 
-def _calibrate_2d(
-    *,
-    cases_data: List[Dict[str, Any]],
-    dp_eval: Callable[[Dict[str, Any], float, float], float],
-    bounds_x: Tuple[float, float],
-    bounds_y: Tuple[float, float],
-    stdnum: float,
-    n_grid_x: int,
-    n_grid_y: int,
-    n_refine: int,
-    param_names: Tuple[str, str],
-) -> CalibrationResult2D:
-    N = np.array([c["Nf"] for c in cases_data], dtype=float)
-
-    def objective(px: float, py: float) -> float:
-        DP = np.array([dp_eval(c, float(px), float(py)) for c in cases_data], dtype=float)
-        fit = fit_power_law_with_survival_std(N, DP, stdnum=stdnum)
-        return float(fit["STD"]) if np.isfinite(fit["STD"]) else np.inf
-
-    x_best, y_best, std_best = minimize_2d_grid_refine(
-        objective,
-        bounds_x,
-        bounds_y,
-        n_grid_x=n_grid_x,
-        n_grid_y=n_grid_y,
-        n_refine=n_refine,
-    )
-
-    DP_best = np.array([dp_eval(c, float(x_best), float(y_best)) for c in cases_data], dtype=float)
-    fit = fit_power_law_with_survival_std(N, DP_best, stdnum=stdnum)
-
-    return CalibrationResult2D(
-        param_names=tuple(param_names),
-        p_opt=(float(x_best), float(y_best)),
-        scatter_STD=float(std_best),
-        fit=dict(fit),
-        series={"N": N, "DP": DP_best},
-    )
-
-
-# -----------------------------
-# ZhuEDP multiaxial selection helpers
-# -----------------------------
-
-def _harmonic_amplitudes_for_zhu(h: Mapping[str, np.ndarray]) -> Tuple[float, float, float]:
-    """Return (amp_axial, amp_shear, F_NP) using the same definitions as ZhuEDP."""
-    E_sin = np.asarray(h.get("E_sin"), dtype=float)
-    E_cos = np.asarray(h.get("E_cos"), dtype=float)
-
-    ex_s, ex_c = float(E_sin[1, 1]), float(E_cos[1, 1])
-    g_s, g_c = 2.0 * float(E_sin[0, 1]), 2.0 * float(E_cos[0, 1])
-    gy_s, gy_c = g_s / math.sqrt(3.0), g_c / math.sqrt(3.0)
-
-    amp_ax = math.sqrt(ex_s * ex_s + ex_c * ex_c)
-    amp_sh = math.sqrt(gy_s * gy_s + gy_c * gy_c)
-
-    def _phase(sin_coeff: float, cos_coeff: float) -> float:
-        if abs(sin_coeff) < 1e-16 and abs(cos_coeff) < 1e-16:
-            return 0.0
-        return math.atan2(cos_coeff, sin_coeff)
-
-    phi_x = _phase(ex_s, ex_c)
-    phi_y = _phase(gy_s, gy_c)
-    F_NP = abs(math.sin(phi_y - phi_x))
-
-    return float(amp_ax), float(amp_sh), float(F_NP)
-
-
 # -----------------------------
 # Public API
 # -----------------------------
@@ -449,18 +322,12 @@ def calibrate_material_params(
     # search tuning
     n_grid_1d: int = 41,
     n_refine_1d: int = 6,
-    n_grid_2d: int = 21,
-    n_refine_2d: int = 5,
     # bounds
     bounds_k_FS: Tuple[float, float] = (0.0, 3.0),
     bounds_k_FI: Tuple[float, float] = (0.0, 3.0),
     bounds_L_LI: Tuple[float, float] = (0.0, 5.0),
     bounds_k_MGSE: Tuple[float, float] = (0.0, 5.0),
     bounds_a_MSWT: Tuple[float, float] = (0.0, 1.0),
-    bounds_alpha_w: Tuple[float, float] = (0.0, 2.0),
-    bounds_xi_ZHU: Tuple[float, float] = (0.0, 1.0),
-    # Zhu selection
-    zhu_amp_tol: float = 1e-12,
 ) -> Dict[str, Any]:
     """Calibrate FS/FIN + additional parameters for one material."""
 
@@ -667,80 +534,6 @@ def calibrate_material_params(
     )
 
     # ------------------
-    # ZhuEDP: 2D calibration on multiaxial cases (if available)
-    # ------------------
-    zhu_model = ZhuEDP()
-
-    all_cases: List[Dict[str, Any]] = []
-    multiax_cases: List[Dict[str, Any]] = []
-
-    for cid, c in cases.items():
-        try:
-            Nf = float(c["meta"]["Nf_cycles"])
-        except Exception:
-            continue
-
-        S0, E0, S1, E1, H = exp.extract_tensor(data, material_name, int(cid), node=node, include_harmonics=True)
-        entry = {"case_id": int(cid), "Nf": Nf, "S0": S0, "E0": E0, "S1": S1, "E1": E1, "H": H}
-        all_cases.append(entry)
-
-        try:
-            amp_ax, amp_sh, _fnp = _harmonic_amplitudes_for_zhu(H)
-            if amp_ax > zhu_amp_tol and amp_sh > zhu_amp_tol:
-                multiax_cases.append(entry)
-        except Exception:
-            pass
-
-    if len(all_cases) < 2:
-        warnings.warn(f"[{material_name}] ZhuEDP: not enough cases to calibrate.", RuntimeWarning)
-        zhu_cal: Optional[CalibrationResult2D] = None
-    else:
-        zhu_cases_use = multiax_cases if len(multiax_cases) >= 2 else all_cases
-        if len(multiax_cases) < 2:
-            warnings.warn(
-                f"[{material_name}] ZhuEDP: no (or too few) multiaxial cases with both axial+shear amplitudes; using ALL cases.",
-                RuntimeWarning,
-            )
-
-        # Warn if alpha_w is likely not identifiable (F_NP ~ 0 for all selected points)
-        fnp_vals = []
-        for e in zhu_cases_use:
-            try:
-                _ax, _sh, fnp = _harmonic_amplitudes_for_zhu(e["H"])
-                fnp_vals.append(float(fnp))
-            except Exception:
-                pass
-        if fnp_vals and max(fnp_vals) < 1e-3:
-            warnings.warn(
-                f"[{material_name}] ZhuEDP: selected cases have F_NP≈0; alpha_w may be poorly identifiable (objective weakly depends on alpha_w).",
-                RuntimeWarning,
-            )
-
-        def zhu_eval(case_dict: Dict[str, Any], alpha_w: float, xi: float) -> float:
-            r = zhu_model.evaluate_case(
-                S0=case_dict["S0"],
-                E0=case_dict["E0"],
-                S1=case_dict["S1"],
-                E1=case_dict["E1"],
-                params={"alpha_w": float(alpha_w), "xi_ZHU": float(xi)},
-                harmonics=case_dict["H"],
-                R_list=None,
-            )
-            return float(r.values.get("", np.nan))
-
-        zhu_cal = _calibrate_2d(
-            cases_data=zhu_cases_use,
-            dp_eval=zhu_eval,
-            bounds_x=bounds_alpha_w,
-            bounds_y=bounds_xi_ZHU,
-            stdnum=stdnum,
-            n_grid_x=n_grid_2d,
-            n_grid_y=n_grid_2d,
-            n_refine=n_refine_2d,
-            param_names=("alpha_w", "xi_ZHU"),
-        )
-
-    # ------------------
     # Pack output
     # ------------------
     out: Dict[str, Any] = {
@@ -752,8 +545,6 @@ def calibrate_material_params(
             "tension_info": tension_info,
             "torsion_info": torsion_info,
             "n_uniax": int(len(uniax_cases)),
-            "n_all": int(len(all_cases)),
-            "n_zhu_multiax": int(len(multiax_cases)),
         },
         "FS": {
             "k_FS": FS_cal.p_opt,
@@ -781,21 +572,6 @@ def calibrate_material_params(
             "fit": MSWT_cal.fit,
         },
     }
-
-    if zhu_cal is not None:
-        out["ZHU_EDP"] = {
-            "alpha_w": zhu_cal.p_opt[0],
-            "xi_ZHU": zhu_cal.p_opt[1],
-            "scatter_STD": zhu_cal.scatter_STD,
-            "fit": zhu_cal.fit,
-        }
-    else:
-        out["ZHU_EDP"] = {
-            "alpha_w": np.nan,
-            "xi_ZHU": np.nan,
-            "scatter_STD": np.nan,
-            "fit": {},
-        }
 
     return out
 
@@ -846,7 +622,6 @@ if __name__ == "__main__":
         print("Material:", cal["material"])
         sel = cal["selection"]
         print(f"Uniaxial cases: tension={len(sel['tension_case_ids'])} torsion={len(sel['torsion_case_ids'])} (total={sel['n_uniax']})")
-        print(f"ZhuEDP cases: all={sel['n_all']} multiax(amp>tol)={sel['n_zhu_multiax']}")
 
         print("\nCalibrated parameters")
         print(f"  k_FS     = {cal['FS']['k_FS']:.6g}")
@@ -854,13 +629,6 @@ if __name__ == "__main__":
         print(f"  L_LI     = {cal['LI']['L_LI']:.6g}")
         print(f"  k_MGSE   = {cal['MGSE_ZHU']['k_MGSE']:.6g}")
         print(f"  a_MSWT   = {cal['MSWT']['a_MSWT']:.6g}")
-        if np.isfinite(cal['ZHU_EDP'].get('alpha_w', np.nan)):
-            print(f"  alpha_w  = {cal['ZHU_EDP']['alpha_w']:.6g}")
-            print(f"  xi_ZHU   = {cal['ZHU_EDP']['xi_ZHU']:.6g}")
-        else:
-            print("  alpha_w  = NaN (not calibrated)")
-            print("  xi_ZHU   = NaN (not calibrated)")
-
         # Scatter summary
         print("\nScatter STD (lnN residuals)")
         print(f"  FS      STD = {cal['FS']['scatter_STD']:.6g}")
@@ -868,4 +636,3 @@ if __name__ == "__main__":
         print(f"  LI      STD = {cal['LI']['scatter_STD']:.6g}")
         print(f"  MGSE    STD = {cal['MGSE_ZHU']['scatter_STD']:.6g}")
         print(f"  MSWT    STD = {cal['MSWT']['scatter_STD']:.6g}")
-        print(f"  ZhuEDP  STD = {cal['ZHU_EDP'].get('scatter_STD', np.nan):.6g}")
