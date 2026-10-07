@@ -26,15 +26,6 @@ DCMESH_N1 = 20
 DCMESH_N2 = 2 * DCMESH_N1
 STDNUM = 0
 
-# Models you want to calibrate (you can include CP and non-CP)
-# NOTE: for CP "_ext" you still calibrate the base name, since "_ext" is a variant.
-MODEL_NAMES = [
-    "FS", "FIN", "SWT", "DANGVAN", "SWTD", "CARSPA", "MATAKE", "MCD", "OTT",
-    # Newly added CP methods from attached PDFs
-    "LI", "GSE", "GSA", "MGSE_YU", "MGSE_ZHU", "LIU2021", "MKBM", "ZHU_EDP",
-]    #, "TRESCA", "W_MAX"
-
-
 def _variant_from_model_name(name: str) -> tuple[str, str]:
     """
     Returns (base_model_name, variant_key).
@@ -180,17 +171,20 @@ def main():
     uniax_Rm1 = exp.extract_uniaxial_tension(data)
 
     # ----------------------------
-    # 5) Models + calibration on uniaxial points
+    # 5) Selected model + calibration on uniaxial points
     # ----------------------------
-    # IMPORTANT: calibrate base names (no "_ext"). Variants are handled at evaluation time.
-    base_model_names = []
-    for n in MODEL_NAMES:
-        base, _ = _variant_from_model_name(n)
-        if base not in base_model_names:
-            base_model_names.append(base)
+    # Only the requested model contributes to this run's CSV. For a CP "_ext"
+    # variant, calibrate its base model (which returns both variants).
+    base_name, variant_key = _variant_from_model_name(MODEL_NAME)
+    model = get_models([base_name])[0]
 
-    models = get_models(base_model_names)
-    model_map = {m.name: m for m in models}
+    # Check before the potentially expensive calibration.
+    missing = [k for k in model.required_params() if params.get(k, None) is None]
+    if missing:
+        raise ValueError(
+            f"Missing required material params for {model.name}: {missing}. "
+            f"Available: {params}"
+        )
 
     cal = collect_uniaxial_series_and_fit(
         data=data,
@@ -198,26 +192,10 @@ def main():
         material_name=MATERIAL_NAME,
         uniax_cases=uniax_Rm1,
         R_list=R_list,
-        models=models,
+        models=[model],
         params=params,
         stdnum=STDNUM,
     )
-
-    # Pick requested model + variant
-    base_name, variant_key = _variant_from_model_name(MODEL_NAME)
-
-    if base_name not in model_map:
-        raise ValueError(f"Requested '{base_name}' not in models {list(model_map.keys())}")
-
-    model = model_map[base_name]
-
-    # Required parameter sanity check
-    missing = [k for k in model.required_params() if params.get(k, None) is None]
-    if missing:
-        raise ValueError(
-            f"Missing required material params for {model.name}: {missing}. "
-            f"Available: {params}"
-        )
 
     # Pull calibration for this model
     if base_name not in cal:

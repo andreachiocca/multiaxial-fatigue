@@ -1,6 +1,6 @@
 # Architecture and data flow
 
-`1_run_material.py` reads one material workbook from `Experimental_Data/`, selects uniaxial design points, fits a power-law relation between a method's damage parameter and cycles to failure, evaluates the remaining cases, and writes `Results/<METHOD>_<MATERIAL>.csv`. `2_compare_results.py` reads those CSVs and generates plots and tables under `Results/Comparison/`. `0_calibrate_material_params.py` prints suggested material parameters without editing the workbooks.
+`1_run_material.py` reads one material workbook from `Experimental_Data/`, selects uniaxial design points, fits a power-law relation for the selected method only, evaluates the remaining cases, and writes `Results/<METHOD>_<MATERIAL>.csv`. `2_compare_results.py` reads those CSVs and generates plots and tables under `Results/Comparison/`. `0_calibrate_material_params.py` prints suggested material parameters without editing the workbooks.
 
 | Path | Role |
 | --- | --- |
