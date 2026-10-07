@@ -25,21 +25,21 @@ def _sphere_grid(n_polar: int = 24, n_azimuth: int = 48):
     return normals, weights
 
 
-def _strengths(params: Mapping[str, float]):
+def _strengths(params: Mapping[str, float], name="BP"):
     s = float(params["Sigm1"])
     t = float(params["Taum1"])
     if not (np.isfinite(s) and np.isfinite(t) and s > 0 and t > 0):
-        raise ValueError("BP requires positive finite Sigm1 and Taum1")
+        raise ValueError(f"{name} requires positive finite Sigm1 and Taum1")
 
     s0 = params.get("Sig0")
     if s0 is None:
         su = params.get("Su")
         if su is None or not np.isfinite(su) or su <= 0:
-            raise ValueError("BP requires Sig0, or Su to estimate it using Eq. (1) of Böhme et al. (2026)")
+            raise ValueError(f"{name} requires Sig0, or Su to estimate it using Eq. (1) of Böhme et al. (2026)")
         s0 = 4.0 * s * float(su) / (s + 2.0 * float(su))
     s0 = float(s0)
     if not np.isfinite(s0) or s0 <= 0:
-        raise ValueError("BP requires a positive finite Sig0")
+        raise ValueError(f"{name} requires a positive finite Sig0")
 
     t0 = params.get("Tau0")
     if t0 is None:
@@ -47,7 +47,7 @@ def _strengths(params: Mapping[str, float]):
         t0 = 4.0 * t / (1.0 + 2.0 * s / s0)
     t0 = float(t0)
     if not np.isfinite(t0) or t0 <= 0:
-        raise ValueError("BP requires a positive finite Tau0")
+        raise ValueError(f"{name} requires a positive finite Tau0")
     return s, t, s0, t0
 
 
@@ -56,6 +56,21 @@ def _plane_components(stress: np.ndarray, normals: np.ndarray):
     normal = np.sum(traction * normals, axis=1)
     shear = traction - normal[:, None] * normals
     return normal, shear
+
+
+def _plane_amplitudes(mean, sin, cos, normals):
+    sigma_m, tau_m_vec = _plane_components(mean, normals)
+    sigma_s, tau_s = _plane_components(sin, normals)
+    sigma_c, tau_c = _plane_components(cos, normals)
+
+    sigma_a = np.hypot(sigma_s, sigma_c)
+    # Minimum circumscribed circle radius of the single-harmonic shear ellipse.
+    ss = np.sum(tau_s * tau_s, axis=1)
+    cc = np.sum(tau_c * tau_c, axis=1)
+    sc = np.sum(tau_s * tau_c, axis=1)
+    tau_a = np.sqrt(np.maximum(0.0, 0.5 * (ss + cc + np.hypot(ss - cc, 2.0 * sc))))
+    tau_m = np.linalg.norm(tau_m_vec, axis=1)
+    return sigma_a, sigma_m, tau_a, tau_m
 
 
 class BohmePapuga:
@@ -70,10 +85,9 @@ class BohmePapuga:
         self, *, S0, E0, S1, E1, params: Mapping[str, float],
         R_list=None, harmonics=None,
     ) -> CaseResult:
-        s, t, s0, t0 = _strengths(params)
+        s, t, s0, t0 = _strengths(params, self.name)
         k2 = (s / t) ** 2
-        a = 4.5 * (k2 - 4.0 / 3.0)
-        b = 3.0 * (3.0 - k2)
+        a, b = self._amplitude_coefficients(k2)
         c = 2.5 * k2 * ((2.0 * t / t0) ** 2 - 1.0)
         d = 5.0 * ((2.0 * s / s0) ** 2 - 1.0 - 2.0 * c / 15.0)
 
@@ -85,21 +99,18 @@ class BohmePapuga:
             mean, sin, cos = (np.asarray(harmonics[key], dtype=float)
                               for key in ("S_mean", "S_sin", "S_cos"))
         if any(x.shape != (3, 3) or not np.all(np.isfinite(x)) for x in (mean, sin, cos)):
-            raise ValueError("BP requires finite 3x3 stress mean/sin/cos tensors")
+            raise ValueError(f"{self.name} requires finite 3x3 stress mean/sin/cos tensors")
 
         normals, weights = _sphere_grid()
-        sigma_m, tau_m_vec = _plane_components(mean, normals)
-        sigma_s, tau_s = _plane_components(sin, normals)
-        sigma_c, tau_c = _plane_components(cos, normals)
-
-        sigma_a = np.hypot(sigma_s, sigma_c)
-        # Minimum circumscribed circle radius of the single-harmonic shear ellipse.
-        ss = np.sum(tau_s * tau_s, axis=1)
-        cc = np.sum(tau_c * tau_c, axis=1)
-        sc = np.sum(tau_s * tau_c, axis=1)
-        tau_a = np.sqrt(np.maximum(0.0, 0.5 * (ss + cc + np.hypot(ss - cc, 2.0 * sc))))
-        tau_m = np.linalg.norm(tau_m_vec, axis=1)
-
-        integral = np.dot(weights, a * tau_a**2 + b * sigma_a**2
-                          + c * tau_a * tau_m + d * sigma_a * sigma_m)
+        sigma_a, sigma_m, tau_a, tau_m = _plane_amplitudes(mean, sin, cos, normals)
+        integral = self._combine(a, b, c, d, sigma_a, sigma_m, tau_a, tau_m,
+                                 weights, normals, mean, sin, cos)
         return CaseResult(values={"": float(np.sqrt(max(0.0, integral)) / s)})
+
+    def _amplitude_coefficients(self, k2):
+        return 4.5 * (k2 - 4.0 / 3.0), 3.0 * (3.0 - k2)
+
+    def _combine(self, a, b, c, d, sigma_a, sigma_m, tau_a, tau_m,
+                 weights, normals, mean, sin, cos):
+        return np.dot(weights, a * tau_a**2 + b * sigma_a**2
+                      + c * tau_a * tau_m + d * sigma_a * sigma_m)

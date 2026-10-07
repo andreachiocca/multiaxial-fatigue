@@ -46,6 +46,7 @@ from .invariant_methods.ottosen import OttosenReduced
 from .energy_based_methods.swtd import SWTD
 from .energy_based_methods.zhu_edp import ZhuEDP
 from .integral_methods.bohme_papuga import BohmePapuga
+from .integral_methods.caim import CAIM
 
 def _available_cp_methods():
     """Instantiate all available critical-plane methods."""
@@ -81,6 +82,7 @@ def _available_direct_models():
         "SWTD": SWTD(),
         "ZHU_EDP": ZhuEDP(),
         "BP": BohmePapuga(),
+        "CAIM": CAIM(),
         # "TRESCA": TrescaEqvStressAmp(),
         # "W_MAX": ElasticStrainEnergyMax(),
     }

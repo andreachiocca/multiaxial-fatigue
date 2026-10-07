@@ -182,10 +182,10 @@ def main():
     base_name, variant_key = _variant_from_model_name(MODEL_NAME)
     model = get_models([base_name])[0]
 
-    if base_name == "BP" and (Sig0 is None or Tau0 is None):
+    if base_name in {"BP", "CAIM"} and (Sig0 is None or Tau0 is None):
         from fatigue.models.integral_methods.bohme_papuga import _strengths
-        _, _, estimated_s0, estimated_t0 = _strengths(params)
-        print(f"BP R=0 strengths (MPa): Sig0={estimated_s0:.3f} "
+        _, _, estimated_s0, estimated_t0 = _strengths(params, base_name)
+        print(f"{base_name} R=0 strengths (MPa): Sig0={estimated_s0:.3f} "
               f"({'estimated' if Sig0 is None else 'workbook'}), "
               f"Tau0={estimated_t0:.3f} "
               f"({'estimated' if Tau0 is None else 'workbook'})")
