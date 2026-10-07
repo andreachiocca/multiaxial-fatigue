@@ -23,7 +23,7 @@ The existing CSV files in `Results/` are example outputs from the supplied archi
 
 ## Add a fatigue method
 
-Implement a method in `fatigue/models/cp_methods/`, `fatigue/models/invariant_methods/`, or `fatigue/models/energy_based_methods/`, then register it in `fatigue/models/registry.py`. See [the method guide](docs/how_to_add_new_method_v7_2_structured.pdf) for the expected interfaces, calibration behavior, and naming conventions. The [repository overview](docs/help_repository_overview_v7_2_structured.pdf) describes the data flow and CSV fields.
+Implement a method in `fatigue/models/cp_methods/`, `fatigue/models/invariant_methods/`, or `fatigue/models/energy_based_methods/`, then register it in `fatigue/models/registry.py`. See [adding a method](docs/adding-methods.md) for the expected interfaces and naming conventions. The [architecture notes](docs/architecture.md) describe the data flow and CSV fields.
 
 ## Layout
 
