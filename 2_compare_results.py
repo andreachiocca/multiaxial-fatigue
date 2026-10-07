@@ -172,6 +172,8 @@ def _family_cmap_name(family: str) -> str:
     # Sensible defaults for other families
     if "energy" in f:
         return "Greens"
+    if "integral" in f:
+        return "Purples"
     if "stress" in f:
         return "Purples"
     if "strain" in f:

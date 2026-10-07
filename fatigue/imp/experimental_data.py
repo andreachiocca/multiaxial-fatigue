@@ -315,6 +315,13 @@ def import_experimental_data_grouped_by_material(
             c = _optional_col_idx(*needles)
             return None if c is None else to_float_or_none(ws.cell(row=avg_row, column=c).value)
 
+        # Optional maximum stresses in zero-to-maximum (R=0) fatigue tests.
+        # BP estimates missing values using Eqs. (1)-(2) of Böhme et al. (2026).
+        s0 = _read_opt("Sig0", "tensile fatigue strength r=0", "tensile fatigue limit r=0",
+                       "tensile fatigue strength r = 0", "tensile fatigue limit r = 0")
+        t0 = _read_opt("Tau0", "torsional fatigue strength r=0", "torsional fatigue limit r=0",
+                       "torsional fatigue strength r = 0", "torsional fatigue limit r = 0")
+
         sigma_f_opt = _read_opt("sigma_f", "sigma_f", "fatigue strength coefficient")
         epsilon_f_opt = _read_opt("epsilon_f", "epsilon_f", "fatigue ductility coefficient")
         b_fat_opt = _read_opt("b_fat", "b_fat", "fatigue strength exponent")
@@ -371,6 +378,8 @@ def import_experimental_data_grouped_by_material(
                 "Tensile_strength_MPa": uts,
                 "Tensile_fatigue_limit_MPa": sfl,
                 "Torsional_fatigue_limit_MPa": tfl,
+                "Tensile_fatigue_R0_MPa": s0,
+                "Torsional_fatigue_R0_MPa": t0,
                 "k_FS": kfs,
                 "k_FI": kfi,
 

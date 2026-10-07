@@ -9,7 +9,8 @@ themselves isolated in their respective subfolders:
 
   - ``fatigue/models/cp_methods``
   - ``fatigue/models/invariant_methods``
-  - ``fatigue/models/energy_based_methods`` (empty for now)
+  - ``fatigue/models/energy_based_methods``
+  - ``fatigue/models/integral_methods``
 """
 
 from typing import Iterable
@@ -41,9 +42,10 @@ from .cp_methods.gsa import GSA
 # Invariant methods
 from .invariant_methods.ottosen import OttosenReduced
 
-# Energy based methods
+# Energy and integral methods
 from .energy_based_methods.swtd import SWTD
 from .energy_based_methods.zhu_edp import ZhuEDP
+from .integral_methods.bohme_papuga import BohmePapuga
 
 def _available_cp_methods():
     """Instantiate all available critical-plane methods."""
@@ -78,6 +80,7 @@ def _available_direct_models():
         "OTT": OttosenReduced(),
         "SWTD": SWTD(),
         "ZHU_EDP": ZhuEDP(),
+        "BP": BohmePapuga(),
         # "TRESCA": TrescaEqvStressAmp(),
         # "W_MAX": ElasticStrainEnergyMax(),
     }

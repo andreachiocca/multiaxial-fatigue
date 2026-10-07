@@ -9,6 +9,7 @@
 | `fatigue/models/base.py` | Model interfaces and result types |
 | `fatigue/models/cp_adapter.py` | Case-level wrapper around critical-plane methods |
 | `fatigue/models/registry.py` | Names exposed to the runner |
+| `fatigue/models/integral_methods/` | Orientation-averaged integral criteria, including BP |
 | `fatigue/eval/` | Critical-plane evaluation, calibration and fitting |
 | `fatigue/report/export_csv.py` | Per-method CSV output |
 

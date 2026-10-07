@@ -111,6 +111,8 @@ def main():
     nu = mat_prop.get("nu", None)
     Sigm1 = mat_prop.get("Tensile_fatigue_limit_MPa", None)
     Taum1 = mat_prop.get("Torsional_fatigue_limit_MPa", None)
+    Sig0 = mat_prop.get("Tensile_fatigue_R0_MPa", None)
+    Tau0 = mat_prop.get("Torsional_fatigue_R0_MPa", None)
     k_FS = mat_prop.get("k_FS", None)
     k_FI = mat_prop.get("k_FI", None)  # your dataset uses "k_FI"
 
@@ -140,6 +142,8 @@ def main():
         "nu": float(nu) if nu is not None else None,
         "Sigm1": float(Sigm1) if Sigm1 is not None else None,
         "Taum1": float(Taum1) if Taum1 is not None else None,
+        "Sig0": float(Sig0) if Sig0 is not None else None,
+        "Tau0": float(Tau0) if Tau0 is not None else None,
         "k_FS": float(k_FS) if k_FS is not None else None,
         "k_FI": float(k_FI) if k_FI is not None else None,
 
@@ -177,6 +181,14 @@ def main():
     # variant, calibrate its base model (which returns both variants).
     base_name, variant_key = _variant_from_model_name(MODEL_NAME)
     model = get_models([base_name])[0]
+
+    if base_name == "BP" and (Sig0 is None or Tau0 is None):
+        from fatigue.models.integral_methods.bohme_papuga import _strengths
+        _, _, estimated_s0, estimated_t0 = _strengths(params)
+        print(f"BP R=0 strengths (MPa): Sig0={estimated_s0:.3f} "
+              f"({'estimated' if Sig0 is None else 'workbook'}), "
+              f"Tau0={estimated_t0:.3f} "
+              f"({'estimated' if Tau0 is None else 'workbook'})")
 
     # Check before the potentially expensive calibration.
     missing = [k for k in model.required_params() if params.get(k, None) is None]

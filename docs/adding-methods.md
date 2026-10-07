@@ -11,7 +11,7 @@ The user-facing method name is registered in `fatigue/models/registry.py`. The r
 
 ## Direct method
 
-1. Add a class in `fatigue/models/invariant_methods/` or `fatigue/models/energy_based_methods/`. Follow an existing model and the `FatigueModel` protocol in `fatigue/models/base.py`.
+1. Add a class in `fatigue/models/invariant_methods/`, `fatigue/models/energy_based_methods/`, or `fatigue/models/integral_methods/`. Follow an existing model and the `FatigueModel` protocol in `fatigue/models/base.py`.
 2. Provide `name`, `required_params()`, and `evaluate_case(*, S0, E0, S1, E1, params, R_list=None, harmonics=None) -> CaseResult`. The result uses `values={"": damage}`. A direct model must explicitly use `harmonics` if its calculation needs phase information.
 3. Import and register the class in `_available_direct_models()` in `fatigue/models/registry.py`, then select it with `MODEL_NAME` in `1_run_material.py`.
 

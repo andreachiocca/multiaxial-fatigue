@@ -23,7 +23,11 @@ The existing CSV files in `Results/` are example outputs from the supplied archi
 
 ## Add a fatigue method
 
-Implement a method in `fatigue/models/cp_methods/`, `fatigue/models/invariant_methods/`, or `fatigue/models/energy_based_methods/`, then register it in `fatigue/models/registry.py`. See [adding a method](docs/adding-methods.md) for the expected interfaces and naming conventions. The [architecture notes](docs/architecture.md) describe the data flow and CSV fields.
+Implement a method in `fatigue/models/cp_methods/`, `fatigue/models/invariant_methods/`, `fatigue/models/energy_based_methods/`, or `fatigue/models/integral_methods/`, then register it in `fatigue/models/registry.py`. See [adding a method](docs/adding-methods.md) for the expected interfaces and naming conventions. The [architecture notes](docs/architecture.md) describe the data flow and CSV fields.
+
+### Böhme–Papuga (BP)
+
+Set `MODEL_NAME = "BP"` in `1_run_material.py`. BP uses `Sigm1` and `Taum1` (the R=−1 tensile and torsional fatigue limits). If available, add `Tensile fatigue strength R=0` and `Torsional fatigue strength R=0` columns to the workbook `Summary` sheet. These are **maximum** stresses for zero-to-maximum loading. When absent, the runner uses the estimates in Eqs. (1)–(2) of [Böhme, Papuga & Lange (2026)](https://doi.org/10.1111/ffe.70244), based on tensile strength and the R=−1 limits, and prints the resulting values. The BP damage parameter is dimensionless and uses a sphere integral of shear and normal amplitudes and mean stresses. The attached MATLAB `damage_criteria_CAIM.m` describes the distinct CAIM method and is not used for BP.
 
 ## Layout
 
