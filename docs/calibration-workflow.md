@@ -1,5 +1,10 @@
 # Calibration history and experimental run-outs
 
+> **Scientific review proposal:** The planned source-prescribed defaults, optional
+> all-eligible/subset calibration, and independent-validation safeguards are defined in
+> [the Issue #14 protocol](calibration-validation-protocol.md). The procedures proposed
+> there are not yet implemented in production.
+
 > **In this repository.** This document tracks upstream PRs #5-#6 (commits dc4fe6d-f0df0a7, and the
 > Findley amplitude section of PR #9, 36ff0a1, 0105b69) and
 > describes the Script 0 / Script 1 workflow that produced the records in `Calibrations/`. That versioned
