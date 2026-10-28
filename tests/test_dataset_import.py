@@ -151,7 +151,7 @@ def test_identity_conflict_warns_but_uses_summary_fatigue_limits(tmp_path):
 
 def test_summary_source_without_material_name_is_imported(tmp_path):
     rows = [["ref", "A", 2020, None, 206000, 0.3, 900, 750, 420, 300, 2e6, -1]]
-    path = write_revised_workbook(tmp_path / "New_alloy.xlsx", _tension_rows(), summary_rows=rows)
+    path = write_revised_workbook(tmp_path / "N.xlsx", _tension_rows(), summary_rows=rows)
     block = _one(path)
     assert block["material"]["Tensile_fatigue_limit_MPa"] == 420
     assert block["material"]["Torsional_fatigue_limit_MPa"] == 300
