@@ -35,9 +35,11 @@ Changed files are the importer, dataset-import tests and fixture builder, this c
 `docs/dataset-workflow.md`. The generated `docs/workbook-format.md` is not edited while PR #21
 owns that file; its Summary paragraph needs reconciliation when the PRs are integrated.
 
-Next action: publish a draft PR, inspect CI and numerical regression output, resolve the
-source-batch policy and AISI overlay mismatch with the maintainer, then request scientific review.
-Do not merge automatically.
+Draft [PR #23](https://github.com/andreachiocca/multiaxial-fatigue/pull/23) is open without merge.
+The first CI lint run found a Black formatting failure; the extra trailing newlines in the three
+reconstructed Python files were removed in the follow-up commit. Next action: inspect the new CI
+run and numerical regression output, resolve the source-batch policy and AISI overlay mismatch with
+the maintainer, then request scientific review. Do not merge automatically.
 
 ## Milestone, multifat architecture integration (22 October 2026)
 

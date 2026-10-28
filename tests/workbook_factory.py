@@ -180,4 +180,3 @@ def write_revised_workbook(path: Path, rows: list[list], *, summary_rows=None) -
         ds.append(r)
     wb.save(path)
     return path
-

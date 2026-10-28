@@ -890,4 +890,3 @@ def exclude_subdataset(
         }
 
     return filtered
-

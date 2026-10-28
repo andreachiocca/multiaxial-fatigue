@@ -330,4 +330,3 @@ def test_excel_lock_files_ignored(tmp_path):
     (tmp_path / "~$A.xlsx").write_bytes(b"lock")
     assert list(import_experimental_data_grouped_by_material(tmp_path)) == ["A"]
     assert resolve_workbook("A", tmp_path) == tmp_path / "A.xlsx"
-
