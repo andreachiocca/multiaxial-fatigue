@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "workbook": "8_AISI316L.xlsx",
-  "base_sha256": "b637deefb415243c5a071a38f188c02202501d2c6e85b87c30af41523a211949",
-  "expected_fingerprint": "b139cef997c825a12b8f7c0e9f4e72402addbf193222f4506db8b7a4caba666b",
+  "base_sha256": "26a97aec4603aa19df29bbd6576c3b72259cc3792eaa6e60df1d5e977f52017c",
+  "expected_fingerprint": "a63f9325d41155bb7611b2c6272e0bbee9a46e33fefe4bc33faa47f8470f4750",
   "operations": [
     {
       "op": "set_summary",
@@ -71,116 +71,6 @@
       "field": "Material name",
       "from": 86,
       "to": 94,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_1",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_2",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_3",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_4",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_5",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_6",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_7",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_8",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_9",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_10",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
-      "decision": "d056",
-      "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
-    },
-    {
-      "op": "set_case",
-      "authors": "Janssens",
-      "specimen": "Non_prop_11",
-      "field": "Phase TORSIONAL load (°)",
-      "from": 0,
-      "to": 90,
       "decision": "d056",
       "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8"
     },

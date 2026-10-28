@@ -129,6 +129,9 @@ Known issues:
 
 ## AISI316L.xlsx
 
+**Janssens final revision, supplied 28 October 2026.** The final author workbook (`8_AISI316L(1).xlsx`, original SHA-256 `a70a09f76fb8fa22f0d6ef9843512eefd20db8fae980639067ef6d207187a35a`) replaces the previous revision. Its reported R = -1 tensile fatigue limit is 278.5 MPa (previously 241); the torsional limit remains 144 MPa. Its first uniaxial run-out is 17,225,000 cycles (previously 11,000,000), and non-proportional torsional phases in Dataset rows 18-28 are now 90 degrees. The Summary averages and derived values are also updated. All underlying ZIP members of the workbook are preserved verbatim, although the repository copy is recompressed at ZIP-container level. The repository XLSX SHA-256 is `26a97aec4603aa19df29bbd6576c3b72259cc3792eaa6e60df1d5e977f52017c`. Because the 11 phase corrections are now part of the source, the active overlay has 15 remaining operations. The new post-overlay fingerprint is `a63f9325d41155bb7611b2c6272e0bbee9a46e33fefe4bc33faa47f8470f4750` (39 failure observations and 13 run-outs). The previous overlay mapping remains in the historical overlay JSON. No other experimental workbooks are changed.
+
+
 **Author-corrected workbook received on 28 October 2026.** The maintainer confirmed
 that the new `8_AISI316L.xlsx` is the authoritative Janssens-corrected experimental input.
 The workbook is preserved byte-for-byte (SHA-256

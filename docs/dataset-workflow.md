@@ -34,7 +34,7 @@ Legacy workbooks keep their own conventions: a `Null` stress denotes an inactive
 |---|---|
 | CX18 | The Summary names 30NCD16 and holds its limits, yet rows 2-3 agree with FatLim's XC18; 3 of its 5 rows also occur in 30NCD16. The importer reads the stored 710 and 450 MPa limits and reports the identity conflict. Their scientific applicability to CX18 needs review. |
 | Ti6Al4V | One Summary source names Ti64Al4V (Delahay). Both source rows have R = -1, so the workbook supplies their mean limits of 576 and 416.75 MPa. The source identity and batch compatibility still need review. |
-| AISI316L | The Average row mixes Janssens' R = -1 amplitude with Braun's R = 0 stress range. Source-row selection currently yields 241 and 144 MPa, but the newly uploaded Dataset contains corrected Janssens axial stresses while the Summary is unchanged. The axial limit and the distinct Braun batch require scientific review before using the resulting comparisons. |
+| AISI316L | The Average row mixes Janssens' R = -1 amplitude with Braun's R = 0 stress range. The final author-supplied Summary reports 278.5 and 144 MPa at R = -1; the experimental observations and phase shifts are corrected in this final source. The axial limit and the distinct Braun batch require scientific review before using the resulting comparisons. |
 | En3B, GJS600 | Every observation is notched, outside the plain-specimen scope. |
 | Fatigue-limit sets | CX18, 30NCD16, 25CrMo4, 982FA, 34Cr4, GGG60 and S65A contain limit states only. In five sets their pure R = -1 rows contradict the Summary limits (see PROVENANCE.md), so their fatigue index errors await the source check. |
 
