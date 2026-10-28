@@ -48,6 +48,7 @@ jobs:
     permissions:
       contents: read
       issues: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
@@ -58,25 +59,36 @@ jobs:
         shell: bash
         run: |
           set +e
-          uv run pytest -q --tb=short --maxfail=12 > pytest-diagnostic.log 2>&1
+          uv run pytest tests/test_dataset_overlays.py tests/test_dataset_import.py -q --tb=short --maxfail=8 > pytest-diagnostic.log 2>&1
           code=$?
           echo "DIAGNOSTIC_TEST_EXIT_CODE=$code" >> "$GITHUB_ENV"
           exit 0
       - name: Report exact failures on the pull request
         env:
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         shell: bash
         run: |
           python - <<'PY'
           import json
           import os
+          import urllib.request
           from pathlib import Path
           output = Path("pytest-diagnostic.log").read_text(encoding="utf-8", errors="replace")
-          tail = output[-18000:]
-          body = ("Temporary CI diagnostic on Python 3.12. Exit code "
+          tail = output[-15000:]
+          body = ("CI diagnostic for data-import tests on Python 3.12. Exit code "
                   + os.environ.get("DIAGNOSTIC_TEST_EXIT_CODE", "unknown")
-                  + ". The diagnostic workflow step will be removed after triage.\n\n"
+                  + ". Temporary diagnostic job.\n\n"
                   + "```text\n" + tail + "\n```")
-          Path("diagnostic-comment.json").write_text(json.dumps({"body": body}), encoding="utf-8")
+          repo = os.environ["GITHUB_REPOSITORY"]
+          number = os.environ["PR_NUMBER"]
+          url = f"https://api.github.com/repos/{repo}/issues/{number}/comments"
+          data = json.dumps({"body":body}).encode("utf-8")
+          request = urllib.request.Request(url, data=data, method="POST",
+              headers={"Authorization": "Bearer " + os.environ["GITHUB_TOKEN"],
+                       "Accept": "application/vnd.github+json",
+                       "User-Agent": "multifat-ci-diagnostics",
+                       "Content-Type": "application/json"})
+          with urllib.request.urlopen(request, timeout=30) as response:
+              print("Posted CI diagnostics", response.status, len(body))
           PY
-          gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" -X POST --input diagnostic-comment.json
