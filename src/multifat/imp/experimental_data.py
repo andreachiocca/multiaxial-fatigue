@@ -208,8 +208,7 @@ def _summary_fatigue_limits(
     declared = [
         str(r[material_column]).strip()
         for r in sources
-        if r.get(material_column) is not None
-        and norm_text(r[material_column]) not in ("", "null")
+        if r.get(material_column) is not None and norm_text(r[material_column]) not in ("", "null")
     ]
     identity: list[str] = []
     if any(_alloy_token(n) != _alloy_token(material) for n in declared):
