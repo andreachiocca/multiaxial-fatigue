@@ -22,7 +22,9 @@ from multifat.models.cp_methods.fs import FatemiSocie
         ("FIN_ext", ("FIN", "_ext")),
     ],
 )
-def test_public_single_model_tags_resolve_to_default_or_explicit_extension(method_tag, expected):
+def test_public_single_model_tags_resolve_to_default_or_explicit_extension(
+    method_tag, expected
+):
     assert _split_model_variant(method_tag) == expected
 
 
@@ -37,7 +39,10 @@ def test_fs_default_plane_metric_is_shear_strain_amplitude():
     E1r[0, 2] = -0.01
 
     result = FatemiSocie().evaluate_on_plane(
-        S0r=S0r, S1r=S1r, E0r=E0r, E1r=E1r,
+        S0r=S0r,
+        S1r=S1r,
+        E0r=E0r,
+        E1r=E1r,
         params={"Sy": 500.0, "k_FS": 0.5},
     )
     # FS default selects by shear strain, not by the full damage parameter.
@@ -56,7 +61,10 @@ def test_findley_default_metric_is_the_complete_damage_parameter():
     S1r[2, 2] = -100.0
 
     result = Findley().evaluate_on_plane(
-        S0r=S0r, S1r=S1r, E0r=E0r, E1r=E1r,
+        S0r=S0r,
+        S1r=S1r,
+        E0r=E0r,
+        E1r=E1r,
         params={"k_FI": 0.2},
     )
     # tau_a = 50 MPa, k_FI * sigma_n,max = 20 MPa.
