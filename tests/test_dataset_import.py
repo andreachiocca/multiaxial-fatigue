@@ -257,11 +257,10 @@ def test_reversed_fatigue_limits_average_by_loading_mode(tmp_path):
     assert block["material"]["Tensile_fatigue_limit_MPa"] == 430
     assert block["material"]["Torsional_fatigue_limit_MPa"] == 310
     assert [source["reference"] for source in block["fatigue_limit_sources"]["Sigm1"]] == [
-        "doi-a", "doi-b"
+        "doi-a",
+        "doi-b",
     ]
-    assert [source["excel_row"] for source in block["fatigue_limit_sources"]["Taum1"]] == [
-        2, 3
-    ]
+    assert [source["excel_row"] for source in block["fatigue_limit_sources"]["Taum1"]] == [2, 3]
 
 
 def test_no_reversed_torsional_source_leaves_property_unavailable(tmp_path):
@@ -295,9 +294,7 @@ def test_censored_source_is_not_an_exact_fatigue_limit(tmp_path):
 
 
 def test_average_cannot_replace_missing_source_limit(tmp_path):
-    rows = [
-        ["doi-a", "A", 2018, "Synthetic steel", 206000, 0.3, 900, 750, None, 300, 2e6, -1]
-    ]
+    rows = [["doi-a", "A", 2018, "Synthetic steel", 206000, 0.3, 900, 750, None, 300, 2e6, -1]]
     path = write_revised_workbook(
         tmp_path / "Synthetic_steel.xlsx", _tension_rows(), summary_rows=rows
     )
