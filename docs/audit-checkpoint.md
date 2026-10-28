@@ -28,18 +28,31 @@ regression snapshot cannot run in this container: Git transport and the package 
 so only the relevant source files and active workbooks were reconstructed and pytest is absent.
 The current AISI316L workbook SHA-256 is `b637deefb415243c5a071a38f188c02202501d2c6e85b87c30af41523a211949`,
 while its declared overlay expects `3750a62d54828b8c75b2b775811f768ecb5921daacad4bc31bab5b978c28dc19`.
+Compared cell by cell with the preceding workbook at `52b061b`, the new file has 449 changed
+Dataset values, including axial amplitudes 230 -> 265.8 MPa and 240 -> 277.4 MPa; its Summary
+fatigue limits are unchanged. The 241 MPa Janssens source limit selected by this branch may
+therefore be inconsistent with the corrected stresses and requires a scientific decision.
 Consequently the existing active-workbook count test expects 39 AISI failures, but the unoverlaid
-workbook yields 31. This mismatch predates this branch and is not repaired here.
+workbook yields 31. The overlay operations match the new workbook in memory, but retargeting its
+hash would accept changed experimental inputs, so this branch does not do it.
 
-Changed files are the importer, dataset-import tests and fixture builder, this checkpoint and
-`docs/dataset-workflow.md`. The generated `docs/workbook-format.md` is not edited while PR #21
+The CX18 overlay's expected dataset fingerprint is updated from
+`ed52773be6d62432542e4b9b611769de2990a9933536a1f7d38b2d8e2a06c5ec` to
+`76ad277894b3402a703adbfc5dc8b9babd385304c89ad9c0be344969baaa6911`, calculated
+from its unchanged workbook and overlay with the now-unavailable mismatched limits. This is a
+derived software checksum, not a scientific benchmark value.
+
+Changed files are the importer, dataset-import tests and fixture builder, the CX18 overlay's
+derived fingerprint, this checkpoint and `docs/dataset-workflow.md`. The generated `docs/workbook-format.md` is not edited while PR #21
 owns that file; its Summary paragraph needs reconciliation when the PRs are integrated.
 
 Draft [PR #23](https://github.com/andreachiocca/multiaxial-fatigue/pull/23) is open without merge.
-The first CI lint run found a Black formatting failure; the extra trailing newlines in the three
-reconstructed Python files were removed in the follow-up commit. Next action: inspect the new CI
-run and numerical regression output, resolve the source-batch policy and AISI overlay mismatch with
-the maintainer, then request scientific review. Do not merge automatically.
+The first CI lint run found a Black formatting failure; the current branch lint passes after
+formatting corrections. The test matrix still fails, as does the unchanged `main` baseline, with
+the AISI overlay mismatch accounting for at least one existing failure. Next action: obtain a
+scientific decision on the corrected AISI limit and batch policy, reconcile its overlay and
+historical results, then rerun the full test matrix and numerical regression snapshot. Do not merge
+automatically.
 
 ## Milestone, multifat architecture integration (22 October 2026)
 
