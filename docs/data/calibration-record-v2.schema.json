@@ -1,0 +1,489 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/andreachiocca/multiaxial-fatigue/blob/main/docs/data/calibration-record-v2.schema.json",
+  "title": "Proposed immutable, method-specific calibration record for FABER WG4.3",
+  "description": "Design proposal only. Not the current pipeline output schema and not yet enforced by the running code.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "calibration_id",
+    "created_at_utc",
+    "method",
+    "procedure",
+    "dataset",
+    "inputs",
+    "selection",
+    "parameters",
+    "objective",
+    "search",
+    "master_curve",
+    "validation",
+    "software",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "calibration_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "parent_calibration_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "method": {
+      "type": "object",
+      "required": [
+        "base_name",
+        "resolved_variant",
+        "formulation_revision",
+        "critical_plane_rule",
+        "output_quantity"
+      ],
+      "properties": {
+        "base_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resolved_variant": {
+          "enum": [
+            "",
+            "_ext"
+          ]
+        },
+        "formulation_revision": {
+          "type": "string"
+        },
+        "critical_plane_rule": {
+          "type": "string"
+        },
+        "shear_amplitude_algorithm": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "output_quantity": {
+          "enum": [
+            "damage_parameter",
+            "fatigue_index",
+            "life_cycles",
+            "index"
+          ]
+        }
+      }
+    },
+    "procedure": {
+      "type": "object",
+      "required": [
+        "mode",
+        "procedure_id",
+        "verification_status",
+        "reference",
+        "equations"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "author",
+            "all_eligible",
+            "subset",
+            "supplied"
+          ]
+        },
+        "procedure_id": {
+          "type": "string"
+        },
+        "verification_status": {
+          "enum": [
+            "source_verified",
+            "maintainer_defined",
+            "adaptation_documented",
+            "source_review_required",
+            "not_applicable"
+          ]
+        },
+        "reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "doi": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "equations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "dataset": {
+      "type": "object",
+      "required": [
+        "material_id",
+        "workbook",
+        "workbook_sha256",
+        "dataset_fingerprint",
+        "source_batches"
+      ],
+      "properties": {
+        "material_id": {
+          "type": "string"
+        },
+        "workbook": {
+          "type": "string"
+        },
+        "workbook_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dataset_fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "overlay_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_batches": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "description": "Measured, derived, estimated and externally supplied constants with units and source identity. Names are criterion-specific.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "value",
+          "unit",
+          "origin"
+        ],
+        "properties": {
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "unit": {
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "measured",
+              "derived",
+              "estimated",
+              "external",
+              "supplied"
+            ]
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "required": [
+        "per_parameter_observation_ids",
+        "master_curve_observation_ids",
+        "excluded_observations",
+        "censoring_rule"
+      ],
+      "properties": {
+        "per_parameter_observation_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "master_curve_observation_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "excluded_observations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "observation_id",
+              "reason"
+            ],
+            "properties": {
+              "observation_id": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "source_rows": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "selection_predicate": {
+          "type": "string"
+        },
+        "censoring_rule": {
+          "type": "string"
+        }
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "required": [
+        "fitted",
+        "fixed",
+        "uncertainty"
+      ],
+      "properties": {
+        "fitted": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "fixed": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "uncertainty": {
+          "type": "object"
+        }
+      }
+    },
+    "objective": {
+      "type": "object",
+      "required": [
+        "kind",
+        "definition",
+        "weights"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "definition": {
+          "type": "string"
+        },
+        "weights": {
+          "type": "object"
+        },
+        "transform": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "search": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "bounds",
+        "settings",
+        "diagnostics"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": "string"
+        },
+        "bounds": {
+          "type": "object"
+        },
+        "settings": {
+          "type": "object"
+        },
+        "seed": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "diagnostics": {
+          "type": "object"
+        }
+      }
+    },
+    "master_curve": {
+      "type": "object",
+      "required": [
+        "fitted",
+        "parameters",
+        "observation_ids",
+        "source_procedure"
+      ],
+      "properties": {
+        "fitted": {
+          "type": "boolean"
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "observation_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_procedure": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": [
+        "observation_ids",
+        "group_ids",
+        "independent",
+        "leakage_check"
+      ],
+      "properties": {
+        "observation_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "group_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "independent": {
+          "type": "boolean"
+        },
+        "leakage_check": {
+          "enum": [
+            "passed",
+            "failed",
+            "not_applicable",
+            "not_checked"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "software": {
+      "type": "object",
+      "required": [
+        "git_commit",
+        "package_version",
+        "python_version",
+        "numerical_environment"
+      ],
+      "properties": {
+        "git_commit": {
+          "type": "string"
+        },
+        "package_version": {
+          "type": "string"
+        },
+        "python_version": {
+          "type": "string"
+        },
+        "numerical_environment": {
+          "type": "object"
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "calibrated",
+        "reused",
+        "not_applicable",
+        "infeasible",
+        "error"
+      ]
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "record_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Hash of canonical record content excluding this field. Verified before reuse."
+    }
+  }
+}
