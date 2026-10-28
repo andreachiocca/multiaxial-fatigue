@@ -41,3 +41,42 @@ jobs:
           uv run multifat-run --help
           uv run multifat-compare --help
           uv run multifat-pipeline --help
+
+  diagnose:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+      - run: uv sync --locked
+      - name: Capture failing pytest tracebacks
+        shell: bash
+        run: |
+          set +e
+          uv run pytest -q --tb=short --maxfail=12 > pytest-diagnostic.log 2>&1
+          code=$?
+          echo "DIAGNOSTIC_TEST_EXIT_CODE=$code" >> "$GITHUB_ENV"
+          exit 0
+      - name: Report exact failures on the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          output = Path("pytest-diagnostic.log").read_text(encoding="utf-8", errors="replace")
+          tail = output[-18000:]
+          body = ("Temporary CI diagnostic on Python 3.12. Exit code "
+                  + os.environ.get("DIAGNOSTIC_TEST_EXIT_CODE", "unknown")
+                  + ". The diagnostic workflow step will be removed after triage.\n\n"
+                  + "```text\n" + tail + "\n```")
+          Path("diagnostic-comment.json").write_text(json.dumps({"body": body}), encoding="utf-8")
+          PY
+          gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" -X POST --input diagnostic-comment.json
