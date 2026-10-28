@@ -187,7 +187,7 @@ def _summary_sources(ws, header_row: int, avg_row: int) -> list[dict]:
         ws.iter_rows(min_row=header_row + 1, max_row=avg_row - 1, values_only=True),
         start=header_row + 1,
     ):
-        if any(value is not None and norm_text(value) not in ("", "null") for value in values):
+        if any(not is_nullish(value) for value in values):
             rows.append({"_row": row_number, **{h: v for h, v in zip(heads, values) if h}})
     return rows
 
@@ -205,11 +205,8 @@ def _summary_fatigue_limits(
         (name for key, name in headers.items() if key.startswith("number of cycles")), None
     )
     sources = _summary_sources(ws, header_row, avg_row)
-    declared = [
-        str(r[material_column]).strip()
-        for r in sources
-        if r.get(material_column) is not None and norm_text(r[material_column]) not in ("", "null")
-    ]
+    declared = [str(r.get(material_column, "")).strip() for r in sources]
+    declared = [name for name in declared if name and norm_text(name) != "null"]
     identity: list[str] = []
     if any(_alloy_token(n) != _alloy_token(material) for n in declared):
         identity.append(
