@@ -129,6 +129,29 @@ Known issues:
 
 ## AISI316L.xlsx
 
+**Author-corrected workbook received on 28 October 2026.** The maintainer confirmed
+that the new `8_AISI316L.xlsx` is the authoritative Janssens-corrected experimental input.
+The workbook is preserved byte-for-byte (SHA-256
+`b637deefb415243c5a071a38f188c02202501d2c6e85b87c30af41523a211949`). Relative to the previous input, it
+contains revised geometry and stress values; these observations are not reverted or
+recalculated. Its `Summary` still reports Janssens' R = -1 tensile and torsional
+limits as 241 and 144 MPa, respectively, alongside Braun's R = 0 tensile stress
+range of 387.8 MPa. The importer selects the R = -1 source values and does not use
+the mixed-ratio `Average` value as an endurance limit.
+
+The in-memory overlay retains the documented independent corrections (bulk elastic
+properties, non-proportional phases and eight additional published Janssens cases).
+On the author-corrected workbook it yields 39 failures and 13 run-outs. The overlay
+now targets the corrected workbook hash and records the regenerated dataset fingerprint
+`b139cef997c825a12b8f7c0e9f4e72402addbf193222f4506db8b7a4caba666b`. The prior overlay is preserved without
+modification as `8_AISI316L.before-author-correction.overlay.json` to retain the
+original input-to-correction mapping. Its stored fingerprint refers to the earlier
+importer behaviour and should not be interpreted as a validation of current results.
+Neither source workbook values nor existing calibration records were modified.
+Material-batch comparability and the interpretation of the original 241 MPa fatigue
+limit after the corrected stress amplitudes remain matters for scientific review.
+
+
 | Source | Plain failures | Plain run-outs | Notched | Where printed | How read |
 |---|---|---|---|---|---|
 | Janssens 2018, IJF 110, 42-48, [10.1016/j.ijfatigue.2017.12.013](https://doi.org/10.1016/j.ijfatigue.2017.12.013) | 25 (axial 11, torsion 7, 90° non-proportional 7) | 10 (Nf > 11×10^6, stored as 11e6) | 0 | Table 4, p. 4 | tabulated |
