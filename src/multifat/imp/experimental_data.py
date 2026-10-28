@@ -156,7 +156,8 @@ def import_experimental_data_grouped_by_material(
       - Filter Dataset: Notched == No; Run out == No gives the failures (cases),
         Run out == Yes the run-outs (kept apart, never used in fits)
       - Dataset numeric Nulls -> 0.0
-      - Material properties are read from "Summary" at the row number given by the named cell "Average"
+      - Most material properties come from the named "Average" row; revised R = -1 fatigue
+        limits come from compatible Summary source rows.
     """
     folder = Path(folder)
     files = workbook_files(folder)
@@ -182,41 +183,83 @@ def _summary_sources(ws, header_row: int, avg_row: int) -> list[dict]:
     """Source rows of the Summary (between the header and the Average row), by header."""
     heads = [str(c.value).strip() if c.value is not None else "" for c in ws[header_row]]
     rows = []
-    for values in ws.iter_rows(min_row=header_row + 1, max_row=avg_row - 1, values_only=True):
-        if len(values) > 3 and values[3] is not None and str(values[3]).strip().lower() != "null":
-            rows.append({h: v for h, v in zip(heads, values) if h})
+    for row_number, values in enumerate(
+        ws.iter_rows(min_row=header_row + 1, max_row=avg_row - 1, values_only=True),
+        start=header_row + 1,
+    ):
+        if any(not is_nullish(value) for value in values):
+            rows.append({"_row": row_number, **{h: v for h, v in zip(heads, values) if h}})
     return rows
 
 
-def _summary_issues(material: str, ws, header_row: int, avg_row: int) -> tuple[list, dict]:
-    """Identity and Sigm1 checks of a revised Summary (upstream 904c619, A. Chiocca).
-
-    A Summary naming another alloy than the file is reported, never merged; an average tensile
-    fatigue limit over sources at different stress ratios is not a reversed strength.
-    """
-    heads = [norm_text(c.value) for c in ws[header_row]]
-    if "stress ratio r" not in heads:
-        return [], {}
+def _summary_fatigue_limits(
+    material: str, ws, header_row: int, avg_row: int
+) -> tuple[list[str], dict[str, str], dict[str, float], dict[str, list[dict]]]:
+    """Select R = -1 amplitudes from revised Summary rows, retaining every contributing source."""
+    headers = {norm_text(c.value): str(c.value).strip() for c in ws[header_row] if c.value}
+    if "stress ratio r" not in headers:
+        return [], {}, {}, {}
+    ratio_column = headers["stress ratio r"]
+    material_column = headers.get("material name", "Material name")
+    cycles_column = next(
+        (name for key, name in headers.items() if key.startswith("number of cycles")), None
+    )
     sources = _summary_sources(ws, header_row, avg_row)
-    declared = [str(r.get("Material name", "")).strip() for r in sources]
-    identity = []
+    declared = [str(r.get(material_column, "")).strip() for r in sources]
+    declared = [name for name in declared if name and norm_text(name) != "null"]
+    identity: list[str] = []
     if any(_alloy_token(n) != _alloy_token(material) for n in declared):
         identity.append(
             f"file material {material} conflicts with Summary names {declared}; "
-            "confirm identity before pooling"
+            "fatigue limits are read from this workbook, but source identity needs review"
         )
-    ratios = {
-        to_float_or_none(r.get("Stress ratio R"))
-        for r in sources
-        if to_float_or_none(r.get("Tensile fatigue limit (MPa)")) is not None
-    } - {None}
-    issues = {}
-    if len(ratios) > 1:
-        issues["Sigm1"] = (
-            "Summary average combines tensile fatigue strengths at different stress ratios "
-            f"{sorted(ratios)}; a consistent R = -1 strength is needed"
-        )
-    return identity, issues
+    issues: dict[str, str] = {}
+    selected: dict[str, float] = {}
+    provenance: dict[str, list[dict]] = {}
+    for key, label in (
+        ("Sigm1", "tensile fatigue limit"),
+        ("Taum1", "torsional fatigue limit"),
+    ):
+        column = next((name for head, name in headers.items() if label in head), None)
+        if column is None:
+            continue
+        present = []
+        compatible = []
+        for row in sources:
+            raw_value = row.get(column)
+            value = to_float_or_none(raw_value)
+            if value is None:
+                continue
+            present.append(row)
+            stress_ratio = to_float_or_none(row.get(ratio_column))
+            if (
+                math.isfinite(value)
+                and value > 0
+                and not (
+                    isinstance(raw_value, str)
+                    and raw_value.lstrip().startswith((">", "<", "\u2265", "\u2264"))
+                )
+                and stress_ratio is not None
+                and math.isfinite(stress_ratio)
+                and math.isclose(stress_ratio, -1.0, rel_tol=0.0, abs_tol=1e-6)
+            ):
+                compatible.append(
+                    {
+                        "excel_row": row["_row"],
+                        "value_MPa": value,
+                        "stress_ratio": stress_ratio,
+                        "reference_cycles": to_float_or_none(row.get(cycles_column)),
+                        "material_name": row.get(material_column),
+                        "reference": row.get("Article DOI / Reference"),
+                        "authors": row.get("Authors"),
+                    }
+                )
+        if compatible:
+            selected[key] = math.fsum(item["value_MPa"] for item in compatible) / len(compatible)
+            provenance[key] = compatible
+        elif present:
+            issues[key] = "no usable R = -1 source fatigue limit; the Summary average is not used"
+    return identity, issues, selected, provenance
 
 
 def load_material_workbook(
@@ -379,13 +422,28 @@ def load_material_workbook(
         if key not in ("Sig0", "Tau0"):
             material[key] = _read_opt(key)
     material["extra"] = extra
+    identity_issues, property_issues, selected_limits, limit_sources = _summary_fatigue_limits(
+        material_name, ws, header_row, avg_row
+    )
+    limit_keys = {
+        "Sigm1": "Tensile_fatigue_limit_MPa",
+        "Taum1": "Torsional_fatigue_limit_MPa",
+    }
+    revised_summary = any(norm_text(c.value) == "stress ratio r" for c in ws[header_row])
+    for key, field in limit_keys.items():
+        if key in selected_limits:
+            material[field] = selected_limits[key]
+            rows = ", ".join(str(item["excel_row"]) for item in limit_sources[key])
+            rep.info.append(f"Summary: {key} is the mean of compatible R = -1 source rows {rows}")
+        else:
+            if revised_summary and material[field] is not None:
+                property_issues.setdefault(
+                    key, "no usable R = -1 source fatigue limit; the Summary average is not used"
+                )
+            if key in property_issues:
+                material["flagged_" + field] = material[field]
+                material[field] = None
     _check_material(fp.name, material, rep)
-
-    identity_issues, property_issues = _summary_issues(material_name, ws, header_row, avg_row)
-    flagged = {"Sigm1": "Tensile_fatigue_limit_MPa"}
-    for key in property_issues:  # not used by any entry point; the issue gives the reason
-        material["flagged_" + flagged[key]] = material[flagged[key]]
-        material[flagged[key]] = None
     rep.warnings += [f"Summary: {t}" for t in identity_issues]
     rep.warnings += [f"Summary: {k}: {t}" for k, t in property_issues.items()]
     data: Dict[str, Any] = {
@@ -400,6 +458,7 @@ def load_material_workbook(
             },
             "identity_issues": identity_issues,
             "property_issues": property_issues,
+            "fatigue_limit_sources": limit_sources,
             "excluded_observations": [],
             "overlay": overlay_id,
         }

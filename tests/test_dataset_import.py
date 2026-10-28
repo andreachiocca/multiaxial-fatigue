@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from openpyxl import load_workbook
 
 from multifat.imp.experimental_data import (
     import_experimental_data_grouped_by_material,
@@ -134,7 +135,7 @@ def test_pressure_without_hoop_stress_flagged(tmp_path):
     )
 
 
-def test_identity_and_sigm1_issues(tmp_path):
+def test_identity_conflict_warns_but_uses_summary_fatigue_limits(tmp_path):
     rows = [
         ["r1", "A", 1992, "30NCD16", 195000, 0.3, 1160, 1020, 710, 450, 1e6, -1],
         ["r2", "B", 2024, "30NCD16", 195000, 0.3, 1160, 1020, 388, 450, 1e6, 0],
@@ -142,7 +143,19 @@ def test_identity_and_sigm1_issues(tmp_path):
     path = write_revised_workbook(tmp_path / "2_CX18.xlsx", _tension_rows(), summary_rows=rows)
     block = _one(path)
     assert block["identity_issues"] and "30NCD16" in block["identity_issues"][0]
-    assert "stress ratio" in block["property_issues"]["Sigm1"]
+    assert not block["property_issues"]
+    assert block["material"]["Tensile_fatigue_limit_MPa"] == 710
+    assert block["material"]["Torsional_fatigue_limit_MPa"] == 450
+    assert block["fatigue_limit_sources"]["Sigm1"][0]["material_name"] == "30NCD16"
+
+
+def test_summary_source_without_material_name_is_imported(tmp_path):
+    rows = [["ref", "A", 2020, None, 206000, 0.3, 900, 750, 420, 300, 2e6, -1]]
+    path = write_revised_workbook(tmp_path / "N.xlsx", _tension_rows(), summary_rows=rows)
+    block = _one(path)
+    assert block["material"]["Tensile_fatigue_limit_MPa"] == 420
+    assert block["material"]["Torsional_fatigue_limit_MPa"] == 300
+    assert block["fatigue_limit_sources"]["Sigm1"][0]["material_name"] is None
 
 
 def test_missing_nu_blocks_strain_models_only(tmp_path):
@@ -177,21 +190,23 @@ def test_all_active_workbooks_import():
         assert rep.ok or rep.errors, path.name
 
 
-def test_sigm1_issue_skips_models_that_need_it(tmp_path):
+def test_mixed_ratio_summary_uses_reversed_source_for_models(tmp_path):
     from multifat.cli.pipeline import run_workbook
 
     rows = [
         ["r1", "A", 2018, "Synthetic steel", 206000, 0.3, 900, 750, 420, 300, 2e6, -1],
         ["r2", "B", 2024, "Synthetic steel", 206000, 0.3, 900, 750, 600, 300, 1e6, 0],
     ]
-    path = write_revised_workbook(tmp_path / "S.xlsx", _tension_rows(), summary_rows=rows)
+    path = write_revised_workbook(
+        tmp_path / "Synthetic_steel.xlsx", _tension_rows(), summary_rows=rows
+    )
     out = {
         o.model: o
         for o in run_workbook(
             path, models=["CROSSLAND", "SWT"], results_dir=tmp_path / "res", calibrate=False
         )
     }
-    assert out["CROSSLAND"].status == "skipped" and "stress ratios" in out["CROSSLAND"].reason
+    assert out["CROSSLAND"].status == "ok"
     assert out["SWT"].status == "ok"
 
 
@@ -208,22 +223,98 @@ def test_batch_workbook_counts():
              if c["meta"]["phase_tor_deg"] == 90]  # fmt: skip
     assert len(jan90) == 12
     assert (ss["material"]["E_MPa"], ss["material"]["nu"]) == (193000, 0.3)
+    assert (
+        ss["material"]["Tensile_fatigue_limit_MPa"],
+        ss["material"]["Torsional_fatigue_limit_MPa"],
+    ) == (278.5, 144)
+    assert (
+        data["Ti6Al4V"]["material"]["Tensile_fatigue_limit_MPa"],
+        data["Ti6Al4V"]["material"]["Torsional_fatigue_limit_MPa"],
+    ) == (576, 416.75)
+    assert data["CX18"]["material"]["Tensile_fatigue_limit_MPa"] == 710
+    assert data["CX18"]["material"]["Torsional_fatigue_limit_MPa"] == 450
     for m in ("CX18", "30NCD16", "25CrMo4", "982FA"):
         assert data[m]["material"]["nu"] == 0.3, m
 
 
-def test_sigm1_issue_nulls_value_for_every_entry_point(tmp_path):
-    """Review I5: the flagged Sigm1 is not used by multifat-run either."""
+def test_mixed_ratio_summary_reaches_every_entry_point(tmp_path):
+    """Run and pipeline paths share the selected R = -1 value."""
     from multifat.cli.run import build_params, load_material
 
     rows = [
         ["r1", "A", 2018, "Synthetic steel", 206000, 0.3, 900, 750, 420, 300, 2e6, -1],
         ["r2", "B", 2024, "Synthetic steel", 206000, 0.3, 900, 750, 600, 300, 1e6, 0],
     ]
-    path = write_revised_workbook(tmp_path / "S.xlsx", _tension_rows(), summary_rows=rows)
+    path = write_revised_workbook(
+        tmp_path / "Synthetic_steel.xlsx", _tension_rows(), summary_rows=rows
+    )
     data, m = load_material(path)
-    assert build_params(data[m]["material"])["Sigm1"] is None
-    assert "stress ratios" in data[m]["property_issues"]["Sigm1"]
+    assert build_params(data[m]["material"])["Sigm1"] == 420
+    assert "Sigm1" not in data[m]["property_issues"]
+    assert data[m]["fatigue_limit_sources"]["Sigm1"][0]["excel_row"] == 2
+
+
+def test_reversed_fatigue_limits_average_by_loading_mode(tmp_path):
+    rows = [
+        ["doi-a", "A", 2018, "Synthetic steel", 206000, 0.3, 900, 750, 420, 300, 2e6, -1],
+        ["doi-b", "B", 2020, "Alternate label", 206000, 0.3, 900, 750, 440, 320, 2e6, -1],
+        ["doi-c", "C", 2024, "Synthetic steel", 206000, 0.3, 900, 750, 600, 500, 1e6, 0],
+    ]
+    path = write_revised_workbook(
+        tmp_path / "Synthetic_steel.xlsx", _tension_rows(), summary_rows=rows
+    )
+    block = _one(path)
+    assert block["material"]["Tensile_fatigue_limit_MPa"] == 430
+    assert block["material"]["Torsional_fatigue_limit_MPa"] == 310
+    assert block["identity_issues"]
+    assert [source["reference"] for source in block["fatigue_limit_sources"]["Sigm1"]] == [
+        "doi-a",
+        "doi-b",
+    ]
+    assert [source["excel_row"] for source in block["fatigue_limit_sources"]["Taum1"]] == [2, 3]
+
+
+def test_no_reversed_torsional_source_leaves_property_unavailable(tmp_path):
+    rows = [
+        ["doi-a", "A", 2018, "Synthetic steel", 206000, 0.3, 900, 750, 420, None, 2e6, -1],
+        ["doi-b", "B", 2024, "Synthetic steel", 206000, 0.3, 900, 750, None, 500, 1e6, 0],
+    ]
+    path = write_revised_workbook(
+        tmp_path / "Synthetic_steel.xlsx", _tension_rows(), summary_rows=rows
+    )
+    block = _one(path)
+    assert block["material"]["Tensile_fatigue_limit_MPa"] == 420
+    assert block["material"]["Torsional_fatigue_limit_MPa"] is None
+    assert "Taum1" in block["property_issues"]
+
+
+def test_censored_source_is_not_an_exact_fatigue_limit(tmp_path):
+    rows = [
+        ["doi-a", "A", 2018, "Synthetic steel", 206000, 0.3, 900, 750, ">420", 300, 2e6, -1],
+        ["doi-b", "B", 2020, "Synthetic steel", 206000, 0.3, 900, 750, 440, 320, 2e6, -1],
+    ]
+    path = write_revised_workbook(
+        tmp_path / "Synthetic_steel.xlsx", _tension_rows(), summary_rows=rows
+    )
+    wb = load_workbook(path)
+    wb["Summary"]["I1"] = "Tensile fatigue limit* (MPa)"
+    wb.save(path)
+    block = _one(path)
+    assert block["material"]["Tensile_fatigue_limit_MPa"] == 440
+    assert [source["excel_row"] for source in block["fatigue_limit_sources"]["Sigm1"]] == [3]
+
+
+def test_average_cannot_replace_missing_source_limit(tmp_path):
+    rows = [["doi-a", "A", 2018, "Synthetic steel", 206000, 0.3, 900, 750, None, 300, 2e6, -1]]
+    path = write_revised_workbook(
+        tmp_path / "Synthetic_steel.xlsx", _tension_rows(), summary_rows=rows
+    )
+    wb = load_workbook(path)
+    wb["Summary"]["I3"] = 420
+    wb.save(path)
+    block = _one(path)
+    assert block["material"]["Tensile_fatigue_limit_MPa"] is None
+    assert "Sigm1" in block["property_issues"]
 
 
 def test_blank_specimen_and_frequency_are_empty_text(tmp_path):

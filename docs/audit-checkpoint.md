@@ -1,5 +1,41 @@
 # Development continuation checkpoint
 
+## Janssens final workbook (28 October 2026)
+
+The final author-supplied AISI316L workbook replaces the previous file. The R = -1 tensile fatigue limit is 278.5 MPa, the first uniaxial run-out is 17,225,000 cycles, and the non-proportional torsional phases are 90 degrees. The overlay has been reduced to 15 independent operations. The updated dataset fingerprint is `a63f9325d41155bb7611b2c6272e0bbee9a46e33fefe4bc33faa47f8470f4750`. Older checkpoint notes describe superseded source revisions.
+
+
+## Issue #22, approved fatigue-limit selection policy (28 October 2026)
+
+The maintainer confirmed that fatigue-limit values measured at the same stress ratio
+should be averaged, separately for tensile and torsional loading. The implementation
+on PR #23 already follows this policy. For each available R = -1 parameter,
+`Sigm1` or `Taum1`, the revised Summary importer calculates an equal-weight
+arithmetic mean of eligible positive, finite source values. It does not average
+across different stress ratios or loading modes. Entries representing bounds rather
+than measured values are not used as exact limits. The selected value retains its
+contributing Excel rows, references, authors, stress ratios and reference cycle
+counts. Missing usable R = -1 data cause a warning and leave the property
+unavailable. The original workbook and calibration JSON records are not edited.
+
+On the final Janssens-supplied AISI316L workbook, the selected values are
+278.5 MPa in tension and 144 MPa in torsion at R = -1. Braun's R = 0 stress
+range (387.8 MPa at 10^6 cycles) is excluded from these averages. The author-
+corrected workbook and its 15-operation overlay yield 39 failures and 13
+run-outs. Both push and pull-request CI runs passed on commit `2178636`,
+including lint and the complete test matrix (Ubuntu 3.10-3.13 and Windows
+3.12). The previous AISI316L overlay remains available as a historical record.
+
+The source identity and batch-compatibility limitations remain separate data
+review questions. In particular, the CX18 Summary names 30NCD16, and a Ti6Al4V
+source uses a different material label. The importer retains their source
+provenance and reports identity conflicts but does not establish metallurgical
+equivalence. Fatigue strengths reported at incompatible reference lives or as
+stress ranges must not be interpreted as independently validated endurance
+limits. No unverified Goodman conversion or other mean-stress correction is
+automatically applied. Issue #18 remains separate and concerns distinct
+fatigue-limit and fatigue-life assessment workflows.
+
 ## Milestone, multifat architecture integration (22 October 2026)
 
 Branch `dev/tg-developments`, local and not pushed. Upstream `main` at `ba84152` (PRs #10 and #11)
@@ -585,3 +621,4 @@ No pending test failure is known. The unresolved item is source completeness, no
 - `fatigue/report/export_csv.py`
 - `tests/run_material_validation.py`
 - `tests/test_method_audit.py`
+
