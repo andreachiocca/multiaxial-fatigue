@@ -25,15 +25,9 @@ def test_resolver_matches_single_model_runner(tag, expected):
 
 def test_request_expansion_preserves_order_and_deduplicates():
     selected = select_method_variants(["FS", "FIN", "CROSSLAND", "FS_ext"])
-    assert [request.tag for request in selected] == [
-        "FS", "FIN", "CROSSLAND", "FS_ext"
-    ]
-    expanded = select_method_variants(
-        ["FS", "FIN", "CROSSLAND", "FIN"], all_variants=True
-    )
-    assert [request.tag for request in expanded] == [
-        "FS", "FS_ext", "FIN", "FIN_ext", "CROSSLAND"
-    ]
+    assert [request.tag for request in selected] == ["FS", "FIN", "CROSSLAND", "FS_ext"]
+    expanded = select_method_variants(["FS", "FIN", "CROSSLAND", "FIN"], all_variants=True)
+    assert [request.tag for request in expanded] == ["FS", "FS_ext", "FIN", "FIN_ext", "CROSSLAND"]
 
 
 @pytest.mark.parametrize("tag", ["CROSSLAND_ext", "SINES_ext", "MISSING", "", "FS_ext_ext"])

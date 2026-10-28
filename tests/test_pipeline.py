@@ -60,8 +60,6 @@ def test_missing_workbook_constant_is_calibrated(tmp_path):
     assert 0.0 <= cal["params"]["k_FI"] <= 3.0
 
 
-
-
 def test_explicit_ext_and_all_variants_output(tmp_path):
     """A requested extension is not accompanied by an unwanted plain result."""
     wb = write_workbook(tmp_path / "Variant.xlsx")
@@ -72,9 +70,7 @@ def test_explicit_ext_and_all_variants_output(tmp_path):
     assert not (ext_dir / "FIN_Variant.csv").exists()
 
     both_dir = tmp_path / "both"
-    result = run_workbook(
-        wb, models=["FIN", "CROSSLAND"], all_variants=True, results_dir=both_dir
-    )
+    result = run_workbook(wb, models=["FIN", "CROSSLAND"], all_variants=True, results_dir=both_dir)
     assert {row.model: row.status for row in result} == {
         "FIN": "ok",
         "FIN_ext": "ok",
@@ -89,6 +85,7 @@ def test_invalid_explicit_ext_is_rejected(tmp_path):
     wb = write_workbook(tmp_path / "InvalidVariant.xlsx")
     with pytest.raises(ValueError, match="no _ext variant"):
         run_workbook(wb, models=["CROSSLAND_ext"], results_dir=tmp_path / "res")
+
 
 def test_workbook_without_design_set_is_rejected(tmp_path):
     rows = [r for r in basquin_rows() if r[8] == 0 or r[10] != 0]

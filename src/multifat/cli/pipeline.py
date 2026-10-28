@@ -565,7 +565,11 @@ def _fatigue_limit_model(job: tuple) -> tuple[Outcome, dict]:
                 raise MissingParamsError(model.name, absent)
             limits = list(block["runouts"].values())
             rows = fatigue_index(
-                model, params, [case_from_block(c) for c in limits], refs, ratios,
+                model,
+                params,
+                [case_from_block(c) for c in limits],
+                refs,
+                ratios,
                 variant=suffix,
             )
             citation = method_reference(base_name)
@@ -618,10 +622,7 @@ def _evaluate_fatigue_limit(workbook: Path, material: str, requests, dest: Path,
     """Every model on a fatigue-limit dataset; returns the outcomes and the sidecar payload."""
     import pandas as pd
 
-    queue = [
-        (str(workbook), request.base_name, request.suffix, str(dest))
-        for request in requests
-    ]
+    queue = [(str(workbook), request.base_name, request.suffix, str(dest)) for request in requests]
     if jobs > 1:
         with ProcessPoolExecutor(jobs) as pool:
             pairs = list(pool.map(_fatigue_limit_model, queue))
@@ -771,11 +772,13 @@ def main(cli_args=None) -> None:
     )
     parser.add_argument("--all", action="store_true", help="every workbook in Experimental_Data")
     parser.add_argument(
-        "--models", default="all",
+        "--models",
+        default="all",
         help="comma-separated method names, including explicit _ext, or 'all'",
     )
     parser.add_argument(
-        "--all-variants", action="store_true",
+        "--all-variants",
+        action="store_true",
         help="also evaluate each selected critical-plane method's available _ext variant",
     )
     parser.add_argument("--jobs", type=int, default=1)
