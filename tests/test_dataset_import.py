@@ -135,7 +135,7 @@ def test_pressure_without_hoop_stress_flagged(tmp_path):
     )
 
 
-def test_identity_conflict_does_not_supply_fatigue_limits(tmp_path):
+def test_identity_conflict_warns_but_uses_summary_fatigue_limits(tmp_path):
     rows = [
         ["r1", "A", 1992, "30NCD16", 195000, 0.3, 1160, 1020, 710, 450, 1e6, -1],
         ["r2", "B", 2024, "30NCD16", 195000, 0.3, 1160, 1020, 388, 450, 1e6, 0],
@@ -143,9 +143,19 @@ def test_identity_conflict_does_not_supply_fatigue_limits(tmp_path):
     path = write_revised_workbook(tmp_path / "2_CX18.xlsx", _tension_rows(), summary_rows=rows)
     block = _one(path)
     assert block["identity_issues"] and "30NCD16" in block["identity_issues"][0]
-    assert "no compatible R = -1" in block["property_issues"]["Sigm1"]
-    assert block["material"]["Tensile_fatigue_limit_MPa"] is None
-    assert block["material"]["Torsional_fatigue_limit_MPa"] is None
+    assert not block["property_issues"]
+    assert block["material"]["Tensile_fatigue_limit_MPa"] == 710
+    assert block["material"]["Torsional_fatigue_limit_MPa"] == 450
+    assert block["fatigue_limit_sources"]["Sigm1"][0]["material_name"] == "30NCD16"
+
+
+def test_summary_source_without_material_name_is_imported(tmp_path):
+    rows = [["ref", "A", 2020, None, 206000, 0.3, 900, 750, 420, 300, 2e6, -1]]
+    path = write_revised_workbook(tmp_path / "N.xlsx", _tension_rows(), summary_rows=rows)
+    block = _one(path)
+    assert block["material"]["Tensile_fatigue_limit_MPa"] == 420
+    assert block["material"]["Torsional_fatigue_limit_MPa"] == 300
+    assert block["fatigue_limit_sources"]["Sigm1"][0]["material_name"] is None
 
 
 def test_missing_nu_blocks_strain_models_only(tmp_path):
@@ -220,9 +230,9 @@ def test_batch_workbook_counts():
     assert (
         data["Ti6Al4V"]["material"]["Tensile_fatigue_limit_MPa"],
         data["Ti6Al4V"]["material"]["Torsional_fatigue_limit_MPa"],
-    ) == (500, 422.5)
-    assert data["CX18"]["material"]["Tensile_fatigue_limit_MPa"] is None
-    assert data["CX18"]["material"]["Torsional_fatigue_limit_MPa"] is None
+    ) == (576, 416.75)
+    assert data["CX18"]["material"]["Tensile_fatigue_limit_MPa"] == 710
+    assert data["CX18"]["material"]["Torsional_fatigue_limit_MPa"] == 450
     for m in ("CX18", "30NCD16", "25CrMo4", "982FA"):
         assert data[m]["material"]["nu"] == 0.3, m
 
@@ -247,7 +257,7 @@ def test_mixed_ratio_summary_reaches_every_entry_point(tmp_path):
 def test_reversed_fatigue_limits_average_by_loading_mode(tmp_path):
     rows = [
         ["doi-a", "A", 2018, "Synthetic steel", 206000, 0.3, 900, 750, 420, 300, 2e6, -1],
-        ["doi-b", "B", 2020, "Synthetic steel", 206000, 0.3, 900, 750, 440, 320, 2e6, -1],
+        ["doi-b", "B", 2020, "Alternate label", 206000, 0.3, 900, 750, 440, 320, 2e6, -1],
         ["doi-c", "C", 2024, "Synthetic steel", 206000, 0.3, 900, 750, 600, 500, 1e6, 0],
     ]
     path = write_revised_workbook(
@@ -256,6 +266,7 @@ def test_reversed_fatigue_limits_average_by_loading_mode(tmp_path):
     block = _one(path)
     assert block["material"]["Tensile_fatigue_limit_MPa"] == 430
     assert block["material"]["Torsional_fatigue_limit_MPa"] == 310
+    assert block["identity_issues"]
     assert [source["reference"] for source in block["fatigue_limit_sources"]["Sigm1"]] == [
         "doi-a",
         "doi-b",

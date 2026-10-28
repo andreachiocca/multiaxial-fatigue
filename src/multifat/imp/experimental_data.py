@@ -258,10 +258,7 @@ def _summary_fatigue_limits(
             selected[key] = math.fsum(item["value_MPa"] for item in compatible) / len(compatible)
             provenance[key] = compatible
         elif present:
-            issues[key] = (
-                "no usable R = -1 source fatigue limit; "
-                "the Summary average is not used"
-            )
+            issues[key] = "no usable R = -1 source fatigue limit; the Summary average is not used"
     return identity, issues, selected, provenance
 
 
