@@ -8,19 +8,22 @@ method, pipeline, catalogue and generated workbook documentation; this branch do
 files. The requested policy is an arithmetic mean of source values at the same stress ratio.
 
 The importer now calculates `Sigm1` and `Taum1` separately from positive, finite R = -1 source
-rows whose material name matches the workbook, records contributing rows and citations, and leaves
-unavailable properties without a compatible source. It does not infer an R = 0 amplitude from a
-reported stress range, apply a mean-stress correction, or change a workbook or calibration JSON.
+rows in each user-supplied workbook, records contributing rows and citations, and leaves a
+property unavailable when no usable same-ratio source exists. A missing source-row material name
+does not hide its value. A name conflicting with the workbook ID produces an identity warning,
+while the Summary remains the material-property store. It does not infer an R = 0 amplitude from
+a reported stress range, apply a mean-stress correction, or change a workbook or calibration JSON.
 Legacy workbooks retain the Average-row rule. The selection policy cannot establish that two
 source rows belong to the same metallurgical batch, because the Summary format has no reliable
 batch identifier; this needs scientific review before interpreting cross-source comparisons.
 
-An importer sweep of all 15 active workbooks, without overlays, identified the intentional
-property changes: AISI316L `Sigm1` 314.4 -> 241 MPa; Ti6Al4V `Sigm1` 576 -> 500 MPa and
-`Taum1` 416.75 -> 422.5 MPa; CX18 `Sigm1` 710 -> unavailable and `Taum1` 450 -> unavailable
-because its only Summary source names 30NCD16. Other imported fatigue-limit values were unchanged.
-These properties feed multiple criteria and the fatigue-limit workflow, so result changes and
-eligibility changes are expected; no scientific benchmark values have been edited.
+An importer sweep of all 15 active workbooks, without overlays, identifies one intended
+fatigue-limit change relative to `main`: AISI316L `Sigm1` 314.4 -> 241 MPa, because the 387.8 MPa
+Braun entry has R = 0 and is no longer pooled with Janssens' R = -1 entry. Ti6Al4V retains the
+workbook's 576 and 416.75 MPa means, and CX18 retains its 710 and 450 MPa values with an identity
+warning. Other imported fatigue-limit values are unchanged. AISI316L's shared `Sigm1` feeds
+multiple criteria and the fatigue-limit workflow, so numerical results may change; no scientific
+benchmark values have been edited.
 
 Eleven focused importer checks passed using the reconstructed source and synthetic workbooks.
 Python compilation and the all-workbook import sweep passed. The complete pytest, Black, Ruff and
@@ -36,19 +39,17 @@ Consequently the existing active-workbook count test expects 39 AISI failures, b
 workbook yields 31. The overlay operations match the new workbook in memory, but retargeting its
 hash would accept changed experimental inputs, so this branch does not do it.
 
-The CX18 overlay's expected dataset fingerprint is updated from
-`ed52773be6d62432542e4b9b611769de2990a9933536a1f7d38b2d8e2a06c5ec` to
-`76ad277894b3402a703adbfc5dc8b9babd385304c89ad9c0be344969baaa6911`, calculated
-from its unchanged workbook and overlay with the now-unavailable mismatched limits. This is a
-derived software checksum, not a scientific benchmark value.
+The CX18 overlay retains its original expected dataset fingerprint
+`ed52773be6d62432542e4b9b611769de2990a9933536a1f7d38b2d8e2a06c5ec`, verified against
+the unchanged workbook and overlay. The previous draft's changed fingerprint is removed.
 
-Changed files are the importer, dataset-import tests and fixture builder, the CX18 overlay's
-derived fingerprint, this checkpoint and `docs/dataset-workflow.md`. The generated `docs/workbook-format.md` is not edited while PR #21
+Changed files are the importer, dataset-import tests and fixture builder, this checkpoint and
+`docs/dataset-workflow.md`. The CX18 overlay is restored to its `main` content. The generated `docs/workbook-format.md` is not edited while PR #21
 owns that file; its Summary paragraph needs reconciliation when the PRs are integrated.
 
 Draft [PR #23](https://github.com/andreachiocca/multiaxial-fatigue/pull/23) is open without merge.
-The first CI lint run found a Black formatting failure; the current branch lint passes after
-formatting corrections. The test matrix still fails, as does the unchanged `main` baseline, with
+The first CI lint run found a Black formatting failure; the last published branch lint passed after
+formatting corrections. Its test matrix failed, as did the unchanged `main` baseline, with
 the AISI overlay mismatch accounting for at least one existing failure. Next action: obtain a
 scientific decision on the corrected AISI limit and batch policy, reconcile its overlay and
 historical results, then rerun the full test matrix and numerical regression snapshot. Do not merge

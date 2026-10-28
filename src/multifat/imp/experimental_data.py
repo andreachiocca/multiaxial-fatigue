@@ -187,7 +187,7 @@ def _summary_sources(ws, header_row: int, avg_row: int) -> list[dict]:
         ws.iter_rows(min_row=header_row + 1, max_row=avg_row - 1, values_only=True),
         start=header_row + 1,
     ):
-        if len(values) > 3 and values[3] is not None and str(values[3]).strip().lower() != "null":
+        if any(value is not None and norm_text(value) not in ("", "null") for value in values):
             rows.append({"_row": row_number, **{h: v for h, v in zip(heads, values) if h}})
     return rows
 
@@ -205,12 +205,17 @@ def _summary_fatigue_limits(
         (name for key, name in headers.items() if key.startswith("number of cycles")), None
     )
     sources = _summary_sources(ws, header_row, avg_row)
-    declared = [str(r.get(material_column, "")).strip() for r in sources]
+    declared = [
+        str(r[material_column]).strip()
+        for r in sources
+        if r.get(material_column) is not None
+        and norm_text(r[material_column]) not in ("", "null")
+    ]
     identity: list[str] = []
     if any(_alloy_token(n) != _alloy_token(material) for n in declared):
         identity.append(
             f"file material {material} conflicts with Summary names {declared}; "
-            "confirm identity before pooling"
+            "fatigue limits are read from this workbook, but source identity needs review"
         )
     issues: dict[str, str] = {}
     selected: dict[str, float] = {}
@@ -241,7 +246,6 @@ def _summary_fatigue_limits(
                 and ratio is not None
                 and math.isfinite(ratio)
                 and math.isclose(ratio, -1.0, rel_tol=0.0, abs_tol=1e-6)
-                and _alloy_token(row.get(material_column)) == _alloy_token(material)
             ):
                 compatible.append(
                     {
@@ -259,7 +263,7 @@ def _summary_fatigue_limits(
             provenance[key] = compatible
         elif present:
             issues[key] = (
-                "no compatible R = -1 source fatigue limit for this material; "
+                "no usable R = -1 source fatigue limit; "
                 "the Summary average is not used"
             )
     return identity, issues, selected, provenance
