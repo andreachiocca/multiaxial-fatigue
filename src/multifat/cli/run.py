@@ -42,7 +42,7 @@ DATA_FOLDER = "Experimental_Data"
 RESULTS_DIR = "Results/current"
 
 MATERIAL_NAME = "AISI316L"  # e.g. "42CrMo4_QT", "AISI316L", "Al7075_T6", "Ti6Al4V_andrea_(AXIAL)"
-MODEL_NAME = "FS_ext"  # e.g. "FS", "FIN", "SWT", "BP", "CAIM"
+MODEL_NAME = "FS"  # defaults to the author/maintainer plane-selection rule
 # Findley only (FIN, FIN_ext): method_default is the production MCE path; mcc_harmonic,
 # mce_harmonic and rss run the explicit harmonic assessment, calibrated with the same option.
 SHEAR_AMPLITUDE_ALGORITHM = "method_default"
@@ -85,17 +85,11 @@ PARAM_KEYS = {
 
 
 def _split_model_variant(model_tag: str) -> tuple[str, str]:
-    """
-    Gives back (family_name, suffix_tag).
+    """Resolve a named method through the shared public variant selector."""
+    from multifat.cli.method_selection import resolve_method_tag
 
-    Naming scheme:
-      - "FIN"     -> ("FIN", "")      plain flavour
-      - "FIN_ext" -> ("FIN", "_ext")  extreme flavour
-      - "VM"      -> ("VM", "")       plain flavour only
-    """
-    if model_tag.endswith("_ext"):
-        return model_tag[:-4], "_ext"
-    return model_tag, ""
+    request = resolve_method_tag(model_tag)
+    return request.base_name, request.suffix
 
 
 def classify_loading_type(
