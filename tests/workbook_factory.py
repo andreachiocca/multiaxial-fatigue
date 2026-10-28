@@ -6,6 +6,8 @@ from pathlib import Path
 
 from openpyxl import Workbook
 
+from multifat.imp.schema import material_id
+
 SUMMARY_HEADERS = [
     "Article DOI",
     "Authors",
@@ -159,7 +161,7 @@ def revised_row(overrides: dict | None = None) -> list:
 def write_revised_workbook(path: Path, rows: list[list], *, summary_rows=None) -> Path:
     """Revised-format workbook; `summary_rows` are source rows (the Average is their copy)."""
     rows_s = summary_rows or [
-        ["ref", "A", 2020, "Synthetic steel", 206000, 0.3, 900, 750, 420, 300, 2e6, -1]
+        ["ref", "A", 2020, material_id(path.stem), 206000, 0.3, 900, 750, 420, 300, 2e6, -1]
     ]
     wb = Workbook()
     wb.remove(wb.active)
@@ -178,3 +180,4 @@ def write_revised_workbook(path: Path, rows: list[list], *, summary_rows=None) -
         ds.append(r)
     wb.save(path)
     return path
+

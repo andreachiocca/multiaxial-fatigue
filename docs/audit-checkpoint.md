@@ -1,5 +1,44 @@
 # Development continuation checkpoint
 
+## In progress, Issue #22 Summary fatigue-limit selection (28 October 2026)
+
+Branch `fix/summary-fatigue-limits-ratio` is based on `main` at
+`a7f3cc81151ec3da2fa4da5441ed6f0dcb70b2fd`. PR #21 is open and changes the TVEIT2025
+method, pipeline, catalogue and generated workbook documentation; this branch does not edit those
+files. The requested policy is an arithmetic mean of source values at the same stress ratio.
+
+The importer now calculates `Sigm1` and `Taum1` separately from positive, finite R = -1 source
+rows whose material name matches the workbook, records contributing rows and citations, and leaves
+unavailable properties without a compatible source. It does not infer an R = 0 amplitude from a
+reported stress range, apply a mean-stress correction, or change a workbook or calibration JSON.
+Legacy workbooks retain the Average-row rule. The selection policy cannot establish that two
+source rows belong to the same metallurgical batch, because the Summary format has no reliable
+batch identifier; this needs scientific review before interpreting cross-source comparisons.
+
+An importer sweep of all 15 active workbooks, without overlays, identified the intentional
+property changes: AISI316L `Sigm1` 314.4 -> 241 MPa; Ti6Al4V `Sigm1` 576 -> 500 MPa and
+`Taum1` 416.75 -> 422.5 MPa; CX18 `Sigm1` 710 -> unavailable and `Taum1` 450 -> unavailable
+because its only Summary source names 30NCD16. Other imported fatigue-limit values were unchanged.
+These properties feed multiple criteria and the fatigue-limit workflow, so result changes and
+eligibility changes are expected; no scientific benchmark values have been edited.
+
+Eleven focused importer checks passed using the reconstructed source and synthetic workbooks.
+Python compilation and the all-workbook import sweep passed. The complete pytest, Black, Ruff and
+regression snapshot cannot run in this container: Git transport and the package index are blocked,
+so only the relevant source files and active workbooks were reconstructed and pytest is absent.
+The current AISI316L workbook SHA-256 is `b637deefb415243c5a071a38f188c02202501d2c6e85b87c30af41523a211949`,
+while its declared overlay expects `3750a62d54828b8c75b2b775811f768ecb5921daacad4bc31bab5b978c28dc19`.
+Consequently the existing active-workbook count test expects 39 AISI failures, but the unoverlaid
+workbook yields 31. This mismatch predates this branch and is not repaired here.
+
+Changed files are the importer, dataset-import tests and fixture builder, this checkpoint and
+`docs/dataset-workflow.md`. The generated `docs/workbook-format.md` is not edited while PR #21
+owns that file; its Summary paragraph needs reconciliation when the PRs are integrated.
+
+Next action: publish a draft PR, inspect CI and numerical regression output, resolve the
+source-batch policy and AISI overlay mismatch with the maintainer, then request scientific review.
+Do not merge automatically.
+
 ## Milestone, multifat architecture integration (22 October 2026)
 
 Branch `dev/tg-developments`, local and not pushed. Upstream `main` at `ba84152` (PRs #10 and #11)
@@ -585,3 +624,4 @@ No pending test failure is known. The unresolved item is source completeness, no
 - `fatigue/report/export_csv.py`
 - `tests/run_material_validation.py`
 - `tests/test_method_audit.py`
+
