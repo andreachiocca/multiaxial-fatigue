@@ -22,9 +22,7 @@ from multifat.models.cp_methods.fs import FatemiSocie
         ("FIN_ext", ("FIN", "_ext")),
     ],
 )
-def test_public_single_model_tags_resolve_to_default_or_explicit_extension(
-    method_tag, expected
-):
+def test_plain_method_and_explicit_ext_tags(method_tag, expected):
     assert _split_model_variant(method_tag) == expected
 
 
