@@ -82,6 +82,22 @@ def test_pipeline_routes_fatigue_limit_workbook(tmp_path):
     assert set(summary.Method) == {"CROSSLAND", "FIN"}
 
 
+
+
+def test_fatigue_limit_pipeline_honours_explicit_ext(tmp_path):
+    from multifat.cli.pipeline import run_workbook
+
+    path = write_workbook(tmp_path / "LimitVariant.xlsx", rows=_limit_rows())
+    outdir = tmp_path / "res"
+    outcomes = run_workbook(path, models=["FIN_ext"], results_dir=outdir)
+    assert [(row.model, row.status) for row in outcomes] == [("FIN_ext", "ok")]
+    assert (outdir / "FatigueLimit" / "FIN_ext_LimitVariant_FI.csv").exists()
+    assert not (outdir / "FatigueLimit" / "FIN_LimitVariant_FI.csv").exists()
+    summary = pd.read_csv(
+        outdir / "FatigueLimit" / "LimitVariant_fatigue_index_summary.csv"
+    )
+    assert list(summary.Method) == ["FIN_ext"]
+
 def test_runout_workbook_without_limits_rejected(tmp_path):
     from multifat.cli.run import validate_workbook
     from workbook_factory import SUMMARY_HEADERS, SUMMARY_VALUES

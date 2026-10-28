@@ -18,6 +18,26 @@ This workflow retains the present FABER WG4.3 scope of constant-amplitude loadin
 and smooth/plain geometries. It does not introduce a new fatigue formulation or
 censored-data regression.
 
+## Public method and plane-selection variants
+
+The name without a suffix selects **each method's declared default**: `FS` evaluates
+the damage parameter on the plane with greatest shear-strain amplitude, whereas
+`FIN` maximises the *complete* Findley parameter. The `_ext` suffix explicitly
+selects the plane that maximises the complete damage parameter; `FIN_ext`
+therefore matches `FIN` under the current Findley definition.
+
+`multifat-run --model FS` and `multifat-pipeline --models FS` request only the
+default variant. To request the alternative use `FS_ext`; to compare both in
+the pipeline use `--all-variants` (or `--models FS,FS_ext`). Direct/non-critical-
+plane methods have no `_ext` variant and unsupported requests are rejected.
+The same selection also applies to fatigue-limit datasets.
+
+This change selects **how a critical plane is evaluated**; it does not
+change method constants, numerical search algorithms or the choice of
+calibration procedure. The immutable calibration JSON archive and
+author-prescribed coefficient-fitting modes remain future Issue #14 work.
+The current pipeline still overwrites its latest-run calibration sidecar.
+
 ## Calibration stages
 
 The previous workflow had two distinct fitting stages. Script 0 optimised five
