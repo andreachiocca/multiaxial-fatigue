@@ -82,6 +82,28 @@ The following entries describe the **current repository implementation or litera
 
 For every implemented criterion, create a source-audit entry containing the primary DOI, equation/table/page, parameter names and units, required observations, calibration objective, numerical constraints, supported formulations, and independent reproduction check. Mark each `source_verified`, `adaptation_documented`, `source_review_required` or `not_applicable`. Do not promote a method to source-verified on the basis of a similar published implementation or a passing software test alone.
 
+## 6a. Author clarification, method names and calibration history
+
+**Maintainer-approved calibration rule for Fatemi-Socie:** use fatigue-scatter minimisation on fully reversed axial and torsional failure data. This is a maintainer-defined specification, not a claim that the unavailable Fatemi-Socie (1988) original publication was independently reviewed. The first paper-level review of Findley, Li, MGSE and MSWT appears in [the primary-source audit](calibration-source-audit.md).
+
+**Method call contract:** the name without a suffix must always resolve to the **declared default critical-plane selection of that criterion**, independently of how many alternatives the evaluator supports. `FS` selects the plane with maximum `gamma_a`; `FS_ext` explicitly selects the plane that maximises the complete FS damage parameter. `FIN` selects the maximum of the complete Findley parameter; `FIN_ext` is an explicit request for the complete-parameter maximum and should agree numerically with `FIN` where that is already the rule. No suffix means **author/approved plane selection**, not an unlabelled generic optimiser. Do not rely on an `_ext` suffix to decide which variant the method's author intended.
+
+The existing `multifat-run --model FS` and `--model FIN` paths already follow these two default selections; `--model FS_ext` and `--model FIN_ext` select the explicit alternative. In contrast, `multifat-pipeline` currently exports both available variants regardless of the user's request, and the registry `get_models` does not itself treat suffixed names as separate model IDs. The future public API and pipeline must default to a **single** declared variant per requested method, accept a selected `_ext` (or explicit no-`_ext`) override, and offer a separately named opt-in `all_variants` mode for comparisons. This behavioural change is **not yet implemented**. Guard against conflicts with PR #21, which also changes `src/multifat/cli/pipeline.py`.
+
+**Immutable JSON history is mandatory.** Each calibration, including the automatic author-defined/default calibration and every user-forced `all_eligible` or `subset` fit, must have a distinct, reusable, **append-only calibration record**, not merely the mutable latest-run `<MATERIAL>_calibration.json` sidecar. A recalibration must never overwrite an earlier record even if the current input, method, numerical settings or subset has changed. Identical deterministic reruns may reuse the same scientific record if its identity and source hashes match exactly. The existing archive under `Calibrations/<material>/` should remain readable; do not silently migrate or reinterpret historical records.
+
+For each record, retain:
+
+- calibration ID, UTC timestamp, record schema version, author/maintainer/source-based procedure ID, DOI, equation/page and source verification status;
+- criterion base name, **explicit resolved default or `_ext` variant**, version of the mathematical formulation, plane-selection and shear-amplitude algorithms;
+- calibration mode (`author`, `all_eligible`, `subset` or `supplied`), fitted parameter names, units, initial/allowed bounds, fixed material inputs, their measured/estimated origins and source/batch identity;
+- source workbook SHA-256, post-overlay dataset fingerprint and overlay identity, original source rows, selected observation/case IDs **per fitted coefficient**, and explicit reasons for excluded cases;
+- type and definition of the optimisation objective, weighting and transformations, numerical algorithm, convergence settings, seed, diagnostics, status and uncertainty/identifiability;
+- **separate** coefficient-fitting and master-curve design observations, fitted fatigue-law and master-curve parameters, and held-out validation-group IDs, so calibration leakage cannot be disguised as independent prediction;
+- numerical result, warnings/fallbacks (never implicit), environment and Git revision, required data dependencies, and any parent calibration ID for reuse or adaptation.
+
+The current pipeline writes a JSON sidecar and overwrites it on reruns; historical `Calibrations/` records exist but are **not automatically created by the current pipeline**. Replacing the sidecar with an immutable store plus a latest-run pointer is a planned implementation, not a completed feature. A compact user-facing pointer to the chosen archived JSON should accompany every result, with a flag if it was the source-defined default or a user-forced fit.
+
 ## 7. Proposed comparison experiment for Issue #14
 
 Before changing the production calibration, run a focused, reproducible comparison on representative datasets:
@@ -111,12 +133,12 @@ Do not overwrite historical records or silently reuse an incompatible material o
 
 Following scientific review and the primary-source audit, prepare independently reviewable development work:
 
-1. Add method-level calibration descriptors and source-verification status without altering the implemented equations.
+1. Add method-level calibration descriptors, default-variant resolution and source-verification status without altering the implemented equations.
 2. Provide a deterministic observation/group selector and persistent training/validation split manifests.
 3. Implement the source-prescribed calibrators method by method, with primary-source reproduction tests.
 4. Add explicit `author`, `all_eligible`, `subset` and `supplied` controls with parameter/objective compatibility checks.
 5. Keep model-constant fitting separate from master-curve fitting and ensure independent validation excludes both sets of design observations.
-6. Produce matched comparison reports, calibrated constants, run-out diagnostics and auditable JSON records.
+6. Implement an append-only, source-backed calibration JSON history with immutable records (including the default), explicit variant, data hashes, fitting subsets and latest-run pointers; produce matched comparison reports and run-out diagnostics.
 7. Coordinate classification and comparison semantics with Issue #18; coordinate batch identity checks with Issue #24.
 
 **Review gate:** Issue #14 should remain open until author procedures are source-verified and the requested representative-material comparison has been performed. This document establishes the initial scientific protocol but does not yet satisfy those acceptance criteria.
