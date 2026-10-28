@@ -231,7 +231,7 @@ def _summary_fatigue_limits(
             if value is None:
                 continue
             present.append(row)
-            ratio = to_float_or_none(row.get(ratio_column))
+            stress_ratio = to_float_or_none(row.get(ratio_column))
             if (
                 math.isfinite(value)
                 and value > 0
@@ -239,15 +239,15 @@ def _summary_fatigue_limits(
                     isinstance(raw_value, str)
                     and raw_value.lstrip().startswith((">", "<", "\u2265", "\u2264"))
                 )
-                and ratio is not None
-                and math.isfinite(ratio)
-                and math.isclose(ratio, -1.0, rel_tol=0.0, abs_tol=1e-6)
+                and stress_ratio is not None
+                and math.isfinite(stress_ratio)
+                and math.isclose(stress_ratio, -1.0, rel_tol=0.0, abs_tol=1e-6)
             ):
                 compatible.append(
                     {
                         "excel_row": row["_row"],
                         "value_MPa": value,
-                        "stress_ratio": ratio,
+                        "stress_ratio": stress_ratio,
                         "reference_cycles": to_float_or_none(row.get(cycles_column)),
                         "material_name": row.get(material_column),
                         "reference": row.get("Article DOI / Reference"),
