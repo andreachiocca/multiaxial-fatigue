@@ -109,7 +109,7 @@ def _annotate_calibration(outcome: Outcome, model, calibration: dict) -> Outcome
 
 
 def _evaluate_base_core(job: tuple) -> list[Outcome]:
-    workbook, base_name, dest, overrides, design_ids, why, make_plots, calibration = job
+    workbook, base_name, dest, overrides, design_ids, why, make_plots, calibration, suffixes = job
     start = time.perf_counter()
     adopted: list[str] = []
     try:
@@ -129,8 +129,14 @@ def _evaluate_base_core(job: tuple) -> list[Outcome]:
             base_name not in stress_only_models()
         ):
             text = "needs E and nu (absent from the Summary): strains are undefined"
-            skip = Outcome(base_name, "skipped", text, 0, time.perf_counter() - start)
-            return [_annotate_calibration(skip, model, calibration)]
+            return [
+                _annotate_calibration(
+                    Outcome(base_name + suffix, "skipped", text, 0, time.perf_counter() - start),
+                    model,
+                    calibration,
+                )
+                for suffix in suffixes
+            ]
         for key, value in overrides.items():
             if key in suppliable and params.get(key) is None:
                 params[key] = value
@@ -147,21 +153,30 @@ def _evaluate_base_core(job: tuple) -> list[Outcome]:
             + [f"not identifiable: {hint}" for hint in explanations]
             + [f"{key}: {flagged[key]}" for key in exc.missing if key in flagged]
         )
-        skipped = Outcome(
-            base_name,
-            "skipped",
-            text,
-            0,
-            time.perf_counter() - start,
-            missing=tuple(exc.missing),
-        )
-        return [_annotate_calibration(skipped, model, calibration)]
+        return [
+            _annotate_calibration(
+                Outcome(
+                    base_name + suffix,
+                    "skipped",
+                    text,
+                    0,
+                    time.perf_counter() - start,
+                    missing=tuple(exc.missing),
+                ),
+                model,
+                calibration,
+            )
+            for suffix in suffixes
+        ]
     except Exception as exc:  # carry on with the remaining models
         text = f"{type(exc).__name__}: {exc} | {traceback.format_exc(limit=-2).strip()}"
-        return [Outcome(base_name, "failed", text, 0, time.perf_counter() - start)]
+        return [
+            Outcome(base_name + suffix, "failed", text, 0, time.perf_counter() - start)
+            for suffix in suffixes
+        ]
     results = []
     fitted_label = ",".join(sorted(adopted))
-    for suffix in ("", "_ext"):
+    for suffix in suffixes:
         label = base_name + suffix
         if suffix == "_ext" and not any("_ext" in v for v in evaluation.values):
             results.append(Outcome(label, "skipped", "model has no _ext variant"))
@@ -359,6 +374,7 @@ def run_workbook(
     workbook: Path,
     *,
     models: list[str] | None = None,
+    all_variants: bool = False,
     results_dir: Path = Path(RESULTS_DIR),
     jobs: int = 1,
     calibrate: bool = True,
@@ -373,10 +389,13 @@ def run_workbook(
     if not report.ok:
         raise WorkbookError(workbook.name, "", "", "; ".join(report.errors))
 
-    selected = models or _every_model()
+    from multifat.cli.method_selection import select_method_variants
+
+    requested = select_method_variants(models, all_variants=all_variants)
+    selected = list(dict.fromkeys(request.base_name for request in requested))
     data, _ = runmod.load_material(workbook)
     if not data[material]["cases"]:  # validated: a fatigue-limit dataset
-        results, sidecar = _evaluate_fatigue_limit(workbook, material, selected, results_dir, jobs)
+        results, sidecar = _evaluate_fatigue_limit(workbook, material, requested, results_dir, jobs)
         sidecar["provenance"] = provenance(workbook, data)
         sidecar["status"] = "not_applicable"
         sidecar["reason"] = "fatigue-limit dataset: constants from the R = -1 limits"
@@ -427,18 +446,22 @@ def run_workbook(
     why = sidecar.get("unidentified", {})
     calibration = _calibration_state(sidecar, needed)
 
+    suffixes_by_base: dict[str, list[str]] = {}
+    for request in requested:
+        suffixes_by_base.setdefault(request.base_name, []).append(request.suffix)
     queue = [
         (
             str(workbook),
-            name,
+            base_name,
             str(results_dir),
             overrides,
             design_ids,
             why,
             plots,
             calibration,
+            tuple(suffixes),
         )
-        for name in selected
+        for base_name, suffixes in suffixes_by_base.items()
     ]
     if jobs > 1:
         with ProcessPoolExecutor(jobs) as pool:
@@ -491,7 +514,8 @@ def _fatigue_limit_model(job: tuple) -> tuple[Outcome, dict]:
     from multifat.models.references import IMPLEMENTATION_REVISION, method_reference
     from multifat.models.registry import get_models, stress_only_models
 
-    workbook, base_name, dest = job
+    workbook, base_name, suffix, dest = job
+    model_tag = base_name + suffix
     start = time.perf_counter()
     adopted: dict = {}
     with warnings.catch_warnings(record=True) as captured:
@@ -506,7 +530,7 @@ def _fatigue_limit_model(job: tuple) -> tuple[Outcome, dict]:
             ):
                 text = "needs E and nu (absent from the Summary): strains are undefined"
                 return (
-                    Outcome(base_name, "skipped", text, 0, time.perf_counter() - start),
+                    Outcome(model_tag, "skipped", text, 0, time.perf_counter() - start),
                     adopted,
                 )
             ratios = runmod.build_R_list(n1=runmod.DCMESH_N1, n2=runmod.DCMESH_N2)
@@ -520,13 +544,14 @@ def _fatigue_limit_model(job: tuple) -> tuple[Outcome, dict]:
                         refs,
                         ENDURANCE_CONSTANTS[param_name],
                         ratios,
+                        variant=suffix,
                     )
                     if value is None:
                         text = f"{param_name}: no value in {ENDURANCE_CONSTANTS[param_name]} equalises the "
                         text += "axial and torsional fatigue limits"
                         return (
                             Outcome(
-                                base_name,
+                                model_tag,
                                 "skipped",
                                 text,
                                 0,
@@ -539,9 +564,16 @@ def _fatigue_limit_model(job: tuple) -> tuple[Outcome, dict]:
             if absent:
                 raise MissingParamsError(model.name, absent)
             limits = list(block["runouts"].values())
-            rows = fatigue_index(model, params, [case_from_block(c) for c in limits], refs, ratios)
+            rows = fatigue_index(
+                model,
+                params,
+                [case_from_block(c) for c in limits],
+                refs,
+                ratios,
+                variant=suffix,
+            )
             citation = method_reference(base_name)
-            target = Path(dest) / "FatigueLimit" / f"{base_name}_{material}_FI.csv"
+            target = Path(dest) / "FatigueLimit" / f"{model_tag}_{material}_FI.csv"
             target.parent.mkdir(parents=True, exist_ok=True)
             with open(target, "w", newline="", encoding="utf-8") as handle:
                 writer = csv.writer(handle)
@@ -549,13 +581,13 @@ def _fatigue_limit_model(job: tuple) -> tuple[Outcome, dict]:
                 for case, row in zip(limits, rows):
                     loading = runmod.classify_loading_type(H=case["harmonics"], meta=case["meta"])
                     writer.writerow(
-                        [material, base_name, loading, case["meta"].get("specimen_id", ""),
+                        [material, model_tag, loading, case["meta"].get("specimen_id", ""),
                          case["meta"]["Nf_cycles"], row["DP"], row["DP_ref_axial"], row["DP_ref_torsion"],
                          row["FI_axial"], row["FI_torsion"], row["FI_load"], IMPLEMENTATION_REVISION,
                          citation["url"] or citation["citation"]]
                     )  # fmt: skip
             outcome = Outcome(
-                base_name,
+                model_tag,
                 "ok",
                 "",
                 len(rows),
@@ -565,7 +597,7 @@ def _fatigue_limit_model(job: tuple) -> tuple[Outcome, dict]:
             outcome.mode = "fatigue_index"
         except MissingParamsError as exc:
             outcome = Outcome(
-                base_name,
+                model_tag,
                 "skipped",
                 str(exc),
                 0,
@@ -574,7 +606,7 @@ def _fatigue_limit_model(job: tuple) -> tuple[Outcome, dict]:
             )
         except Exception as exc:  # carry on with the remaining models
             outcome = Outcome(
-                base_name,
+                model_tag,
                 "failed",
                 f"{type(exc).__name__}: {exc}",
                 0,
@@ -586,11 +618,11 @@ def _fatigue_limit_model(job: tuple) -> tuple[Outcome, dict]:
     return outcome, adopted
 
 
-def _evaluate_fatigue_limit(workbook: Path, material: str, names, dest: Path, jobs: int):
+def _evaluate_fatigue_limit(workbook: Path, material: str, requests, dest: Path, jobs: int):
     """Every model on a fatigue-limit dataset; returns the outcomes and the sidecar payload."""
     import pandas as pd
 
-    queue = [(str(workbook), name, str(dest)) for name in names]
+    queue = [(str(workbook), request.base_name, request.suffix, str(dest)) for request in requests]
     if jobs > 1:
         with ProcessPoolExecutor(jobs) as pool:
             pairs = list(pool.map(_fatigue_limit_model, queue))
@@ -679,7 +711,9 @@ def write_eligibility(runs: dict, out_dir: Path, *, calibrate: bool, models=None
                 )
             continue
         for outcome in outcomes:
-            if outcome.model.endswith("_ext"):
+            if outcome.model.endswith("_ext") and any(
+                item.model == outcome.model.removesuffix("_ext") for item in outcomes
+            ):
                 continue
             state = _eligibility_status(outcome, calibrate)
             count = (
@@ -737,7 +771,16 @@ def main(cli_args=None) -> None:
         "--material", action="append", default=[], help="name inside Experimental_Data"
     )
     parser.add_argument("--all", action="store_true", help="every workbook in Experimental_Data")
-    parser.add_argument("--models", default="all", help="comma-separated base names, or 'all'")
+    parser.add_argument(
+        "--models",
+        default="all",
+        help="comma-separated method names, including explicit _ext, or 'all'",
+    )
+    parser.add_argument(
+        "--all-variants",
+        action="store_true",
+        help="also evaluate each selected critical-plane method's available _ext variant",
+    )
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--results-dir", type=Path, default=Path(RESULTS_DIR))
     parser.add_argument("--no-calibrate", action="store_true")
@@ -791,6 +834,7 @@ def main(cli_args=None) -> None:
             outcomes = run_workbook(
                 workbook,
                 models=selected,
+                all_variants=args.all_variants,
                 results_dir=args.results_dir,
                 jobs=args.jobs,
                 calibrate=not args.no_calibrate,

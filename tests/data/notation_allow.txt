@@ -34,3 +34,6 @@ algorithm cosine sine shear_amplitude_algorithm cos sin x
 
 # Generic bookkeeping of the registry, the parameter reader, and the reference table.
 default warn context names
+
+# Method output variant is an interface selector for fatigue-index evaluation.
+variant

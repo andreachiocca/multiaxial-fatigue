@@ -30,14 +30,12 @@ def test_missing_constants_are_skipped_and_others_run(tmp_path):
     status = {o.model: o.status for o in outcomes}
     assert status == {
         "FIN": "ok",
-        "FIN_ext": "ok",
         "CROSSLAND": "ok",
-        "CROSSLAND_ext": "skipped",
         "SINES": "skipped",
     }
     rep = _report(out / "Synth_run_report.tsv")
     assert "['Su']" in rep["SINES"]["reason"]
-    assert rep["CROSSLAND_ext"]["reason"] == "model has no _ext variant"
+    assert "FIN_ext" not in rep and "CROSSLAND_ext" not in rep
     assert (out / "FIN_Synth.csv").exists() and (out / "CROSSLAND_Synth.csv").exists()
     assert "kept: 15" in (out / "Synth_validation.txt").read_text(encoding="utf-8")
     cal = json.loads((out / "Synth_calibration.json").read_text(encoding="utf-8"))
@@ -57,10 +55,36 @@ def test_missing_workbook_constant_is_calibrated(tmp_path):
     outcomes = run_workbook(wb, models=["FIN"], results_dir=out)
     assert {o.model: (o.status, o.calibrated) for o in outcomes} == {
         "FIN": ("ok", "k_FI"),
-        "FIN_ext": ("ok", "k_FI"),
     }
     cal = json.loads((out / "NoKFI_calibration.json").read_text(encoding="utf-8"))
     assert 0.0 <= cal["params"]["k_FI"] <= 3.0
+
+
+def test_explicit_ext_and_all_variants_output(tmp_path):
+    """A requested extension is not accompanied by an unwanted plain result."""
+    wb = write_workbook(tmp_path / "Variant.xlsx")
+    ext_dir = tmp_path / "ext"
+    result = run_workbook(wb, models=["FIN_ext"], results_dir=ext_dir)
+    assert [(row.model, row.status) for row in result] == [("FIN_ext", "ok")]
+    assert (ext_dir / "FIN_ext_Variant.csv").exists()
+    assert not (ext_dir / "FIN_Variant.csv").exists()
+
+    both_dir = tmp_path / "both"
+    result = run_workbook(wb, models=["FIN", "CROSSLAND"], all_variants=True, results_dir=both_dir)
+    assert {row.model: row.status for row in result} == {
+        "FIN": "ok",
+        "FIN_ext": "ok",
+        "CROSSLAND": "ok",
+    }
+    assert (both_dir / "FIN_Variant.csv").exists()
+    assert (both_dir / "FIN_ext_Variant.csv").exists()
+    assert not (both_dir / "CROSSLAND_ext_Variant.csv").exists()
+
+
+def test_invalid_explicit_ext_is_rejected(tmp_path):
+    wb = write_workbook(tmp_path / "InvalidVariant.xlsx")
+    with pytest.raises(ValueError, match="no _ext variant"):
+        run_workbook(wb, models=["CROSSLAND_ext"], results_dir=tmp_path / "res")
 
 
 def test_workbook_without_design_set_is_rejected(tmp_path):

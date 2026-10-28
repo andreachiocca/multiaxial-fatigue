@@ -92,12 +92,12 @@ def case_from_block(case: dict) -> dict:
     }
 
 
-def damage(model, params: dict, case: dict, R_list) -> float:
+def damage(model, params: dict, case: dict, R_list, *, variant: str = "") -> float:
     result = model.evaluate_case(
         S0=case["S0"], E0=case["E0"], S1=case["S1"], E1=case["E1"], params=params,
         R_list=R_list, harmonics=case["H"],
     )  # fmt: skip
-    return float(result.values.get("", np.nan))
+    return float(result.values.get(variant, np.nan))
 
 
 def _root_in_interval(f, lo: float, hi: float, f_lo: float, tol: float = 1e-13) -> float:
@@ -114,13 +114,15 @@ def _root_in_interval(f, lo: float, hi: float, f_lo: float, tol: float = 1e-13) 
     return 0.5 * (lo + hi)
 
 
-def calibrate_endurance_constant(model, key: str, params: dict, refs: dict, bounds, R_list):
+def calibrate_endurance_constant(
+    model, key: str, params: dict, refs: dict, bounds, R_list, *, variant: str = ""
+):
     """Value of `key` inside `bounds` making both references agree on DP, or None."""
 
     def mismatch(p: float) -> float:
         trial = {**params, key: float(p)}
-        return damage(model, trial, refs["axial"], R_list) - damage(
-            model, trial, refs["torsion"], R_list
+        return damage(model, trial, refs["axial"], R_list, variant=variant) - damage(
+            model, trial, refs["torsion"], R_list, variant=variant
         )
 
     lo, hi = float(bounds[0]), float(bounds[1])
@@ -146,11 +148,13 @@ def scaled_case(case: dict, factor: float) -> dict:
     }
 
 
-def load_factor(model, params: dict, case: dict, target: float, R_list) -> float:
+def load_factor(
+    model, params: dict, case: dict, target: float, R_list, *, variant: str = ""
+) -> float:
     """Factor s for which DP(s * case) = target (DP grows with the loads), or NaN."""
 
     def residual(s: float) -> float:
-        return damage(model, params, scaled_case(case, s), R_list) - target
+        return damage(model, params, scaled_case(case, s), R_list, variant=variant) - target
 
     r1 = residual(1.0)
     if not np.isfinite(r1) or not np.isfinite(target) or target <= 0:
@@ -174,13 +178,15 @@ def load_factor(model, params: dict, case: dict, target: float, R_list) -> float
     return float(np.sqrt(lo * hi))
 
 
-def fatigue_index(model, params: dict, cases: list[dict], refs: dict, R_list) -> list[dict]:
+def fatigue_index(
+    model, params: dict, cases: list[dict], refs: dict, R_list, *, variant: str = ""
+) -> list[dict]:
     """DP, the two reference DPs and both fatigue index errors, for every case."""
-    dp_axial_ref = damage(model, params, refs["axial"], R_list)
-    dp_torsion_ref = damage(model, params, refs["torsion"], R_list)
+    dp_axial_ref = damage(model, params, refs["axial"], R_list, variant=variant)
+    dp_torsion_ref = damage(model, params, refs["torsion"], R_list, variant=variant)
     rows = []
     for case in cases:
-        dp = damage(model, params, case, R_list)
+        dp = damage(model, params, case, R_list, variant=variant)
         rows.append(
             {
                 "DP": dp,
@@ -188,7 +194,9 @@ def fatigue_index(model, params: dict, cases: list[dict], refs: dict, R_list) ->
                 "DP_ref_torsion": dp_torsion_ref,
                 "FI_axial": dp / dp_axial_ref - 1.0,
                 "FI_torsion": dp / dp_torsion_ref - 1.0,
-                "FI_load": 1.0 / load_factor(model, params, case, dp_axial_ref, R_list) - 1.0,
+                "FI_load": 1.0
+                / load_factor(model, params, case, dp_axial_ref, R_list, variant=variant)
+                - 1.0,
             }
         )
     return rows
