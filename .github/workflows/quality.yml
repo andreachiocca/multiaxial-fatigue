@@ -59,7 +59,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          uv run pytest tests/test_dataset_overlays.py tests/test_dataset_import.py -q --tb=short --maxfail=8 > pytest-diagnostic.log 2>&1
+          uv run pytest -q --tb=short --maxfail=12 > pytest-diagnostic.log 2>&1
           code=$?
           echo "DIAGNOSTIC_TEST_EXIT_CODE=$code" >> "$GITHUB_ENV"
           exit 0
@@ -76,7 +76,7 @@ jobs:
           from pathlib import Path
           output = Path("pytest-diagnostic.log").read_text(encoding="utf-8", errors="replace")
           tail = output[-15000:]
-          body = ("CI diagnostic for data-import tests on Python 3.12. Exit code "
+          body = ("CI diagnostic for full test suite on Python 3.12. Exit code "
                   + os.environ.get("DIAGNOSTIC_TEST_EXIT_CODE", "unknown")
                   + ". Temporary diagnostic job.\n\n"
                   + "```text\n" + tail + "\n```")
