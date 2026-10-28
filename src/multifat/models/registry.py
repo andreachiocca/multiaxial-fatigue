@@ -47,6 +47,7 @@ from .integral_methods.bohme_papuga import BohmePapuga
 from .integral_methods.caim import CAIM
 from .energy_based_methods.swtd import SWTD
 from .invariant_methods.ottosen import OttosenReduced
+from .invariant_methods.tveit2025 import Tveit2025
 from .cp_methods.dangvan import DangVan
 from .invariant_methods.crossland import Crossland
 from .invariant_methods.sines import Sines
@@ -93,6 +94,7 @@ def _available_direct_models():
         "CAIM": CAIM(),
         "SWTD": SWTD(),
         "OTT": OttosenReduced(),
+        "TVEIT2025": Tveit2025(),
         "DANGVAN": DangVan(),
         "CROSSLAND": Crossland(),
         "SINES": Sines(),
@@ -172,6 +174,9 @@ _PROBE_PARAMS = {
     "k_FS": 1.0, "k_FI": 0.3, "L_LI": 3.0, "k_MGSE": 1.0, "a_MSWT": 0.3, "alpha_w": 0.0,
     "xi_ZHU": 1.0, "sigma_f": 1200.0, "b_fat": -0.09, "epsilon_f": 0.5, "c_fat": -0.6,
     "tau_f": 700.0, "gamma_f": 0.9, "b0": -0.09, "c0": -0.6,
+    "Sigm1_TVEIT": 400.0, "Taum1_TVEIT": 250.0,
+    "npts_TVEIT": 1001.0, "min_blocks_TVEIT": 8.0, "max_blocks_TVEIT": 10000.0,
+    "tol_alpha_TVEIT": 1e-6, "tol_damage_TVEIT": 1e-5,
 }  # fmt: skip
 
 

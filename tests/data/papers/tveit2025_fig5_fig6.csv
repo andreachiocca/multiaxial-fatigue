@@ -1,0 +1,9 @@
+# Tveit, Ottosen, Erduran & Reyes (2025) Mech. Mater. 209:105452, doi:10.1016/j.mechmat.2025.105452.
+# Model S-N curves, fully reversed: Fig. 5 (inoculated cast iron, PDF p.6) and Fig. 6 (NiCrMo steel, PDF p.7),
+# panel b bending (S = sigma_xx,a) and panel d torsion (S = sigma_xy,a); S in MPa, N in cycles.
+# The figures are vector graphics: each point is a vertex of the plotted model curve read from the PDF
+# drawing operators (PyMuPDF), not a printed number.
+material,panel,loading,N,S
+Inoculated cast iron,5d,torsion,217955.630588009,192.123443959752
+NiCrMo steel,6b,bending,377966.987087383,723.447776818501
+NiCrMo steel,6d,torsion,226478.136212454,395.897648086307

@@ -26,3 +26,27 @@ own results go to `<MATERIAL>_calibration.json` in the results folder, which `--
 accepts. The four records belong to the previous collection (material IDs `42CrMo4_QT`,
 `AISI316L`, `Al7075_T6`, `Ti6Al4V_andrea_(AXIAL)`); the revised workbooks change the material
 inputs, so a record reproduces former constants, not a calibration of the new data.
+
+## Hand-entered TVEIT2025 constants
+
+`<material>/TVEIT2025_stage1.json` holds the constants of the Tveit et al. (2025) model, entered by
+hand (stage 1: the model runs with supplied constants; their calibration is not implemented yet).
+These files use the sidecar layout (`params` and `provenance.workbook`), not the record schema.
+`provenance` states how the constants were obtained. Each file sets:
+
+- `A_TVEIT`, `C_TVEIT`, `K_TVEIT` and `L_TVEIT`;
+- `Sigm1_TVEIT` and `Taum1_TVEIT`, the fatigue limits these constants were calibrated with. They
+  replace the workbook Sigm1 and Taum1 for TVEIT2025 only, because the constants hold only
+  together with them;
+- the numerical settings of the time integration (`npts_TVEIT`, `min_blocks_TVEIT`,
+  `max_blocks_TVEIT`, `tol_alpha_TVEIT`, `tol_damage_TVEIT`), at their default values.
+
+`notes` explains each entry. Edit a copy to change a run:
+
+    multifat-pipeline Experimental_Data/6_42CrMo4_QT.xlsx --models TVEIT2025 --no-calibrate --constants Calibrations/42CrMo4_QT/TVEIT2025_stage1.json
+
+## Provisional TVEIT2025 records
+
+The stage-1 TVEIT2025 constants are source-specific, manually supplied coefficients; they are neither independently validated nor transferable between experimental campaigns. The AISI316L record proposed in the contributor branch is deliberately withheld from this integration: its PSI load-cell-corrected axial stress scale (x1.1558) and reference fatigue limit (271.6 MPa) do not match the current Janssens workbook/reference (278.5 MPa). A source-compatible workbook and reviewed calibration are needed before enabling this record. Do not change the reference limit without re-estimating A, C, K, L.
+
+For TVEIT2025, `Nf_native` is the model's direct prediction. The generic damage-index-based `Nf_expected` from a fitted Basquin curve is not a Tveit prediction and must not be used for ranking or validating this model. A native-life comparison is a separate follow-up.

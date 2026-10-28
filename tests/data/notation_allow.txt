@@ -28,6 +28,13 @@ gamma_a h h_c h_m history k_a k_phi lambda1 lambda3 n_prime nu_bar p phase_shift
 psi q r r_m rho shear_stress sigma sigma_0 sigma_A sigma_T sigma_eq sigma_eq_max sigma_f
 sigma_inf sigma_op sigma_star tau_A tau_f tau_r volume volume_ratio v0_su_m xi
 
+# Tveit et al. (2025) Eqs. (6)-(7): back-stress modulus C and damage constants K and L.
+C K L
+
+# Numerical settings of the Tveit et al. (2025) time integration: points per cycle, the minimum and
+# maximum number of repeated cycles, and the stationarity tolerances of back-stress and damage.
+n_points min_blocks max_blocks tol_alpha tol_damage
+
 # Shear-amplitude algorithm choice, the harmonic arrays of a plane history, and the scalar
 # argument of the exact-power helper.
 algorithm cosine sine shear_amplitude_algorithm cos sin x
