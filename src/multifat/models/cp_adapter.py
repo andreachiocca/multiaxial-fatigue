@@ -18,8 +18,10 @@ class CPModelAdapter:
         self._m = method
         self.name = method.name
         self.optional_params = getattr(method, "optional_params", {})
+        if hasattr(method, "comparison_capabilities"):
+            self.comparison_capabilities = method.comparison_capabilities
         # Native life law of the plane method, if any (see multifat.cli.run.write_variant).
-        for attr in ("native_life", "life_fit"):
+        for attr in ("native_life", "life_fit", "expected_dp_at_life"):
             if hasattr(method, attr):
                 setattr(self, attr, getattr(method, attr))
 

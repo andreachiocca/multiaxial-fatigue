@@ -52,6 +52,17 @@ class Outcome:
 # Fitted Basquin/strain-life constants are never handed to models that read them only
 # optionally (GSA and LIU2021 would silently abandon their documented fallbacks).
 CALIBRATED_OPTIONAL = {"L_LI", "k_MGSE", "a_MSWT"}
+# Optional constants and numerical settings that a constants file may set: the TVEIT2025 fatigue
+# limits its A, C, K and L were calibrated with, and its time-integration settings.
+SUPPLIED_OPTIONAL = {
+    "Sigm1_TVEIT",
+    "Taum1_TVEIT",
+    "npts_TVEIT",
+    "min_blocks_TVEIT",
+    "max_blocks_TVEIT",
+    "tol_alpha_TVEIT",
+    "tol_damage_TVEIT",
+}
 
 
 def _every_model() -> list[str]:
@@ -182,7 +193,10 @@ def _evaluate_base_core(job: tuple) -> list[Outcome]:
             results.append(Outcome(label, "skipped", "model has no _ext variant"))
             continue
         try:
-            runmod.check_fit(base_name, suffix, evaluation.cal)
+            from multifat.models.comparison import capabilities_for_model
+
+            if capabilities_for_model(model).life_prediction != "native":
+                runmod.check_fit(base_name, suffix, evaluation.cal)
         except ValueError as exc:
             results.append(
                 Outcome(
@@ -219,7 +233,7 @@ def _evaluate_base_core(job: tuple) -> list[Outcome]:
 
 def _constants_calibration_can_supply(model) -> set[str]:
     return set(model.required_params()) | (
-        set(getattr(model, "optional_params", {})) & CALIBRATED_OPTIONAL
+        set(getattr(model, "optional_params", {})) & (CALIBRATED_OPTIONAL | SUPPLIED_OPTIONAL)
     )
 
 

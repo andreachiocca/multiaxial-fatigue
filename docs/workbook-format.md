@@ -136,6 +136,7 @@ constants are missing is skipped and reported; the other models still run.
 | CAIM | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Tau0`: Boehme et al. 2026 Eq. (2); `Su`: only to estimate Sig0 |
 | SWTD | - | - |
 | OTT | `Sigm1`, `Taum1` | `m_OTT`: m(kappa = Taum1/Sigm1), not allowed to exceed 2.767; `A_OTT`: 2 Sigm1/Sig0 - 1; `Sig0`: Boehme et al. 2026 Eq. (1), obtained from Su and Sigm1; `Su`: used only for estimating Sig0 |
+| TVEIT2025 | `A_TVEIT`, `C_TVEIT`, `K_TVEIT`, `L_TVEIT` | `Sigm1_TVEIT`: Sigm1 of the workbook; `Taum1_TVEIT`: Taum1 of the workbook; `npts_TVEIT`: 1001; `min_blocks_TVEIT`: 8; `max_blocks_TVEIT`: 10000; `tol_alpha_TVEIT`: 1e-06; `tol_damage_TVEIT`: 1e-05 |
 | DANGVAN | `Sigm1`, `Taum1` | - |
 | CROSSLAND | `Sigm1`, `Taum1` | - |
 | SINES | `Sigm1`, `Su`, `Taum1` | - |

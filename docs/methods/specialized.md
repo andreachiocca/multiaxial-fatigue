@@ -50,7 +50,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [N44](../../METHODS.md#n44) | Effective Equivalent Stress Hypothesis (EESH) | Not implemented | not_tested | Low | Yes |
 | [N45](../../METHODS.md#n45) | Linear normal/shear critical-plane equivalent-stress variants | Not implemented | not_tested | Low | bundle |
 | [C01](../../METHODS.md#c01) | Tveit–Reyes–Erduran full continuum endurance/damage model | Not implemented | not_tested | Low | workstream |
-| [C02](../../METHODS.md#c02) | Tveit et al. 2025 continuum follow-up | Not implemented | not_tested | Low | workstream |
+| [C02](../../METHODS.md#c02) | Tveit et al. (2025) continuum endurance/damage model (TVEIT2025) | Partially implemented | reference_examples_reproduced | High | implementation |
 | [C08](../../METHODS.md#c08) | Tao modified Wang–Brown variable-amplitude workflow | Not implemented | not_tested | Low | workstream |
 | [C11](../../METHODS.md#c11) | Zhang SFRP multiscale interface workstream | Not implemented | not_tested | Low | workstream |
 | [C12](../../METHODS.md#c12) | Sheen non-proportional crack path/growth | Not implemented | not_tested | Low | workstream |
@@ -230,36 +230,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### C02
 
-**Tveit et al. 2025 continuum follow-up** — See supplied review
+**Tveit et al. (2025) continuum endurance/damage model (TVEIT2025)** — Sigbjørn Tveit, Niels Saabye Ottosen, Emrah Erduran, Aase Reyes (2025)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Specialized; Major-extension / reviewed workstream |
-| Record / counting | workstream; Workflow, wider model or publication package; not a separately reconciled local method. Consult original and coverage register. |
-| Reference | Review-FABER-WG43.md #4; primary reference requires verification |
-| DOI | No verified original DOI available |
-| Reference evidence | Original DOI not verified; no identifier assigned |
-| Formulation evidence | Preliminary workstream classification only |
-| Principle | Recover original article; cycle integration |
-| Loading scope | CA component or applicability requires source-level check |
-| Inputs / material parameters | See original workstream |
-| Output | Workstream-dependent |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; Original full-text and case data required |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Major extension or application, not automatically an independent method Historical workstream reference numbering is inconsistent in places; use coverage register and original review, not this number alone. |
+| Record / counting | implementation; Stage 1 of the two-stage contribution agreed at the WG4.3 meeting of 16 October 2026 (model and native life with user-supplied C, K, L); whether it enters the progress totals is left to the maintainers. |
+| Reference | Continuum mechanics fatigue model for arbitrary ratios of shear and normal stress fatigue strengths, Mechanics of Materials 209 (2025) 105452 |
+| DOI | https://doi.org/10.1016/j.mechmat.2025.105452 |
+| Reference evidence | Title, journal, volume and DOI read from the publisher PDF (Elsevier metadata); no Crossref record stored yet |
+| Formulation evidence | Checked against the publisher PDF, Eqs. (1)-(12), pp. 2-4, and Eq. (24), p. 5 (2026-10-26) |
+| Principle | Endurance function beta = (sigma_e + A I1 - s_-1)/s_-1 with the Lode-dependent effective stress sigma_e = sqrt(3 J2) - lambda (1 - 27/4 J3^2/J2^3) of s - alpha (Eqs. 1-5, lambda = sqrt(3) t_-1 - s_-1, Eq. 24); back-stress d alpha = C (s - alpha) d beta and damage dD = K exp(L beta) d beta while beta > 0 and d beta > 0 (Eqs. 6-12); failure at D = 1. |
+| Loading scope | Single-frequency harmonic CA, proportional and phase-shifted NP, mean stresses; the cycle is integrated in time (1001 points per cycle, repeated blocks with stabilised extrapolation). |
+| Inputs / material parameters | A_TVEIT, C_TVEIT, K_TVEIT, L_TVEIT from a constants file (--constants; Calibrations/<material>/TVEIT2025_stage1.json). Optional in the same file: Sigm1_TVEIT, Taum1_TVEIT, the fatigue limits the constants were calibrated with (default: workbook Sigm1, Taum1), and the numerical settings npts_TVEIT, min_blocks_TVEIT, max_blocks_TVEIT, tol_alpha_TVEIT, tol_damage_TVEIT (defaults 1001, 8, 10000, 1e-6, 1e-5). |
+| Output | Fatigue index max (sigma_e + A I1)/s_-1 at alpha = 0 with the universal fit; native life by integration of the damage evolution in Nf_native, infinite when the path shakes down inside the moving endurance surface |
+| Implementation / evidence | Partially implemented; known_essential_gaps |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_tveit2025.py: with the Table 1 parameters the published S-N model curves (Fig. 5 inoculated cast iron torsion; Fig. 6 NiCrMo steel bending and torsion) are reproduced within 1 % in stress; Eq. (24) torsional limit; infinite life inside the endurance surface and after shakedown under mean shear stress. |
+| Python implementation | [src/multifat/models/invariant_methods/tveit2025.py](../../src/multifat/models/invariant_methods/tveit2025.py); Tveit2025 |
+| Automated tests | [tests/methods/test_tveit2025.py](../../tests/methods/test_tveit2025.py) |
+| Limitations | C, K and L are supplied by the user (calibration record); the Eq. (25) calibration of Ottosen et al. (2008) is not implemented yet. C is not identifiable from uniaxial constant-amplitude data alone. One case takes up to about 30 s near the endurance surface (pure-Python time integration). |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | not_individually_searched; not integrated or independently validated |
-| Missing tasks | Recover original article; cycle integration |
-| Reference retrieval action | Original publication/variant identity remains unresolved; current comparator/review citation is a lead. Resolve it before numerical implementation; do not guess a DOI. |
-| Development disposition | broader_workstream; Retained wider formulation/application package; its independent-method boundary and scope are not reconciled, so excluded from the method progress denominator rather than rejected for difficulty. Recover original article; cycle integration |
+| Missing tasks | Implement the C, K, L calibration (Eq. 25, closed-form uniaxial life of Ottosen et al. 2008) in the calibration module. |
+| Reference retrieval action | DOI and publication identity read from the publisher PDF; store the Crossref record in docs/research/doi-records.json. |
+| Development disposition | repair; Model and native life implemented with user-supplied C, K, L (stage 1); the calibration procedure follows in stage 2. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
-| Feasibility / effort / priority | C / High (new data/model infrastructure) / Low |
-| Provenance / prior status | C02; Already reviewed #4; not an independently counted local criterion |
+| Feasibility / effort / priority | B / High (new data/model infrastructure) / High |
+| Provenance / prior status | C02; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=C02+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BC02%5D+Tveit+et+al.+2025+continuum+follow-up) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=C02+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BC02%5D+Tveit+et+al.+%282025%29+continuum+endurance%2Fdamage+model+%28TVEIT2025%29) (no live Issue linked) |
 
 ### C08
 

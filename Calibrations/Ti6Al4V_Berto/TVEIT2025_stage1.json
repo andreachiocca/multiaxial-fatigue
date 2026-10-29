@@ -1,0 +1,32 @@
+{
+    "params": {
+        "Sigm1_TVEIT": 500.0,
+        "Taum1_TVEIT": 422.0,
+        "A_TVEIT": 0.510725229826353,
+        "C_TVEIT": 0.0024530336099279,
+        "K_TVEIT": 2.09182156413546e-05,
+        "L_TVEIT": 2.39874133089254,
+        "npts_TVEIT": 1001,
+        "min_blocks_TVEIT": 8,
+        "max_blocks_TVEIT": 10000,
+        "tol_alpha_TVEIT": 1e-06,
+        "tol_damage_TVEIT": 1e-05
+    },
+    "provenance": {
+        "workbook": "Experimental_Data/15_Ti6Al4V_Berto.xlsx",
+        "model": "TVEIT2025",
+        "entered_by": "A. A. Akay, manual entry (stage 1)",
+        "calibration": "Article-style three-point calibration: C, K and L fitted with Eq. (25) to three axial R = -1 failures of one source (Berto et al., 510.8 / 613.5 / 822.5 MPa: the lowest, middle and highest stress level above Sigm1_TVEIT, the median replicate at each). Many (C, K, L) sets fit almost equally well (C is not identified by uniaxial data); this is the admissible set of lowest objective.",
+        "Sigm1_TVEIT, Taum1_TVEIT": "500 and 422 MPa, the Ti6Al4V values of the earlier workbook collection (Berto and Meneghetti data in one workbook); the revised workbooks give 475.74 / 388.25 (Berto) and 576 / 416.75 (Meneghetti/Delahay)",
+        "A": "Goodman ratio Sigm1/Su = 500/979.",
+        "scope": "one set for both Ti6Al4V workbooks, as calibrated on the combined collection"
+    },
+    "notes": {
+        "Sigm1_TVEIT, Taum1_TVEIT": "fatigue limits [MPa] the constants were calibrated with; they replace the workbook Sigm1 and Taum1 for TVEIT2025 only",
+        "npts_TVEIT": "points per load cycle; 1001 gives lives about 0.02 decade shorter than converged",
+        "min_blocks_TVEIT": "cycles integrated before the stationarity test is applied",
+        "max_blocks_TVEIT": "cycles integrated at most; the life is then extrapolated from the damage of the last cycle (warning in the run notes)",
+        "tol_alpha_TVEIT": "relative change of the back-stress per cycle below which the cycle is stationary",
+        "tol_damage_TVEIT": "relative change of the damage per cycle below which the cycle is stationary"
+    }
+}

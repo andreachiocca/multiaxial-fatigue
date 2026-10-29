@@ -1,0 +1,7 @@
+# Tveit, Ottosen, Erduran & Reyes (2025) Mech. Mater. 209:105452, doi:10.1016/j.mechmat.2025.105452.
+# Table 1, PDF p.5: calibrated parameters of the proposed model for the finite-life validation, MPa where
+# dimensional. lambda is printed; Eq. (24) gives t_m1 = (lambda + f_m1)/sqrt(3). Rows not transcribed:
+# 7:3 brass and the two LPBF 316L conditions.
+material,f_m1,A,lambda,C,K,L
+Inoculated cast iron,199,0.206,105.8,0.9857,2.437e-5,4.287
+NiCrMo steel,661,0.335,-67.08,0.1313,1.003e-5,7.383

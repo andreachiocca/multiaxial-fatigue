@@ -1501,7 +1501,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [N44](#n44) | Effective Equivalent Stress Hypothesis (EESH) | Not implemented | not_tested | Low | Yes |
 | [N45](#n45) | Linear normal/shear critical-plane equivalent-stress variants | Not implemented | not_tested | Low | bundle |
 | [C01](#c01) | Tveit–Reyes–Erduran full continuum endurance/damage model | Not implemented | not_tested | Low | workstream |
-| [C02](#c02) | Tveit et al. 2025 continuum follow-up | Not implemented | not_tested | Low | workstream |
+| [C02](#c02) | Tveit et al. (2025) continuum endurance/damage model (TVEIT2025) | Partially implemented | reference_examples_reproduced | High | implementation |
 | [C08](#c08) | Tao modified Wang–Brown variable-amplitude workflow | Not implemented | not_tested | Low | workstream |
 | [C11](#c11) | Zhang SFRP multiscale interface workstream | Not implemented | not_tested | Low | workstream |
 | [C12](#c12) | Sheen non-proportional crack path/growth | Not implemented | not_tested | Low | workstream |
@@ -1576,12 +1576,12 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### C02
 
-**Tveit et al. 2025 continuum follow-up** — See supplied review
+**Tveit et al. (2025) continuum endurance/damage model (TVEIT2025)** — Sigbjørn Tveit, Niels Saabye Ottosen, Emrah Erduran, Aase Reyes (2025)
 
 | Field | Evidence / task |
 | --- | --- |
-| Reference / DOI | Review-FABER-WG43.md #4; primary reference requires verification; Original DOI unverified |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| Reference / DOI | Continuum mechanics fatigue model for arbitrary ratios of shear and normal stress fatigue strengths, Mechanics of Materials 209 (2025) 105452; https://doi.org/10.1016/j.mechmat.2025.105452 |
+| WG4.3 completeness / validation | Partially implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | not_individually_searched; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/specialized.md#c02) |

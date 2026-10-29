@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 from multifat.eval.metrics import log10_dp_ratio
 from multifat.models.references import DISABLED_METHODS, IMPLEMENTATION_REVISION
+from multifat.models.comparison import DEFAULT_CAPABILITIES, capabilities_for_name
 import numpy as np
 import pandas as pd
 
@@ -577,6 +578,78 @@ def collect_all_results(results_dir: Path) -> pd.DataFrame:
     if not frames:
         raise RuntimeError(f"CSV files exist under {results_dir}, but none held readable data.")
     return pd.concat(frames, ignore_index=True)
+
+
+def annotate_comparison_capabilities(frame: pd.DataFrame) -> pd.DataFrame:
+    """Identify valid comparison quantities without fitting auxiliary native indices."""
+    frame = frame.copy()
+    caps_by_name = {}
+    for name in frame["Method"].dropna().unique():
+        try:
+            caps_by_name[name] = capabilities_for_name(name)
+        except KeyError:
+            caps_by_name[name] = DEFAULT_CAPABILITIES
+
+    prediction = frame["Method"].map(
+        lambda name: caps_by_name.get(name, DEFAULT_CAPABILITIES).life_prediction
+    )
+    dp = frame["Method"].map(
+        lambda name: caps_by_name.get(name, DEFAULT_CAPABILITIES).dp_comparison
+    )
+    mode = frame["Metric_mode"].astype(str).str.strip().str.upper()
+    native = prediction == "native"
+    frame["Life_prediction_source"] = prediction
+    frame["Life_comparison_supported"] = (native & (mode == "NF_DIRECT")) | (
+        ~native & (mode != "DP_DIFF") & (mode != "NF_DIRECT")
+    )
+    dp_fit = pd.to_numeric(
+        frame.get("DP_fit", pd.Series(np.nan, index=frame.index)), errors="coerce"
+    )
+    native_dp_usable = np.isfinite(dp_fit) & (dp_fit > 0)
+    frame["DP_comparison_supported"] = dp & ((mode != "NF_DIRECT") | native_dp_usable)
+    frame["DP_reference_source"] = frame["Method"].map(
+        lambda name: caps_by_name.get(name, DEFAULT_CAPABILITIES).dp_reference
+    )
+    return frame
+
+
+def write_native_life_summary(frame: pd.DataFrame, output_root: Path) -> None:
+    """Count native infinite-life predictions for failed and censored observations."""
+    selected = frame[frame["Life_prediction_source"] == "native"]
+    dest = output_root / "native_life_prediction_summary.csv"
+    if selected.empty:
+        dest.unlink(missing_ok=True)
+        return
+    rows = []
+    for (material, method), group in selected.groupby(["Material", "Method"]):
+        native = pd.to_numeric(
+            group.get("Nf_native", pd.Series(np.nan, index=group.index)),
+            errors="coerce",
+        )
+        flag = pd.to_numeric(group["Flag"], errors="coerce")
+        design = flag == 0
+        failures = flag == 1
+        runouts = flag == RUNOUT_FLAG
+        design_inf = int((design & np.isposinf(native)).sum())
+        failed_inf = int((failures & np.isposinf(native)).sum())
+        runout_inf = int((runouts & np.isposinf(native)).sum())
+        rows.append(
+            {
+                "Material": material,
+                "Method": method,
+                "Design_observations": int(design.sum()),
+                "Design_points_predicted_infinite_life": design_inf,
+                "Failure_observations": int(failures.sum()),
+                "Failed_specimens_predicted_infinite_life": failed_inf,
+                "Runout_observations": int(runouts.sum()),
+                "Runouts_predicted_infinite_life": runout_inf,
+                "Undefined_native_life": int(native.isna().sum()),
+                "Life_source": "Nf_native",
+                "Life_comparison_supported": bool(group["Life_comparison_supported"].all()),
+                "DP_comparison_supported": False,
+            }
+        )
+    pd.DataFrame(rows).to_csv(dest, index=False)
 
 
 # =========================
@@ -1681,7 +1754,7 @@ def plot_dp_point_vs_fit(
     out_tex.write_text(body.strip(), encoding="utf-8")
 
 
-def compute_stats_table(df: pd.DataFrame) -> pd.DataFrame:
+def compute_stats_table(df: pd.DataFrame, plot_kind: str = "both") -> pd.DataFrame:
     """DP log10 statistics for every slope, plus life errors where they make sense."""
     df = df.copy()
     if "Metric_mode" not in df:
@@ -1692,8 +1765,20 @@ def compute_stats_table(df: pd.DataFrame) -> pd.DataFrame:
     for (material, method_name, mode_name), group in df.groupby(
         ["Material", "Method", "Metric_mode"], dropna=False
     ):
-        metric_names = ["Error_log10_dp"]
-        if str(mode_name).strip().upper() != "DP_DIFF":
+        dp_ok = (
+            bool(group["DP_comparison_supported"].any())
+            if "DP_comparison_supported" in group
+            else True
+        )
+        life_ok = (
+            bool(group["Life_comparison_supported"].any())
+            if "Life_comparison_supported" in group
+            else str(mode_name).strip().upper() != "DP_DIFF"
+        )
+        metric_names = []
+        if dp_ok and plot_kind in ("both", "damage"):
+            metric_names.append("Error_log10_dp")
+        if life_ok and plot_kind in ("both", "life"):
             metric_names.append("Error_ln")
         for metric_name in metric_names:
             errors = pd.to_numeric(
@@ -1861,6 +1946,12 @@ def main(argv=None) -> None:
         "(upstream 904c619); writes selected_common_observations.csv and the subset reports.",
     )
     parser.add_argument("--comparison-metric", choices=["life", "damage"], default="life")
+    parser.add_argument(
+        "--plot-kind",
+        choices=["life", "damage", "both"],
+        default="both",
+        help="Generate life-based plots, DP-based plots, or both (default).",
+    )
 
     # opacity of the scatter markers (helps seeing clusters)
     parser.add_argument("--scatter_alpha", type=float, default=0.18)
@@ -1909,6 +2000,50 @@ def main(argv=None) -> None:
         raise RuntimeError(
             "No current results available. Run multifat-run (or scripts/1_run_material.py), or pass --include-legacy to also use historical outputs."
         )
+
+    frame = annotate_comparison_capabilities(frame)
+    write_native_life_summary(frame, output_root)
+    capability_report = frame[
+        [
+            "Material",
+            "Method",
+            "Metric_mode",
+            "Life_prediction_source",
+            "DP_reference_source",
+            "Life_comparison_supported",
+            "DP_comparison_supported",
+        ]
+    ].drop_duplicates()
+    capability_report.to_csv(output_root / "comparison_capabilities.csv", index=False)
+    if cli_args.common_methods:
+        supported = (
+            "Life_comparison_supported"
+            if cli_args.comparison_metric == "life"
+            else "DP_comparison_supported"
+        )
+        unavailable = [
+            name
+            for name in cli_args.common_methods
+            if not frame.loc[frame["Method"] == name, supported].any()
+        ]
+        if unavailable:
+            raise ValueError(
+                f"Methods without a valid {cli_args.comparison_metric} comparison: "
+                f"{', '.join(unavailable)}"
+            )
+    if cli_args.plot_kind == "life":
+        supported = frame["Life_comparison_supported"]
+    elif cli_args.plot_kind == "damage":
+        supported = frame["DP_comparison_supported"]
+    else:
+        supported = frame["Life_comparison_supported"] | frame["DP_comparison_supported"]
+    excluded = int((~supported).sum())
+    if excluded:
+        print(f"[INFO] Excluded {excluded} rows without a valid {cli_args.plot_kind} comparison")
+    frame = frame.loc[supported].copy()
+    if frame.empty:
+        print("[INFO] No compatible methods for the selected plot kind.")
+        return
 
     # Minimal set of required columns (works for both the Nf-based and DP-based modes)
     for needed in ["Material", "Method", "Nf_exp"]:
@@ -2002,7 +2137,7 @@ def main(argv=None) -> None:
     write_faber_style_file(method_styles, family_styles, output_root / "faber_plot_styles.tex")
 
     # Global statistics (feeding the single "legend table")
-    stats = compute_stats_table(frame)
+    stats = compute_stats_table(frame, cli_args.plot_kind)
     stats.to_csv(output_root / "summary_error_stats.csv", index=False)
     write_stats_table_with_styles(
         stats=stats,
@@ -2020,15 +2155,16 @@ def main(argv=None) -> None:
         if material_frame.empty:
             continue
         material_runouts = runouts_frame[runouts_frame["Material"] == material]
-        runouts_nf = material_runouts[
-            material_runouts["Metric_mode"].astype(str).str.strip().str.upper() != "DP_DIFF"
-        ]
 
-        # Separate the life-based rows from the damage-based ones
-        mode_upper = material_frame["Metric_mode"].astype(str).str.strip().str.upper()
-        life_frame = material_frame[mode_upper != "DP_DIFF"].copy()
-        # Damage-space comparisons use every slope.
-        damage_frame = material_frame.copy()
+        # Filter each output by the declared method capabilities.
+        life_frame = material_frame[material_frame["Life_comparison_supported"]].copy()
+        damage_frame = material_frame[material_frame["DP_comparison_supported"]].copy()
+        runouts_nf = material_runouts[material_runouts["Life_comparison_supported"]].copy()
+        runouts_dp = material_runouts[material_runouts["DP_comparison_supported"]].copy()
+        if cli_args.plot_kind == "life":
+            damage_frame = damage_frame.iloc[0:0]
+        elif cli_args.plot_kind == "damage":
+            life_frame = life_frame.iloc[0:0]
 
         stem = _fs_safe_stem(material)
         material_dir = output_root / stem
@@ -2122,7 +2258,7 @@ def main(argv=None) -> None:
                 scatter_alpha=scatter_alpha,
                 factors=factors,
                 show_method_legends=cli_args.show_method_legends,
-                df_run=material_runouts,
+                df_run=runouts_dp,
             )
 
     print(f"Done. Outputs written to: {output_root.resolve()}")

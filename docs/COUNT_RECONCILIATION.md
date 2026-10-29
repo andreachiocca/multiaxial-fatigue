@@ -31,11 +31,12 @@ A publication can introduce several laws (G01/PCR and G02/PI share one 2008 arti
 | Outside progress denominator | Records |
 | --- | --- |
 | bundle | 4 |
+| implementation | 1 |
 | overlap_review | 4 |
 | related_publication | 10 |
 | related_scope | 2 |
 | unresolved_lead | 10 |
-| workstream | 14 |
+| workstream | 13 |
 
 Broader workstreams are excluded from the narrow method-progress denominator because their boundaries are not reconciled, not because major extensions are unwanted. Twelve **counted** missing candidates already have C feasibility, and three are on the initial roadmap. Full VA/random workflows are outside the CA priority scope. Nguyen’s manufacturing comparison does not establish an independent law. The per-record reasons below preserve these distinctions.
 
@@ -46,11 +47,11 @@ Broader workstreams are excluded from the narrow method-progress denominator bec
 | application_comparison | 1 |
 | available_not_scheduled | 66 |
 | available_validate | 29 |
-| broader_workstream | 11 |
+| broader_workstream | 10 |
 | deferred_major_extension | 9 |
 | identity_or_relationship_review | 30 |
 | prioritized_addition | 6 |
-| repair | 2 |
+| repair | 3 |
 | scope_deferred | 2 |
 | source_review | 5 |
 
@@ -142,7 +143,7 @@ Use the catalogue link for full references, loading/data scope and scientific li
 | [R03](../METHODS.md#r03) — Deviatoric SWT | related_publication | No | Not implemented | identity_or_relationship_review | Additional source/scope for I_SWTD; no additional method count. Archived stress/strain eigen-directions were not physically paired |
 | [R04](../METHODS.md#r04) — Modified Carpinteri–Spagnoli (reviewed comparison) | related_scope | No | Not implemented | identity_or_relationship_review | Restoration/variant note, not a separate confirmed implementation. Comparator describes a variant; exact variant origin requires original verification |
 | [C01](../METHODS.md#c01) — Tveit–Reyes–Erduran full continuum endurance/damage model | workstream | No | Not implemented | broader_workstream | Retained wider formulation/application package; its independent-method boundary and scope are not reconciled, so excluded from the method progress denominator rather than rejected for difficulty. Internal-variable cycle integration and parameter identification |
-| [C02](../METHODS.md#c02) — Tveit et al. 2025 continuum follow-up | workstream | No | Not implemented | broader_workstream | Retained wider formulation/application package; its independent-method boundary and scope are not reconciled, so excluded from the method progress denominator rather than rejected for difficulty. Recover original article; cycle integration |
+| [C02](../METHODS.md#c02) — Tveit et al. (2025) continuum endurance/damage model (TVEIT2025) | implementation | No | Partially implemented | repair | Model and native life implemented with user-supplied C, K, L (stage 1); the calibration procedure follows in stage 2. |
 | [C03](../METHODS.md#c03) — Saintier nonlocal energy workstream | workstream | No | Not implemented | broader_workstream | Retained wider formulation/application package; its independent-method boundary and scope are not reconciled, so excluded from the method progress denominator rather than rejected for difficulty. Spatial integration and volume calibration |
 | [C04](../METHODS.md#c04) — Chiocca–Frendo ECP workstream | workstream | No | Not implemented | broader_workstream | Retained wider formulation/application package; its independent-method boundary and scope are not reconciled, so excluded from the method progress denominator rather than rejected for difficulty. Spatial field and local plasticity |
 | [C05](../METHODS.md#c05) — Benedetti critical-distance / defect workstream | workstream | No | Not implemented | broader_workstream | Retained wider formulation/application package; its independent-method boundary and scope are not reconciled, so excluded from the method progress denominator rather than rejected for difficulty. Spatial stress paths and defect data |

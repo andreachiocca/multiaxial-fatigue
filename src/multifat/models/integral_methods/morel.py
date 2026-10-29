@@ -28,6 +28,7 @@ import numpy as np
 
 from .bohme_papuga import _plane_amplitudes, _sphere_grid
 from ..base import CaseResult
+from ..comparison import ComparisonCapabilities
 from ..errors import NativeLifeError
 from ..invariant_methods.stress_invariants import harmonic_parts
 from .papadopoulos import generalised_shear_amplitude
@@ -125,6 +126,7 @@ class Morel:
     """Morel (1998) case model: damage T_S / T_Slim (Eqs. 9-11 and 33), native life from Eq. (38)."""
 
     name = "MOREL"
+    comparison_capabilities = ComparisonCapabilities(life_prediction="native")
 
     def required_params(self) -> set[str]:
         return {"Sigm1", "Taum1"}

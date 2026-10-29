@@ -74,6 +74,10 @@ REFERENCES = {
         "Tveit et al. (2024), A continuum approach to multiaxial high-cycle fatigue modeling for ductile metallic materials",
         "10.1016/j.rineng.2024.102171",
     ),
+    "TVEIT2025": (
+        "Tveit, Ottosen, Erduran & Reyes (2025), Continuum mechanics fatigue model for arbitrary ratios of shear and normal stress fatigue strengths, Eqs. (1)-(12), (24)",
+        "10.1016/j.mechmat.2025.105452",
+    ),
     "SWTD": (
         "Kujawski (2014), A deviatoric version of the SWT parameter",
         "10.1016/j.ijfatigue.2013.12.002",
