@@ -17,6 +17,17 @@ results and requires Scientific Reviewer or numerical-owner approval and
 updated reference checks. PR #27 and the overlapping original PR #21 must not
 both be merged.
 
+## Issue #17 comparison-error reporting (29 October 2026)
+
+The focused follow-up starts from merged `main` at `3555826`. It adds
+`summary_error_stats_by_role.csv` to distinguish design residuals from other
+assessed failures while leaving the existing aggregate statistics and CSV
+fields unchanged. Analytical tests cover the DP error's base and sign,
+nonpositive/nonfinite masking, role means and counts, and run-out exclusion.
+`Flag=1` is an assessment row, not proof of source- or batch-independent
+validation. Issue #14 retains the held-out validation protocol. No fatigue
+equation, calibration record, experimental data or numerical benchmark changes.
+
 ## Janssens final workbook (28 October 2026)
 
 The final author-supplied AISI316L workbook replaces the previous file. The R = -1 tensile fatigue limit is 278.5 MPa, the first uniaxial run-out is 17,225,000 cycles, and the non-proportional torsional phases are 90 degrees. The overlay has been reduced to 15 independent operations. The updated dataset fingerprint is `a63f9325d41155bb7611b2c6272e0bbee9a46e33fefe4bc33faa47f8470f4750`. Older checkpoint notes describe superseded source revisions.
