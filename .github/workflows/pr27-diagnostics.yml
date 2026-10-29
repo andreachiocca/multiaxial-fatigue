@@ -1,0 +1,42 @@
+name: PR27 temporary test and formatting diagnostics
+
+on:
+  push:
+    branches:
+      - fix/tveit2025-stage1-pr21-integration
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Format revised Python files
+        run: |
+          uv run black src/multifat/models/comparison.py src/multifat/models/cp_adapter.py src/multifat/models/invariant_methods/tveit2025.py src/multifat/cli/run.py src/multifat/cli/pipeline.py src/multifat/cli/compare.py src/multifat/eval/calibration.py tests/test_tveit_reporting.py
+      - name: Capture focused test failures
+        shell: bash
+        run: |
+          set +e
+          uv run pytest -q tests/test_tveit_reporting.py > /tmp/pr27-test-output.txt 2>&1
+          test_status=$?
+          {
+            echo "Temporary PR27 diagnostics. Test exit status: ${test_status}"
+            echo
+            tail -n 160 /tmp/pr27-test-output.txt
+          } > pr27-diagnostics.txt
+          cat pr27-diagnostics.txt
+          exit 0
+      - name: Push formatted files and diagnostic record to integration branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/multifat/models/comparison.py src/multifat/models/cp_adapter.py src/multifat/models/invariant_methods/tveit2025.py src/multifat/cli/run.py src/multifat/cli/pipeline.py src/multifat/cli/compare.py src/multifat/eval/calibration.py tests/test_tveit_reporting.py pr27-diagnostics.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "Temporary PR27 formatting and test diagnostics"
+          git push origin HEAD:fix/tveit2025-stage1-pr21-integration
