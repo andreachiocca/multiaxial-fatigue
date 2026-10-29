@@ -17,6 +17,7 @@ from typing import Iterable
 
 from .cp_adapter import CPModelAdapter
 from .base import FatigueModel
+from .comparison import DEFAULT_CAPABILITIES
 from .references import ensure_enabled, method_reference
 
 # CP (critical-plane) plane-level methods
@@ -165,6 +166,8 @@ def get_models(names: Iterable[str]):
 
     for model in out:
         model.reference = method_reference(model.name)
+        if not hasattr(model, "comparison_capabilities"):
+            model.comparison_capabilities = DEFAULT_CAPABILITIES
     return out
 
 

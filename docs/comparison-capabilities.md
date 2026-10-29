@@ -6,6 +6,23 @@ scientific catalogue. It is the audit and user-facing counterpart of
 does not guarantee that a particular material has sufficient material properties,
 independent calibration data, or a finite prediction.
 
+## Access through the method API
+
+Every registered model returned by `get_models` exposes the capability object
+as `model.comparison_capabilities`. Methods without a native life law receive
+the conventional default explicitly on registration. A new method that
+implements `native_life` must declare its own capabilities and pass the
+method-inventory regression test.
+
+```python
+from multifat.models.registry import get_models
+
+method = get_models(["MOREL"])[0]
+print(method.comparison_capabilities.life_prediction)  # native
+print(method.comparison_capabilities.dp_comparison)    # True
+print(method.comparison_capabilities.dp_reference)     # master_curve
+```
+
 ## Output semantics
 
 - **Life, fitted master curve**: the method computes a damage parameter `DP`, a
