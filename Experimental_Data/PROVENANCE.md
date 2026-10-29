@@ -129,6 +129,32 @@ Known issues:
 
 ## AISI316L.xlsx
 
+### PSI axial amplitude correction (29 October 2026, pending confirmation)
+
+Arda Akay reported that six of the eight Janssens PSI observations added by the
+in-memory overlay still carried the uncorrected, published axial stress
+amplitudes. The overlay now applies the reported **1.1558 load-cell factor**
+to `Uniaxial_10` through `Uniaxial_14` and `Non_prop_12`. The applied
+amplitudes (MPa) are 277.4, 300.5, 335.2, 346.7, 381.4 and **269.3
+(provisional)**, respectively, replacing 240, 260, 290, 300, 330 and 233.
+The two torsional-only observations and the 135 MPa shear amplitude in
+`Non_prop_12` are unchanged. The original `8_AISI316L.xlsx` file is
+preserved; the correction is applied at import time. The overlay records
+the original values, multiplier, correspondent's clarification and the
+updated dataset fingerprint.
+
+**Open check before merging:** Arda's email of 29 October gives 269.7 MPa
+for `Non_prop_12`, whereas the stated multiplier applied to the published
+233 MPa yields 269.3014 MPa. This PR provisionally uses **269.3 MPa** after
+rounding to one decimal. Verify the original unrounded PSI stress or obtain
+Arda's confirmation before treating the non-proportional correction as final.
+The historical fingerprints and fatigue-life calibrations based on the
+uncorrected dataset must not be silently reused.
+
+This correction changes experimental stress histories for all criteria,
+not Tveit alone, and does not resolve the separate Janssens/Braun material
+and batch distinction tracked in Issue #24.
+
 **Janssens final revision, supplied 28 October 2026.** The final author workbook (`8_AISI316L(1).xlsx`, original SHA-256 `a70a09f76fb8fa22f0d6ef9843512eefd20db8fae980639067ef6d207187a35a`) replaces the previous revision. Its reported R = -1 tensile fatigue limit is 278.5 MPa (previously 241); the torsional limit remains 144 MPa. Its first uniaxial run-out is 17,225,000 cycles (previously 11,000,000), and non-proportional torsional phases in Dataset rows 18-28 are now 90 degrees. The Summary averages and derived values are also updated. All underlying ZIP members of the workbook are preserved verbatim, although the repository copy is recompressed at ZIP-container level. The repository XLSX SHA-256 is `26a97aec4603aa19df29bbd6576c3b72259cc3792eaa6e60df1d5e977f52017c`. Because the 11 phase corrections are now part of the source, the active overlay has 15 remaining operations. The new post-overlay fingerprint is `a63f9325d41155bb7611b2c6272e0bbee9a46e33fefe4bc33faa47f8470f4750` (39 failure observations and 13 run-outs). The previous overlay mapping remains in the historical overlay JSON. No other experimental workbooks are changed.
 
 

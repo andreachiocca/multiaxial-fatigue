@@ -1,0 +1,42 @@
+name: Temporary AISI316L fingerprint regeneration
+on:
+  push:
+    branches:
+      - fix/aisi316l-psi-overlay-axial-stresses
+permissions:
+  contents: write
+jobs:
+  regenerate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Derive fingerprint from actual corrected imported dataset
+        run: |
+          uv run python - <<'PY'
+          import json
+          from pathlib import Path
+          from multifat.imp.experimental_data import load_material_workbook
+          from multifat.report.subsets import dataset_fingerprint
+          path = Path("src/multifat/imp/overlay_files/8_AISI316L.overlay.json")
+          block = load_material_workbook("Experimental_Data/8_AISI316L.xlsx")["AISI316L"]
+          fingerprint = dataset_fingerprint(block)
+          overlay = json.loads(path.read_text(encoding="utf-8"))
+          old = overlay["expected_fingerprint"]
+          overlay["expected_fingerprint"] = fingerprint
+          path.write_text(json.dumps(overlay, indent=2) + "\n", encoding="utf-8")
+          print("before:", old, "after:", fingerprint)
+          assert len(block["cases"]) == 39 and len(block["runouts"]) == 13
+          PY
+      - name: Run targeted overlay tests
+        run: uv run pytest -q tests/test_dataset_overlays.py
+      - name: Commit regenerated fingerprint
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/multifat/imp/overlay_files/8_AISI316L.overlay.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Recalculate AISI316L corrected dataset fingerprint from importer"
+          git push origin HEAD:fix/aisi316l-psi-overlay-axial-stresses

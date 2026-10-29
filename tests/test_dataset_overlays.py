@@ -94,3 +94,90 @@ def test_modified_workbook_is_not_overlaid(tmp_path):
     wb.save(copy)  # same content, different bytes: no overlay is written against it
     assert overlay_path(copy) is None
     assert apply_overlay_to_workbook(wb, copy) is None
+
+# The five uniaxial and one non-proportional PSI rows were added from the
+# publication using nominal (uncorrected) stresses. The 2026-10-29 correction
+# applies only to their axial amplitudes, never to torsional amplitudes.
+@pytest.mark.parametrize(
+    ("specimen", "original", "corrected"),
+    [
+        ("Uniaxial_10", 240, 277.4),
+        ("Uniaxial_11", 260, 300.5),
+        ("Uniaxial_12", 290, 335.2),
+        ("Uniaxial_13", 300, 346.7),
+        ("Uniaxial_14", 330, 381.4),
+        ("Non_prop_12", 233, 269.3),
+    ],
+)
+def test_aisi316l_psi_axial_corrections_are_loaded(specimen, original, corrected):
+    raw = json.loads(
+        overlay_path(FOLDER / "8_AISI316L.xlsx").read_text(encoding="utf-8")
+    )
+    op = next(
+        item
+        for item in raw["operations"]
+        if item["op"] == "add_case" and item["values"]["Specimen name"] == specimen
+    )
+    metadata = op["psi_axial_stress_correction"]
+    assert metadata["uncorrected_amplitude_MPa"] == original
+    assert metadata["multiplier"] == pytest.approx(1.1558)
+    assert op["values"]["Amplitute AXIAL stress  (MPa)"] == pytest.approx(corrected)
+    assert corrected == pytest.approx(round(original * 1.1558, 1))
+
+    block = load_material_workbook(FOLDER / "8_AISI316L.xlsx")["AISI316L"]
+    cases = [
+        case for case in block["cases"].values()
+        if case["meta"]["specimen_id"] == specimen
+    ]
+    assert len(cases) == 1
+    case = cases[0]
+    assert case["harmonics"]["S_sin"][1, 1] == pytest.approx(corrected)
+    assert case["harmonics"]["S_cos"][1, 1] == pytest.approx(0.0)
+    assert case[1][1]["stress"][1, 1] == pytest.approx(corrected)
+    assert len(block["cases"]) == 39
+    assert len(block["runouts"]) == 13
+
+
+@pytest.mark.parametrize(("specimen", "shear"), [
+    ("Torsional_8", 150.0),
+    ("Torsional_9", 156.0),
+    ("Non_prop_12", 135.0),
+])
+def test_aisi316l_psi_torsional_amplitudes_are_unchanged(specimen, shear):
+    raw = json.loads(
+        overlay_path(FOLDER / "8_AISI316L.xlsx").read_text(encoding="utf-8")
+    )
+    op = next(
+        item for item in raw["operations"]
+        if item["op"] == "add_case" and item["values"]["Specimen name"] == specimen
+    )
+    assert op["values"]["Amplitute SHEAR stress  (MPa)"] == pytest.approx(shear)
+    block = load_material_workbook(FOLDER / "8_AISI316L.xlsx")["AISI316L"]
+    case = next(
+        case for case in block["cases"].values()
+        if case["meta"]["specimen_id"] == specimen
+    )
+    sin_shear = case["harmonics"]["S_sin"][0, 1]
+    cos_shear = case["harmonics"]["S_cos"][0, 1]
+    assert (sin_shear**2 + cos_shear**2) ** 0.5 == pytest.approx(shear)
+    if specimen == "Non_prop_12":
+        assert case["meta"]["phase_tor_deg"] == pytest.approx(90.0)
+
+
+def test_aisi316l_psi_correction_scope_is_six_of_eight_added_cases():
+    overlay = json.loads(
+        overlay_path(FOLDER / "8_AISI316L.xlsx").read_text(encoding="utf-8")
+    )
+    added = [op for op in overlay["operations"] if op["op"] == "add_case"]
+    corrected = [
+        op for op in added if "psi_axial_stress_correction" in op
+    ]
+    assert len(added) == 8
+    assert len(corrected) == 6
+    assert {op["values"]["Specimen name"] for op in added} - {
+        op["values"]["Specimen name"] for op in corrected
+    } == {"Torsional_8", "Torsional_9"}
+    nonprop = next(
+        op for op in corrected if op["values"]["Specimen name"] == "Non_prop_12"
+    )
+    assert "269.7" in nonprop["psi_axial_stress_correction"]["review_note"]
