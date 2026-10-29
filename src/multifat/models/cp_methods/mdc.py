@@ -86,10 +86,10 @@ class MDC:
         _, _, tau_f, b_tau = _extract_constants(params)
         return mdc_life(aux["dp"], tau_f, b_tau)
 
-    def expected_dp_at_life(self, cycles, params: Mapping[str, float]):
+    def expected_dp_at_life(self, N_exp, params: Mapping[str, float]):
         """Eq. (8) equivalent shear strength at experimental life (MPa)."""
         _, _, tau_f, b_tau = _extract_constants(params)
-        n = np.asarray(cycles, dtype=float)
+        n = np.asarray(N_exp, dtype=float)
         with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
             return np.where(n > 0, tau_f * np.power(2.0 * n, b_tau), np.nan)
 

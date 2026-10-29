@@ -139,9 +139,9 @@ class MMCCM:
             np.inf,
         )
 
-    def expected_dp_at_life(self, cycles, params: Mapping[str, float]):
+    def expected_dp_at_life(self, N_exp, params: Mapping[str, float]):
         """Definition of the MMCCM damage parameter, DP = 1/N_f."""
-        n = np.asarray(cycles, dtype=float)
+        n = np.asarray(N_exp, dtype=float)
         with np.errstate(divide="ignore", invalid="ignore"):
             return np.where(n > 0, 1.0 / n, np.nan)
 

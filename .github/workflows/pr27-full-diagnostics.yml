@@ -19,13 +19,13 @@ jobs:
       - name: Run entire pytest suite and record failures
         run: |
           set +e
-          uv run pytest -x -q --tb=short > /tmp/pr27-full-output.txt 2>&1
+          uv run pytest -q --tb=short > /tmp/pr27-full-output.txt 2>&1
           status=$?
           {
             echo "Full pytest exit status: ${status}"
             echo "Git commit: $(git rev-parse HEAD)"
             echo
-            tail -n 250 /tmp/pr27-full-output.txt
+            tail -n 500 /tmp/pr27-full-output.txt
           } > pr27-full-test-diagnostics.txt
           exit 0
       - name: Publish traceback on PR branch
