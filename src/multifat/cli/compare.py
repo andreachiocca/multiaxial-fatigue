@@ -579,6 +579,64 @@ def collect_all_results(results_dir: Path) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
+# The Tveit continuum model predicts life by integrating its own damage law.
+# A Basquin fit of its auxiliary fatigue index is not the TVEIT2025 prediction.
+# Keep its raw Nf_native results, but do not rank it against other methods until
+# the comparison supports native-life predictions (including infinite lives).
+_NATIVE_LIFE_PENDING = {"TVEIT2025"}
+
+
+def exclude_native_life_pending(frame: pd.DataFrame, output_root: Path) -> pd.DataFrame:
+    """Exclude unsupported native-life models from *generic* statistics and figures.
+
+    Preserve a per-material audit, including failed specimens for which the
+    native model predicts infinite life. These predictions must not disappear
+    from the raw run CSVs or be silently treated as missing finite residuals.
+    """
+    method = frame["Method"].astype(str).str.removesuffix("_ext")
+    excluded = method.isin(_NATIVE_LIFE_PENDING)
+    notice_path = output_root / "native_life_comparison_pending.csv"
+    if not excluded.any():
+        notice_path.unlink(missing_ok=True)
+        return frame
+
+    records = []
+    for (material, model), group in frame.loc[excluded].groupby(
+        ["Material", "Method"], dropna=False
+    ):
+        native = pd.to_numeric(
+            group.get("Nf_native", pd.Series(np.nan, index=group.index)), errors="coerce"
+        )
+        flags = pd.to_numeric(
+            group.get("Flag", pd.Series(np.nan, index=group.index)), errors="coerce"
+        )
+        failures = flags != RUNOUT_FLAG
+        records.append(
+            {
+                "Material": material,
+                "Method": model,
+                "Rows_excluded": int(len(group)),
+                "Failed_specimens_predicted_infinite_life": int(
+                    (failures & np.isposinf(native)).sum()
+                ),
+                "Runouts_predicted_infinite_life": int(
+                    ((~failures) & np.isposinf(native)).sum()
+                ),
+                "Reason": (
+                    "Nf_native is the physical prediction; fitted-index Nf_expected "
+                    "and DP errors are not valid TVEIT2025 comparisons"
+                ),
+            }
+        )
+    pd.DataFrame(records).to_csv(notice_path, index=False)
+    print(
+        f"[WARN] Excluded {int(excluded.sum())} TVEIT2025 rows from generic "
+        f"Basquin-based comparisons. See {notice_path}; Nf_native is retained "
+        "in the individual results."
+    )
+    return frame.loc[~excluded].copy()
+
+
 # =========================
 # TikZ helpers
 # =========================
@@ -1909,6 +1967,22 @@ def main(argv=None) -> None:
         raise RuntimeError(
             "No current results available. Run multifat-run (or scripts/1_run_material.py), or pass --include-legacy to also use historical outputs."
         )
+
+    if cli_args.common_methods and any(
+        name.removesuffix("_ext") in _NATIVE_LIFE_PENDING
+        for name in cli_args.common_methods
+    ):
+        raise ValueError(
+            "TVEIT2025 cannot enter --common-methods until native-life comparison "
+            "supports Nf_native and infinite-life failure predictions."
+        )
+    frame = exclude_native_life_pending(frame, output_root)
+    if frame.empty:
+        print(
+            "[INFO] No methods eligible for generic comparison. "
+            "The native-life predictions remain in the individual CSV files."
+        )
+        return
 
     # Minimal set of required columns (works for both the Nf-based and DP-based modes)
     for needed in ["Material", "Method", "Nf_exp"]:
