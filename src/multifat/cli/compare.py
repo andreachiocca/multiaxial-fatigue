@@ -634,7 +634,9 @@ def write_native_life_summary(frame: pd.DataFrame, output_root: Path) -> None:
                 "Runouts_predicted_infinite_life": runout_inf,
                 "Undefined_native_life": int(native.isna().sum()),
                 "Life_source": "Nf_native",
-                "Life_comparison_supported": bool(group["Life_comparison_supported"].all()),
+                "Life_comparison_supported": bool(
+                    group["Life_comparison_supported"].all()
+                ),
                 "DP_comparison_supported": False,
             }
         )
@@ -2024,10 +2026,14 @@ def main(argv=None) -> None:
     elif cli_args.plot_kind == "damage":
         supported = frame["DP_comparison_supported"]
     else:
-        supported = frame["Life_comparison_supported"] | frame["DP_comparison_supported"]
+        supported = (
+            frame["Life_comparison_supported"] | frame["DP_comparison_supported"]
+        )
     excluded = int((~supported).sum())
     if excluded:
-        print(f"[INFO] Excluded {excluded} rows without a valid {cli_args.plot_kind} comparison")
+        print(
+            f"[INFO] Excluded {excluded} rows without a valid {cli_args.plot_kind} comparison"
+        )
     frame = frame.loc[supported].copy()
     if frame.empty:
         print("[INFO] No compatible methods for the selected plot kind.")

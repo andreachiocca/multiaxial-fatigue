@@ -528,7 +528,6 @@ def native_lives(ev: Evaluation, variant_key: str, F_d, extra_values):
     return case_lives, design_lives, runout_lives
 
 
-
 def write_native_variant(
     ev: Evaluation,
     variant_key: str,
@@ -561,9 +560,7 @@ def write_native_variant(
         raise ValueError(f"{method_name} declared native life but does not provide it")
 
     obs = ev.observations
-    ids_design = (
-        design_identities(ev, variant_key, len(design_cycles)) if obs else None
-    )
+    ids_design = design_identities(ev, variant_key, len(design_cycles)) if obs else None
     os.makedirs(results_dir, exist_ok=True)
     return save_fatigue_csv(
         out_dir=str(results_dir),

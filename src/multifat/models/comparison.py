@@ -23,14 +23,16 @@ class ComparisonCapabilities:
 
     def __post_init__(self):
         if self.life_prediction not in ("master_curve", "native"):
-            raise ValueError(f"Unknown life prediction mechanism: {self.life_prediction!r}")
+            raise ValueError(
+                f"Unknown life prediction mechanism: {self.life_prediction!r}"
+            )
 
 
 DEFAULT_CAPABILITIES = ComparisonCapabilities()
 
 
 def capabilities_for_model(model) -> ComparisonCapabilities:
-    """Obtain the registered model's declared capabilities, defaulting to the classic route."""
+    """Obtain the registered model's comparison capabilities."""
     value = getattr(model, "comparison_capabilities", DEFAULT_CAPABILITIES)
     if not isinstance(value, ComparisonCapabilities):
         raise TypeError(f"{model.name} must declare ComparisonCapabilities")
