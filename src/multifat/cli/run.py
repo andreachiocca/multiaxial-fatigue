@@ -502,20 +502,11 @@ def native_lives(ev: Evaluation, variant_key: str, F_d, extra_values):
     if life_fn is None:
         return None, None, None
     exp_lives = np.asarray(ev.cal["series"]["N"], dtype=float)
-    if hasattr(ev.model, "life_fit") and not ev.design_aux:
-        warnings.warn(
-            f"{ev.base_name} native life needs design data for its life coefficients",
-            RuntimeWarning,
-        )
-        nan_value = float("nan")
-        return (
-            [nan_value] * len(ev.values),
-            [nan_value] * len(F_d),
-            [nan_value] * len(ev.runout["values"]),
-        )
     try:
         life_curve = (
-            ev.model.life_fit(ev.design_aux, exp_lives, ev.params) if ev.design_aux else None
+            ev.model.life_fit(ev.design_aux, exp_lives, ev.params)
+            if hasattr(ev.model, "life_fit")
+            else None
         )
     except NativeLifeError as e:
         warnings.warn(f"{ev.base_name} native life not available: {e}", RuntimeWarning)

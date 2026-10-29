@@ -93,9 +93,10 @@ multifat-compare --results_dir Results/current --out_dir Results/Comparison --pl
 
 The command writes `comparison_capabilities.csv` showing per-method and
 per-result eligibility and DP reference source. Native-life models also write
-`native_life_prediction_summary.csv`, which counts experimentally failed
-specimens for which the model predicts infinite life separately from run-outs
-and from finite logarithmic life errors. Infinite predictions are not silently
+`native_life_prediction_summary.csv`, which reports design observations,
+assessment failures and run-outs separately, including the positive-infinite
+native-life predictions in each group. Design observations are not independent
+assessment failures. Infinite predictions are not silently
 discarded as if the method made no prediction. Such counts are not an
 independent validation statistic by themselves.
 
