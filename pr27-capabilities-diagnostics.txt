@@ -1,18 +1,3 @@
-PR27 capability regression suite exit status: 2
-
-==================================== ERRORS ====================================
-________________ ERROR collecting tests/test_tveit_reporting.py ________________
-tests/test_tveit_reporting.py:16: in <module>
-    class _NativeExample:
-tests/test_tveit_reporting.py:18: in _NativeExample
-    comparison_capabilities = ComparisonCapabilities(life_prediction="native", dp_comparison=False)
-                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-<string>:6: in __init__
-    ???
-src/multifat/models/comparison.py:32: in __post_init__
-    raise ValueError("DP comparison and reference declarations disagree")
-E   ValueError: DP comparison and reference declarations disagree
-=========================== short test summary info ============================
-ERROR tests/test_tveit_reporting.py - ValueError: DP comparison and reference declarations disagree
-!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
-1 error in 3.12s
+PR27 capability regression suite exit status: 0
+............                                                             [100%]
+12 passed in 3.14s
