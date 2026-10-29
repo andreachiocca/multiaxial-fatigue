@@ -15,7 +15,9 @@ from multifat.models.references import IMPLEMENTATION_REVISION
 
 class _NativeExample:
     name = "TVEIT2025"
-    comparison_capabilities = ComparisonCapabilities(life_prediction="native", dp_comparison=False)
+    comparison_capabilities = ComparisonCapabilities(
+        life_prediction="native", dp_comparison=False, dp_reference="none"
+    )
 
     def life_fit(self, aux, N, params):
         return {}
