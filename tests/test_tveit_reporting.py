@@ -67,9 +67,8 @@ def test_no_pending_native_models_leaves_frame_unchanged(tmp_path):
 def test_native_only_comparison_exits_cleanly_with_audit(tmp_path):
     results = tmp_path / "Results"
     results.mkdir()
-    _rows().query("Method == 'TVEIT2025'").to_csv(
-        results / "Demo_TVEIT2025.csv", index=False
-    )
+    filename = results / "Demo_TVEIT2025.csv"
+    _rows().query("Method == 'TVEIT2025'").to_csv(filename, index=False)
     compare.main(["--results_dir", str(results), "--out_dir", str(tmp_path / "out")])
     audit = pd.read_csv(tmp_path / "out" / "native_life_comparison_pending.csv")
     assert audit["Rows_excluded"].sum() == 2

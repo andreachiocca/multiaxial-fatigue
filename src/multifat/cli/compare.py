@@ -604,24 +604,20 @@ def exclude_native_life_pending(frame: pd.DataFrame, output_root: Path) -> pd.Da
     for (material, model), group in frame.loc[excluded].groupby(
         ["Material", "Method"], dropna=False
     ):
-        native = pd.to_numeric(
-            group.get("Nf_native", pd.Series(np.nan, index=group.index)), errors="coerce"
-        )
-        flags = pd.to_numeric(
-            group.get("Flag", pd.Series(np.nan, index=group.index)), errors="coerce"
-        )
-        failures = flags != RUNOUT_FLAG
+        native = group.get("Nf_native", pd.Series(np.nan, index=group.index))
+        native = pd.to_numeric(native, errors="coerce")
+        flags = group.get("Flag", pd.Series(np.nan, index=group.index))
+        flags = pd.to_numeric(flags, errors="coerce")
+        failed = flags != RUNOUT_FLAG
+        failed_inf = int((failed & np.isposinf(native)).sum())
+        runout_inf = int((~failed & np.isposinf(native)).sum())
         records.append(
             {
                 "Material": material,
                 "Method": model,
-                "Rows_excluded": int(len(group)),
-                "Failed_specimens_predicted_infinite_life": int(
-                    (failures & np.isposinf(native)).sum()
-                ),
-                "Runouts_predicted_infinite_life": int(
-                    ((~failures) & np.isposinf(native)).sum()
-                ),
+                "Rows_excluded": len(group),
+                "Failed_specimens_predicted_infinite_life": failed_inf,
+                "Runouts_predicted_infinite_life": runout_inf,
                 "Reason": (
                     "Nf_native is the physical prediction; fitted-index Nf_expected "
                     "and DP errors are not valid TVEIT2025 comparisons"
@@ -1968,14 +1964,13 @@ def main(argv=None) -> None:
             "No current results available. Run multifat-run (or scripts/1_run_material.py), or pass --include-legacy to also use historical outputs."
         )
 
-    if cli_args.common_methods and any(
-        name.removesuffix("_ext") in _NATIVE_LIFE_PENDING
-        for name in cli_args.common_methods
-    ):
-        raise ValueError(
-            "TVEIT2025 cannot enter --common-methods until native-life comparison "
-            "supports Nf_native and infinite-life failure predictions."
-        )
+    if cli_args.common_methods:
+        requested = {name.removesuffix("_ext") for name in cli_args.common_methods}
+        if requested & _NATIVE_LIFE_PENDING:
+            raise ValueError(
+                "TVEIT2025 cannot enter --common-methods until native-life comparison "
+                "supports Nf_native and infinite-life failure predictions."
+            )
     frame = exclude_native_life_pending(frame, output_root)
     if frame.empty:
         print(
