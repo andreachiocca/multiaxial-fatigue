@@ -33,6 +33,7 @@ from multifat.eval.findley_calibration import (
 )
 from multifat.models.references import IMPLEMENTATION_REVISION
 from multifat.models.registry import get_models
+from multifat.models.comparison import capabilities_for_model
 
 
 # ----------------------------
@@ -372,7 +373,11 @@ def evaluate_model(
     if absent:
         raise MissingParamsError(mdl.name, absent)
 
+    native_prediction = capabilities_for_model(mdl).life_prediction == "native"
     uniax_rminus1 = exp.extract_uniaxial_tension(data)
+    if material not in uniax_rminus1 and native_prediction:
+        # A native-life model needs no axial R=-1 subset or DP master curve.
+        uniax_rminus1 = {material: {"points": []}}
     if material not in uniax_rminus1:
         raise ValueError(
             f"No design points for '{material}': the calibration needs uniaxial tension R = -1 tests"
@@ -402,7 +407,7 @@ def evaluate_model(
         amplitude=amplitude,
     )
     result.observations = observation_index(data[material])
-    if require_variant is not None:
+    if require_variant is not None and not native_prediction:
         check_fit(base_name, require_variant, result.cal)
     if hasattr(mdl, "life_fit"):
         for pt in uniax_rminus1[material]["points"]:
@@ -523,6 +528,74 @@ def native_lives(ev: Evaluation, variant_key: str, F_d, extra_values):
     return case_lives, design_lives, runout_lives
 
 
+
+def write_native_variant(
+    ev: Evaluation,
+    variant_key: str,
+    results_dir: str | Path,
+) -> str:
+    """Export a direct fatigue-life model without inventing a DP master curve.
+
+    The fatigue index is kept only as a diagnostic. The comparison quantity is
+    the model's Nf_native, including +inf when the model predicts non-failure.
+    """
+    series = ev.cal["series"]
+    base_name = ev.base_name
+    method_name = base_name + variant_key
+
+    design_cycles = np.asarray(series["N"], dtype=float)
+    design_index = np.asarray(
+        series["CP"] if variant_key == "" else series["CP_ext"], dtype=float
+    )
+    extra_index = [v[variant_key] for v in ev.extra["values"]]
+    if extra_index:
+        design_cycles = np.concatenate([design_cycles, ev.extra["Nexp"]])
+        design_index = np.concatenate([design_index, extra_index])
+
+    cases_index = [float(v[variant_key]) for v in ev.values]
+    runout_index = [float(v[variant_key]) for v in ev.runout["values"]]
+    native_cases, native_design, native_runouts = native_lives(
+        ev, variant_key, design_index, extra_index
+    )
+    if native_cases is None or native_design is None or native_runouts is None:
+        raise ValueError(f"{method_name} declared native life but does not provide it")
+
+    obs = ev.observations
+    ids_design = (
+        design_identities(ev, variant_key, len(design_cycles)) if obs else None
+    )
+    os.makedirs(results_dir, exist_ok=True)
+    return save_fatigue_csv(
+        out_dir=str(results_dir),
+        method_name=method_name,
+        material_name=ev.material,
+        N_exp=ev.Nexp,
+        CP=cases_index,
+        N_pred=native_cases,
+        N_design=design_cycles,
+        F_design=design_index,
+        N_pred_design=native_design,
+        loading_type=ev.loading_type,
+        loading_type_design=["Tensile"] * len(series["N"]) + list(ev.extra["lt"]),
+        metric_mode="Nf_direct",
+        DP_fit=np.full(len(cases_index), np.nan),
+        DP_fit_design=np.full(len(design_cycles), np.nan),
+        N_native=native_cases,
+        N_native_design=native_design,
+        N_runout=ev.runout["Nexp"],
+        CP_runout=runout_index,
+        N_pred_runout=native_runouts,
+        DP_fit_runout=[float("nan")] * len(runout_index),
+        loading_type_runout=ev.runout["lt"],
+        N_native_runout=native_runouts,
+        observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
+        observation_ids_design=ids_design,
+        observation_ids_runout=(
+            [obs[("runout", i)] for i in ev.runout["ids"]] if obs else None
+        ),
+    )
+
+
 def design_identities(ev: Evaluation, variant_key: str, n_rows: int) -> list[dict] | None:
     """Identities of the design rows, pairing the standard series lives with this variant's DP.
 
@@ -551,6 +624,8 @@ def write_variant(
     """Error metrics, predicted lives and the CSV for a single variant of an evaluated model."""
     base_name = ev.base_name
     model_name = base_name + variant_key
+    if capabilities_for_model(ev.model).life_prediction == "native":
+        return write_native_variant(ev, variant_key, results_dir)
     check_fit(base_name, variant_key, ev.cal)
     series = ev.cal["series"]
     curve = ev.fit(variant_key)

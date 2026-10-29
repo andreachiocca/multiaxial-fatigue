@@ -193,7 +193,10 @@ def _evaluate_base_core(job: tuple) -> list[Outcome]:
             results.append(Outcome(label, "skipped", "model has no _ext variant"))
             continue
         try:
-            runmod.check_fit(base_name, suffix, evaluation.cal)
+            from multifat.models.comparison import capabilities_for_model
+
+            if capabilities_for_model(model).life_prediction != "native":
+                runmod.check_fit(base_name, suffix, evaluation.cal)
         except ValueError as exc:
             results.append(
                 Outcome(

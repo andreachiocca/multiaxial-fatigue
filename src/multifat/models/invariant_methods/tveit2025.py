@@ -55,6 +55,7 @@ from typing import Mapping
 import numpy as np
 
 from ..base import CaseResult
+from ..comparison import ComparisonCapabilities
 from .stress_invariants import harmonic_parts
 
 N_POINTS = 1001  # samples per closed cycle
@@ -296,6 +297,7 @@ class Tveit2025:
     """Tveit et al. (2025) continuum model: fatigue index for the universal curve, native life."""
 
     name = "TVEIT2025"
+    comparison_capabilities = ComparisonCapabilities(life_prediction="native", dp_comparison=False)
     optional_params = {
         "Sigm1_TVEIT": "Sigm1 of the workbook",
         "Taum1_TVEIT": "Taum1 of the workbook",
