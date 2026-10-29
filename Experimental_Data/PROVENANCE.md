@@ -140,8 +140,13 @@ amplitudes (MPa) are 277.4, 300.5, 335.2, 346.7, 381.4 and **269.3
 The two torsional-only observations and the 135 MPa shear amplitude in
 `Non_prop_12` are unchanged. The original `8_AISI316L.xlsx` file is
 preserved; the correction is applied at import time. The overlay records
-the original values, multiplier, correspondent's clarification and the
-updated dataset fingerprint.
+the original values, multiplier and correspondent's clarification. The
+new corrected dataset fingerprint is
+`d5a42243370f4944595891f69a87d1e47d9532aeca45594749ab15edf7836fef`
+(recomputed from the importer). The previously recorded fingerprint
+`a63f9325d41155bb7611b2c6272e0bbee9a46e33fefe4bc33faa47f8470f4750`
+is retained in the historical revision below, not reused as the current
+dataset identity.
 
 **Open check before merging:** Arda's email of 29 October gives 269.7 MPa
 for `Non_prop_12`, whereas the stated multiplier applied to the published
