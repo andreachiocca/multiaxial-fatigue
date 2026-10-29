@@ -502,6 +502,17 @@ def native_lives(ev: Evaluation, variant_key: str, F_d, extra_values):
     if life_fn is None:
         return None, None, None
     exp_lives = np.asarray(ev.cal["series"]["N"], dtype=float)
+    if hasattr(ev.model, "life_fit") and not ev.design_aux:
+        warnings.warn(
+            f"{ev.base_name} native life needs design data for its life coefficients",
+            RuntimeWarning,
+        )
+        nan_value = float("nan")
+        return (
+            [nan_value] * len(ev.values),
+            [nan_value] * len(F_d),
+            [nan_value] * len(ev.runout["values"]),
+        )
     try:
         life_curve = (
             ev.model.life_fit(ev.design_aux, exp_lives, ev.params) if ev.design_aux else None
@@ -557,6 +568,27 @@ def write_native_variant(
     if native_cases is None or native_design is None or native_runouts is None:
         raise ValueError(f"{method_name} declared native life but does not provide it")
 
+    caps = capabilities_for_model(ev.model)
+
+    def expected_dp(cycles):
+        n = np.asarray(cycles, dtype=float)
+        if not caps.dp_comparison:
+            return np.full(n.shape, np.nan)
+        if caps.dp_reference == "model_law":
+            reference = getattr(ev.model, "expected_dp_at_life", None)
+            if reference is None:
+                raise ValueError(f"{method_name} lacks its declared DP reference")
+            return np.asarray(reference(n, ev.params), dtype=float)
+        curve = ev.fit(variant_key)
+        if curve is None:
+            return np.full(n.shape, np.nan)
+        a, b = float(curve["A_surv"]), float(curve["b"])
+        with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
+            return np.where(n > 0, a * np.power(n, b), np.nan)
+
+    dp_fit_cases = expected_dp(ev.Nexp)
+    dp_fit_design = expected_dp(design_cycles)
+    dp_fit_runouts = expected_dp(ev.runout["Nexp"])
     obs = ev.observations
     ids_design = design_identities(ev, variant_key, len(design_cycles)) if obs else None
     os.makedirs(results_dir, exist_ok=True)
@@ -573,14 +605,14 @@ def write_native_variant(
         loading_type=ev.loading_type,
         loading_type_design=["Tensile"] * len(series["N"]) + list(ev.extra["lt"]),
         metric_mode="Nf_direct",
-        DP_fit=np.full(len(cases_index), np.nan),
-        DP_fit_design=np.full(len(design_cycles), np.nan),
+        DP_fit=dp_fit_cases,
+        DP_fit_design=dp_fit_design,
         N_native=native_cases,
         N_native_design=native_design,
         N_runout=ev.runout["Nexp"],
         CP_runout=runout_index,
         N_pred_runout=native_runouts,
-        DP_fit_runout=[float("nan")] * len(runout_index),
+        DP_fit_runout=dp_fit_runouts,
         loading_type_runout=ev.runout["lt"],
         N_native_runout=native_runouts,
         observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,

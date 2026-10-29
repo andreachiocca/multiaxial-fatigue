@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 LifePrediction = Literal["master_curve", "native"]
+DPReference = Literal["master_curve", "model_law", "none"]
 
 
 @dataclass(frozen=True)
@@ -20,10 +21,15 @@ class ComparisonCapabilities:
 
     life_prediction: LifePrediction = "master_curve"
     dp_comparison: bool = True
+    dp_reference: DPReference = "master_curve"
 
     def __post_init__(self):
         if self.life_prediction not in ("master_curve", "native"):
             raise ValueError(f"Unknown life prediction mechanism: {self.life_prediction!r}")
+        if self.dp_reference not in ("master_curve", "model_law", "none"):
+            raise ValueError(f"Unknown DP reference: {self.dp_reference!r}")
+        if self.dp_comparison == (self.dp_reference == "none"):
+            raise ValueError("DP comparison and reference declarations disagree")
 
 
 DEFAULT_CAPABILITIES = ComparisonCapabilities()

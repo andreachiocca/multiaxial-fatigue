@@ -602,7 +602,16 @@ def annotate_comparison_capabilities(frame: pd.DataFrame) -> pd.DataFrame:
     frame["Life_comparison_supported"] = (native & (mode == "NF_DIRECT")) | (
         ~native & (mode != "DP_DIFF") & (mode != "NF_DIRECT")
     )
-    frame["DP_comparison_supported"] = dp & (mode != "NF_DIRECT")
+    dp_fit = pd.to_numeric(
+        frame.get("DP_fit", pd.Series(np.nan, index=frame.index)), errors="coerce"
+    )
+    native_dp_usable = np.isfinite(dp_fit) & (dp_fit > 0)
+    frame["DP_comparison_supported"] = dp & (
+        (mode != "NF_DIRECT") | native_dp_usable
+    )
+    frame["DP_reference_source"] = frame["Method"].map(
+        lambda name: caps_by_name.get(name, DEFAULT_CAPABILITIES).dp_reference
+    )
     return frame
 
 
@@ -1997,6 +2006,7 @@ def main(argv=None) -> None:
             "Method",
             "Metric_mode",
             "Life_prediction_source",
+            "DP_reference_source",
             "Life_comparison_supported",
             "DP_comparison_supported",
         ]

@@ -19,6 +19,8 @@ non-proportional loading, without notches, cracks or significant stress gradient
 
 ## Quick start
 
+See [method-level comparison capabilities](docs/comparison-capabilities.md) for which models support direct fatigue-life predictions, calibrated life estimates, and meaningful DP-based errors. Use `multifat-compare --plot-kind life`, `--plot-kind damage`, or `--plot-kind both` to choose the output figures.
+
 > [!TIP]
 > For an end-to-end walkthrough covering input data preparation, command-line workflows, and Python API usage, see the **[User Guide](docs/user-guide.md)**.
 

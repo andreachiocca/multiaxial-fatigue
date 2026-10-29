@@ -198,3 +198,122 @@ def test_invalid_native_method_has_no_comparison_in_legacy_results():
     selected = compare.annotate_comparison_capabilities(invalid)
     assert selected["Life_comparison_supported"].eq(False).all()
     assert selected["DP_comparison_supported"].eq(False).all()
+
+
+def test_all_registered_methods_have_explicitly_verified_comparison_semantics():
+    from multifat.models.registry import (
+        _available_cp_methods,
+        _available_direct_models,
+        get_models,
+    )
+    from multifat.models.comparison import capabilities_for_model
+
+    names = sorted({**_available_cp_methods(), **_available_direct_models()})
+    assert len(names) == 35
+    native_methods = {"TVEIT2025", "MOREL", "MDC", "MMCCM"}
+    for name in names:
+        model = get_models([name])[0]
+        caps = capabilities_for_model(model)
+        assert caps.life_prediction == (
+            "native" if name in native_methods else "master_curve"
+        )
+        assert bool(getattr(model, "native_life", None)) == (name in native_methods)
+        assert caps.dp_comparison == (name != "TVEIT2025")
+        if caps.dp_reference == "model_law":
+            assert callable(getattr(model, "expected_dp_at_life", None))
+    assert capabilities_for_name("MOREL").dp_reference == "master_curve"
+    assert capabilities_for_name("MDC").dp_reference == "model_law"
+    assert capabilities_for_name("MMCCM").dp_reference == "model_law"
+    with pytest.raises(ValueError, match="DP comparison"):
+        ComparisonCapabilities(dp_comparison=False)
+    with pytest.raises(ValueError, match="DP reference"):
+        ComparisonCapabilities(dp_reference="incorrect")
+
+
+@pytest.mark.parametrize(
+    ("method", "params", "damage", "reference"),
+    [
+        (
+            "MDC",
+            {"sigma_f": 1200.0, "b_fat": -0.1, "tau_f": 600.0, "b0": -0.09},
+            300.0,
+            600.0 * (2.0 * 1000.0) ** -0.09,
+        ),
+        ("MMCCM", {}, 1.0 / 1200.0, 1.0 / 1000.0),
+    ],
+)
+def test_direct_models_preserve_theoretical_dp_reference(
+    method, params, damage, reference, tmp_path
+):
+    from multifat.models.registry import get_models
+
+    ev = Evaluation(
+        material="Demo",
+        base_name=method,
+        params=params,
+        R_list=[],
+        cal={
+            "series": {
+                "N": np.array([]),
+                "CP": np.array([]),
+                "CP_ext": np.array([]),
+            },
+            "fit": None,
+            "fit_ext": None,
+            "design_case_ids": [],
+        },
+        model=get_models([method])[0],
+    )
+    ev.values = [{"": damage}]
+    ev.aux = [{}]
+    ev.Nexp = [1000.0]
+    ev.loading_type = ["Torsion"]
+    output = pd.read_csv(write_variant(ev, "", tmp_path))
+    assert output.Metric_mode.iloc[0] == "Nf_direct"
+    assert output.DP_fit.iloc[0] == pytest.approx(reference)
+    assert np.isfinite(output.Error_log10_dp.iloc[0])
+    assert output.Nf_expected.iloc[0] == pytest.approx(output.Nf_native.iloc[0])
+    annotation = compare.annotate_comparison_capabilities(output)
+    assert bool(annotation.DP_comparison_supported.iloc[0])
+    assert bool(annotation.Life_comparison_supported.iloc[0])
+
+
+def test_morel_supports_native_life_and_independently_fitted_dp_reference(tmp_path):
+    from multifat.models.registry import get_models
+
+    model = get_models(["MOREL"])[0]
+    ev = Evaluation(
+        material="Demo",
+        base_name="MOREL",
+        params={"Sigm1": 300.0, "Taum1": 170.0},
+        R_list=[],
+        cal={
+            "series": {
+                "N": np.array([1000.0, 2000.0, 3000.0]),
+                "CP": np.array([1.6, 1.4, 1.2]),
+                "CP_ext": np.array([]),
+            },
+            "fit": {"A_surv": 3.0, "b": -0.1},
+            "fit_ext": None,
+            "design_case_ids": [1, 2, 3],
+        },
+        model=model,
+    )
+    ev.design_aux = [
+        {"C_A": 50.0, "tau_lim": 20.0},
+        {"C_A": 45.0, "tau_lim": 20.0},
+        {"C_A": 40.0, "tau_lim": 20.0},
+    ]
+    ev.values = [{"": 1.5}]
+    ev.aux = [{"C_A": 48.0, "tau_lim": 20.0}]
+    ev.Nexp = [2500.0]
+    ev.loading_type = ["Multiaxial proportional"]
+    output = pd.read_csv(write_variant(ev, "", tmp_path))
+    actual = output.loc[output.Flag == 1].iloc[0]
+    assert actual.Metric_mode == "Nf_direct"
+    assert actual.DP_fit == pytest.approx(3.0 * 2500.0**-0.1)
+    assert np.isfinite(actual.Nf_native)
+    assert actual.Nf_expected == pytest.approx(actual.Nf_native)
+    support = compare.annotate_comparison_capabilities(output)
+    assert support.DP_comparison_supported.all()
+    assert support.Life_comparison_supported.all()

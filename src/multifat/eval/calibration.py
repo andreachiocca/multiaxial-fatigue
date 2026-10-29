@@ -118,16 +118,18 @@ def collect_uniaxial_series_and_fit(
         cp_ext_arr = np.asarray(cp_ext_vals, dtype=float)
 
         # Native life comes from the constitutive law; never fit its diagnostic index.
-        native_prediction = capabilities_for_model(model).life_prediction == "native"
+        caps = capabilities_for_model(model)
+        # A model can predict life natively AND have an independently defined DP.
+        fit_dp_curve = caps.dp_comparison and caps.dp_reference == "master_curve"
         # Perform the fits
         std_fit = (
             fit_power_law_with_survival_std(n_std_arr, cp_std_arr, stdnum=stdnum)
-            if len(n_std_arr) > 0 and not native_prediction
+            if len(n_std_arr) > 0 and fit_dp_curve
             else None
         )
         ext_fit = (
             fit_power_law_with_survival_std(n_ext_arr, cp_ext_arr, stdnum=stdnum)
-            if len(n_ext_arr) > 0 and not native_prediction
+            if len(n_ext_arr) > 0 and fit_dp_curve
             else None
         )
 

@@ -297,7 +297,7 @@ class Tveit2025:
     """Tveit et al. (2025) continuum model: fatigue index for the universal curve, native life."""
 
     name = "TVEIT2025"
-    comparison_capabilities = ComparisonCapabilities(life_prediction="native", dp_comparison=False)
+    comparison_capabilities = ComparisonCapabilities(life_prediction="native", dp_comparison=False, dp_reference="none")
     optional_params = {
         "Sigm1_TVEIT": "Sigm1 of the workbook",
         "Taum1_TVEIT": "Taum1 of the workbook",

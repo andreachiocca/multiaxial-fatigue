@@ -33,6 +33,7 @@ from multifat.models.errors import MissingParamsError
 from multifat.models.utils.batch import check_planes, pypow2
 
 from ..base import CPPlaneResult
+from ..comparison import ComparisonCapabilities
 
 _REQUIRED_STRAIN_KEYS = (
     "E",
@@ -119,6 +120,9 @@ class MMCCM:
     """MMCCM critical plane: maximum engineering shear strain amplitude, damage 1/N_f (Eq. 2)."""
 
     name = "MMCCM"
+    comparison_capabilities = ComparisonCapabilities(
+        life_prediction="native", dp_reference="model_law"
+    )
     optional_params = {"nu_p": "0.5 (plastic Poisson's ratio)"}
     np_shear_rule = "longest_chord"
     ext_variant = False
@@ -134,6 +138,12 @@ class MMCCM:
             1.0 / np.where(DP > 0.0, DP, 1.0),
             np.inf,
         )
+
+    def expected_dp_at_life(self, cycles, params: Mapping[str, float]):
+        """Definition of the MMCCM damage parameter, DP = 1/N_f."""
+        n = np.asarray(cycles, dtype=float)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            return np.where(n > 0, 1.0 / n, np.nan)
 
     def evaluate_on_plane(self, *, S0r, E0r, S1r, E1r, params: Mapping[str, float]):
         damage, metric = self.evaluate_on_planes(

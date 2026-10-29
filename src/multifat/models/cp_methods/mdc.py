@@ -29,6 +29,7 @@ from multifat.models.errors import MissingParamsError
 from multifat.models.utils.batch import check_planes, pypow2
 
 from ..base import CPPlaneResult
+from ..comparison import ComparisonCapabilities
 
 _PARAM_KEYS = ("sigma_f", "b_fat", "tau_f", "b0")
 
@@ -73,6 +74,9 @@ class MDC:
     """MDC critical-plane criterion: maximum shear-amplitude plane, damage tau_r (Eq. 8)."""
 
     name = "MDC"
+    comparison_capabilities = ComparisonCapabilities(
+        life_prediction="native", dp_reference="model_law"
+    )
 
     def required_params(self) -> set[str]:
         return set(_PARAM_KEYS)
@@ -81,6 +85,13 @@ class MDC:
         """Return N_f from tau_r through the torsional Basquin curve, Eq. (8)."""
         _, _, tau_f, b_tau = _extract_constants(params)
         return mdc_life(aux["dp"], tau_f, b_tau)
+
+    def expected_dp_at_life(self, cycles, params: Mapping[str, float]):
+        """Eq. (8) equivalent shear strength at experimental life (MPa)."""
+        _, _, tau_f, b_tau = _extract_constants(params)
+        n = np.asarray(cycles, dtype=float)
+        with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
+            return np.where(n > 0, tau_f * np.power(2.0 * n, b_tau), np.nan)
 
     def evaluate_on_plane(self, *, S0r, E0r, S1r, E1r, params: Mapping[str, float]):
         damage, metric = self.evaluate_on_planes(

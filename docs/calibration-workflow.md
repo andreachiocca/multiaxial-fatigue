@@ -1,5 +1,7 @@
 # Calibration history and experimental run-outs
 
+For the current distinction between native-life models and fitted DP-based assessment, see [method comparison capabilities](comparison-capabilities.md). The `Nf_direct` route bypasses an unnecessary DP master curve only for native-life models; the DP comparison remains method-dependent.
+
 > **Scientific review proposal:** The planned source-prescribed defaults, optional
 > all-eligible/subset calibration, and independent-validation safeguards are defined in
 > [the Issue #14 protocol](calibration-validation-protocol.md). The procedures proposed
