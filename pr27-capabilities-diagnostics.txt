@@ -1,3 +1,0 @@
-PR27 capability regression suite exit status: 0
-............                                                             [100%]
-12 passed in 3.14s
