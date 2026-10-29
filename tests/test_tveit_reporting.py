@@ -214,9 +214,7 @@ def test_all_registered_methods_have_explicitly_verified_comparison_semantics():
     for name in names:
         model = get_models([name])[0]
         caps = capabilities_for_model(model)
-        assert caps.life_prediction == (
-            "native" if name in native_methods else "master_curve"
-        )
+        assert caps.life_prediction == ("native" if name in native_methods else "master_curve")
         assert bool(getattr(model, "native_life", None)) == (name in native_methods)
         assert caps.dp_comparison == (name != "TVEIT2025")
         if caps.dp_reference == "model_law":

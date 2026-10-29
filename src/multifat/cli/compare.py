@@ -606,9 +606,7 @@ def annotate_comparison_capabilities(frame: pd.DataFrame) -> pd.DataFrame:
         frame.get("DP_fit", pd.Series(np.nan, index=frame.index)), errors="coerce"
     )
     native_dp_usable = np.isfinite(dp_fit) & (dp_fit > 0)
-    frame["DP_comparison_supported"] = dp & (
-        (mode != "NF_DIRECT") | native_dp_usable
-    )
+    frame["DP_comparison_supported"] = dp & ((mode != "NF_DIRECT") | native_dp_usable)
     frame["DP_reference_source"] = frame["Method"].map(
         lambda name: caps_by_name.get(name, DEFAULT_CAPABILITIES).dp_reference
     )
