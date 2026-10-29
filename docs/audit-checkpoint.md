@@ -1,5 +1,17 @@
 # Development continuation checkpoint
 
+## Main after Tveit integration (29 October 2026)
+
+PR #28 was merged into PR #27, and PR #27 was merged into `main` at
+`3555826`. PR #21 was closed without merge; no overlapping PR remains open.
+The documentation follow-up starts from this merge. It records the current
+CLI, registry and comparison-capability flow, distinguishes the historical
+`output_quantity` proposal from the implemented API, and corrects generated
+catalogue wording for active, partially implemented TVEIT2025. No model,
+calibration record, experimental dataset, benchmark or numerical result is
+changed. The within-cycle Tveit failure-interpolation question recorded below
+still requires scientific approval before any numerical correction.
+
 ## PR #27 native-life reporting review (29 October 2026)
 
 The focused follow-up branch `fix/pr27-native-reporting-review` starts from

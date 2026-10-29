@@ -374,7 +374,13 @@ visualisation. Existing suppression of life inversion for flat, positive or exce
 shallow curves remains unchanged. Such cases retain the damage–life plot; saved parity
 plots are omitted. No censored-data regression or survival-analysis model is added.
 
-## Model output and fatigue-life comparison
+## Historical model-output proposal
+
+The following section records the earlier `output_quantity` design proposal. It is
+not the current `multifat` interface. Current models declare life and DP routes
+through `ComparisonCapabilities`; `CaseResult` contains `values` and `aux`, not
+an `output_quantity` field. See [architecture](architecture.md) and
+[comparison capabilities](comparison-capabilities.md) for the implemented path.
 
 The computational family does not determine the output quantity. In particular,
 the current non-critical-plane BP and CAIM implementations return dimensionless
