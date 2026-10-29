@@ -543,9 +543,7 @@ def write_native_variant(
     method_name = base_name + variant_key
 
     design_cycles = np.asarray(series["N"], dtype=float)
-    design_index = np.asarray(
-        series["CP"] if variant_key == "" else series["CP_ext"], dtype=float
-    )
+    design_index = np.asarray(series["CP"] if variant_key == "" else series["CP_ext"], dtype=float)
     extra_index = [v[variant_key] for v in ev.extra["values"]]
     if extra_index:
         design_cycles = np.concatenate([design_cycles, ev.extra["Nexp"]])
@@ -587,9 +585,7 @@ def write_native_variant(
         N_native_runout=native_runouts,
         observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
         observation_ids_design=ids_design,
-        observation_ids_runout=(
-            [obs[("runout", i)] for i in ev.runout["ids"]] if obs else None
-        ),
+        observation_ids_runout=([obs[("runout", i)] for i in ev.runout["ids"]] if obs else None),
     )
 
 

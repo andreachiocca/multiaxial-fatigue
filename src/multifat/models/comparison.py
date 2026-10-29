@@ -23,9 +23,7 @@ class ComparisonCapabilities:
 
     def __post_init__(self):
         if self.life_prediction not in ("master_curve", "native"):
-            raise ValueError(
-                f"Unknown life prediction mechanism: {self.life_prediction!r}"
-            )
+            raise ValueError(f"Unknown life prediction mechanism: {self.life_prediction!r}")
 
 
 DEFAULT_CAPABILITIES = ComparisonCapabilities()

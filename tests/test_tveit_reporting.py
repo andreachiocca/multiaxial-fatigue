@@ -15,9 +15,7 @@ from multifat.models.references import IMPLEMENTATION_REVISION
 
 class _NativeExample:
     name = "TVEIT2025"
-    comparison_capabilities = ComparisonCapabilities(
-        life_prediction="native", dp_comparison=False
-    )
+    comparison_capabilities = ComparisonCapabilities(life_prediction="native", dp_comparison=False)
 
     def life_fit(self, aux, N, params):
         return {}
@@ -136,9 +134,7 @@ def test_native_life_export_does_not_require_a_master_curve(tmp_path):
         ("both", {"TVEIT2025", "FIN"}, {"FIN"}),
     ],
 )
-def test_plot_types_respect_capabilities(
-    tmp_path, monkeypatch, kind, life_methods, damage_methods
-):
+def test_plot_types_respect_capabilities(tmp_path, monkeypatch, kind, life_methods, damage_methods):
     seen = {"life": [], "damage": []}
     monkeypatch.setattr(compare, "collect_all_results", lambda path: _rows())
     monkeypatch.setattr(compare, "write_faber_style_file", lambda *args: None)
@@ -171,13 +167,11 @@ def test_plot_types_respect_capabilities(
     assert counts.loc[0, "Runouts_predicted_infinite_life"] == 1
     stats = pd.read_csv(tmp_path / "Comparison" / "summary_error_stats.csv")
     assert set(stats.Metric) == (
-        {"Error_ln"} if kind == "life"
-        else {"Error_log10_dp"} if kind == "damage"
-        else {"Error_ln", "Error_log10_dp"}
+        {"Error_ln"}
+        if kind == "life"
+        else {"Error_log10_dp"} if kind == "damage" else {"Error_ln", "Error_log10_dp"}
     )
-    assert not (
-        (stats.Method == "TVEIT2025") & (stats.Metric == "Error_log10_dp")
-    ).any()
+    assert not ((stats.Method == "TVEIT2025") & (stats.Metric == "Error_log10_dp")).any()
 
 
 def test_damage_common_subset_rejects_native_only_method(tmp_path, monkeypatch):

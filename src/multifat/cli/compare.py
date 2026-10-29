@@ -599,9 +599,8 @@ def annotate_comparison_capabilities(frame: pd.DataFrame) -> pd.DataFrame:
     mode = frame["Metric_mode"].astype(str).str.strip().str.upper()
     native = prediction == "native"
     frame["Life_prediction_source"] = prediction
-    frame["Life_comparison_supported"] = (
-        (native & (mode == "NF_DIRECT"))
-        | (~native & (mode != "DP_DIFF") & (mode != "NF_DIRECT"))
+    frame["Life_comparison_supported"] = (native & (mode == "NF_DIRECT")) | (
+        ~native & (mode != "DP_DIFF") & (mode != "NF_DIRECT")
     )
     frame["DP_comparison_supported"] = dp & (mode != "NF_DIRECT")
     return frame
@@ -634,9 +633,7 @@ def write_native_life_summary(frame: pd.DataFrame, output_root: Path) -> None:
                 "Runouts_predicted_infinite_life": runout_inf,
                 "Undefined_native_life": int(native.isna().sum()),
                 "Life_source": "Nf_native",
-                "Life_comparison_supported": bool(
-                    group["Life_comparison_supported"].all()
-                ),
+                "Life_comparison_supported": bool(group["Life_comparison_supported"].all()),
                 "DP_comparison_supported": False,
             }
         )
@@ -2026,14 +2023,10 @@ def main(argv=None) -> None:
     elif cli_args.plot_kind == "damage":
         supported = frame["DP_comparison_supported"]
     else:
-        supported = (
-            frame["Life_comparison_supported"] | frame["DP_comparison_supported"]
-        )
+        supported = frame["Life_comparison_supported"] | frame["DP_comparison_supported"]
     excluded = int((~supported).sum())
     if excluded:
-        print(
-            f"[INFO] Excluded {excluded} rows without a valid {cli_args.plot_kind} comparison"
-        )
+        print(f"[INFO] Excluded {excluded} rows without a valid {cli_args.plot_kind} comparison")
     frame = frame.loc[supported].copy()
     if frame.empty:
         print("[INFO] No compatible methods for the selected plot kind.")
@@ -2151,18 +2144,10 @@ def main(argv=None) -> None:
         material_runouts = runouts_frame[runouts_frame["Material"] == material]
 
         # Filter each output by the declared method capabilities.
-        life_frame = material_frame[
-            material_frame["Life_comparison_supported"]
-        ].copy()
-        damage_frame = material_frame[
-            material_frame["DP_comparison_supported"]
-        ].copy()
-        runouts_nf = material_runouts[
-            material_runouts["Life_comparison_supported"]
-        ].copy()
-        runouts_dp = material_runouts[
-            material_runouts["DP_comparison_supported"]
-        ].copy()
+        life_frame = material_frame[material_frame["Life_comparison_supported"]].copy()
+        damage_frame = material_frame[material_frame["DP_comparison_supported"]].copy()
+        runouts_nf = material_runouts[material_runouts["Life_comparison_supported"]].copy()
+        runouts_dp = material_runouts[material_runouts["DP_comparison_supported"]].copy()
 
         stem = _fs_safe_stem(material)
         material_dir = output_root / stem
