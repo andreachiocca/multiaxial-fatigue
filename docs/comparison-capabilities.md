@@ -91,6 +91,30 @@ multifat-compare --results_dir Results/current --out_dir Results/Comparison --pl
 multifat-compare --results_dir Results/current --out_dir Results/Comparison --plot-kind both
 ```
 
+## Error statistics and observation roles
+
+For a valid DP comparison, `Error_log10_dp = log10(DP_fit / CP_value)`.
+A positive value means that the reference DP at the observed life exceeds the
+method's DP at the applied load. The retained `Error_ln_dp` column has the
+opposite sign and a natural-log scale:
+`Error_ln_dp = ln(CP_value / DP_fit) = -ln(10) Error_log10_dp`.
+The life error is `Error_ln = ln(Nf_exp / Nf_expected)`. Undefined, nonpositive
+or nonfinite quantities do not enter finite-error statistics. Infinite native
+life predictions remain visible in the separate native-life summary.
+
+`summary_error_stats.csv` and its styled table retain their historical
+aggregate of eligible failed rows for compatibility. They may combine design
+and other assessment observations and must not be labelled independent
+validation. `summary_error_stats_by_role.csv` reports the same metrics
+separately for `Flag=0` design observations and `Flag=1` other assessed
+failures. Rows without a recognised flag are labelled `unclassified`;
+`Flag=2` run-outs contribute to neither ordinary error table. The
+`--common-methods` option restricts comparison to finite metrics on matched
+failed observations assessed by every selected method. A `Flag=1` row is not
+automatically independent of all material-property or method-constant fits.
+Establishing a source- and batch-aware held-out validation population remains
+part of [Issue #14](https://github.com/andreachiocca/multiaxial-fatigue/issues/14).
+
 The command writes `comparison_capabilities.csv` showing per-method and
 per-result eligibility and DP reference source. Native-life models also write
 `native_life_prediction_summary.csv`, which reports design observations,

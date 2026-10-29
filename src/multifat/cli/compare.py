@@ -1802,6 +1802,41 @@ def compute_stats_table(df: pd.DataFrame, plot_kind: str = "both") -> pd.DataFra
     ).sort_values(["Material", "Method", "Metric"])
 
 
+def compute_stats_table_by_role(df: pd.DataFrame, plot_kind: str = "both") -> pd.DataFrame:
+    """Separate design residuals from other assessed failures without reclassifying run-outs."""
+    columns = [
+        "Material",
+        "Method",
+        "Metric",
+        "Observation_role",
+        "n",
+        "Error_mean",
+        "Error_std",
+    ]
+    if "Flag" in df:
+        flag = pd.to_numeric(df["Flag"], errors="coerce")
+        partitions = (
+            ("design", flag == 0),
+            ("assessment", flag == 1),
+            ("unclassified", flag.isna() | ~flag.isin((0, 1, RUNOUT_FLAG))),
+        )
+    else:
+        partitions = (("unclassified", pd.Series(True, index=df.index)),)
+    tables = []
+    for role, mask in partitions:
+        selected = df.loc[mask]
+        if selected.empty:
+            continue
+        table = compute_stats_table(selected, plot_kind)
+        table.insert(3, "Observation_role", role)
+        tables.append(table)
+    if not tables:
+        return pd.DataFrame(columns=columns)
+    return pd.concat(tables, ignore_index=True)[columns].sort_values(
+        ["Material", "Method", "Metric", "Observation_role"]
+    )
+
+
 def write_stats_table_with_styles(
     stats: pd.DataFrame,
     method_styles: Dict[str, Dict[str, str]],
@@ -2139,6 +2174,9 @@ def main(argv=None) -> None:
     # Global statistics (feeding the single "legend table")
     stats = compute_stats_table(frame, cli_args.plot_kind)
     stats.to_csv(output_root / "summary_error_stats.csv", index=False)
+    compute_stats_table_by_role(frame, cli_args.plot_kind).to_csv(
+        output_root / "summary_error_stats_by_role.csv", index=False
+    )
     write_stats_table_with_styles(
         stats=stats,
         method_styles=method_styles,
