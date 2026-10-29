@@ -2148,6 +2148,10 @@ def main(argv=None) -> None:
         damage_frame = material_frame[material_frame["DP_comparison_supported"]].copy()
         runouts_nf = material_runouts[material_runouts["Life_comparison_supported"]].copy()
         runouts_dp = material_runouts[material_runouts["DP_comparison_supported"]].copy()
+        if cli_args.plot_kind == "life":
+            damage_frame = damage_frame.iloc[0:0]
+        elif cli_args.plot_kind == "damage":
+            life_frame = life_frame.iloc[0:0]
 
         stem = _fs_safe_stem(material)
         material_dir = output_root / stem
