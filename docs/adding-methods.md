@@ -24,7 +24,7 @@ Every constant the model reads has to be declared: the required ones belong in `
 
 ## Native life law
 
-Should the source define a life law of its own, implement `native_life(aux, params, fit=None)`, plus `life_fit(aux, N, params)` in those cases where its constants are fitted, and store the per-case inputs in `CaseResult.aux`. Next to the universal fitted curve, the CSV then carries `Nf_native` and `Error_log10_native`. Reference implementations are `cp_methods/mdc.py` and `integral_methods/morel.py`.
+Should the source define a life law of its own, implement `native_life(aux, params, fit=None)`, plus `life_fit(aux, N, params)` when its constants are fitted, and store per-case inputs in `CaseResult.aux`. Declare `ComparisonCapabilities(life_prediction="native", ...)` on the method. Specify whether a separate DP comparison has a defensible `master_curve` or `model_law` reference, or set `dp_comparison=False, dp_reference="none"`. The CSV uses `Metric_mode=Nf_direct` and writes the native prediction to both `Nf_native` and the plot-compatible `Nf_expected` column. It must not fit a diagnostic index as a life law. Reference implementations are `cp_methods/mdc.py`, `integral_methods/morel.py` and `invariant_methods/tveit2025.py`. See [comparison capabilities](comparison-capabilities.md) for the distinct life and DP routes.
 
 ## Evidence
 

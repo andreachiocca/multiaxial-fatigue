@@ -93,7 +93,8 @@ def test_old_tveit_auxiliary_index_not_accepted_for_life_or_dp():
     assert not support.iloc[0]["DP_comparison_supported"]
 
 
-def test_native_life_export_does_not_require_a_master_curve(tmp_path):
+@pytest.mark.parametrize("with_design", [False, True])
+def test_native_life_export_does_not_require_a_master_curve(tmp_path, with_design):
     ev = Evaluation(
         material="Demo",
         base_name="TVEIT2025",
@@ -101,17 +102,17 @@ def test_native_life_export_does_not_require_a_master_curve(tmp_path):
         R_list=[],
         cal={
             "series": {
-                "N": np.array([600.0]),
-                "CP": np.array([1.1]),
+                "N": np.array([600.0]) if with_design else np.array([]),
+                "CP": np.array([1.1]) if with_design else np.array([]),
                 "CP_ext": np.array([]),
             },
             "fit": None,
             "fit_ext": None,
-            "design_case_ids": [3],
+            "design_case_ids": [3] if with_design else [],
         },
         model=_NativeExample(),
     )
-    ev.design_aux = [{"Nf": 640.0}]
+    ev.design_aux = [{"Nf": 640.0}] if with_design else []
     ev.values = [{"": 1.4}, {"": 1.2}]
     ev.aux = [{"Nf": np.inf}, {"Nf": 1200.0}]
     ev.Nexp = [1000.0, 1000.0]
@@ -126,6 +127,21 @@ def test_native_life_export_does_not_require_a_master_curve(tmp_path):
     assert np.isinf(output.loc[output.Flag == 1, "Nf_expected"]).sum() == 1
     assert np.isinf(output.loc[output.Flag == 2, "Nf_native"]).all()
     assert output.loc[output.Flag == 1, "Error_log10_dp"].isna().all()
+
+
+def test_native_life_summary_separates_design_and_assessment_rows(tmp_path):
+    rows = _rows()
+    design = rows.iloc[[0]].copy()
+    design["Flag"] = 0
+    annotated = compare.annotate_comparison_capabilities(pd.concat([design, rows]))
+    compare.write_native_life_summary(annotated, tmp_path)
+    summary = pd.read_csv(tmp_path / "native_life_prediction_summary.csv")
+    assert summary.loc[0, "Design_observations"] == 1
+    assert summary.loc[0, "Design_points_predicted_infinite_life"] == 1
+    assert summary.loc[0, "Failure_observations"] == 1
+    assert summary.loc[0, "Failed_specimens_predicted_infinite_life"] == 1
+    assert summary.loc[0, "Runout_observations"] == 1
+    assert summary.loc[0, "Runouts_predicted_infinite_life"] == 1
 
 
 @pytest.mark.parametrize(

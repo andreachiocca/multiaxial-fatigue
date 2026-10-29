@@ -627,16 +627,21 @@ def write_native_life_summary(frame: pd.DataFrame, output_root: Path) -> None:
             errors="coerce",
         )
         flag = pd.to_numeric(group["Flag"], errors="coerce")
-        failures = flag != RUNOUT_FLAG
+        design = flag == 0
+        failures = flag == 1
+        runouts = flag == RUNOUT_FLAG
+        design_inf = int((design & np.isposinf(native)).sum())
         failed_inf = int((failures & np.isposinf(native)).sum())
-        runout_inf = int(((~failures) & np.isposinf(native)).sum())
+        runout_inf = int((runouts & np.isposinf(native)).sum())
         rows.append(
             {
                 "Material": material,
                 "Method": method,
+                "Design_observations": int(design.sum()),
+                "Design_points_predicted_infinite_life": design_inf,
                 "Failure_observations": int(failures.sum()),
                 "Failed_specimens_predicted_infinite_life": failed_inf,
-                "Runout_observations": int((~failures).sum()),
+                "Runout_observations": int(runouts.sum()),
                 "Runouts_predicted_infinite_life": runout_inf,
                 "Undefined_native_life": int(native.isna().sum()),
                 "Life_source": "Nf_native",

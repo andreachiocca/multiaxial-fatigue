@@ -1,5 +1,22 @@
 # Development continuation checkpoint
 
+## PR #27 native-life reporting review (29 October 2026)
+
+The focused follow-up branch `fix/pr27-native-reporting-review` starts from
+PR #27 head `05fa153`. It evaluates native life even when no reversed-axial
+design set is available, while retaining Morel's explicit insufficient-design
+diagnostic. The native-life summary now distinguishes calibration/design rows,
+assessment failures and run-outs. Focused regression tests cover both cases.
+The Tveit continuum equations, numerical constants, scientific benchmarks,
+material records and dataset files are unchanged.
+
+The Tveit within-cycle failure interpolation in
+`src/multifat/models/invariant_methods/tveit2025.py` appears to add one sampled
+increment to the elapsed fraction. Correcting it would change native numerical
+results and requires Scientific Reviewer or numerical-owner approval and
+updated reference checks. PR #27 and the overlapping original PR #21 must not
+both be merged.
+
 ## Janssens final workbook (28 October 2026)
 
 The final author-supplied AISI316L workbook replaces the previous file. The R = -1 tensile fatigue limit is 278.5 MPa, the first uniaxial run-out is 17,225,000 cycles, and the non-proportional torsional phases are 90 degrees. The overlay has been reduced to 15 independent operations. The updated dataset fingerprint is `a63f9325d41155bb7611b2c6272e0bbee9a46e33fefe4bc33faa47f8470f4750`. Older checkpoint notes describe superseded source revisions.
