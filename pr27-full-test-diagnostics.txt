@@ -1,0 +1,82 @@
+Full pytest exit status: 1
+Git commit: 59dd554af34a5e02808ac4f6129490ea3949e169
+
+.................................xx..xx......xx.....x.x...x.........xx.. [  4%]
+x...................................................................x... [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+.....................................x.................................. [ 20%]
+.........................xxx............................................ [ 24%]
+..................................x..xxxxx..x........................... [ 28%]
+..x......x..........x...............................x..........x........ [ 32%]
+..............................................................xx..xxx... [ 36%]
+.x.................................x.............................x...... [ 40%]
+...x..................................................x................. [ 44%]
+........................................................x............... [ 48%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+.........x.................................................. [ 60%]
+........................................................................ [ 64%]
+......................................................................................................................... [ 71%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+......s.s..sss.ss.....ss..s..sss.s.s.....ss.......ss...s.ss........s.... [ 83%]
+...............ssss..................................................... [ 87%]
+.....................................F
+=================================== FAILURES ===================================
+______________ test_parameters_are_in_the_table_or_the_allow_list ______________
+tests/test_notation.py:319: in test_parameters_are_in_the_table_or_the_allow_list
+    assert not offenders, (
+E   AssertionError: parameter names outside docs/notation.md; add a table row or an entry with its reason to tests/data/notation_allow.txt:
+E     src/multifat/models/cp_methods/mdc.py:89: `cycles`
+E     src/multifat/models/cp_methods/mmccm.py:142: `cycles`
+E   assert not ['src/multifat/models/cp_methods/mdc.py:89: `cycles`', 'src/multifat/models/cp_methods/mmccm.py:142: `cycles`']
+=========================== short test summary info ============================
+SKIPPED [27] tests/test_notation.py:129: no module docstring
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r1] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r2] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r5] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r6] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r13] - 42CrMo4 rows 14-15: 0.3 points off, unresolved
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r14] - 42CrMo4 rows 14-15: 0.3 points off, unresolved
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r20] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r22] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r26] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r36] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r37] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r40] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
+XFAIL tests/methods/test_doudard.py::test_printed_kappa_16 - unresolved: printed kappa(16) 3.6 / 1.0 / 1.6 / 9.6 are 5-10 % above Eq. (36) (3.357 / 0.9415 / 1.459 / 9.137), no common factor
+XFAIL tests/methods/test_morel.py::test_worked_example_c_a_as_printed - printed C_A = 282 MPa; the critical-plane semi-major axis is 285.0
+XFAIL tests/methods/test_ottosen.py::test_out_of_phase_close_to_incremental_model[r0] - 30NCD16 phi = 90: both models print 0.00; reduced form gives -26 to -34 %
+XFAIL tests/methods/test_ottosen.py::test_out_of_phase_close_to_incremental_model[r1] - 30NCD16 phi = 90: both models print 0.00; reduced form gives -26 to -34 %
+XFAIL tests/methods/test_ottosen.py::test_out_of_phase_close_to_incremental_model[r2] - 30NCD16 phi = 90: both models print 0.00; reduced form gives -26 to -34 %
+XFAIL tests/methods/test_papadopoulos.py::test_papadopoulos1997_table1_column[r11] - 0.13-0.37 points off; the source carries numerical scatter (see docstring)
+XFAIL tests/methods/test_papadopoulos.py::test_papadopoulos1997_table1_column[r14] - 0.13-0.37 points off; the source carries numerical scatter (see docstring)
+XFAIL tests/methods/test_papadopoulos.py::test_papadopoulos1997_table1_column[r15] - 0.13-0.37 points off; the source carries numerical scatter (see docstring)
+XFAIL tests/methods/test_papadopoulos.py::test_papadopoulos1997_table1_column[r16] - 0.13-0.37 points off; the source carries numerical scatter (see docstring)
+XFAIL tests/methods/test_papadopoulos.py::test_papadopoulos1997_table1_column[r17] - 0.13-0.37 points off; the source carries numerical scatter (see docstring)
+XFAIL tests/methods/test_papadopoulos.py::test_papadopoulos1997_table1_column[r18] - 0.13-0.37 points off; the source carries numerical scatter (see docstring)
+XFAIL tests/methods/test_papadopoulos.py::test_papadopoulos1997_table1_column[r21] - 0.13-0.37 points off; the source carries numerical scatter (see docstring)
+XFAIL tests/methods/test_papadopoulos1997_matake_mcd.py::test_table1_matake[r8] - table calculation error
+XFAIL tests/methods/test_papadopoulos1997_matake_mcd.py::test_table1_matake[r15] - mean torsion with phase shift, unresolved
+XFAIL tests/methods/test_papadopoulos1997_matake_mcd.py::test_table1_matake[r26] - mean torsion with phase shift, unresolved
+XFAIL tests/methods/test_papadopoulos1997_matake_mcd.py::test_table1_mcdiarmid[r16] - mean torsion with phase shift, unresolved
+XFAIL tests/methods/test_papadopoulos1997_matake_mcd.py::test_table1_mcdiarmid[r27] - mean torsion with phase shift, unresolved
+XFAIL tests/methods/test_robert_fogue_bahuaud.py::test_tables_validity_parameter[T1r1] - unresolved, see module docstring
+XFAIL tests/methods/test_robert_fogue_bahuaud.py::test_tables_validity_parameter[T1r2] - unresolved, see module docstring
+XFAIL tests/methods/test_robert_fogue_bahuaud.py::test_tables_validity_parameter[T1r5] - unresolved, see module docstring
+XFAIL tests/methods/test_robert_fogue_bahuaud.py::test_tables_validity_parameter[T1r6] - unresolved, see module docstring
+XFAIL tests/methods/test_robert_fogue_bahuaud.py::test_tables_validity_parameter[T1r7] - unresolved, see module docstring
+XFAIL tests/methods/test_robert_fogue_bahuaud.py::test_tables_validity_parameter[T1r12] - unresolved, see module docstring
+XFAIL tests/methods/test_robert_fogue_bahuaud.py::test_tables_validity_parameter[T3r11] - unresolved, see module docstring
+XFAIL tests/methods/test_swtd.py::test_table2_uniaxial_compression[row10] - printed 0.335, Eq. (25) gives 0.324 (misprint)
+XFAIL tests/methods/test_swtd.py::test_table3_torsion_uses_gamma_over_sqrt3[row9] - printed 0.58; tau gamma/sqrt3 = 0.61 (row inconsistent)
+XFAIL tests/methods/test_vu_halm_nadot.py::test_tables_error_index[T2r9] - printed delta_xy = 0; all indices of the row correspond to 90 deg
+XFAIL tests/methods/test_vu_halm_nadot.py::test_tables_error_index[T11r1] - printed Sigma_xx,a = 52.90; I^a and I^e correspond to 552.90
+XFAIL tests/methods/test_zhu_edp.py::test_case_ix_as_printed - p.14 prints (1 + xi) dW_0 with I = D^2/12 (misprint)
+FAILED tests/test_notation.py::test_parameters_are_in_the_table_or_the_allow_list - AssertionError: parameter names outside docs/notation.md; add a table row or an entry with its reason to tests/data/notation_allow.txt:
+  src/multifat/models/cp_methods/mdc.py:89: `cycles`
+  src/multifat/models/cp_methods/mmccm.py:142: `cycles`
+assert not ['src/multifat/models/cp_methods/mdc.py:89: `cycles`', 'src/multifat/models/cp_methods/mmccm.py:142: `cycles`']
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 1518 passed, 27 skipped, 41 xfailed, 35 subtests passed in 240.60s (0:04:00)
