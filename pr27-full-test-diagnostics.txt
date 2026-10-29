@@ -1,5 +1,5 @@
-Full pytest exit status: 1
-Git commit: 59dd554af34a5e02808ac4f6129490ea3949e169
+Full pytest exit status: 0
+Git commit: 6473a58c6940fd2e6d639666776956d2a606ee60
 
 .................................xx..xx......xx.....x.x...x.........xx.. [  4%]
 x...................................................................x... [  8%]
@@ -22,15 +22,10 @@ x...................................................................x... [  8%]
 ........................................................................ [ 79%]
 ......s.s..sss.ss.....ss..s..sss.s.s.....ss.......ss...s.ss........s.... [ 83%]
 ...............ssss..................................................... [ 87%]
-.....................................F
-=================================== FAILURES ===================================
-______________ test_parameters_are_in_the_table_or_the_allow_list ______________
-tests/test_notation.py:319: in test_parameters_are_in_the_table_or_the_allow_list
-    assert not offenders, (
-E   AssertionError: parameter names outside docs/notation.md; add a table row or an entry with its reason to tests/data/notation_allow.txt:
-E     src/multifat/models/cp_methods/mdc.py:89: `cycles`
-E     src/multifat/models/cp_methods/mmccm.py:142: `cycles`
-E   assert not ['src/multifat/models/cp_methods/mdc.py:89: `cycles`', 'src/multifat/models/cp_methods/mmccm.py:142: `cycles`']
+........................................................................ [ 91%]
+........................................................................ [ 95%]
+................................................... [ 98%]
+...........................                                              [100%]
 =========================== short test summary info ============================
 SKIPPED [27] tests/test_notation.py:129: no module docstring
 XFAIL tests/methods/test_crossland_sines.py::test_table1_crossland[r1] - Table 1 used sin(delta) for sin^2(delta) of Eq. (44)
@@ -74,9 +69,4 @@ XFAIL tests/methods/test_swtd.py::test_table3_torsion_uses_gamma_over_sqrt3[row9
 XFAIL tests/methods/test_vu_halm_nadot.py::test_tables_error_index[T2r9] - printed delta_xy = 0; all indices of the row correspond to 90 deg
 XFAIL tests/methods/test_vu_halm_nadot.py::test_tables_error_index[T11r1] - printed Sigma_xx,a = 52.90; I^a and I^e correspond to 552.90
 XFAIL tests/methods/test_zhu_edp.py::test_case_ix_as_printed - p.14 prints (1 + xi) dW_0 with I = D^2/12 (misprint)
-FAILED tests/test_notation.py::test_parameters_are_in_the_table_or_the_allow_list - AssertionError: parameter names outside docs/notation.md; add a table row or an entry with its reason to tests/data/notation_allow.txt:
-  src/multifat/models/cp_methods/mdc.py:89: `cycles`
-  src/multifat/models/cp_methods/mmccm.py:142: `cycles`
-assert not ['src/multifat/models/cp_methods/mdc.py:89: `cycles`', 'src/multifat/models/cp_methods/mmccm.py:142: `cycles`']
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-1 failed, 1518 passed, 27 skipped, 41 xfailed, 35 subtests passed in 240.60s (0:04:00)
+1703 passed, 27 skipped, 41 xfailed, 56 subtests passed in 283.04s (0:04:43)
