@@ -1,0 +1,35 @@
+name: PR27 focused method comparison verification
+on:
+  push:
+    branches: [fix/tveit2025-stage1-pr21-integration]
+permissions:
+  contents: write
+jobs:
+  verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Format changed method and comparison code
+        run: |
+          uv run black src/multifat/models/comparison.py src/multifat/models/cp_adapter.py src/multifat/models/cp_methods/mdc.py src/multifat/models/cp_methods/mmccm.py src/multifat/models/integral_methods/morel.py src/multifat/models/invariant_methods/tveit2025.py src/multifat/eval/calibration.py src/multifat/cli/run.py src/multifat/cli/compare.py tests/test_tveit_reporting.py
+      - name: Capture new regression tests
+        run: |
+          set +e
+          uv run pytest -q tests/test_tveit_reporting.py > /tmp/compare-check.log 2>&1
+          test_status=$?
+          {
+            echo "PR27 capability regression suite exit status: ${test_status}"
+            tail -n 240 /tmp/compare-check.log
+          } > pr27-capabilities-diagnostics.txt
+          exit 0
+      - name: Commit formatting and diagnostics
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/multifat/models/comparison.py src/multifat/models/cp_adapter.py src/multifat/models/cp_methods/mdc.py src/multifat/models/cp_methods/mmccm.py src/multifat/models/integral_methods/morel.py src/multifat/models/invariant_methods/tveit2025.py src/multifat/eval/calibration.py src/multifat/cli/run.py src/multifat/cli/compare.py tests/test_tveit_reporting.py pr27-capabilities-diagnostics.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "Temporary comparison capabilities verification and formatting"
+          git push origin HEAD:fix/tveit2025-stage1-pr21-integration
