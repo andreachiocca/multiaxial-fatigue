@@ -1,4 +1,0 @@
-Temporary PR27 diagnostics. Test exit status: 0
-
-........                                                                 [100%]
-8 passed in 2.91s
