@@ -133,6 +133,9 @@ uv run multifat-run --model SINES --material 42CrMo4_QT --no-plots
 # Run Findley with explicit shear amplitude algorithm
 uv run multifat-run --model FIN --material 42CrMo4_QT --shear-amplitude-algorithm mce_harmonic
 
+# Master curve with a fatigue limit (Kohout & Věchet 2001) instead of Basquin (also on multifat-pipeline)
+uv run multifat-run --model SINES --material 42CrMo4_QT --sn-model kohout_vechet
+
 # Design curve with a 90 % survival probability instead of the median (also on multifat-pipeline)
 uv run multifat-run --model SINES --material 42CrMo4_QT --survival-probability 0.9
 ```

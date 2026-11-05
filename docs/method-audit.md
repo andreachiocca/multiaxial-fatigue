@@ -75,6 +75,47 @@ The default uses the median fitted curve (`STDNUM=0`, survival probability P_s =
 
 Life predictions are still suppressed when `b >= 0` or `k=-1/b > 15`. Exactly flat curves retain a finite constant `DP_e`. Constant-life calibration data cannot identify a slope and yield an invalid fit; the runner rejects it with an explanatory error. Parameter searches with no finite objective also fail explicitly instead of reporting an arbitrary bound as an optimum. Nonpositive evaluated DP values are retained with undefined log/life metrics instead of passing into life inversion. New columns do not change the meanings of `Error_ln` or `Error_ln_dp`.
 
+## Master-curve (S-N) models
+
+`--sn-model` (`multifat-run`, `multifat-pipeline`; issue #38) selects the curve that converts a DP
+to life (`multifat.eval.sn_curves`), fitted on ln DP of the uniaxial R = -1 design tests:
+
+| `--sn-model` | Curve | Parameters | Source |
+|---|---|---|---|
+| `basquin` (default) | DP = A N^b | A, b | Basquin; the established fit, bit for bit |
+| `kohout_vechet` | DP = sigma_inf (N/(N+C))^b | sigma_inf, C, b | Kohout & Vechet (2001), Eq. (H2), doi:10.1016/S0142-1123(00)00082-7 |
+| `stromeyer` | DP = a N^b + sigma_inf | a, b, sigma_inf | Stromeyer |
+
+Nonlinear fits use `scipy.optimize.least_squares` (trust-region, bounded) from several starts
+derived from the Basquin fit. A fit is rejected with its reason (the model is then skipped, never
+silently replaced by Basquin) with fewer than 2p design tests, without convergence, with a
+parameter on a search bound (b in [-3, 0), C in [1e2, 1e12]) or with a singular covariance. Below
+sigma_inf the predicted life is infinite: it is written as `inf`, counted in the run report and in
+the `n_nonfinite` column of the statistics, and has no life error but a load error. The Kohout &
+Vechet whole-range form (W) is not offered: it needs low-cycle data or the strength sigma_1, which
+has no counterpart for an arbitrary DP. Plane constants (k_FI, k_FS, ...) are still calibrated on
+the Basquin scatter objective, and native life laws (MDC, MMCCM, MOREL, TVEIT2025) and the
+Basquin constants of their own formulations are not affected. Every CSV records `SN_model`, the
+sidecar `master_curve_model`; `multifat-compare` refuses mixed models.
+
+**Known problems (checked on AISI316L and Al7075_T6, FIN, SWT, CROSSLAND, BP, PCR, MOREL):**
+
+- *Fatigue limit from failures only.* sigma_inf is estimated from the failed design tests;
+  run-outs are not used (a censored fit is future work, #38). On AISI316L the fitted limit lies
+  above most assessed DPs: 21 of 28 CROSSLAND and 20 of 28 PCR predictions are infinite.
+- *Selection bias of the life error.* Life statistics cover only finite predictions, so a model
+  that predicts infinite life for the hardest tests looks better: SWT on AISI316L has SD ln N 6.06
+  with Basquin and 0.79 with Kohout-Vechet, on 28 and 14 tests. Always read `n_nonfinite`.
+- *Not uniformly better.* On Al7075_T6 Kohout-Vechet raises the life scatter of most methods
+  (BP 1.29 -> 1.84) and adds 7-13 infinite predictions per method; Stromeyer behaves similarly.
+- *The load error is robust to the choice:* SWT on AISI316L 0.278 / 0.285 / 0.284 (Basquin /
+  Kohout-Vechet / Stromeyer). Rank methods on `Error_load`; use the S-N model for life prediction
+  where a fatigue limit is physically expected and supported by data near it.
+- *Survival shift:* a vertical shift exp(-z s) of the whole curve, s = sqrt(SSE/(n-p)) in ln DP;
+  the corresponding life factor varies along a curved model.
+- The regression space of Kohout & Vechet is not stated in the paper; ln DP is a repository
+  choice consistent with Basquin.
+
 ## Constants fitted by the pipeline and native lives
 
 `multifat-pipeline` fills only constants that a model requires and the workbook lacks. The fits are written to `<MATERIAL>_calibration.json`, never into the workbook. Basquin constants (sigma_f, b_fat, tau_f, b0) come from the workbook's fully reversed tension and torsion tests. A curve is used only with at least 5 tests, at least one decade of life and a slope beyond two standard errors; otherwise MDC and MMCCM are skipped with the reason. MMCCM's plastic terms (epsilon_f, c_fat, gamma_f, c0) are uniform-material-law estimates (steel form), because elastic HCF data cannot identify them. Torsion tests behind a fitted tau_f, b0 are written as design points (Flag = 0). `k_MGSE` comes from Zhu (2018) Eq. (12) on the Basquin fits whenever they are identifiable, also when no other selected model needs those fits (previously a run selecting MGSE_ZHU without MDC or MMCCM fitted `k_MGSE` by scatter minimisation instead, e.g. 1.239 rather than 0.988 on Al7075_T6); otherwise it falls back to scatter minimisation, recorded in `source`. Since November 2026 the same holds for the plane constants: the tension and torsion tests of the scatter objective behind a calibrated k_FI, k_FS, L_LI, k_MGSE or a_MSWT, and the Basquin tests behind a k_MGSE from Zhu (2018) Eq. (12), are design points of every model that adopts that constant (they were previously exported as Flag = 1, so their errors were not independent of the calibration). With `--constants`, a sidecar of this pipeline carries its design tests only when its `failure_fingerprint` matches the data; for an upstream record or a workbook constant the tests are unknown and remain Flag = 1 (`constants_source.design_rows` says so). Fitted constants are never passed to models that only read them optionally (GSA, LIU2021 keep their documented fallbacks). A constants file (`--constants`) may also supply the optional TVEIT2025 fatigue limits and numerical settings (`SUPPLIED_OPTIONAL` in `cli/pipeline.py`). MDC, MMCCM, MOREL and TVEIT2025 add `Nf_native` and `Error_log10_native = log10(Nf_exp/Nf_native)` from their own life laws.

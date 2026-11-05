@@ -24,6 +24,7 @@ from multifat.imp.schema import (
 from multifat.planes.sampling import build_R_list
 from multifat.eval.calibration import collect_uniaxial_series_and_fit
 from multifat.eval.fitting import stdnum_for_survival
+from multifat.eval.sn_curves import SN_MODELS, curve_dp, curve_life
 from multifat.report.export_csv import save_fatigue_csv
 from multifat.report.subsets import observation_index
 from multifat.models.errors import MissingParamsError, NativeLifeError
@@ -56,6 +57,8 @@ DCMESH_N2 = 2 * DCMESH_N1
 STDNUM = 0
 # Survival probability P_s of the master curve (issue #16); 0.5 is the median curve, STDNUM = 0.
 SURVIVAL_PROBABILITY = 0.5
+# Master-curve (S-N) model, see multifat.eval.sn_curves (issue #38); basquin is the default
+SN_MODEL = "basquin"
 MAKE_PLOTS = True
 K_SLOPE_MAX = 15.0
 
@@ -255,6 +258,8 @@ class Evaluation:
     # Master-curve shift: z standard deviations of ln DP, and the survival probability Phi(z)
     stdnum: float = 0.0
     survival_probability: float = 0.5
+    # Master-curve model (multifat.eval.sn_curves)
+    sn_model: str = "basquin"
     # Imported data of the material, for re-evaluating cases at scaled loads (load error)
     data: Any = None
     # Fitted constants of the native life law, set by native_lives
@@ -304,6 +309,8 @@ def check_fit(base_name: str, variant_key: str, cal: dict) -> None:
             f"fit exists: {cal['fit'] is not None}, "
             f"fit_ext exists: {cal['fit_ext'] is not None}."
         )
+    if not curve.get("valid", True):
+        raise ValueError(f"S-N model not usable: {curve.get('reason', '')}")
     a_surv, slope = curve["A_surv"], curve["b"]
     if not (np.isfinite(a_surv) and a_surv > 0 and np.isfinite(slope)):
         raise ValueError(
@@ -367,6 +374,7 @@ def evaluate_model(
     require_variant: str | None = None,
     stdnum: float | None = None,
     survival_probability: float | None = None,
+    sn_model: str | None = None,
     extra_design_ids=(),
     shear_amplitude_algorithm: str = "method_default",
 ) -> Evaluation:
@@ -381,6 +389,9 @@ def evaluate_model(
         stdnum = stdnum_for_survival(survival_probability)
     elif survival_probability is not None:
         raise ValueError("give either stdnum or survival_probability, not both")
+    sn_model = SN_MODEL if sn_model is None else sn_model
+    if sn_model not in SN_MODELS:
+        raise ValueError(f"unknown S-N model {sn_model!r}; choose one of {SN_MODELS}")
     if R_list is None:
         R_list = build_R_list(n1=DCMESH_N1, n2=DCMESH_N2)
     amplitude = shear_amplitude_for(base_name, shear_amplitude_algorithm)
@@ -409,6 +420,7 @@ def evaluate_model(
         models=[mdl],
         params=params,
         stdnum=stdnum,
+        sn_model=sn_model,
     )
     # Grab the calibration of this model
     if base_name not in calibrations:
@@ -425,6 +437,7 @@ def evaluate_model(
         amplitude=amplitude,
         stdnum=float(stdnum),
         survival_probability=float(NormalDist().cdf(stdnum)),
+        sn_model=sn_model,
     )
     result.observations = observation_index(data[material])
     result.data = data
@@ -595,6 +608,8 @@ def write_native_variant(
         curve = ev.fit(variant_key)
         if curve is None:
             return np.full(n.shape, np.nan)
+        if not _is_basquin(curve):
+            return curve_dp(curve, n)
         a, b = float(curve["A_surv"]), float(curve["b"])
         with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
             return np.where(n > 0, a * np.power(n, b), np.nan)
@@ -616,6 +631,7 @@ def write_native_variant(
     return save_fatigue_csv(
         out_dir=str(results_dir),
         survival_probability=ev.survival_probability,
+        sn_model=ev.sn_model,
         Error_load=load_error,
         Error_load_design=load_error_d,
         method_name=method_name,
@@ -680,7 +696,7 @@ def load_errors(ev: Evaluation, variant_key: str, case_ids, lives, *, native: bo
                 )
             )  # fmt: skip
             continue
-        DP_fit = float(curve["A_surv"]) * float(Nf) ** float(curve["b"])
+        DP_fit = curve_dp_at(curve, float(Nf))
         DP = damage(ev.model, ev.params, case, ev.R_list, variant=variant_key)
         errors.append(
             master_curve_load_error(
@@ -730,6 +746,34 @@ def metric_mode(exponent_b) -> tuple[str, float]:
     return "Nf", slope_k
 
 
+def _is_basquin(curve: dict) -> bool:
+    return curve.get("sn_model", "basquin") == "basquin"
+
+
+def life_mode(curve: dict) -> tuple[str, float]:
+    """metric_mode for any master-curve model; a valid non-Basquin curve is always invertible."""
+    if _is_basquin(curve):
+        return metric_mode(curve["b"])
+    return ("Nf", np.nan) if curve.get("valid") else ("DP_DIFF", np.nan)
+
+
+def curve_dp_at(curve: dict, Nf: float) -> float:
+    """Master-curve DP at the life Nf (Basquin: the established expression, bit for bit)."""
+    if _is_basquin(curve):
+        A_surv, b = curve["A_surv"], curve["b"]
+        if np.isfinite(Nf) and Nf > 0 and np.isfinite(A_surv) and np.isfinite(b):
+            return float(A_surv) * (Nf ** float(b))
+        return float("nan")
+    return float(curve_dp(curve, Nf))
+
+
+def curve_life_at(curve: dict, DP):
+    """Master-curve life of DP (+inf below a fatigue-limit asymptote)."""
+    if _is_basquin(curve):
+        return fatc.fatigue_cycles(DP, curve["A_surv"], curve["b"])
+    return curve_life(curve, DP)
+
+
 def write_variant(
     ev: Evaluation,
     variant_key: str,
@@ -758,7 +802,7 @@ def write_variant(
     # When k gets very large (nearly flat curve), the predicted N is meaningless.
     # Then switch to the DP log-ratio metric:
     #   Error_ln_dp = ln(DP_point / DP_fit(Nf_exp))
-    error_mode, slope_k = metric_mode(exponent_b)
+    error_mode, slope_k = life_mode(curve)
 
     if verbose:
         print(
@@ -786,15 +830,18 @@ def write_variant(
 
     # Predicted cycles at the design points only carry meaning in Nf mode
     if error_mode == "Nf":
-        Npred_d = fatc.fatigue_cycles(F_d, surv_A, exponent_b)
+        Npred_d = curve_life_at(curve, F_d)
     else:
         Npred_d = np.full_like(np.asarray(N_d, dtype=float), np.nan, dtype=float)
 
     # DP_fit at the design points (always obtainable from the calibration curve)
     N_d_arr = np.asarray(N_d, dtype=float)
     DP_fit_d = np.full_like(N_d_arr, np.nan, dtype=float)
-    md = np.isfinite(N_d_arr) & (N_d_arr > 0) & np.isfinite(surv_A) & np.isfinite(exponent_b)
-    DP_fit_d[md] = float(surv_A) * (N_d_arr[md] ** float(exponent_b))
+    if _is_basquin(curve):
+        md = np.isfinite(N_d_arr) & (N_d_arr > 0) & np.isfinite(surv_A) & np.isfinite(exponent_b)
+        DP_fit_d[md] = float(surv_A) * (N_d_arr[md] ** float(exponent_b))
+    else:
+        DP_fit_d = curve_dp(curve, N_d_arr)
     # DP log-ratio error at the design points
     F_d_arr = np.asarray(F_d, dtype=float)
     Error_ln_dp_d = np.full_like(F_d_arr, np.nan, dtype=float)
@@ -809,13 +856,11 @@ def write_variant(
         F = float(res_values[variant_key])
 
         # Calibration-curve DP at the experimental Nf
-        dp_fit_i = np.nan
-        if np.isfinite(Nf) and Nf > 0 and np.isfinite(surv_A) and np.isfinite(exponent_b):
-            dp_fit_i = float(surv_A) * (Nf ** float(exponent_b))
+        dp_fit_i = curve_dp_at(curve, Nf)
 
         # Metric branch
         if error_mode == "Nf" and np.isfinite(F) and F > 0:
-            N_pred = fatc.fatigue_cycles(F, surv_A, exponent_b)
+            N_pred = curve_life_at(curve, F)
         else:
             N_pred = np.nan
 
@@ -826,7 +871,9 @@ def write_variant(
             err_ln_dp_i = np.nan
 
         values.append(float(F))
-        Npred.append(float(N_pred) if np.isfinite(N_pred) else float("nan"))
+        # +inf is a prediction (below a fatigue-limit asymptote), kept as such; NaN means none
+        keep_inf = not _is_basquin(curve) and N_pred == np.inf
+        Npred.append(float(N_pred) if np.isfinite(N_pred) or keep_inf else float("nan"))
         DP_fit.append(float(dp_fit_i) if np.isfinite(dp_fit_i) else float("nan"))
         Error_ln_dp.append(float(err_ln_dp_i) if np.isfinite(err_ln_dp_i) else float("nan"))
 
@@ -838,20 +885,13 @@ def write_variant(
     CP_r = [float(v[variant_key]) for v in ev.runout["values"]]
     Npred_r = [
         (
-            float(fatc.fatigue_cycles(F, surv_A, exponent_b))
+            float(curve_life_at(curve, F))
             if error_mode == "Nf" and np.isfinite(F) and F > 0
             else float("nan")
         )
         for F in CP_r
     ]
-    DP_fit_r = [
-        (
-            float(surv_A) * (Nf ** float(exponent_b))
-            if np.isfinite(Nf) and Nf > 0 and np.isfinite(surv_A) and np.isfinite(exponent_b)
-            else float("nan")
-        )
-        for Nf in ev.runout["Nexp"]
-    ]
+    DP_fit_r = [curve_dp_at(curve, Nf) for Nf in ev.runout["Nexp"]]
 
     # Plot only in Nf mode (the parity plot needs a meaningful N_pred)
     if error_mode == "Nf" and make_plots:
@@ -861,6 +901,7 @@ def write_variant(
             Npred,
             A=surv_A,
             B=exponent_b,
+            curve=None if _is_basquin(curve) else (lambda n: curve_dp(curve, n)),
             F_design=F_d,
             N_design=N_d,
             F_runout=CP_r,
@@ -903,6 +944,7 @@ def write_variant(
     csv_path = save_fatigue_csv(
         out_dir=str(results_dir),
         survival_probability=ev.survival_probability,
+        sn_model=ev.sn_model,
         Error_load=load_error,
         Error_load_design=load_error_d,
         method_name=model_name,  # keep filename compatibility
@@ -986,7 +1028,7 @@ def cli(argv=None) -> None:
     import argparse
 
     global MODEL_NAME, MATERIAL_NAME, RESULTS_DIR, MAKE_PLOTS, SHEAR_AMPLITUDE_ALGORITHM
-    global SURVIVAL_PROBABILITY
+    global SURVIVAL_PROBABILITY, SN_MODEL
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("--model", default=MODEL_NAME)
     arg_parser.add_argument("--material", default=MATERIAL_NAME)
@@ -996,6 +1038,13 @@ def cli(argv=None) -> None:
         "--no-overlay",
         action="store_true",
         help="use the workbooks as supplied, without the overlays",
+    )
+    arg_parser.add_argument(
+        "--sn-model",
+        default=SN_MODEL,
+        choices=SN_MODELS,
+        help="master curve converting the damage parameter to life (default basquin); native "
+        "life laws and the calibration of plane constants are not affected",
     )
     arg_parser.add_argument(
         "--survival-probability",
@@ -1015,6 +1064,7 @@ def cli(argv=None) -> None:
     SHEAR_AMPLITUDE_ALGORITHM = opts.shear_amplitude_algorithm
     stdnum_for_survival(opts.survival_probability)  # reject invalid values before any work
     SURVIVAL_PROBABILITY = opts.survival_probability
+    SN_MODEL = opts.sn_model
     MODEL_NAME, MATERIAL_NAME, RESULTS_DIR = opts.model, opts.material, opts.results_dir
     MAKE_PLOTS = not opts.no_plots
     main()
