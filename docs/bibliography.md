@@ -140,3 +140,11 @@ Implemented as restated by Papadopoulos et al. (1997), Eqs. (44), (62)-(64): htt
 - MSWT lineage: Jiang (2000), *A fatigue criterion for general multiaxial loading*, https://doi.org/10.1046/j.1460-2695.2000.00247.x. The current code implements the scalar form recorded in Zhu (2018), not a full incremental implementation of Jiang (2000).
 - BP implementation equations and R=0 estimates: Böhme, Papuga & Lange (2026), https://doi.org/10.1111/ffe.70244. The user-supplied MATLAB file `damage_criteria_CAIM.m` applies specifically to CAIM.
 - FS maximum-damage extension: Chiocca (2024), *Closed-form solution for the Fatemi-Socie extended critical plane parameter in case of linear elasticity and proportional loading*, https://doi.org/10.1111/ffe.14153. The repository uses a numerical plane scan, not this closed-form solution.
+
+## Master-curve (S-N) models
+
+Not fatigue criteria: the curves that convert a damage parameter to life (`--sn-model`, `multifat.eval.sn_curves`).
+
+- Kohout & Věchet (2001), *A new function for fatigue curves characterization and its multiple merits*, International Journal of Fatigue 23, 175–183, https://doi.org/10.1016/S0142-1123(00)00082-7. Implemented: form (H2), finite-life and high-cycle region.
+- Basquin (1910), *The exponential law of endurance tests*, Proceedings ASTM 10, 625–630 (default master curve).
+- Stromeyer (1914), *The determination of fatigue limits under alternating stress conditions*, Proceedings of the Royal Society A 90, 411–425.

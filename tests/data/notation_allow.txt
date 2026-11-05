@@ -19,7 +19,7 @@ exp material_name models uniax_cases block cases df factor key mean model radial
 # Fit inputs and coefficients, their brackets, and the validation figures.
 A B N N_design N_exp N_pred N_pred_runout N_runout Nmax Nmin F_design F_par F_runout
 N_hi N_lo b b0 sf tf bounds stdnum expected observed
-ax color curve_range error_factors label loglog n_curve return_figax return_warnings show y
+ax color curve curve_range error_factors label loglog n_curve return_figax return_warnings show y
 
 # Names a criterion introduces for its own quantities, defined by the equation its module cites.
 A_prime C_A E_amp F1 F_NP G H_c K_prime R1 R3 S_amp S_max S_min T_Slim X Y alpha alpha_w

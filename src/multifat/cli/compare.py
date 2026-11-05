@@ -586,6 +586,14 @@ def collect_all_results(results_dir: Path) -> pd.DataFrame:
                 f"{results_dir} mixes master curves of survival probabilities {levels}: their "
                 "lives and DP errors are not comparable; compare one survival probability at a time"
             )
+    if "SN_model" in frame.columns:
+        # Results made before the column existed use the Basquin master curve.
+        models = sorted(frame["SN_model"].fillna("basquin").unique())
+        if len(models) > 1:
+            raise ValueError(
+                f"{results_dir} mixes master-curve models {models}: their lives and DP errors "
+                "are not comparable; compare one S-N model at a time"
+            )
     return frame
 
 
@@ -1772,6 +1780,7 @@ STATS_COLUMNS = [
     "Error_std",
     "Within_10pct",
     "Within_20pct",
+    "n_nonfinite",
 ]
 
 
@@ -1809,6 +1818,8 @@ def compute_stats_table(df: pd.DataFrame, plot_kind: str = "both") -> pd.DataFra
                 group.get(metric_name, pd.Series(np.nan, index=group.index)),
                 errors="coerce",
             ).to_numpy(dtype=float)
+            # Rows without a finite error (e.g. infinite predicted lives) are counted, not hidden
+            n_nonfinite = int(np.sum(~np.isfinite(errors)))
             errors = errors[np.isfinite(errors)]
             band = np.abs(np.expm1(errors)) if metric_name == "Error_load" else None
             records.append(
@@ -1826,6 +1837,7 @@ def compute_stats_table(df: pd.DataFrame, plot_kind: str = "both") -> pd.DataFra
                     Within_20pct=(
                         float(np.mean(band <= 0.2)) if band is not None and band.size else np.nan
                     ),
+                    n_nonfinite=n_nonfinite,
                 )
             )
     return pd.DataFrame(

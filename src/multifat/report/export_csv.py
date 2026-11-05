@@ -174,6 +174,8 @@ def save_fatigue_csv(
     # Load-equivalent error e_L = ln(1/s*) (issue #37), failures only; adds a column when given
     Error_load=None,
     Error_load_design=None,
+    # Master-curve model behind Nf_expected and DP_fit (issue #38); adds a last column when given
+    sn_model: str | None = None,
 ) -> str:
     """Export a lightweight results CSV.
 
@@ -199,7 +201,8 @@ def save_fatigue_csv(
     With observation identities, Test_status, Specimen_id, Case_id, Observation_id and
     Dataset_fingerprint follow. With a survival probability, Survival_probability follows
     them: the probability P_s of the master curve that Nf_expected and DP_fit refer to.
-    Error_load (load-equivalent error ln(1/s*), empty for run-outs) is appended last.
+    Error_load (load-equivalent error ln(1/s*), empty for run-outs) and SN_model (the master-curve
+    model, multifat.eval.sn_curves) are appended last.
 
     Notes:
       * Parameters Error_dp / Error_dp_design are deprecated aliases kept only to avoid breaking older scripts.
@@ -354,6 +357,7 @@ def save_fatigue_csv(
 
     tail = [float(survival_probability)] if survival_probability is not None else []
     with_load = Error_load is not None or Error_load_design is not None
+    model_tail = [str(sn_model)] if sn_model is not None else []
 
     def _load(values, i: int) -> list:
         if not with_load:
@@ -384,6 +388,7 @@ def save_fatigue_csv(
             + (IDENTITY_COLUMNS if with_ids else [])
             + (["Survival_probability"] if survival_probability is not None else [])
             + (["Error_load"] if with_load else [])
+            + (["SN_model"] if sn_model is not None else [])
         )
 
         if have_design:
@@ -426,6 +431,7 @@ def save_fatigue_csv(
                     + _ids(observation_ids_design, i)
                     + tail
                     + _load(Error_load_design, i)
+                    + model_tail
                 )
 
         for i, (ne, cp, npred, err) in enumerate(zip(N_exp, CP, N_pred, err_other)):
@@ -457,6 +463,7 @@ def save_fatigue_csv(
                 + _ids(observation_ids, i)
                 + tail
                 + _load(Error_load, i)
+                + model_tail
             )
 
         nan = float("nan")
@@ -483,6 +490,7 @@ def save_fatigue_csv(
                 + _ids(observation_ids_runout, i)
                 + tail
                 + _load(None, i)
+                + model_tail
             )
 
     return path

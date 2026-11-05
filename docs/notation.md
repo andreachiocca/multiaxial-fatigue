@@ -59,6 +59,7 @@ normal(s) themselves.
 | Per-plane damage and metric arrays | - | `damage`, `metric` | - | model |
 | Number of cycles to failure | N_f | `Nf` | Nf_cycles | cycles |
 | Survival probability of a fitted master curve | P_s | `P_s` | - | - |
+| Master-curve (S-N) model: basquin, kohout_vechet, stromeyer | - | `sn_model` | - | - |
 | Master-curve damage parameter at the observed life | DP_e | `DP_fit` | - | model |
 | Weights of tau_a^2, sigma_a^2, tau_a tau_m, sigma_a sigma_m in BP / CAIM | a_BP..d_BP, a_CAIM..d_CAIM | `a_BP`, `b_BP`, `c_BP`, `d_BP`, `a_CAIM`, `b_CAIM`, `c_CAIM`, `d_CAIM` | - | - |
 | Tension/torsion fatigue-limit ratio and its square | kappa, kappa^2 | `kappa`, `kappa_sq` | - | - |

@@ -166,7 +166,7 @@ def test_pipeline_csv_has_identities(tmp_path):
     columns = list(df.columns)
     start = columns.index(IDENTITY_COLUMNS[0])  # later columns are appended after them
     assert columns[start : start + len(IDENTITY_COLUMNS)] == IDENTITY_COLUMNS
-    assert columns[-2:] == ["Survival_probability", "Error_load"]
+    assert columns[-3:] == ["Survival_probability", "Error_load", "SN_model"]
     assert df.Observation_id.is_unique and df.Dataset_fingerprint.nunique() == 1
     assert set(df.loc[df.Flag == 2, "Test_status"]) == {"runout"}
     assert set(df.loc[df.Flag != 2, "Test_status"]) == {"failure"}

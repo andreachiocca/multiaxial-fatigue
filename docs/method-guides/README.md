@@ -128,6 +128,10 @@ design tests only when it was made on the same failures; for constants from the 
 upstream record the tests are unknown and stay `Flag = 1`. The held-out validation protocol is
 tracked in [issue #14](https://github.com/andreachiocca/multiaxial-fatigue/issues/14).
 
+The default master curve is Basquin; `--sn-model kohout_vechet` or `stromeyer` adds a fatigue-limit
+asymptote, with the caveats listed in the
+[method audit](../method-audit.md#master-curve-s-n-models).
+
 To rank methods against each other use the load-equivalent error `Error_load`, which does not
 depend on the slope of the master curve nor on the degree of the DP
 ([comparison capabilities](../comparison-capabilities.md#load-equivalent-error-the-cross-method-ranking-metric)).
