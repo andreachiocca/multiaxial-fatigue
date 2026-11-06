@@ -31,6 +31,22 @@ environment. MIT licence (see `LICENSE`).
 - `src/multifat/models/{cp_methods,invariant_methods,integral_methods,energy_based_methods}`:
   one module per published criterion; `registry.py` wires the case-level models, `references.py`
   holds the citations, `base.py` the interfaces.
+- `src/multifat/fe`: local FE histories (`model.py`, `tensors.py`, `store.py` HDF5 file version 1.1,
+  `csvio.py` CSV header, columns and `import_fe_csv`, `csvwriter.py` stdlib-only writer, `vtk.py`
+  importer, `ranges.py`, `bridge.py`, `synthetic.py` tube oracle and CSV generator); imported by
+  nothing else; specs in `docs/fe-input-format.md` and `docs/fe-csv-format.md`; `h5py` is the optional
+  extra `fe`.
+- `src/multifat/fe/solvers`: strict Abaqus RPT and Ansys PRNSOL/NLIST/complete Workbench table
+  converters; optional native RST uses `ansys-mapdl-reader` (extra `ansys`, inspected 0.56 API).
+  Output is atomic FE CSV, never direct HDF5; aliases come from `fe.csvio`. Preserve explicit units,
+  global frame, averaging and state metadata. Native RST is stress-only, default solids, one material,
+  real static/transient. No ODB reader. MIT real Abaqus fixtures: `tests/data/solvers/axis-fem`.
+  Ansys text samples are hand-written. Real RST test is opt-in via `MULTIFAT_TEST_RST`; ordinary
+  tests never download or execute third-party content.
+- `src/multifat/history`: general load histories (`signal.py` contract, `channels.py`, `proportionality.py`,
+  `rainflow.py`, `events.py`, `accumulate.py` Basquin and Miner, `eligibility.py`, `assess.py`,
+  `nodes.py` node histories, unit cases and `assess_nodes`); imported by nothing else; spec in
+  `docs/load-histories.md`.
 - `src/multifat/eval`: plane preparation and search (`evaluator.py`, `plane_search.py`), life and
   fatigue-index fitting (`calibration.py`, `fitting.py`, `material_fits.py`, `endurance.py`),
   Findley amplitude options (`findley_calibration.py`).

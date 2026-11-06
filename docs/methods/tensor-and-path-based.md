@@ -61,7 +61,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Reference | Multiaxial fatigue space: A three-dimensional space constituted of fatigue basic units, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/j.ijfatigue.2020.105995 |
 | Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Original read 2026-11-06 (Lu & Martinez-Esnaola 2021, Int J Fatigue 143:105995): P1, P2, P3 (Eqs. 12-19), FP (Eqs. 20-21, 25-26), life Eq. (27); 2D plane stress, strain- or stress-based per test control. |
+| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
 | Principle | Distortion, normal/volumetric and principal-direction-change descriptors combined into a calibrated fatigue map; CA P/NP, L. |
 | Loading scope | Distortion, normal/volumetric and principal-direction-change descriptors combined into a calibrated fatigue map; CA P/NP, L. |
 | Inputs / material parameters | Physical S/Eps and complete original material coefficient set. |
@@ -70,16 +70,16 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Validation / evidence | not_tested; See prior feasibility assessment |
 | Python implementation | None;  |
 | Automated tests | None for this candidate |
-| Limitations | 2D (plane stress) low-cycle model; reference direction chosen against observed lives; in-sample coefficients (Table 1); scatter plots only. |
+| Limitations | Broader response map; source reconstruction and parameter identifiability must precede implementation. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Ask the authors for the per-test data (394 tests) and a plane-reference rule that does not use the observed lives; k_in, h_in, k_out, zeta and A-D need calibration tests independent of the assessed ones. |
+| Missing tasks | Track principal directions through degeneracies, fatigue-space construction and multicoefficient/native-life calibration. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | source_review; Maintainer decision 2026-11-06: postponed; the critical-plane reference is chosen by minimum prediction error against the experimental lives, up to 9 coefficients per material are fitted on the validation tests, and no per-test values are printed. |
+| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Track principal directions through degeneracies, fatigue-space construction and multicoefficient/native-life calibration. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
 | Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Low |
-| Provenance / prior status | N32; Reviewed from the original, postponed (not predictive as published) |
+| Provenance / prior status | N32; Already reviewed, not implemented |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N32+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN32%5D+Multiaxial+Fatigue+Space+%28MFS%29) (no live Issue linked) |
 
@@ -160,7 +160,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Reference | A curvilinear integral method for multiaxial fatigue life computing under non-proportional, arbitrary or random stressing, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/0142-1123(93)90258-r |
 | Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Original read 2026-11-06 (Stephanov 1993, Int J Fatigue 15:467-472): R(sigma', sigma'') is defined only on radial (proportional) paths, Eq. (6); the off-radial construction, the lines of equal life l_N and of equivalent mean l_m and the extrapolation below the endurance lines are given only in the 1980 dissertation (ref. 1) and the author's programs; no numerical example. |
+| Formulation evidence | Preliminary; full equation-level verification pending |
 | Principle | Integrates damage contributions along the loading path. |
 | Loading scope | Repeated CA P/NP paths; original also arbitrary/random |
 | Inputs / material parameters | Synchronized stress path; damage-law calibration |
@@ -169,15 +169,15 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Validation / evidence | not_tested; 1993 examples and later computer-realization papers |
 | Python implementation | None;  |
 | Automated tests | None for this candidate |
-| Limitations | Only the radial-path R-function (Eqs. 4-6) is published; it reduces to an S-N curve with Miner's rule for proportional loading. |
+| Limitations | CA closed-cycle scope first; full arbitrary-history implementation may be C Crossref author Stephanov; transliteration Stefanov in some citations |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Obtain Stephanov (1980) dissertation (Sofia Technical University, in Bulgarian) or Stephanov (1985, Varna, in Russian) for the off-radial R-function; then define benchmarks. |
+| Missing tasks | Faithful line integral and closed-cycle damage calculation |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | source_review; Maintainer decision 2026-11-06: postponed; the published paper does not define the method beyond proportional paths. |
+| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Faithful line integral and closed-cycle damage calculation |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
 | Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Medium |
-| Provenance / prior status | G32; Reviewed from the original, postponed (incomplete formulation) |
+| Provenance / prior status | G32; New distinct formulation candidate |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=G32+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BG32%5D+Stefanov+curvilinear+integral+%2F+IDD+family) (no live Issue linked) |

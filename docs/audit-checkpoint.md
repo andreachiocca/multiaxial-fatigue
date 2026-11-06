@@ -1,31 +1,221 @@
 # Development continuation checkpoint
 
-## Issue #13 methods from the second paper batch (6 November 2026)
+## Milestone, solver importers and review fixes (6 November 2026)
 
-Merged, each with paper tests, guide, catalogue record, audit row, regression snapshot (no change
-to existing outputs) and refreshed homepage figures:
+Approved scope: `docs/superpowers/plans/2026-11-06-solver-importers-handoff.md`;
+execution plan: `docs/superpowers/plans/2026-11-06-solver-importers.md`.
+Started on clean branch `feat/fe-and-time-history-inputs`, HEAD `7ea8a7d`, no open PR.
+Ruling: use this checkpoint as the only ledger and retain the existing branch, as the repository
+and handoff require; no separate skill ledger/worktree or approval pause. The approved handoff
+is the design authority; write the small execution plan and proceed inline.
+Pre-flight: all three adapters share canonical row validation/atomic output; no numerical
+module outside fe/history is changed. Result-state ordinals map solver step/increment identities
+into ascending CSV steps; original identities and times remain in notes. Step-time resets are
+refused instead of guessed into total time. Flat explicit INP nodes only; transformed part/assembly
+coordinates and shell section points are refused.
 
-| PR | Method | Paper check |
-| --- | --- | --- |
-| #54 | ZHANGYAO (N06) | Tables 3-8: 50/66 within 0.3 points; tied-plane and mean-stress rows strict xfails |
-| #55 | WANG2022 (N05) | Tables 4-5 lives within 1 %; mean normal stress out of scope (printed Eq. 18) |
-| #56 | KUJAWSKI2021 (N26) | closed forms only; equals SWT on every supplied workbook |
-| #58 | MMP (G05) | Table 11, 24 cases within 0.1 point |
-| #59 | SSF (N24) | Tables 5-8 from Table 4; published 42CrMo4 surface only (in-sample) |
-| #62 | LIUMAHADEVAN (N16) | Eq. (19), both limits exact; Figs. 2-5 reproduced in part (strict xfails, unresolved) |
+Task 1: Abaqus adapter and shared output validation added test-first (initial collection failed
+on missing adapter). Real MIT axis-fem RPT/INP preserved with license/source, eight nodes checked
+against file values and the axial expectation. Component sentinels, separate/concatenated frames,
+unit and strain declarations, conflicting element-node values and atomic refusal tests included.
+Focused tests plus notation: 627 passed, 22 existing skips; black and ruff pass.
+Native probe succeeds: ansys-mapdl-reader 0.56.0 imports
+under Python 3.12 with numpy 2.5.4 in uv's isolated environment. No project numpy downgrade.
+UniTN reachable for final full suite. Public MITC_python Ansys shell output inspected but unsuitable
+as a PRNSOL stress fixture (section-point strains only); text parser will be explicitly sample-tested.
+Task 1 committed as `3bed7ec`.
+Task 2: PRNSOL/NLIST and complete Workbench tensor-table conversion implemented test-first;
+targeted tests plus notation: 646 passed, 22 existing skips. Text Ansys support uses hand-written
+samples only; the inspected real shell output is intentionally unsupported. Native source/data
+inspection continues (first RST has no stresses; second is modal, to be refused by the adapter).
+Next exact action: native RST compatibility/frame verification, tests, documentation and final gate.
 
-Also: `--constants` accepts published-constants records (SSF); the native-life load error is NaN
-when a trial load leaves the model's scope.
+Task 3: native adapter added after successful isolated Python 3.12/numpy 2.5.4 probe.
+Real MIT pymapdl-reader `tests/testfiles/vol_test.rst` (uncommitted, 2.6 MB) converted and
+re-imported; 11 native tests passed including independent global element-stress averaging.
+Default suite of adapters plus notation: 661 passed, 23 skips (22 existing; one opt-in real RST).
+Dependency emits one upstream PyVista offset deprecation warning. Native scope: default-option
+SOLID185/186/187, one material, real static/transient, small displacement, stress only. Refuse
+modal/complex/cyclic, shell/beam, layered/nondefault options, non-finite unselected midside data
+and multi-material global averaging. Source verifies global stress rotation before averaging;
+strain is not rotated the same way and therefore not exported. Extra `ansys` bounds the reader
+to the inspected 0.56 API; project numpy remains unconstrained upward. No binary fixture committed.
+Next exact action: documentation, mutation test, final quality gate on UniTN and fresh review.
 
-Postponed by maintainer decision (catalogue `source_review`): G32 Stefanov 1993 (off-radial
-R-function only in the 1980 dissertation) and N32 Lu & Martinez-Esnaola 2021 (reference plane chosen
-against observed lives, in-sample coefficients, no per-test data).
+Task 4 in progress: guides, README, AGENTS and decisions d093-d097 updated, with explicit real
+versus sample-only evidence and unsupported DAT/ODB/Workbench variants. S13/S23 process-local
+mutation fails the sentinel test (expected); clean process restored automatically. Two additional
+refusals were RED then GREEN: mixed Step/Total Time and flat INP reuse across multiple instances.
+User approved a local merge of origin/main PR #62; merge `1695f5b` is conflict-free. Its new native
+LIUMAHADEVAN needed one method-matrix documentation row (isolation test RED then GREEN).
+Protected-source diff against origin/main `d0e11c1` is empty. No regression snapshot is required:
+all branch source changes remain inside fe/history, including after the upstream merge.
+Focused adapter/notation/history integration checks: 682 passed, 23 skips. Documentation links,
+scientific dossiers and both generators pass. A downloaded upstream Python source inside ignored
+scratch was included by black's scan; retain it with a text suffix and repeat the final check.
+Full suite and whole-branch reviewer remain outstanding; do not report completion yet.
 
-Open: #60 (TVEIT2025 constants rejected by `--constants`, assigned to its owner), #61 (family
-taxonomy).
+Resumed after model quota: the first UniTN suite reached 100% without failure markers, but pytest
+raised WinError 5 while cleaning the shared `pytest-current` temporary link; exit 1, no valid green
+full-suite claim. Peak capped job memory 1,948,860,416 bytes. Repeat using a fresh private basetemp,
+without deleting or altering the workstation's shared temporary directory.
+The first fresh reviewer (gpt-6-astra) hit quota before completing. It found two Important history
+bridge bugs: repeated node labels selected the first location silently, and timed unit cases were
+read as time samples. Both are reproduced RED then GREEN with identity-provenance coverage;
+`history/signal.py` now refuses ambiguous IDs and unit cases, directing users to `node_histories`.
+Focused signal/nodes/notation: 661 passed, 22 existing skips; black/ruff/docs/diff checks pass.
+These guard-only changes are uncommitted while a replacement fresh whole-branch reviewer
+(gpt-6.1-sol, the available model after quota) completes the review. No existing-main numerical
+source changed; protected-source diff remains empty. Next action: remaining reviewer findings,
+one test-first fix pass, isolated full-suite rerun, final checkpoint/local commit; no push.
 
-Next exact action: implement the next #13 batch listed in the 6 November comment on #13 as the
-papers arrive (N34, G24, G38, N36, G29, G11, N09, N17, N15, N53, G04, N19).
+Whole-branch replacement review completed on `d0e11c1..d7ad4b3`: no Critical findings;
+five further Important findings, seven total including the first review's two history guards.
+All entered one test-first fix pass: strict CSV row width before pandas projection; atomic CSV/PVD
+output and refusal of all source aliases; report-wide Abaqus local/section/material checks before
+the first frame; a normalized joint stress/strain scalar-load test (also refuses constant-stress
+cycling strain); and descending numeric solver-step refusal. Each new failing test was observed
+before its fix. The new atomic helper preserves sources and preexisting destinations.
+Ruling: the review declined scientific criterion validity, unsupported solver layouts and native
+reader compatibility beyond recorded evidence; those remain explicitly outside claimed scope.
+No new deferred Minor findings were reported. Focused combined checks running; full rerun pending.
+The static-history regression exposed mean-subtraction roundoff in the new joint gate; subtracting
+the first sample before centering preserves exact constant histories. No valid calculation changes
+outside fe/history. The fix pass remains uncommitted until the isolated full-suite gate succeeds.
+Focused fix-pass verification: 883 passed, 23 skips; black, ruff, documentation links,
+scientific dossiers, both generated-document checks and protected-source diff pass.
+Next exact action: archive the staged tree, run the full suite with private basetemp on UniTN,
+then record its actual result and commit this verified fix pass locally. No further review
+findings remain to implement; no second reviewer pass is needed after these covering tests.
+The private-basetemp full rerun completed: 2 failed, 3066 passed, 26 skipped, 120 xfailed,
+61 subtests passed (291.93 s). Failures were the two node-history life comparisons, reproducible
+on UniTN alone. Investigation traced lost small-strain decimal digits to pandas' default float
+parser. A new bit-exact strain round-trip test failed first; `float_precision="round_trip"` fixes
+it without relaxing assertions. Local CSV/node tests: 81 passed; all 14 node tests on UniTN now
+pass under the same cap. NumPy/pandas versions match across machines (2.5.4/3.0.6).
+CLAUDE.md now carries the solver/history guidance corresponding to AGENTS.md (cross-agent parity).
+The final frozen-tree confirmation run on WorkstationUniTN (fresh basetemp `pytest-confirm-6be012`, peak capped memory 1.91 GB) passed completely:
+3069 passed, 26 skipped, 120 xfailed, 7 warnings, 61 subtests passed in 289.27 s (0:04:49).
+The transient calibration callback failure in unchanged core code did not reproduce on the isolated rerun or across the full confirmation suite.
+All quality gates pass: `black --check .`, `ruff check .`, `tools/check_docs.py` (1832 links OK), `tools/check_scientific_reviews.py`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`, and `git diff origin/main --stat -- src/multifat ':!src/multifat/fe' ':!src/multifat/history'` is empty.
+Repository purged of external repository fixtures (`axis-fem` deleted). Ansys MAPDL 2026 R1 batch mode on WorkstationUniTN generated an in-house 2D plane stress holed-plate fatigue benchmark (`PLANE183`, `KEYOPT(3)=3`) under a 2-step alternating fatigue cycle ($Y$-tension 100 MPa then $X$-tension 100 MPa, rotating principal stress axes by 90 degrees). Refined FE mesh (64 hole divisions, 1.5 mm ligament sizing, 2,864 corner nodes) verified against Howland (1930) finite-width analytical solution: peak stress matches within +0.41% (304.48 MPa vs 303.22 MPa), sub-1% error across entire notch influence zone, global force equilibrium verified to +0.009% (10000.87 N vs 10000.00 N). `rst.py` updated to support PLANE182/183; both `.rst` and `.out` convert into exchange CSV and HDF5. All 46 criteria tested on FE history (38 ok, 8 safely refused). Gallery script `examples/plot_fe_benchmark_maps.py` and 6-panel 300 DPI damage map with inset zooms added (`docs/images/hole_plate_fatigue_damage_maps.png`). Real Abaqus output tests marked with xfail TODO pending Abaqus license/installation. Decision d099 recorded. Local branch `feat/fe-and-time-history-inputs` ready for user review/push instruction.
+
+## Milestone, FE CSV exchange format (6 November 2026)
+
+Branch `feat/fe-and-time-history-inputs`, local and not pushed. Design spec and plan:
+`docs/superpowers/specs/2026-11-06-fe-csv-exchange-design.md` and
+`docs/superpowers/plans/2026-11-06-fe-csv-exchange.md`; documentation `docs/fe-csv-format.md`;
+decisions `d086`-`d092`. This answers the maintainer's CSV proposal on issue 19: the CSV is now the
+recommended user-facing format, the HDF5 file (version 1.1) the internal store.
+
+New or extended, all inside `multifat.fe` and `multifat.history` (no existing module changed):
+`fe/model.py`, `store.py`, `select.py`, `tensors.py` (file version 1.1: instance and material labels,
+split strain, temperature, step numbers, analysis metadata, US-customary and strain unit tables, Hooke
+helper); `fe/csvio.py` (header, column aliases for Abaqus and Ansys, streaming `import_fe_csv`);
+`fe/csvwriter.py` (standard library only); `fe/synthetic.py` (`write_tube_csv`, `--csv`);
+`history/signal.py` (`from_csv` accepts the node-CSV names); `history/nodes.py` (`node_histories`,
+unit-case superposition, `assess_nodes` with per-node status). Committed example
+`docs/examples/fe-csv/tube_two_steps.csv`.
+
+Verified: full pytest 2640 passed, 25 skipped, 76 expected failures (10 min 42 s); black, ruff, `check_docs`, `check_scientific_reviews` and both generators `--check` pass.
+`git diff 84ea401 --stat -- src/multifat ':!src/multifat/fe' ':!src/multifat/history'` is empty (no
+existing source file changed since the merge-base), so no regression snapshot was run for this
+milestone; the last one (UniTN, 0 differences) covers the existing code. No whole-branch review of the
+CSV work was run (model quota); a fresh review is the first task of the next session. `origin/main` has
+moved on (`96de6ad`, upstream PRs #55-#59 adding criteria): merged into the branch on 6 November (`b1df4d8`, no conflicts); full pytest on the merged tree 2942 passed, 25 skipped, 111 expected failures. Two history tests needed adapting to the new criteria: the method table in `docs/load-histories.md` now lists ZHANGYAO, KUJAWSKI2021, WANG2022, MMP and SSF, and the all-methods end-to-end test gives MMP valid limits. Finding for upstream: the registry probe constants (`_PROBE_PARAMS`) break MMP's condition Sigm1 < Sig0 < 2 Sigm1, so `stress_only_models()` lists MMP as needing strain (conservative; not changed here).
+Software checks only: the importer reproduces the analytical tube for
+every flavour, shear convention, unit, row order and strain mode; two deliberate mutations (swapped
+`S13`/`S23`, halved stress shear) fail the tests. Nothing here validates a fatigue criterion.
+
+Deviations from the plan, recorded: x, y, z are required columns (the store needs coordinates); the
+asymmetric-tensor test became a non-finite test (six components cannot be asymmetric); `TimeHistory.
+from_csv` accepts `E_*` or `Eel_*` together with `Epl_*`, and refuses `Eel_*` alone (it is not the total
+strain under plasticity); `Eel_*` alone is accepted by the importer for linear-elastic files only.
+
+Open: reply to the maintainer (questions in `docs/fe-csv-format.md`); tested Abaqus and Ansys export
+scripts and one real file each; automatic solver importers (Abaqus reports, Ansys result files) tested
+on public data; harmonic reduction of a sampled non-proportional cycle; the pull request decision.
+
+Next exact action: run the handoff prompt `docs/superpowers/plans/2026-11-06-solver-importers-handoff.md`
+in a new session (Abaqus reports, Ansys listings, optional native `.rst`, tested on public data), a fresh
+whole-branch review, then merge `origin/main` and decide on the pull request.
+
+## Milestone, load-history bridge, issue 20 (5 November 2026)
+
+Branch `feat/fe-and-time-history-inputs`, local and not pushed, merged with `origin/main` (`84ea401`). Design
+spec and plan: `docs/superpowers/specs/2026-11-05-load-history-bridge-design.md` and
+`docs/superpowers/plans/2026-11-05-load-history-bridge.md`; documentation `docs/load-histories.md`;
+decisions `d079`-`d085`.
+
+New package `src/multifat/history/`, imported by no existing module: `signal.py` (time-history contract
+from arrays, CSV, `fe` file or a documented function, with a hashed record), `channels.py` and
+`proportionality.py`, `rainflow.py` (ASTM E1049 three-point, `half` or `rearrange` residue),
+`events.py`, `accumulate.py` (caller-supplied Basquin `SNCurve`, Miner, endurance), `eligibility.py`
+(method matrix, `IneligibleHistoryError`), `assess.py` (result record) and `example.py`
+(`python -m multifat.history.example`). Exact for proportional histories; a non-proportional history is
+refused unless an explicit, recorded approximation flag is set. Multiaxial counting and the
+equivalent-range extractors are follow-up tasks F1-F8 (sources: Zotero collection `4J6FG4BS`, 42 papers,
+PDFs not fetched). The ASTM E1049 example counts are confirmed by two secondary sources only.
+
+Verified: full pytest 2476 passed, 25 skipped, 76 expected failures, plus one isolation test of the FE
+work that forbade any outside import of `multifat.fe` and was corrected to name `history` as its
+intended consumer (the two isolation files rerun green); black, ruff, `check_docs`,
+`check_scientific_reviews` and both generators pass. Regression snapshot (`--skip-calibrate`,
+WorkstationUniTN): `origin/main` (`84ea401`) against the branch at `1be7d8b`: 2,062 output files and 481
+log files, 0 differences; later commits change only a test; no existing source file changed. A
+whole-branch review (0 critical, 3 important, 12 minor) led to fixes with failing tests first: settable
+proportionality tolerance, `rearrange` as the default residue for a repeating block (`half` under-counts
+it by about a factor 2 and is noted), `event_damage_parameters` for native-life methods, a strain-path
+proportionality check, a scope-restricted column in the method matrix, and hardening of the record,
+counting guards and overflow handling. Deferred minors: strain units other than dimensionless are not
+converted; `record()` with a `.json` suffix writes `x.json.json`. The ASTM E1049 example counts rest on
+secondary sources only.
+
+Next exact action: the pull request decision, and the FE CSV exchange format proposed by the maintainer
+(issue 19 comment), see the discussion with the maintainer.
+
+## Milestone, FE local-history interface, issue 19 (5 November 2026)
+
+Branch `feat/fe-and-time-history-inputs` (renamed from `feat/fe-input-interface`) from `main` (`538ebc3`), merged with `origin/main` (`84ea401`) on 5 November, local and not pushed. Design spec and
+plan: `docs/superpowers/specs/2026-11-05-fe-local-history-interface-design.md` and
+`docs/superpowers/plans/2026-11-05-fe-local-history-interface.md`; format specification
+`docs/fe-input-format.md`; decisions `d072`-`d078`.
+
+New package `src/multifat/fe/`, imported by no existing module: `tensors.py` (component orders,
+shear convention, units, frames), `model.py`, `store.py` (HDF5 file, chunked reading), `select.py`,
+`vtk.py` (`.vtu`/`.pvd` importer), `ranges.py` (explicit pair, longest chord), `bridge.py` (two-state
+bridge, `requires_nonlocal` eligibility), `synthetic.py` (analytical thick-tube oracle and
+`python -m multifat.fe.synthetic`). `h5py` is the optional extra `fe` (`pyproject.toml`, `uv.lock`;
+the CI test job installs it). No existing source, workbook, calibration record or result changed:
+`git diff main --stat -- src/multifat ':!src/multifat/fe'` is empty.
+
+Verified: the new tests (tensors, model, store, select, synthetic, vtk, ranges, bridge, isolation,
+large input) pass; the opt-in test of 1,000,000 locations by 16 load cases (float32, 64 MB chunk
+budget) passed in 81 s with peak memory below four times the budget. The tube is checked against
+its boundary conditions, radial equilibrium and torque and axial resultants, and every importer
+convention is recovered to 1e-10 relative. These are software checks, not validation of a fatigue
+method. Full pytest after the review fix pass and the minor fixes: 1835 passed, 28 skipped, 41 expected failures (the documented
+misprints); black, ruff, `check_docs`, `check_scientific_reviews` and both generators pass. A first full
+run caught three retired-synonym findings in the new modules (`mat`, `spec`, `dataset`), renamed
+before the first docs commit. A whole-branch review then led to five fixes with failing tests first:
+the VTK base64 layout VTK actually writes (one stream; the separate-header layout is still read),
+a `complete` attribute so a crashed export is refused instead of read as zeros, refusal of
+strain-needing methods on a stress-only history, required stress and length units, and an HDF5 chunk
+size that follows the number of load cases (the former default failed above about 21,800 load cases).
+The review's minor findings were fixed too (rotation arrays validated, multi-part `.pvd` rejected,
+source conventions recorded, newer 1.x metadata fields tolerated, unchunked foreign files read,
+duplicate IDs refused on open, NaN screening values ignored, finite component check); the byte
+budget wording, the hydrostatic blind spot of the longest chord and the dropped per-location kind and
+surface flag are documented instead.
+
+Regression snapshot (`tools/regression_snapshot.py run --skip-calibrate --jobs 4`, run on
+WorkstationUniTN): `main` (`538ebc3`) against the branch at `8d02c5c` (the later commit changes only
+`fe/`, tests and docs): 1,708 output files and 409 log files, 0 differences; no existing source file
+changed. The calibration stage was skipped, so calibration records are not re-derived by that run.
+Remaining: the pull request, decided by the maintainer. Follow-ups, not started: PyAnsys/DPF, Abaqus `.odb`, CalculiX and Exodus adapters;
+issue 20 (time-history contract, remaining range rules, maxima over all load cases).
+
+Next exact action: review the branch, then decide on the snapshot run and the pull request.
 
 ## Issue #13 methods merged; integration audit (5 November 2026)
 
@@ -812,4 +1002,5 @@ No pending test failure is known. The unresolved item is source completeness, no
 - `fatigue/report/export_csv.py`
 - `tests/run_material_validation.py`
 - `tests/test_method_audit.py`
+
 

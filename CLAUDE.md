@@ -233,6 +233,18 @@ Also:
 
 ## Collaboration constraints
 
+### FE input and history adapters
+
+`src/multifat/fe/solvers` converts Abaqus nodal RPT and Ansys PRNSOL/NLIST or complete Workbench
+tensor tables to atomic FE CSV; native solid RST is optional (`ansys` extra, inspected reader 0.56).
+Use the shared CSV aliases and require explicit units, global frame, averaging and state metadata.
+Native RST is stress-only, one material, default solids, real static/transient. ODB and DAT are
+unsupported. Real MIT Abaqus fixtures are in `tests/data/solvers/axis-fem`; Ansys text samples are
+hand-written; the real RST test uses `MULTIFAT_TEST_RST` and never downloads during ordinary tests.
+See `docs/fe-csv-format.md` and `docs/load-histories.md`. CSV/PVD conversion must preserve source
+files and existing destinations on refusal. Strain-reading criteria require a shared scalar
+stress/strain path for exact counting. Continue from `docs/audit-checkpoint.md`.
+
 - Do not modify the Tveit model (`TVEIT2025`, `invariant_methods/tveit2025.py`): another
   contributor owns it.
 - Do not force-push; pushed branches are updated with merges, not rebases.

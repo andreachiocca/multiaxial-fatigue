@@ -64,6 +64,17 @@ normal(s) themselves.
 | Weights of tau_a^2, sigma_a^2, tau_a tau_m, sigma_a sigma_m in BP / CAIM | a_BP..d_BP, a_CAIM..d_CAIM | `a_BP`, `b_BP`, `c_BP`, `d_BP`, `a_CAIM`, `b_CAIM`, `c_CAIM`, `d_CAIM` | - | - |
 | Coefficients of the stress scale factor surface, Anes et al. (2014) Eq. (31) | a..d, f..i | `a_SSF`, `b_SSF`, `c_SSF`, `d_SSF`, `f_SSF`, `g_SSF`, `h_SSF`, `i_SSF` | a_SSF..i_SSF | MPa^-k |
 | Tension/torsion fatigue-limit ratio and its square | kappa, kappa^2 | `kappa`, `kappa_sq` | - | - |
+| History of the stress / strain tensor of FE locations over ordered load cases, `(M, N, 3, 3)` | - | `S_hist`, `E_hist` | - | MPa, - |
+| Stress / strain range of a history under a range strategy | Delta sigma, Delta eps | `S_range`, `E_range` | - | MPa, - |
+| Stable source identity of an FE location (node, element or integration point) | - | `location_id` | - | - |
+| Pair of load-case indices a range strategy selects | a, b | `pair` | - | - |
+| Axis of a time history and what it measures (`time` or `cycle`) | - | `time`, `axis_kind` | - | s or cycles |
+| Elastic / plastic part of the strain history of FE locations, `(M, N, 3, 3)` | eps^e, eps^p | `E_elastic_hist`, `E_plastic_hist` | - | - |
+| Temperature history of FE locations, `(M, N)` | T | `T_hist` | - | solver unit |
+| Instance (part) and material label of an FE location, with the node label a location is the triple (instance, ID, material) | - | `instance`, `material` | - | - |
+| Load function of a unit load case, `S(t) = sum_k f_k(t) S_k` | f_k | `load_functions` | - | - |
+| Solver step number of a load case (need not be contiguous) | - | `step` | - | - |
+| Kind of FE analysis (`linear_elastic`, `elastic_plastic`) and role of its steps (`time_sample`, `unit_case`) | - | `analysis_type`, `step_role` | - | - |
 | Per-case inputs of a native life law | - | `aux` | - | model |
 | Fitted constants of a native life law | - | `fit` | - | model |
 

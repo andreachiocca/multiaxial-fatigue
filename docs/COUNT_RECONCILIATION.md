@@ -45,7 +45,7 @@ Broader workstreams are excluded from the narrow method-progress denominator bec
 | Track | Records |
 | --- | --- |
 | application_comparison | 1 |
-| available_not_scheduled | 54 |
+| available_not_scheduled | 56 |
 | available_validate | 40 |
 | broader_workstream | 10 |
 | deferred_major_extension | 9 |
@@ -53,7 +53,7 @@ Broader workstreams are excluded from the narrow method-progress denominator bec
 | prioritized_addition | 6 |
 | repair | 3 |
 | scope_deferred | 2 |
-| source_review | 7 |
+| source_review | 5 |
 
 ## Every record accounted for
 
@@ -112,7 +112,7 @@ Use the catalogue link for full references, loading/data scope and scientific li
 | [N29](../METHODS.md#n29) — Original Kandil–Brown–Miller (KBM) | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Original parameter/plane definition and life solver; genuine total strains for elastoplastic use. |
 | [N30](../METHODS.md#n30) — Normalized energy critical-plane parameter | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Published Mohr-circle/plane construction, coefficient fields already partly supported, native life relation. |
 | [N31](../METHODS.md#n31) — Load-path-sensitive modified fatigue parameter | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Validate review's claimed correlation-based factor against original; path integration and native life mapping. |
-| [N32](../METHODS.md#n32) — Multiaxial Fatigue Space (MFS) | method_candidate | Yes | Not implemented | source_review | Maintainer decision 2026-11-06: postponed; the critical-plane reference is chosen by minimum prediction error against the experimental lives, up to 9 coefficients per material are fitted on the validation tests, and no per-test values are printed. |
+| [N32](../METHODS.md#n32) — Multiaxial Fatigue Space (MFS) | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Track principal directions through degeneracies, fatigue-space construction and multicoefficient/native-life calibration. |
 | [N33](../METHODS.md#n33) — Published proportional Hershey–Hosford–Sines reduction | related_scope | No | Not implemented | identity_or_relationship_review | Proportional scope related to I_OTT and full Tveit workstream; not an independent theory. Explicitly named proportional-only evaluator; enforce published fatigue-ratio domain, approximately t−1/f−1 = 0.5–0.5852. |
 | [N34](../METHODS.md#n34) — Probabilistic slip-site model, homogeneous prescribed-volume scope | method_candidate | Yes | Not implemented | #2 | Bounded homogeneous-volume scope introduces probabilistic outputs and appropriate calibration. |
 | [N35](../METHODS.md#n35) — (V)HCF-DAM, prescribed proportional blocks | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Block input and scalar damage-state integrator; preserve sequence and correct stress-function variants. |
@@ -187,7 +187,7 @@ Use the catalogue link for full references, loading/data scope and scientific li
 | [G29](../METHODS.md#g29) — Papadopoulos–Panoskaltsis invariant-gradient criterion | method_candidate | Yes | Not implemented | #1 | Bounded externally supplied-gradient scope is a practical first step toward spatial fatigue methods. |
 | [G30](../METHODS.md#g30) — Berto–Lazzarin averaged strain energy density (SED) | method_candidate | Yes | Not implemented | #4 | Adds widely used control-volume energy assessment for components; deliberately retained despite high effort. |
 | [G31](../METHODS.md#g31) — Wormsen–Härkegård weakest-link / extremes model | method_candidate | Yes | Not implemented | deferred_major_extension | Scientifically relevant but requires major new infrastructure/data; not rejected. Spatial/statistical framework and relevant local criterion |
-| [G32](../METHODS.md#g32) — Stefanov curvilinear integral / IDD family | method_candidate | Yes | Not implemented | source_review | Maintainer decision 2026-11-06: postponed; the published paper does not define the method beyond proportional paths. |
+| [G32](../METHODS.md#g32) — Stefanov curvilinear integral / IDD family | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Faithful line integral and closed-cycle damage calculation |
 | [G33](../METHODS.md#g33) — Zhai–Zou–Hu–Chen–Jin shakedown-constrained Walker model | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Admissibility check and separately identifiable Walker coefficients |
 | [G34](../METHODS.md#g34) — Böhme–Vinogradov–Papuga–Berto gear model (BO) | overlap_review | No | Not implemented | identity_or_relationship_review | Gear-specific formulation independence from BP/CAIM unresolved. Exact local criterion; gear-property mappings require separate scope |
 | [G35](../METHODS.md#g35) — Tien–Wei–Chen–Liu energy time-derivative damage | method_candidate | Yes | Not implemented | #6 | Explores energy-damage evolution over a repeated cycle after stateful integration support; verify its CA reduction before coding. |

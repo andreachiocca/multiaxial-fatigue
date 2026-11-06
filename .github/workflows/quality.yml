@@ -34,7 +34,7 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - run: uv sync --locked
+      - run: uv sync --locked --extra fe
       - run: uv run pytest
       - name: Console entry points resolve
         run: |
