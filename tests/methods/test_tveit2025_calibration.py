@@ -192,9 +192,9 @@ def test_three_point_rule():
 
 def test_calibration_tests_come_from_the_source_of_the_limits():
     tests = [
-        _test(2, 450.0, 1e5, source=("santus et al.", "doi-s")),
-        _test(3, 500.0, 1e5, source=("benedetti et al.", "doi-b")),
-        _test(4, 520.0, 1e5, source=("anes et al.", "doi-a2")),
+        _test(2, 450.0, 1e5, source=("Santus et al.", "doi-s")),
+        _test(3, 500.0, 1e5, source=("Benedetti et al.", "https://doi.org/doi-b")),
+        _test(4, 520.0, 1e5, source=("Anes et al. ", "doi-a2")),
     ]
 
     def limits(authors, reference):
@@ -203,10 +203,11 @@ def test_calibration_tests_come_from_the_source_of_the_limits():
     def rows(pool):
         return [t["excel_row"] for t in pool]
 
+    # matched without case, spaces or DOI prefix; reported as written in the Summary
     pool, how = tc.calibration_source(tests, limits("Benedetti et al.", "DOI-B"), None)
-    assert rows(pool) == [3] and how["match"] == "same reference"
+    assert rows(pool) == [3] and how == {"match": "same reference", "source": "DOI-B"}
     pool, how = tc.calibration_source(tests, limits("Anes et al.", "doi-a1"), None)
-    assert rows(pool) == [4] and how["match"] == "same authors"
+    assert rows(pool) == [4] and how == {"match": "same authors", "source": "Anes et al."}
     pool, how = tc.calibration_source(tests, limits("Other", "doi-x"), None)
     assert rows(pool) == [2, 3, 4] and how["match"] == "no match"
     pool, how = tc.calibration_source(tests, {"sources": []}, None)
@@ -254,6 +255,8 @@ def test_point_findings():
     }
     wide = [{**p, "sigma_a": s, "replicates": 3} for p, s in zip(close, (600.0, 700.0, 800.0))]
     wide[2]["source"] = wide[0]["source"]
+    assert tc._point_findings(wide, 500.0) == []
+    wide[1]["source"] = ["A ", "https://doi.org/DOI-A"]  # the same source, written differently
     assert tc._point_findings(wide, 500.0) == []
 
 

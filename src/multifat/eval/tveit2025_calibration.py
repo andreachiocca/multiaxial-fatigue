@@ -755,6 +755,7 @@ def mean_stress_slope(
 
 
 def _normal(text) -> str:
+    """Key to compare sources: lower case, no surrounding spaces, no DOI prefix."""
     out = str(text or "").strip().lower()
     for prefix in ("https://doi.org/", "http://doi.org/", "doi:"):
         if out.startswith(prefix):
@@ -763,7 +764,7 @@ def _normal(text) -> str:
 
 
 def dataset_sources(workbook: Path) -> Dict[int, Tuple[str, str]]:
-    """(authors, reference) of every Dataset row by Excel row, with the overlay applied."""
+    """(authors, reference) of every Dataset row by Excel row, as written, with the overlay applied."""
     import openpyxl
 
     from multifat.imp import experimental_data as exp
@@ -784,7 +785,7 @@ def dataset_sources(workbook: Path) -> Dict[int, Tuple[str, str]]:
         for excel_row, row in enumerate(rows, start=2):
             name = row[authors] if authors is not None and authors < len(row) else None
             ref = row[refs[0]] if refs and refs[0] < len(row) else None
-            out[excel_row] = (_normal(name), _normal(ref))
+            out[excel_row] = (str(name or "").strip(), str(ref or "").strip())
         return out
     finally:
         workbook_file.close()
@@ -824,23 +825,30 @@ def calibration_source(
 
     Returns the tests and how they were matched: "declared", "same reference", "same authors"
     (another publication of the authors of the limits), "no match" or "unknown" (the Summary names
-    no source); in the last two cases every test is returned.
+    no source); in the last two cases every test is returned. Sources are compared by `_normal`
+    and reported as written in the Summary.
     """
     if declared:
         key = _normal(declared)
-        chosen = [t for t in tests if key in t["source"][0] or key in t["source"][1]]
+        chosen = [t for t in tests if any(key in _normal(s) for s in t["source"])]
         return chosen, {"match": "declared", "source": declared}
-    refs = {_normal(s.get("reference")) for s in limits["sources"]} - {""}
-    names = {_normal(s.get("authors")) for s in limits["sources"]} - {""}
+
+    def written(field):  # comparison key -> text as written in the Summary
+        return {_normal(s.get(field)): str(s.get(field)).strip() for s in limits["sources"]}
+
+    refs, names = written("reference"), written("authors")
+    refs.pop("", None)
+    names.pop("", None)
     if not refs and not names:
         return tests, {"match": "unknown", "source": ""}
-    same_ref = [t for t in tests if t["source"][1] in refs]
+    same_ref = [t for t in tests if _normal(t["source"][1]) in refs]
     if same_ref:
-        return same_ref, {"match": "same reference", "source": ", ".join(sorted(refs))}
-    same_authors = [t for t in tests if t["source"][0] in names]
+        return same_ref, {"match": "same reference", "source": ", ".join(sorted(refs.values()))}
+    same_authors = [t for t in tests if _normal(t["source"][0]) in names]
     if same_authors:
-        return same_authors, {"match": "same authors", "source": ", ".join(sorted(names))}
-    return tests, {"match": "no match", "source": ", ".join(sorted(refs | names))}
+        return same_authors, {"match": "same authors", "source": ", ".join(sorted(names.values()))}
+    every = sorted({*refs.values(), *names.values()})
+    return tests, {"match": "no match", "source": ", ".join(every)}
 
 
 def three_point_rule(candidates: List[Dict[str, Any]], f_m1: float) -> List[Dict[str, Any]]:
@@ -1018,7 +1026,7 @@ def _point_findings(points, f_m1) -> List[Finding]:
                 "more replicates at that level",
             )
         )
-    sources = {tuple(p["source"]) for p in points}
+    sources = {tuple(_normal(s) for s in p["source"]) for p in points}
     if len(sources) > 1:
         found.append(
             Finding(
