@@ -1,0 +1,765 @@
+{
+ "params": {
+  "Sigm1_TVEIT": 143.8,
+  "Taum1_TVEIT": 100.9,
+  "A_TVEIT": 0.35836363636363644,
+  "C_TVEIT": 0.0001,
+  "K_TVEIT": 3.2873746239497344e-06,
+  "L_TVEIT": 2.9746140900192004,
+  "npts_TVEIT": 1001,
+  "min_blocks_TVEIT": 400,
+  "max_blocks_TVEIT": 60000,
+  "tol_alpha_TVEIT": 0.01,
+  "tol_damage_TVEIT": 0.001
+ },
+ "status": "calibrated",
+ "reason": "",
+ "model_calibrations": {
+  "TVEIT2025": {
+   "params": {
+    "Sigm1_TVEIT": 143.8,
+    "Taum1_TVEIT": 100.9,
+    "A_TVEIT": 0.35836363636363644,
+    "C_TVEIT": 0.0001,
+    "K_TVEIT": 3.2873746239497344e-06,
+    "L_TVEIT": 2.9746140900192004,
+    "npts_TVEIT": 1001,
+    "min_blocks_TVEIT": 400,
+    "max_blocks_TVEIT": 60000,
+    "tol_alpha_TVEIT": 0.01,
+    "tol_damage_TVEIT": 0.001
+   },
+   "source": {
+    "Sigm1_TVEIT": "fatigue limit (workbook Summary)",
+    "Taum1_TVEIT": "fatigue limit (workbook Summary)",
+    "A_TVEIT": "fatigue limit sigma_a = 100 MPa at sigma_m = 122.222 MPa on the Haigh line: A = (Sigm1 - sigma_a) / sigma_m (Tveit et al. 2025, Eqs. 22-23)",
+    "C_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures; C is not identified by uniaxial data: equivalent sets (E <= 1.05 E_min) span C 0.0001 to 3.16; the chosen C is the admissible one of lowest E and lies on the search bound",
+    "K_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+    "L_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+    "npts_TVEIT": "time-integration setting checked by gate G2",
+    "min_blocks_TVEIT": "time-integration setting checked by gate G2",
+    "max_blocks_TVEIT": "time-integration setting checked by gate G2",
+    "tol_alpha_TVEIT": "time-integration setting checked by gate G2",
+    "tol_damage_TVEIT": "time-integration setting checked by gate G2"
+   },
+   "design_case_ids": {
+    "C_TVEIT": [
+     6,
+     0,
+     9
+    ],
+    "K_TVEIT": [
+     6,
+     0,
+     9
+    ],
+    "L_TVEIT": [
+     6,
+     0,
+     9
+    ]
+   },
+   "confidence": {
+    "level": "medium",
+    "major": 0,
+    "minor": 3,
+    "findings": [
+     {
+      "code": "C_not_identified",
+      "severity": "minor",
+      "what": "C varies from 0.0001 to 3.16 among the equivalent sets",
+      "why": "uniaxial data cannot fix C; it matters under mean shear stress and non-proportional loading",
+      "advice": "a test with a mean shear stress or 90 deg out-of-phase tension-torsion decides C"
+     },
+     {
+      "code": "low_point_near_limit",
+      "severity": "minor",
+      "what": "the LOW point (150 MPa) lies within 4.3 % of Sigm1 = 143.8 MPa",
+      "why": "near its asymptote the model curve is steep; a residual of a few tenths of a decade is expected there",
+      "advice": "a LOW level further above the fatigue limit"
+     },
+     {
+      "code": "runouts_above_limit",
+      "severity": "minor",
+      "what": "1 axial R = -1 run-out(s) lie above Sigm1 = 143.8 MPa (highest 150 MPa)",
+      "why": "the fatigue limit may be conservative",
+      "advice": "check Sigm1 against the run-outs of the same source"
+     }
+    ]
+   },
+   "record": {
+    "procedure": 2,
+    "mode": "author",
+    "references": [
+     "Tveit et al. (2025) Mech. Mater. 209, 105452, Sect. 4, Eqs. (22)-(26)",
+     "Ottosen et al. (2008) Int. J. Fatigue 30, 996-1006, Sect. 5, Eqs. (23)-(32)"
+    ],
+    "inputs_file": "D:/FABER/WG4.3-Multiaxial/Arda/ottosen/yeni/tveit_matlab_project/Last/tveit_project_organized_v3/tveit_block_sn_clean_tool/multiaxial-fatigue/Calibrations/Al7075_T6/TVEIT2025_inputs.json",
+    "inputs_sha256": "a827bbb7e31d608427ebeed845c28ae1777253e8745d0c4f42d52f07140153a3",
+    "inputs": {
+     "schema": "multifat/tveit2025-calibration-inputs/2",
+     "material_id": "Al7075_T6",
+     "mean_stress_fatigue_limit": {
+      "sigma_a": 100.0,
+      "R": 0.1,
+      "source": "Pedranz et al. (2025), doi:10.1016/j.ijmecsci.2025.109961, the axial R = 0.1 tests of the workbook: the three tests at sigma_a = 100 MPa ran out at 5e6 cycles, two of the three at 110 MPa failed; the limit at 5e6 cycles, the basis of the Summary limits (d111), is taken as 100 MPa"
+     },
+     "notes": "The workbook cannot hold a fatigue limit at a mean stress. Sigm1, Taum1 and the calibration tests are the workbook's own (Pedranz et al. 2025)."
+    },
+    "fatigue_limits": {
+     "Sigm1": 143.8,
+     "Taum1": 100.9,
+     "origin": "workbook Summary",
+     "sources": [
+      {
+       "authors": "Pedranz et al.",
+       "reference": "10.1016/j.ijmecsci.2025.109961",
+       "reference_cycles": 5000000.0,
+       "excel_row": 3
+      }
+     ]
+    },
+    "mean_stress_slope": {
+     "A": 0.35836363636363644,
+     "route": "mean_stress_fatigue_limit",
+     "equation": "fatigue limit sigma_a = 100 MPa at sigma_m = 122.222 MPa on the Haigh line: A = (Sigm1 - sigma_a) / sigma_m (Tveit et al. 2025, Eqs. 22-23)",
+     "source": "Pedranz et al. (2025), doi:10.1016/j.ijmecsci.2025.109961, the axial R = 0.1 tests of the workbook: the three tests at sigma_a = 100 MPa ran out at 5e6 cycles, two of the three at 110 MPa failed; the limit at 5e6 cycles, the basis of the Summary limits (d111), is taken as 100 MPa",
+     "material_type": null,
+     "goodman_because": ""
+    },
+    "numerical_settings": {
+     "npts_TVEIT": 1001,
+     "min_blocks_TVEIT": 400,
+     "max_blocks_TVEIT": 60000,
+     "tol_alpha_TVEIT": 0.01,
+     "tol_damage_TVEIT": 0.001
+    },
+    "calibration_source": {
+     "match": "same reference",
+     "source": "10.1016/j.ijmecsci.2025.109961"
+    },
+    "candidates": 11,
+    "calibration_points": [
+     {
+      "case_id": 6,
+      "specimen_id": "Plain_axial_8",
+      "excel_row": 9,
+      "sigma_m": 0.0,
+      "sigma_a": 150.0,
+      "N_exp": 2807604.0,
+      "source": [
+       "Pedranz et al.",
+       "10.1016/j.ijmecsci.2025.109961"
+      ],
+      "role": "LOW",
+      "replicates": 2,
+      "reason": "LOW level 150 MPa (2 replicate(s)); log10 N closest to the level median 6.5096"
+     },
+     {
+      "case_id": 0,
+      "specimen_id": "Plain_axial_1",
+      "excel_row": 2,
+      "sigma_m": 0.0,
+      "sigma_a": 190.0,
+      "N_exp": 322262.0,
+      "source": [
+       "Pedranz et al.",
+       "10.1016/j.ijmecsci.2025.109961"
+      ],
+      "role": "MID",
+      "replicates": 3,
+      "reason": "MID level 190 MPa (3 replicate(s)); log10 N closest to the level median 5.5082"
+     },
+     {
+      "case_id": 9,
+      "specimen_id": "Plain_axial_12",
+      "excel_row": 13,
+      "sigma_m": 0.0,
+      "sigma_a": 230.0,
+      "N_exp": 73200.0,
+      "source": [
+       "Pedranz et al.",
+       "10.1016/j.ijmecsci.2025.109961"
+      ],
+      "role": "HIGH",
+      "replicates": 3,
+      "reason": "HIGH level 230 MPa (3 replicate(s)); log10 N closest to the level median 4.8645"
+     }
+    ],
+    "validation": "every other test of the workbook is an independent assessment of these constants; the calibration tests are design points (Flag = 0)",
+    "objective": "Eq. (25): sum (1 - ln N / ln N_exp)^2, closed-form N, 10 per lost point",
+    "optimiser": {
+     "method": "profile over C: simplex in ln K, ln L at each C of a fixed grid",
+     "C_grid": "8 per decade over the C bounds",
+     "bounds": {
+      "C": [
+       0.0001,
+       1000.0
+      ],
+      "K": [
+       1e-12,
+       0.1
+      ],
+      "L": [
+       0.05,
+       50.0
+      ]
+     },
+     "max_evaluations_per_simplex": 2000,
+     "family": "E <= 1.05 E_min",
+     "G2_decades": 0.1
+    },
+    "E_min": 0.0004022812949884149,
+    "profile": [
+     {
+      "C": 0.0001,
+      "K": 3.2873746239497344e-06,
+      "L": 2.9746140900192004,
+      "E": 0.0004022812949884149
+     },
+     {
+      "C": 0.0001333521432163324,
+      "K": 3.28742098950056e-06,
+      "L": 2.974682926633636,
+      "E": 0.0004022838335782678
+     },
+     {
+      "C": 0.00017782794100389227,
+      "K": 3.2874828723091145e-06,
+      "L": 2.9747744923463806,
+      "E": 0.0004022869790390133
+     },
+     {
+      "C": 0.00023713737056616554,
+      "K": 3.287565375445824e-06,
+      "L": 2.974896693535858,
+      "E": 0.00040229110812080494
+     },
+     {
+      "C": 0.00031622776601683794,
+      "K": 3.2876754523519216e-06,
+      "L": 2.9750595348900997,
+      "E": 0.0004022966696878257
+     },
+     {
+      "C": 0.00042169650342858224,
+      "K": 3.2878222041203064e-06,
+      "L": 2.9752767634809136,
+      "E": 0.0004023039836652674
+     },
+     {
+      "C": 0.0005623413251903491,
+      "K": 3.2880180531115664e-06,
+      "L": 2.975566340332564,
+      "E": 0.0004023137389982381
+     },
+     {
+      "C": 0.0007498942093324559,
+      "K": 3.2882789943100735e-06,
+      "L": 2.9759525477638546,
+      "E": 0.00040232679905384745
+     },
+     {
+      "C": 0.001,
+      "K": 3.288627162150928e-06,
+      "L": 2.976467372725817,
+      "E": 0.00040234421263450073
+     },
+     {
+      "C": 0.001333521432163324,
+      "K": 3.289091300110387e-06,
+      "L": 2.9771539595311314,
+      "E": 0.0004023674053232865
+     },
+     {
+      "C": 0.0017782794100389228,
+      "K": 3.2897103036711794e-06,
+      "L": 2.978069283938467,
+      "E": 0.00040239830027682537
+     },
+     {
+      "C": 0.0023713737056616554,
+      "K": 3.290535790801679e-06,
+      "L": 2.9792895332203746,
+      "E": 0.00040243943475799706
+     },
+     {
+      "C": 0.0031622776601683794,
+      "K": 3.2916367718407234e-06,
+      "L": 2.9809160316065224,
+      "E": 0.0004024941763234711
+     },
+     {
+      "C": 0.004216965034285823,
+      "K": 3.293104958823054e-06,
+      "L": 2.983084069173293,
+      "E": 0.0004025669725649771
+     },
+     {
+      "C": 0.005623413251903491,
+      "K": 3.295062996595522e-06,
+      "L": 2.9859732508671106,
+      "E": 0.0004026636910639134
+     },
+     {
+      "C": 0.007498942093324558,
+      "K": 3.297674346782823e-06,
+      "L": 2.9898226784319224,
+      "E": 0.0004027920351449195
+     },
+     {
+      "C": 0.01,
+      "K": 3.3011572337721946e-06,
+      "L": 2.994949932356805,
+      "E": 0.0004029620679916805
+     },
+     {
+      "C": 0.01333521432163324,
+      "K": 3.305802736322887e-06,
+      "L": 3.0017765461896633,
+      "E": 0.0004031868421806351
+     },
+     {
+      "C": 0.01778279410038923,
+      "K": 3.311999397678208e-06,
+      "L": 3.010861227040587,
+      "E": 0.0004034831243739017
+     },
+     {
+      "C": 0.023713737056616554,
+      "K": 3.32026573749532e-06,
+      "L": 3.022942806829725,
+      "E": 0.00040387216742919795
+     },
+     {
+      "C": 0.03162277660168379,
+      "K": 3.3312943552365303e-06,
+      "L": 3.038995776739532,
+      "E": 0.00040438041748581613
+     },
+     {
+      "C": 0.042169650342858224,
+      "K": 3.3460104352519716e-06,
+      "L": 3.060301140458888,
+      "E": 0.00040503993279550696
+     },
+     {
+      "C": 0.05623413251903491,
+      "K": 3.365650230837331e-06,
+      "L": 3.088535672733255,
+      "E": 0.0004058881200996078
+     },
+     {
+      "C": 0.07498942093324558,
+      "K": 3.3918668737234124e-06,
+      "L": 3.1258817890481327,
+      "E": 0.0004069661534789979
+     },
+     {
+      "C": 0.1,
+      "K": 3.426871737564502e-06,
+      "L": 3.175160985202238,
+      "E": 0.00040831515275356134
+     },
+     {
+      "C": 0.1333521432163324,
+      "K": 3.4736241763411494e-06,
+      "L": 3.2399909756558745,
+      "E": 0.00040996895916205276
+     },
+     {
+      "C": 0.1778279410038923,
+      "K": 3.5360863397476485e-06,
+      "L": 3.3249658606253063,
+      "E": 0.00041194237326580444
+     },
+     {
+      "C": 0.23713737056616552,
+      "K": 3.6195629925723796e-06,
+      "L": 3.4358583147831285,
+      "E": 0.0004142143833563545
+     },
+     {
+      "C": 0.31622776601683794,
+      "K": 3.731155728944403e-06,
+      "L": 3.5798433622794894,
+      "E": 0.00041670762873596736
+     },
+     {
+      "C": 0.4216965034285822,
+      "K": 3.880366472678705e-06,
+      "L": 3.7657538945505884,
+      "E": 0.00041926821498880886
+     },
+     {
+      "C": 0.5623413251903491,
+      "K": 4.0798999902942345e-06,
+      "L": 4.00439327821655,
+      "E": 0.00042165321864375227
+     },
+     {
+      "C": 0.7498942093324559,
+      "K": 4.34673101513217e-06,
+      "L": 4.308963009557027,
+      "E": 0.0004235347203962892
+     },
+     {
+      "C": 1.0,
+      "K": 4.703528767005657e-06,
+      "L": 4.695702547929241,
+      "E": 0.0004245265499999989
+     },
+     {
+      "C": 1.333521432163324,
+      "K": 5.180565486784978e-06,
+      "L": 5.1848818406639525,
+      "E": 0.0004242327175648863
+     },
+     {
+      "C": 1.7782794100389228,
+      "K": 5.818282013514634e-06,
+      "L": 5.802326304835319,
+      "E": 0.0004223082955188402
+     },
+     {
+      "C": 2.371373705661655,
+      "K": 6.670732024591375e-06,
+      "L": 6.581682977800206,
+      "E": 0.00041851962588753164
+     },
+     {
+      "C": 3.1622776601683795,
+      "K": 7.810192394571315e-06,
+      "L": 7.567653156452025,
+      "E": 0.0004127927571531742
+     },
+     {
+      "C": 4.216965034285822,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 20.0
+     },
+     {
+      "C": 5.623413251903491,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 7.498942093324558,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 10.0,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 13.33521432163324,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 17.78279410038923,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 23.71373705661655,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 31.622776601683793,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 42.169650342858226,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 56.23413251903491,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 74.98942093324558,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 100.0,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 133.3521432163324,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 177.82794100389228,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 237.13737056616552,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 316.22776601683796,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 421.6965034285823,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 562.341325190349,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 749.8942093324558,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     },
+     {
+      "C": 1000.0,
+      "K": 1.0713799547986325e-05,
+      "L": 10.74159364135855,
+      "E": 30.0
+     }
+    ],
+    "family": {
+     "n_equivalent": 34,
+     "C_range": [
+      0.0001,
+      3.1622776601683795
+     ],
+     "K_range": [
+      3.2873746239497344e-06,
+      7.810192394571315e-06
+     ],
+     "L_range": [
+      2.9746140900192004,
+      7.567653156452025
+     ]
+    },
+    "admissibility_checked": [
+     {
+      "C": 0.0001,
+      "E": 0.0004022812949884149,
+      "G1": true,
+      "G2": true,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 150.0,
+        "N_exp": 2807604.0,
+        "N_closed": 3278849.7999576647,
+        "status": "valid",
+        "N_transient": 3211947.1916193585,
+        "log10_transient_minus_closed": -0.008953126306067816,
+        "residual_closed": 0.0673856701525113,
+        "residual_transient": 0.058432543846443724
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 190.0,
+        "N_exp": 322262.0,
+        "N_closed": 263225.11621075077,
+        "status": "valid",
+        "N_transient": 255672.51245181708,
+        "log10_transient_minus_closed": -0.012643286891597327,
+        "residual_closed": -0.08788177196134614,
+        "residual_transient": -0.10052505885294362
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 230.0,
+        "N_exp": 73200.0,
+        "N_closed": 78470.11852406649,
+        "status": "valid",
+        "N_transient": 73985.6792897995,
+        "log10_transient_minus_closed": -0.025556643005250734,
+        "residual_closed": 0.03019322752521278,
+        "residual_transient": 0.004636584519962587
+       }
+      ]
+     }
+    ],
+    "chosen": {
+     "C": 0.0001,
+     "K": 3.2873746239497344e-06,
+     "L": 2.9746140900192004,
+     "E": 0.0004022812949884149,
+     "G1": true,
+     "G2": true,
+     "points": [
+      {
+       "sigma_m": 0.0,
+       "sigma_a": 150.0,
+       "N_exp": 2807604.0,
+       "N_closed": 3278849.7999576647,
+       "status": "valid",
+       "N_transient": 3211947.1916193585,
+       "log10_transient_minus_closed": -0.008953126306067816,
+       "residual_closed": 0.0673856701525113,
+       "residual_transient": 0.058432543846443724
+      },
+      {
+       "sigma_m": 0.0,
+       "sigma_a": 190.0,
+       "N_exp": 322262.0,
+       "N_closed": 263225.11621075077,
+       "status": "valid",
+       "N_transient": 255672.51245181708,
+       "log10_transient_minus_closed": -0.012643286891597327,
+       "residual_closed": -0.08788177196134614,
+       "residual_transient": -0.10052505885294362
+      },
+      {
+       "sigma_m": 0.0,
+       "sigma_a": 230.0,
+       "N_exp": 73200.0,
+       "N_closed": 78470.11852406649,
+       "status": "valid",
+       "N_transient": 73985.6792897995,
+       "log10_transient_minus_closed": -0.025556643005250734,
+       "residual_closed": 0.03019322752521278,
+       "residual_transient": 0.004636584519962587
+      }
+     ],
+     "C_at_search_bound": true
+    },
+    "identifiability": "C is not identified by uniaxial data: equivalent sets (E <= 1.05 E_min) span C 0.0001 to 3.16; the chosen C is the admissible one of lowest E and lies on the search bound",
+    "confidence": {
+     "level": "medium",
+     "major": 0,
+     "minor": 3,
+     "findings": [
+      {
+       "code": "C_not_identified",
+       "severity": "minor",
+       "what": "C varies from 0.0001 to 3.16 among the equivalent sets",
+       "why": "uniaxial data cannot fix C; it matters under mean shear stress and non-proportional loading",
+       "advice": "a test with a mean shear stress or 90 deg out-of-phase tension-torsion decides C"
+      },
+      {
+       "code": "low_point_near_limit",
+       "severity": "minor",
+       "what": "the LOW point (150 MPa) lies within 4.3 % of Sigm1 = 143.8 MPa",
+       "why": "near its asymptote the model curve is steep; a residual of a few tenths of a decade is expected there",
+       "advice": "a LOW level further above the fatigue limit"
+      },
+      {
+       "code": "runouts_above_limit",
+       "severity": "minor",
+       "what": "1 axial R = -1 run-out(s) lie above Sigm1 = 143.8 MPa (highest 150 MPa)",
+       "why": "the fatigue limit may be conservative",
+       "advice": "check Sigm1 against the run-outs of the same source"
+      }
+     ]
+    }
+   },
+   "identity": {
+    "procedure": 2,
+    "implementation_revision": "2026-11-12",
+    "workbook_sha256": "2a378823426639986ba534f6fda4adefce621d1757def2531f157818306f94fc",
+    "overlay_sha256": "2936127f125d7bc2e454aeb3cf8fc2b4725a832ee5752bb6ec6230a435172c31",
+    "inputs_sha256": "a827bbb7e31d608427ebeed845c28ae1777253e8745d0c4f42d52f07140153a3"
+   },
+   "status": "calibrated",
+   "reason": ""
+  }
+ },
+ "source": {
+  "Sigm1_TVEIT": "fatigue limit (workbook Summary)",
+  "Taum1_TVEIT": "fatigue limit (workbook Summary)",
+  "A_TVEIT": "fatigue limit sigma_a = 100 MPa at sigma_m = 122.222 MPa on the Haigh line: A = (Sigm1 - sigma_a) / sigma_m (Tveit et al. 2025, Eqs. 22-23)",
+  "C_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures; C is not identified by uniaxial data: equivalent sets (E <= 1.05 E_min) span C 0.0001 to 3.16; the chosen C is the admissible one of lowest E and lies on the search bound",
+  "K_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+  "L_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+  "npts_TVEIT": "time-integration setting checked by gate G2",
+  "min_blocks_TVEIT": "time-integration setting checked by gate G2",
+  "max_blocks_TVEIT": "time-integration setting checked by gate G2",
+  "tol_alpha_TVEIT": "time-integration setting checked by gate G2",
+  "tol_damage_TVEIT": "time-integration setting checked by gate G2"
+ },
+ "design_case_ids": {
+  "C_TVEIT": [
+   6,
+   0,
+   9
+  ],
+  "K_TVEIT": [
+   6,
+   0,
+   9
+  ],
+  "L_TVEIT": [
+   6,
+   0,
+   9
+  ]
+ },
+ "provenance": {
+  "created_utc": "2026-11-13T19:43:32+00:00",
+  "workbook": "Experimental_Data/Al7075_T6.xlsx",
+  "workbook_sha256": "2a378823426639986ba534f6fda4adefce621d1757def2531f157818306f94fc",
+  "failures": 87,
+  "runouts": 14,
+  "assumptions_applied": {
+   "name": "Al7075_T6.overlay.json",
+   "sha256": "2936127f125d7bc2e454aeb3cf8fc2b4725a832ee5752bb6ec6230a435172c31",
+   "base_sha256": "2a378823426639986ba534f6fda4adefce621d1757def2531f157818306f94fc",
+   "operations": 25,
+   "expected_fingerprint": "b5007cc636a17ef396693df62aa66cca3c293567442c36f5454045140ec89cad"
+  },
+  "failure_fingerprint": "b5007cc636a17ef396693df62aa66cca3c293567442c36f5454045140ec89cad",
+  "multifat_version": "0.1.0.dev0",
+  "implementation_revision": "2026-11-12",
+  "git": {
+   "commit": "cced61cf4587b349345eb4c1ba3694be46cf0185",
+   "dirty": false
+  },
+  "python": "3.11.9",
+  "numpy": "2.4.6",
+  "settings": {
+   "plane_grid": [
+    20,
+    40
+   ],
+   "refined_plane_search": true,
+   "master_curve_stdnum": 0.0,
+   "master_curve_survival_probability": 0.5,
+   "flat_curve_k_max": 15.0
+  }
+ },
+ "calibration_procedure": 2,
+ "calibration_id": "20261113T194332455461Z_8e34a961b0a9"
+}

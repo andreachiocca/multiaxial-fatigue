@@ -66,11 +66,16 @@ the same workbook, overlay, inputs file, procedure version and implementation re
 record instead of calibrating again (a calibration takes up to several minutes). Editing the
 inputs or the data gives a new calibration and a new record; old records stay.
 
+The records committed for Al7075_T6, 42CrMo4_Santus, 42CrMo4_Reis, Ti6Al4V_Meneghetti and
+Ti6Al4V_Berto were made this way from a clean checkout; each holds the constants, the three
+calibration tests, the C range of the equivalent sets and the calibration confidence with its
+findings. AISI316L has none until its fatigue limit is settled (#102).
+
 ## Provisional TVEIT2025 records
 
 The stage-1 TVEIT2025 constants are source-specific, manually supplied coefficients; they are neither independently validated nor transferable between experimental campaigns. The AISI316L record proposed in the contributor branch is deliberately withheld from this integration: its PSI load-cell-corrected axial stress scale (x1.1558) and reference fatigue limit (271.6 MPa) do not match the current Janssens workbook/reference (278.5 MPa). A source-compatible workbook and reviewed calibration are needed before enabling this record. Do not change the reference limit without re-estimating A, C, K, L.
 
-For TVEIT2025, the model declares `ComparisonCapabilities(life_prediction="native", dp_comparison=False)`. The pipeline exports `Metric_mode=Nf_direct`, with `Nf_expected=Nf_native` for compatibility with fatigue-life plots; the diagnostic fatigue index remains in `CP_value` but `DP_fit` and its error are undefined. Other methods retain the normal calibrated master-curve comparison. Select `multifat-compare --results_dir Results/current --out_dir Results/current/Comparison --plot-kind life` for fatigue-life plots, `--plot-kind damage` for DP-only plots, or `--plot-kind both` (default). Tveit is included only in life plots. A `native_life_prediction_summary.csv` counts infinite-life predictions for failed specimens and run-outs, which are not converted into finite logarithmic residuals. The method is still at stage 1 and its constants are not independently validated.
+For TVEIT2025, the model declares `ComparisonCapabilities(life_prediction="native", dp_comparison=False)`. The pipeline exports `Metric_mode=Nf_direct`, with `Nf_expected=Nf_native` for compatibility with fatigue-life plots; the diagnostic fatigue index remains in `CP_value` but `DP_fit` and its error are undefined. Other methods retain the normal calibrated master-curve comparison. Select `multifat-compare --results_dir Results/current --out_dir Results/current/Comparison --plot-kind life` for fatigue-life plots, `--plot-kind damage` for DP-only plots, or `--plot-kind both` (default). Tveit is included only in life plots. A `native_life_prediction_summary.csv` counts infinite-life predictions for failed specimens and run-outs, which are not converted into finite logarithmic residuals. The stage-1 constants are not independently validated; the calibrated records above replace them only when no constants are supplied.
 ## Published constants
 
 `<material>/<MODEL>_published.json` holds constants printed in a paper, entered by hand. The
