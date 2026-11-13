@@ -1,0 +1,10 @@
+{
+ "schema": "multifat/tveit2025-calibration-inputs/2",
+ "material_id": "Al7075_T6",
+ "mean_stress_fatigue_limit": {
+  "sigma_a": 100.0,
+  "R": 0.1,
+  "source": "Pedranz et al. (2025), doi:10.1016/j.ijmecsci.2025.109961, the axial R = 0.1 tests of the workbook: the three tests at sigma_a = 100 MPa ran out at 5e6 cycles, two of the three at 110 MPa failed; the limit at 5e6 cycles, the basis of the Summary limits (d111), is taken as 100 MPa"
+ },
+ "notes": "The workbook cannot hold a fatigue limit at a mean stress. Sigm1, Taum1 and the calibration tests are the workbook's own (Pedranz et al. 2025)."
+}

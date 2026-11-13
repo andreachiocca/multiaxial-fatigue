@@ -6,6 +6,30 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### TVEIT2025 calibration by the authors' procedure (stage 2)
+
+- Without supplied constants, `multifat-pipeline` calibrates `A_TVEIT`, `C_TVEIT`, `K_TVEIT` and
+  `L_TVEIT` on any fatigue-life workbook (`eval/tveit2025_calibration.py`; Tveit et al. 2025,
+  Sect. 4; Ottosen et al. 2008, Sect. 5): the workbook's own `Sigm1`, `Taum1`; `A` in the authors'
+  order (fatigue limit at a tensile mean stress, a hand-entered value, FKM for a declared material
+  type, Goodman); `C`, `K`, `L` by Eq. (25) on three axial R = -1 failures of the source of the
+  Summary limits, with Eq. (25) profiled over `C` because uniaxial data do not identify it.
+  `--constants` takes precedence; `--no-calibrate` turns it off.
+- New extension point for models that calibrate their constants by their own procedure
+  (`calibrated_params`, `calibrate_constants`): the result is kept under
+  `model_calibrations.<MODEL>` in the sidecar and the archived record, and its tests become
+  design rows (Flag 0). No model name in `cli/`.
+- Calibration confidence (`eval/calibration_confidence.py`): named findings, major or minor, each
+  with what to try (estimated A, failures below `Sigm1`, limits and tests of different sources,
+  points close together, a constant on its search bound, the unidentified `C`, ...); level high,
+  medium or low. Printed, recorded and noted on the run-report row.
+- An identical calibration (workbook bytes, overlay, inputs file, procedure version, implementation
+  revision) is reused from `Calibrations/<material>/` or the run's archive.
+- Optional inputs `Calibrations/<material>/TVEIT2025_inputs.json` (schema 2) for Al7075_T6,
+  42CrMo4_Santus, 42CrMo4_Reis, Ti6Al4V_Meneghetti and Ti6Al4V_Berto, and their first records.
+- Changed numerically: TVEIT2025 now runs, with calibrated constants, in pipeline runs without
+  `--constants` (it was skipped for missing constants); no other model changes.
+
 ### Observation type of each Dataset row (decision d113, #18)
 
 - New Dataset column `Observation type (failure/run-out/fatigue limit)`, read by the importer

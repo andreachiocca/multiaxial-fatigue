@@ -50,8 +50,9 @@ Repository choices:
   - The damage parameter passed to the universal curve is the fatigue index, the maximum over the
     cycle of (sigma_e + A I1) / f_m1 with alpha = 0 (beta + 1 of Eq. (1) for the virgin material).
     The model's own prediction is the native life.
-  - A, C, K and L are read from a constants file as A_TVEIT, C_TVEIT, K_TVEIT and L_TVEIT.
-    The calibration of C, K and L (Eq. (25), after Ottosen et al. 2008) is not implemented here.
+  - A, C, K and L are A_TVEIT, C_TVEIT, K_TVEIT and L_TVEIT. Without supplied constants the
+    pipeline calibrates them by the authors' procedure (calibrate_constants: A, then C, K and L
+    by Eq. (25) after Ottosen et al. 2008; multifat.eval.tveit2025_calibration).
   - The constants hold only together with the f_m1 and t_m1 they were calibrated with, so the
     constants file may also set Sigm1_TVEIT and Taum1_TVEIT. These replace the workbook Sigm1 and
     Taum1 for this model only. Without them, the workbook values are used.
@@ -333,8 +334,17 @@ class Tveit2025:
         **{key: str(default) for key, (_, default) in SETTINGS.items()},
     }
 
+    # The constants calibrate_constants identifies; the pipeline skips it when one is supplied
+    calibrated_params = ("A_TVEIT", "C_TVEIT", "K_TVEIT", "L_TVEIT")
+
     def required_params(self) -> set[str]:
         return {"A_TVEIT", "C_TVEIT", "K_TVEIT", "L_TVEIT"}
+
+    def calibrate_constants(self, workbook, data, material, *, progress=None, archives=()):
+        """A, C, K and L by the authors' procedure (multifat.eval.tveit2025_calibration)."""
+        from multifat.eval.tveit2025_calibration import calibrate_tveit2025
+
+        return calibrate_tveit2025(workbook, data, material, progress=progress, archives=archives)
 
     @staticmethod
     def _limit(params: Mapping[str, float], key: str) -> float:

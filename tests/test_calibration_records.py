@@ -12,7 +12,10 @@ import pytest
 from multifat.cli.pipeline import load_constants
 
 ROOT = Path(__file__).resolve().parents[1]
-RECORDS = sorted(p for p in (ROOT / "Calibrations").glob("*/*.json"))
+# TVEIT2025_inputs.json files are calibration inputs, read by the calibration, not records
+RECORDS = sorted(
+    p for p in (ROOT / "Calibrations").glob("*/*.json") if not p.name.endswith("_inputs.json")
+)
 
 
 def test_records_are_present():

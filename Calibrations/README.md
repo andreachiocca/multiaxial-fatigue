@@ -30,7 +30,7 @@ inputs, so a record reproduces former constants, not a calibration of the new da
 ## Hand-entered TVEIT2025 constants
 
 `<material>/TVEIT2025_stage1.json` holds the constants of the Tveit et al. (2025) model, entered by
-hand (stage 1: the model runs with supplied constants; their calibration is not implemented yet).
+hand (stage 1). They take precedence over the calibration of the pipeline (next section).
 These files use the `hand_entered_constants` kind (#60): the constants under
 `hand_entered_constants`, the batch under `material_id`, and in `provenance` how the constants were
 obtained. They are not pipeline calibrations, so they carry no implementation revision or dataset
@@ -47,6 +47,24 @@ copies the provenance. Each file sets:
 `notes` explains each entry. Edit a copy to change a run:
 
     multifat-pipeline Experimental_Data/6_42CrMo4_Santus.xlsx --models TVEIT2025 --no-calibrate --constants Calibrations/42CrMo4_Santus/TVEIT2025_stage1.json
+
+## TVEIT2025 calibration inputs and records
+
+Without supplied constants, `multifat-pipeline` calibrates TVEIT2025 by the authors' procedure on
+the workbook's own data (see the [method guide](../docs/method-guides/TVEIT2025.md)).
+`<material>/TVEIT2025_inputs.json` holds, by hand, only what a workbook cannot: a fatigue limit at
+a tensile mean stress (`mean_stress_fatigue_limit`, Al7075_T6), the material type for the FKM
+estimate of A (`material_type`: steel for 42CrMo4_Santus and 42CrMo4_Reis; titanium alloy, which
+FKM does not cover, for Ti6Al4V_Meneghetti and Ti6Al4V_Berto), a hand-entered A, the source of the
+calibration tests and the time-integration settings. The calibration only reads it. A material
+without the file is calibrated with the Goodman estimate of A.
+
+    multifat-pipeline --material Al7075_T6 --models TVEIT2025 --calibration-archive Calibrations
+
+calibrates and archives the record here as `<material>/<calibration_id>.json`. A later run with
+the same workbook, overlay, inputs file, procedure version and implementation revision reuses that
+record instead of calibrating again (a calibration takes up to several minutes). Editing the
+inputs or the data gives a new calibration and a new record; old records stay.
 
 ## Provisional TVEIT2025 records
 

@@ -104,11 +104,18 @@ def _annotate_calibration(outcome: Outcome, model, calibration: dict) -> Outcome
     """Name the lost constants on the models that ran on their default or were skipped for them.
 
     A result that adopted a plane constant calibrated on tests outside R = -1 is marked
-    ``ok (R fallback)``, with the description of the tests in its notes (issue #77).
+    ``ok (R fallback)``, with the description of the tests in its notes (issue #77). A result
+    whose model calibrated its own constants carries the confidence of that calibration.
     """
     from multifat.cli.calibrate import CALIBRATED
+    from multifat.eval.calibration_confidence import headline
 
     adopted = set(filter(None, outcome.calibrated.split(",")))
+    confidence = (calibration.get("confidence") or {}).get(getattr(model, "name", ""))
+    own = set(getattr(model, "calibrated_params", ()))
+    if confidence and outcome.status.startswith("ok") and own <= adopted:
+        flag = f"calibration {headline(confidence)}"
+        outcome.notes = " | ".join(text for text in (outcome.notes, flag) if text)
     if (
         outcome.status == "ok"
         and calibration.get("r_fallback")
@@ -527,14 +534,83 @@ def provenance(workbook: Path, data: dict | None = None, survival_probability: f
     }
 
 
+def _calibrate_by_models(
+    sidecar: dict,
+    workbook: Path,
+    material: str,
+    names: list[str],
+    supplied: set[str],
+    archive: Path,
+    data: dict | None,
+) -> None:
+    """Calibrate the constants of the selected models that have a procedure of their own.
+
+    A model whose constants follow the procedure of its own papers, not the scatter objective of
+    ``multifat.cli.calibrate``, names them in ``calibrated_params`` and provides
+    ``calibrate_constants(workbook, data, material, progress=..., archives=...)``. It returns a
+    JSON-ready dict with "status" ("calibrated" or the reason it is not), "reason", "params",
+    "source", "design_case_ids" and optionally "confidence" (multifat.eval.calibration_confidence).
+    The result is kept under ``model_calibrations``; its constants join ``params``, and the tests
+    behind them become design points (Flag 0) of the models that adopt them. Supplied constants
+    take precedence: a model is not calibrated when one of its constants is supplied. A
+    calibration that cannot be made leaves the constants absent, with its reason under
+    ``unidentified``, so the model is skipped with that reason.
+    """
+    from multifat.eval.calibration_confidence import headline
+    from multifat.models.registry import get_models
+
+    for model in get_models(names):
+        procedure = getattr(model, "calibrate_constants", None)
+        own = set(getattr(model, "calibrated_params", ()))
+        if procedure is None or not own or own & supplied:
+            continue
+        if data is None:
+            data, _ = runmod.load_material(workbook)
+        print(f"   {model.name}: calibrating {', '.join(sorted(own))} by its own procedure")
+        try:
+            result = procedure(
+                workbook,
+                data,
+                material,
+                progress=lambda text: print("   " + text),
+                archives=[archive],
+            )
+        except Exception as exc:  # carry on with the other models
+            result = {"status": "failed", "reason": f"{type(exc).__name__}: {exc}", "params": {}}
+        sidecar.setdefault("model_calibrations", {})[model.name] = result
+        if result["status"] != "calibrated":
+            why = f"{model.name} calibration {result['status']}: {result['reason']}"
+            print("   " + why)
+            sidecar.setdefault("unidentified", {}).update({k: why for k in own})
+            continue
+        if result.get("confidence"):
+            print(f"   {model.name}: calibration {headline(result['confidence'])}")
+        sidecar["params"] = {**sidecar.get("params", {}), **result["params"]}
+        sidecar["source"] = {**sidecar.get("source", {}), **result.get("source", {})}
+        sidecar["design_case_ids"] = {
+            **sidecar.get("design_case_ids", {}),
+            **result.get("design_case_ids", {}),
+        }
+        if sidecar.get("status") == "not_applicable":
+            sidecar["status"], sidecar["reason"] = "calibrated", ""
+
+
 def _calibration_state(sidecar: dict, needed: set[str]) -> dict:
     """What an infeasible calibration lost, for the models that depended on the lost constants.
 
     Also carries ``r_fallback``, the description of a calibration made on tests outside
-    R = -1 (issue #77), so that the models adopting those constants are flagged.
+    R = -1 (issue #77), so that the models adopting those constants are flagged, and the
+    ``confidence`` of the calibrations made by the models themselves, by model name.
     """
     r_fallback = (sidecar.get("selection") or {}).get("r_fallback", "")
     extra = {"r_fallback": r_fallback} if r_fallback else {}
+    confidence = {
+        name: entry["confidence"]
+        for name, entry in (sidecar.get("model_calibrations") or {}).items()
+        if entry.get("status") == "calibrated" and entry.get("confidence")
+    }
+    if confidence:
+        extra["confidence"] = confidence
     if sidecar.get("status") != "infeasible":
         state = {"at_bound": sidecar.get("at_bound", {})} if sidecar.get("at_bound") else {}
         return {**state, **extra}
@@ -679,6 +755,16 @@ def run_workbook(
     else:
         sidecar["status"] = "not_applicable"
         sidecar["reason"] = "calibration not requested (--no-calibrate)"
+    if calibrate:
+        _calibrate_by_models(
+            sidecar,
+            workbook,
+            constants_material,
+            selected,
+            set(supplied),
+            Path(calibration_archive or results_dir / "calibrations") / constants_material,
+            data if design_workbook is None else None,
+        )
     if supplied:
         sidecar["params"] = {**sidecar.get("params", {}), **supplied}
         reused, note = supplied_design_ids(constants, data[material], supplied)
