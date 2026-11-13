@@ -1,5 +1,34 @@
 # Development continuation checkpoint
 
+## TVEIT2025 stage 2 (calibration) by the authors' procedure (13 November 2026)
+
+- Branch `tveit2025-calibration` (from main `d5f3a5f`): without supplied constants the pipeline
+  calibrates A, C, K, L of TVEIT2025 (Tveit et al. 2025, Sect. 4; Ottosen et al. 2008, Sect. 5)
+  through a model extension point (`calibrated_params`, `calibrate_constants`; result under
+  `model_calibrations.<MODEL>`; no model name in `cli/`, #81). Calibration confidence
+  (`eval/calibration_confidence.py`: major/minor findings, level high/medium/low), reuse of a
+  record with the same identity, optional `Calibrations/<material>/TVEIT2025_inputs.json`.
+- Records committed for Al7075_T6 (medium), 42CrMo4_Santus (low: failures below the limit),
+  42CrMo4_Reis (medium), Ti6Al4V_Meneghetti (low: narrow stress range, L on its bound) and
+  Ti6Al4V_Berto (medium); none for AISI316L until #102.
+- Evidence: full suite 3228 passed, 67 skipped, 125 xfailed at 91831cd; black, ruff, both
+  generators (--check), check_docs and check_scientific_reviews pass. Regression snapshot against
+  main (main run from a worktree, so the workbook paths differ): exit codes identical; every
+  changed file explained (TVEIT2025 outputs and sidecar keys of the seven life workbooks and the
+  transfer, checkout paths, run times); no other model's row, CSV column or constant changes;
+  fatigue-limit workbooks unchanged. The later fix of the source display (cced61c) moves no
+  number: the regenerated records have the same constants, points and E as the snapshot run.
+- Cost: TVEIT2025 now runs in `--models all`; its evaluation took 4866 s on Al7075_T6 (76 tests,
+  C = 1e-4), 811 s on Ti6Al4V_Berto, 440 s on 42CrMo4_Santus; the snapshot took 7410 s (8 jobs).
+- Modified: `cli/pipeline.py`, `eval/tveit2025_calibration.py`, `eval/calibration_confidence.py`,
+  `models/invariant_methods/tveit2025.py`, `Calibrations/` (inputs, records, README), method guide,
+  audit, protocol and workflow docs, CHANGELOG, tests (`tests/methods/test_tveit2025_calibration.py`,
+  `tests/test_tveit2025_calibration_pipeline.py`, `tests/test_calibration_confidence.py`).
+- Open questions for the maintainer (in the PR): design set of a native-life model (Flag 0 for the
+  three calibration tests only?); confidence for other models; TVEIT2025 run time in `--models all`.
+- Next action: push `tveit2025-calibration` to the fork and open the PR; later modes `all_eligible`
+  and `subset` (#14).
+
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 
 - Branch `data/observation-type`: Dataset column `Observation type`, added to all 17 workbooks
