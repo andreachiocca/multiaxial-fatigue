@@ -233,7 +233,7 @@ def test_input_findings():
         "failures_below_limit": "major",
         "runouts_above_limit": "minor",
         "limit_source_differs": "major",
-        "A_estimated": "major",
+        "A_estimated": "minor",  # the authors' own route without a mean-stress limit
         "material_type_for_FKM": "minor",
     }
     slope = tc.mean_stress_slope({"mean_stress_fatigue_limit": {"sigma_a": 100, "R": 0.1}}, 150, {})
@@ -260,12 +260,18 @@ def test_point_findings():
 def test_fit_findings():
     point = {"residual_closed": 0.35, "residual_transient": 0.1}
     chosen = {"C": 1e-4, "K": 1e-5, "L": math.exp(math.log(0.05)), "points": [point]}
+    # C free over decades: its bound is the flat E falling on a grid end, not a finding of its own
     found = tc._fit_findings(chosen, {"C_range": [1e-4, 3.16]})
     assert _codes(found) == {
         "poor_fit": "minor",
         "constant_at_bound": "major",
         "C_not_identified": "minor",
     }
+    bound = next(f.what for f in found if f.code == "constant_at_bound")
+    assert bound.startswith("L of the chosen set")
+    # C pinned by the equivalent sets: on its bound it is a finding
+    found = tc._fit_findings(chosen, {"C_range": [1e-4, 5e-4]})
+    assert _codes(found) == {"poor_fit": "minor", "constant_at_bound": "major"}
     assert "C, L of the chosen set" in next(f.what for f in found if f.code == "constant_at_bound")
 
 

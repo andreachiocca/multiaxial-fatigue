@@ -115,8 +115,12 @@ record).
 
 **Confidence.** Each calibration lists what weakens it, each finding major or minor, with what to
 try; the level is *high* without findings, *medium* with minor findings only and *low* with a major
-one. It is printed during the run, stored in the record and noted on the run-report row. The
-findings only describe the calibration inputs and the fit, never the predictions:
+one. A major finding means the calibration probably misrepresents the material (inconsistent data,
+a degenerate fit); a minor one is a known limitation or an estimate the authors themselves use, so
+that the level separates the calibrations with a real problem. The confidence is printed during
+the run, stored in the record (judged again with the current rules when a record is reused) and
+noted on the run-report row. The findings only describe the calibration inputs and the fit, never
+the predictions:
 
 | Finding | Severity | What to try |
 |---|---|---|
@@ -124,7 +128,7 @@ findings only describe the calibration inputs and the fit, never the predictions
 | `runouts_above_limit`: axial R = −1 run-outs above $f_{-1}$ | minor | the limit may be conservative |
 | `limit_source_differs`: no test from the source of the limits | major | use the limits of the source of the tests |
 | `limit_other_publication`: limits from another paper of the same authors | minor | confirm the same batch |
-| `A_estimated`: $A$ from FKM or Goodman | major | a fatigue limit at a tensile mean stress |
+| `A_estimated`: $A$ from FKM or Goodman | minor | a fatigue limit at a tensile mean stress |
 | `material_type_for_FKM`: Goodman because no material type is declared | minor | declare `material_type` |
 | `A_supplied`: $A$ entered by hand | minor | a fatigue limit at a tensile mean stress |
 | `point_not_R_minus_1`: a calibration point with a mean stress | major | use R = −1 failures |
@@ -133,14 +137,14 @@ findings only describe the calibration inputs and the fit, never the predictions
 | `single_specimen_level`: a chosen level with one specimen | minor | more replicates |
 | `points_mixed_sources`: points from several sources | major | calibrate on one source |
 | `poor_fit`: a point missed by more than 0.3 decade | minor | check the limit and the points |
-| `constant_at_bound`: $C$, $K$ or $L$ on its search bound | major | more informative tests |
+| `constant_at_bound`: $K$ or $L$ on its search bound, or $C$ when the equivalent sets pin it | major | more informative tests |
 | `C_not_identified`: $C$ over more than one decade among equivalent sets | minor | a mean-shear or 90° out-of-phase test |
 
 For example, Ti6Al4V_Meneghetti (its axial R = −1 failures lie between 523 and 551 MPa):
 
 ```text
-TVEIT2025: calibration confidence low (3 major, 3 minor: A_estimated, constant_at_bound,
-  narrow_stress_range, C_not_identified, low_point_near_limit, single_specimen_level)
+TVEIT2025: calibration confidence low (2 major, 4 minor: constant_at_bound, narrow_stress_range,
+  A_estimated, C_not_identified, low_point_near_limit, single_specimen_level)
 ```
 
 ## Worked example

@@ -933,9 +933,9 @@ def _input_findings(f_m1, failures, runouts, matched, slope) -> List[Finding]:
         )
     if slope["route"] in ("fkm", "goodman"):
         found.append(
-            Finding(
+            Finding(  # minor: the authors' own route when no mean-stress limit is available
                 "A_estimated",
-                MAJOR,
+                MINOR,
                 f"A = {slope['A']:.4g} is estimated ({slope['route']}), not measured",
                 "every mean-stress prediction depends on A",
                 "a fatigue limit at a tensile mean stress (e.g. an R = 0.1 staircase) gives A "
@@ -1053,11 +1053,16 @@ def _fit_findings(chosen, family) -> List[Finding]:
                 "check the fatigue limit and the chosen points",
             )
         )
-    # The fit works in ln K and ln L, so a value on a bound comes back within rounding of it
+    # The fit works in ln K and ln L, so a value on a bound comes back within rounding of it.
+    # C on its bound counts only when the equivalent sets pin C: when they span decades, E is flat
+    # in C and the lowest E falls on a grid end by rounding (finding C_not_identified).
+    c_low, c_high = family["C_range"]
+    c_free = math.log10(c_high / c_low) > C_SPAN_DECADES
     bounds = [
         name
         for name in ("C", "K", "L")
         if any(abs(math.log(chosen[name] / b)) < 1e-9 for b in BOUNDS[name])
+        and not (name == "C" and c_free)
     ]
     if bounds:
         found.append(
@@ -1070,8 +1075,7 @@ def _fit_findings(chosen, family) -> List[Finding]:
                 "test); the bound is not a calibrated value",
             )
         )
-    c_low, c_high = family["C_range"]
-    if math.log10(c_high / c_low) > C_SPAN_DECADES:
+    if c_free:
         found.append(
             Finding(
                 "C_not_identified",
@@ -1196,15 +1200,6 @@ def calibrate_tveit2025(
         )
         block = data[material]
         out["identity"] = calibration_identity(Path(workbook), block, digest)
-        earlier = reusable_calibration([CALIBRATIONS_DIR / material, *archives], out["identity"])
-        if earlier is not None:
-            say(
-                f"TVEIT2025 {material}: reusing calibration {earlier['reused_from']['calibration_id']}"
-                " (same workbook, overlay, inputs, procedure and implementation revision)"
-            )
-            for line in report_lines(earlier["confidence"]):
-                say(f"TVEIT2025 {material}: {line}")
-            return earlier
         limits = fatigue_limits(block)
         f_m1, t_m1 = limits["Sigm1"], limits["Taum1"]
         slope = mean_stress_slope(given, f_m1, block["material"])
@@ -1225,9 +1220,22 @@ def calibrate_tveit2025(
     except CalibrationInputError as exc:
         out.update(status="insufficient_calibration_data", reason=str(exc))
         return out
+    findings += _point_findings(points, f_m1)
+    earlier = reusable_calibration([CALIBRATIONS_DIR / material, *archives], out["identity"])
+    if earlier is not None:
+        # Same constants; the confidence is judged again with the current rules
+        chosen, family = earlier["record"]["chosen"], earlier["record"]["family"]
+        confidence = summary(findings + _fit_findings(chosen, family))
+        earlier["confidence"] = earlier["record"]["confidence"] = confidence
+        say(
+            f"TVEIT2025 {material}: reusing calibration {earlier['reused_from']['calibration_id']}"
+            " (same workbook, overlay, inputs, procedure and implementation revision)"
+        )
+        for line in report_lines(confidence):
+            say(f"TVEIT2025 {material}: {line}")
+        return earlier
     A = slope["A"]
     record["calibration_points"] = points
-    findings += _point_findings(points, f_m1)
     ids = [p["case_id"] for p in points]
     record["validation"] = (
         "every other test of the workbook is an independent assessment of these constants; the "

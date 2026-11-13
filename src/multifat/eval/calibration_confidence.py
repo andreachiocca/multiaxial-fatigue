@@ -6,6 +6,12 @@ each such finding with its severity, what was found, why it matters and what dat
 remove it. The level summarises them: "high" without findings, "medium" with minor findings only,
 "low" with at least one major finding.
 
+A major finding means the calibration probably misrepresents the material: inconsistent data
+(e.g. failures below the fatigue limit) or a degenerate fit (e.g. a constant on its search bound).
+A minor finding is a known limitation or an estimate the method's authors themselves use (e.g. a
+mean-stress constant from the tensile strength); it is listed with its advice but does not by
+itself make the level low, so that the level separates calibrations with a real problem.
+
 The findings describe the calibration inputs and the fit, never the predictions of the other
 tests, so that no calibration is changed in view of its validation results.
 """
