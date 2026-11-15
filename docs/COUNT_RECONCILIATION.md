@@ -4,7 +4,7 @@ Generated from `catalogue/methods.json`; every inherited permanent ID is checked
 
 ## Answer to “about 100 reviewed, but about 20 in the roadmap?”
 
-The **71 missing method/scoped candidates** describe the implementation backlog. The **6 roadmap entries** are an intentionally selected initial development sequence. The other **65** are retained, individually accounted for and open to proposals. The prior 23-step research shortlist was itself selective; the published initial roadmap had 22 additions. Neither was the literature census. The only difference between the earlier 23-entry shortlist and the 22-entry published sequence is **G14, Glinka–Shen–Plumtree**: it remains in the catalogue as an overlap-review record pending an equation-level comparison with GSE/GSA. This is not proof that the laws are equivalent. The missing explanation is corrected here.
+The **70 missing method/scoped candidates** describe the implementation backlog. The **6 roadmap entries** are an intentionally selected initial development sequence. The other **64** are retained, individually accounted for and open to proposals. The prior 23-step research shortlist was itself selective; the published initial roadmap had 22 additions. Neither was the literature census. The only difference between the earlier 23-entry shortlist and the 22-entry published sequence is **G14, Glinka–Shen–Plumtree**: it remains in the catalogue as an overlap-review record pending an equation-level comparison with GSE/GSA. This is not proof that the laws are equivalent. The missing explanation is corrected here.
 
 There is no evidence of an inherited record being lost: all **161/161 IDs** survive, and all **51/51 numbered FABER publications** have dispositions. The weakness was that the selection policy and the nonselected backlog were not prominent enough. This update adds explicit development dispositions and browse links; it does not fabricate additional fatigue laws.
 
@@ -20,7 +20,7 @@ There is no evidence of an inherited record being lost: all **161/161 IDs** surv
 | L | Historical bibliographic/identity leads | 14 | 0 | 14 |
 | TOTAL | — | 162 | 118 | 44 |
 
-**161 = 117 + 44; 117 = 20 implementation records + 97 missing candidates; 97 = 6 prioritized additions + 65 nonselected candidates.** Of the 97 missing candidates, 59 have preliminary A/B feasibility and 12 have C feasibility. Feasibility does not certify available measured data, equations or a reproducible algorithm.
+**161 = 117 + 44; 117 = 20 implementation records + 97 missing candidates; 97 = 6 prioritized additions + 64 nonselected candidates.** Of the 97 missing candidates, 58 have preliminary A/B feasibility and 12 have C feasibility. Feasibility does not certify available measured data, equations or a reproducible algorithm.
 
 ## What these numbers do and do not count
 
@@ -45,8 +45,8 @@ Broader workstreams are excluded from the narrow method-progress denominator bec
 | Track | Records |
 | --- | --- |
 | application_comparison | 1 |
-| available_not_scheduled | 54 |
-| available_validate | 40 |
+| available_not_scheduled | 53 |
+| available_validate | 41 |
 | broader_workstream | 10 |
 | deferred_major_extension | 9 |
 | identity_or_relationship_review | 30 |
@@ -99,7 +99,7 @@ Use the catalogue link for full references, loading/data scope and scientific li
 | [N16](../METHODS.md#n16) — Liu–Mahadevan critical-plane criterion and life model | implementation | Yes | Fully implemented | available_validate | Implemented within the named repository scope; the published fatigue-limit comparison is only partly reproduced. |
 | [N17](../METHODS.md#n17) — Mean-shear-sensitive weighted-plane criterion, CA branch | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Stable orientation tracking/averaging, two candidate evaluations and native curve use. |
 | [N18](../METHODS.md#n18) — Piecewise ruled S–N surface | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Five-dimensional hull amplitude, piecewise life solver and multi-curve calibration. |
-| [N19](../METHODS.md#n19) — Improved Gough / Nishihara–Kawamoto criterion | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Principal-coordinate prismatic hull, optimization and published weight function. |
+| [N19](../METHODS.md#n19) — Improved Gough / Nishihara–Kawamoto criterion | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [N20](../METHODS.md#n20) — Stress-invariant endurance criterion | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [N21](../METHODS.md#n21) — Equivalent Second Moment of Load Path (ESMLP) | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Closed-path integration, explicit plane definition and parameter calibration; confirm translation/mean-stress handling. |
 | [N22](../METHODS.md#n22) — Moment of Load Path (MLP), closed CA stress-path branch | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Full cycle path and weighting calculation; correct range extraction for even one cycle. |

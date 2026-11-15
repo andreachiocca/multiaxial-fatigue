@@ -118,6 +118,10 @@ REFERENCES = {
         "Golos, Debski & Debski (2014), A stress-based fatigue criterion to assess high-cycle fatigue under in-phase multiaxial loading conditions, Eqs. (29)-(32)",
         "10.1016/j.tafmec.2014.07.005",
     ),
+    "KHALIJ": (
+        "Khalij, Pagnacco & Troian (2017), Fatigue criterion improvement of Gough and Nishihara & Kawamoto to predict the fatigue damage of a wide range of metallic materials, Eqs. (12), (22), (23), (26)",
+        "10.1016/j.ijfatigue.2017.02.016",
+    ),
     "GAM": (
         "Goncalves, Araujo & Mamiya (2005), Multiaxial fatigue: a stress based criterion for hard metals, Eqs. (11)-(13), (A.17)",
         "10.1016/j.ijfatigue.2004.05.006",
