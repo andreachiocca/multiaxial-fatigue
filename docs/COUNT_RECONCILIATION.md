@@ -13,12 +13,12 @@ There is no evidence of an inherited record being lost: all **161/161 IDs** surv
 | ID prefix | What it represents | All records | In method progress total | Outside denominator |
 | --- | --- | --- | --- | --- |
 | I_ | Current and archived implementation records | 20 | 20 | 0 |
-| N | Inherited review-derived candidate packages | 58 | 51 | 7 |
+| N | Inherited review-derived candidate packages | 60 | 52 | 8 |
 | G | Extended-search publication/formulation packages | 52 | 47 | 5 |
 | R | Restoration/variant notes | 4 | 0 | 4 |
 | C | Wider workflows/model/application packages | 14 | 0 | 14 |
 | L | Historical bibliographic/identity leads | 14 | 0 | 14 |
-| TOTAL | — | 162 | 118 | 44 |
+| TOTAL | — | 164 | 119 | 45 |
 
 **161 = 117 + 44; 117 = 20 implementation records + 97 missing candidates; 97 = 6 prioritized additions + 62 nonselected candidates.** Of the 97 missing candidates, 56 have preliminary A/B feasibility and 12 have C feasibility. Feasibility does not certify available measured data, equations or a reproducible algorithm.
 
@@ -31,7 +31,7 @@ A publication can introduce several laws (G01/PCR and G02/PI share one 2008 arti
 | Outside progress denominator | Records |
 | --- | --- |
 | bundle | 4 |
-| implementation | 1 |
+| implementation | 2 |
 | overlap_review | 4 |
 | related_publication | 10 |
 | related_scope | 2 |
@@ -46,7 +46,7 @@ Broader workstreams are excluded from the narrow method-progress denominator bec
 | --- | --- |
 | application_comparison | 1 |
 | available_not_scheduled | 51 |
-| available_validate | 43 |
+| available_validate | 45 |
 | broader_workstream | 10 |
 | deferred_major_extension | 9 |
 | identity_or_relationship_review | 30 |
@@ -223,5 +223,7 @@ Use the catalogue link for full references, loading/data scope and scientific li
 | [L13](../METHODS.md#l13) — Classic Fogue/Deperrois/Freitas path measures | unresolved_lead | No | Not implemented | identity_or_relationship_review | Historical identity/overlap lead; not an independently counted method. Identify primary formulation; deduplicate before classifying |
 | [L14](../METHODS.md#l14) — 2025/2026 lower-evidence CP/energy variants | unresolved_lead | No | Not implemented | identity_or_relationship_review | Historical identity/overlap lead; not an independently counted method. Identify primary formulation; deduplicate before classifying |
 | [N58](../METHODS.md#n58) — Liu–Xie–Hao equivalent stress on the maximum shear stress amplitude plane | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
+| [N59](../METHODS.md#n59) — Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
+| [N60](../METHODS.md#n60) — Albinmousa–Al Hussain polar damage sum, Fatemi–Socie parameter | implementation | No | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 
 The frozen [research checkpoint](research/Multiaxial_Fatigue_Research_Checkpoint.md), [original 51-publication review](research/Review-FABER-WG43.md), [coverage register](research/Review_51_Coverage.csv) and [prior assessment](research/feasibility-assessment.md) remain source evidence. Some inherited workstream numbering is inconsistent and remains flagged; it is not promoted to a verified method identity. No new broad search or original-equation verification was performed.

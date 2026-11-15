@@ -134,7 +134,7 @@ the generators after touching the catalogue or a model's declared parameters.
    - Limit datasets go through `eval/endurance.py`, which reports the fatigue indices `FI_axial`,
      `FI_torsion` and `FI_load`.
 3. **Calibrate** (`cli/calibrate.py`, called by `cli/pipeline.py`). This fills missing plane
-   constants (`k_FS`, `k_FI`, `L_LI`, `k_MGSE`, `a_MSWT`) by minimising the life scatter of the
+   constants (`k_FS`, `k_FI`, `L_LI`, `k_MGSE`, `a_MSWT`, `k_PDS`) by minimising the life scatter of the
    R = -1 tension and torsion failures.
    - The record is written to `<MAT>_calibration.json` and archived under `calibrations/`
      with an id.

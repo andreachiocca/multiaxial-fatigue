@@ -147,7 +147,7 @@ failures. Rows without a recognised flag are labelled `unclassified`;
 `--common-methods` option restricts comparison to finite metrics on matched
 failed observations assessed by every selected method. Tests behind a constant
 fitted by the pipeline (Basquin constants and the plane constants `k_FI`, `k_FS`,
-`L_LI`, `k_MGSE`, `a_MSWT`) are `Flag=0` for every model that adopts that constant.
+`L_LI`, `k_MGSE`, `a_MSWT`, `k_PDS`) are `Flag=0` for every model that adopts that constant.
 A `Flag=1` row is still not automatically independent of all fits: the R = -1
 fatigue limits, constants supplied in the workbook or by an upstream record, and
 other experimental batches of the same source are not traced.

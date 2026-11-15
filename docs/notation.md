@@ -41,6 +41,7 @@ normal(s) themselves.
 | Ultimate tensile strength | sigma_f, S_u | `su` | Su | MPa |
 | Ultimate torsional strength | tau_b, T_u | `tu` | Tu | MPa |
 | True fracture strength | sigma_T | `sigma_T` | sigma_T | MPa |
+| Fatemi-Socie constant of the polar damage sum (Albinmousa 2021) | k_phi | `k_PDS` | k_PDS | - |
 | Normal stress amplitude / mean on a plane | sigma_a, sigma_m | `sigma_a`, `sigma_m` | - | MPa |
 | Shear stress amplitude / mean on a plane | tau_a, tau_m | `tau_a`, `tau_m` | - | MPa |
 | Hydrostatic amplitude / mean / maximum | sigma_H,a, sigma_H,m | `sigma_H_a`, `sigma_H_m`, `sigma_H_max` | - | MPa |
@@ -172,7 +173,7 @@ gives Young's modulus in GPa (but the shear modulus in MPa): $E_\text{FatPy} = E
 | `Nf` | `tot_fat_life` | cycles | |
 | `sigma_a`, `sigma_m` | `stress_amp`, `mean_stress` | MPa | load-level amplitude and mean (multifat also uses them on a plane) |
 | `phase_shift` | `phase_shift` | degrees | |
-| `k_FS`, `k_FI`, `L_LI`, `k_MGSE`, `a_MSWT`, … | - | - | method constants: no FatPy key yet |
+| `k_FS`, `k_FI`, `L_LI`, `k_MGSE`, `a_MSWT`, `k_PDS`, … | - | - | method constants: no FatPy key yet |
 
 FatPy v01 has no key for a run-out (censored observation) flag, for the torsional ultimate
 strength, or for method constants. New multifat names should be built from the FatPy

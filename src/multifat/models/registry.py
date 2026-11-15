@@ -65,6 +65,7 @@ from .invariant_methods.khalij import Khalij
 from .invariant_methods.matsubara import Matsubara
 from .invariant_methods.sines import Sines
 from .integral_methods.papadopoulos import Papadopoulos
+from .integral_methods.polar_damage_sum import PolarDamageSumFS, PolarDamageSumSWT
 from .integral_methods.papuga_ruzicka import PapugaCriticalPlane, PapugaIntegral
 from .integral_methods.robert_fogue_bahuaud import RobertFogueBahuaud
 from .invariant_methods.vu_halm_nadot import VuHalmNadot
@@ -124,6 +125,8 @@ def _available_direct_models():
         "KHALIJ": Khalij(),
         "KAKUNO": KakunoKawada(),
         "MATSUBARA": Matsubara(),
+        "PDS_SWT": PolarDamageSumSWT(),
+        "PDS_FS": PolarDamageSumFS(),
         "SINES": Sines(),
         "PAPADOPOULOS": Papadopoulos(),
         "PCR": PapugaCriticalPlane(),

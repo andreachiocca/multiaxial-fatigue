@@ -164,6 +164,8 @@ constants are missing is skipped and reported; the other models still run.
 | KHALIJ | `Sigm1`, `Taum1` | - |
 | KAKUNO | `Sigm1`, `Taum1` | `Sig0`: pulsating (R = 0) limit, maximum stress; needed for mean normal stresses |
 | MATSUBARA | - | `sigma_T`: true fracture strength; default 1.84 Su for 400 <= Su <= 1000 MPa (ref. [23]); `Su`: used only to estimate sigma_T |
+| PDS_SWT | - | - |
+| PDS_FS | `Sy`, `k_PDS` | - |
 | SINES | `Sigm1`, `Su`, `Taum1` | - |
 | PAPADOPOULOS | `Sigm1`, `Taum1` | - |
 | PCR | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Su`: only to estimate Sig0 |

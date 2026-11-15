@@ -158,6 +158,8 @@ Matrix of the enabled registered methods (`python -m multifat.history.eligibilit
 | `KHALIJ` | no | no | yes | yes |  |
 | `KAKUNO` | no | no | no | yes |  |
 | `MATSUBARA` | no | no | yes | yes |  |
+| `PDS_SWT` | yes | no | yes | yes |  |
+| `PDS_FS` | yes | no | yes | yes |  |
 | `SINES` | no | no | no | yes |  |
 | `PAPADOPOULOS` | no | no | no | yes |  |
 | `PCR` | no | no | no | yes |  |

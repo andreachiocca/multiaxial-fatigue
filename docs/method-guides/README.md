@@ -59,6 +59,8 @@ All 46 registered criteria have a dedicated guide below, grouped by family.
 | [Kakuno–Kawada](KAKUNO.md) | `KAKUNO` | Stress invariants (octahedral) | $(\tau_{oct,a} + B\,\lvert\mathrm{tr}\,\mathbf S_a\rvert + C\,\mathrm{tr}\,\mathbf S_m)/A$ (index) | `Sigm1`, `Taum1`, `Sig0` |
 | [Khalij–Pagnacco–Troian](KHALIJ.md) | `KHALIJ` | Stress invariants (prismatic hull) | $J_{2,a}/t_{-1}^2 + (1 - 1/3r^2)\,I_{1,a}/s_{-1}$ (damage $\mathfrak D$) | `Sigm1`, `Taum1` |
 | [Matsubara–Hayashida–Kano](MATSUBARA.md) | `MATSUBARA` | Stress invariants (prismatic hull + Stage II normal stress) | $\sigma_T\sqrt{J_{2,amp}}/(\sigma_T - S_{max} + \sqrt3\sqrt{J_{2,amp}})$ (MPa) | `sigma_T` or `Su` |
+| [Polar damage sum, SWT](PDS_SWT.md) | `PDS_SWT` | Integral over surface planes (polar area) | $\tfrac12\int_0^{2\pi} D_{SWT}(\varphi)^2\,d\varphi$ | `E`, `nu` |
+| [Polar damage sum, FS](PDS_FS.md) | `PDS_FS` | Integral over surface planes (polar area) | $\tfrac12\int_0^{2\pi} D_{FS}(\varphi)^2\,d\varphi$ | `E`, `nu`, `Sy`, `k_PDS` |
 | [Reduced Ottosen](OTT.md) | `OTT` | Stress invariants (Hershey–Hosford) | $\sigma_{e,a} + A\,I_{1,m}$ (MPa) | `Sigm1`, `Taum1`; `m_OTT`, `A_OTT`, `Sig0` or `Su` |
 | [Vu–Halm–Nadot](VHN.md) | `VHN` | Stress invariants | $f_{\max}/t_{-1}$, Eq. (8) (index) | `Sigm1`, `Taum1`, `Su` |
 | [Projection-by-Projection](PBP.md) | `PBP` | Stress invariants (deviatoric covariance) | $\Gamma/\sqrt{J_{2A,\rho}}$ (index) | `Sigm1`, `Taum1` |
