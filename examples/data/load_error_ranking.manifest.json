@@ -1,8 +1,8 @@
 {
  "csv": "load_error_ranking.csv",
- "csv_sha256": "9537c08ea5878ae8728561f9e811a0e31c9ae807395c3efd22cda7292b9ef3df",
- "created_utc": "2026-11-15T18:03:09+00:00",
- "git_commit": "1cdb4a36e2d9062761fad891b63e3ab4a1d3fb9a",
+ "csv_sha256": "0d86c0472f04bcb5d36cfc8011cf3c4ed707c49a87191a5e90053dfa786803bb",
+ "created_utc": "2026-11-15T18:14:05+00:00",
+ "git_commit": "7760f3995fad42fb4e21155852d91a5936bf9570",
  "implementation_revision": "2026-11-12",
  "registered_models": [
   "BP",
@@ -25,6 +25,7 @@
   "LIU2025",
   "LIUMAHADEVAN",
   "MATAKE",
+  "MATSUBARA",
   "MCD",
   "MDC",
   "MGSE_YU",
@@ -104,6 +105,7 @@
   "LIU2025",
   "LIUMAHADEVAN",
   "MATAKE",
+  "MATSUBARA",
   "MCD",
   "MDC",
   "MGSE_YU",
