@@ -155,6 +155,7 @@ Matrix of the enabled registered methods (`python -m multifat.history.eligibilit
 | `WANG2022` | no | no | yes | yes |  |
 | `GAM` | no | no | no | yes |  |
 | `GOLOS` | no | no | yes | yes |  |
+| `KHALIJ` | no | no | yes | yes |  |
 | `SINES` | no | no | no | yes |  |
 | `PAPADOPOULOS` | no | no | no | yes |  |
 | `PCR` | no | no | no | yes |  |
