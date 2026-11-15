@@ -9,8 +9,8 @@
  "constants": {
   "42CrMo4_Reis": "Calibrations/42CrMo4_Reis/SSF_published.json"
  },
- "created_utc": "2026-11-15T18:12:30+00:00",
- "git_commit": "7760f3995fad42fb4e21155852d91a5936bf9570",
+ "created_utc": "2026-11-15T18:39:35+00:00",
+ "git_commit": "2224c76dcb0b10cb44cddb4007f10834a6d762cb",
  "registered_models": [
   "BP",
   "CAIM",
@@ -50,6 +50,8 @@
   "PAPADOPOULOS",
   "PBP",
   "PCR",
+  "PDS_FS",
+  "PDS_SWT",
   "PI",
   "RFB",
   "SINES",
@@ -106,6 +108,8 @@
   "PAPADOPOULOS",
   "PBP",
   "PCR",
+  "PDS_FS",
+  "PDS_SWT",
   "PI",
   "RFB",
   "SINES",

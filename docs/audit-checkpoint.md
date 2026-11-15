@@ -9,9 +9,10 @@
   as an elastic version.
 - Stacked branches, one PR each: `feat/khalij-criterion` (done: Table 6 51/53), then
   `feat/kakuno-kawada-criterion` (done: runs on Santus and Berto; PR stacked on KHALIJ), then
-  `feat/matsubara-criterion` (done: runs on 8 materials; PR stacked on KAKUNO), then the polar
-  damage sum (new record N59; k_phi calibrated like k_FS).
-- Next action: implement the polar damage sum on top of the Matsubara branch.
+  `feat/matsubara-criterion` (done: runs on 8 materials; PR stacked on KAKUNO), then
+  `feat/polar-damage-sum` (done: PDS_SWT, PDS_FS, records N59/N60, k_PDS calibrated).
+- Next action: CI of the four stacked PRs and maintainer merges in order (#103, #104, #105, then
+  the polar damage sum PR), retargeting each to main.
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 

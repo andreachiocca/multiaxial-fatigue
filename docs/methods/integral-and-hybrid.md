@@ -18,7 +18,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | --- | --- | --- | --- | --- | --- |
 | Critical plane | 11 | 1 | 7 | 0 | 19 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
+| Integral and hybrid | 6 | 0 | 4 | 0 | 10 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
@@ -27,11 +27,11 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 43 | 2 | 68 | 5 | 118 |
+| **TOTAL** | 44 | 2 | 68 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 162 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](../../docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](../../docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -57,6 +57,8 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [L01](../../METHODS.md#l01) | Kenmeugne–Vidal-Salle–Robert–Bahuaud selective integral (Fatigue 1996) | Not implemented | not_tested | Low | unresolved_lead |
 | [L02](../../METHODS.md#l02) | Fogue–Bahuaud early global criterion | Not implemented | not_tested | Low | unresolved_lead |
 | [L06](../../METHODS.md#l06) | Grubisic–Simbürger original | Not implemented | not_tested | Low | related_publication |
+| [N59](../../METHODS.md#n59) | Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter | Fully implemented | basic_numerical_tests | Medium | Yes |
+| [N60](../../METHODS.md#n60) | Albinmousa–Al Hussain polar damage sum, Fatemi–Socie parameter | Fully implemented | basic_numerical_tests | Medium | implementation |
 
 ### I_BP
 
@@ -453,3 +455,69 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Provenance / prior status | L06; Unresolved lead; potential overlap |
 | Related catalogue ID | [N50](../../METHODS.md#n50) |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=L06+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BL06%5D+Grubisic%E2%80%93Simb%C3%BCrger+original) (no live Issue linked) |
+
+### N59
+
+**Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter** — Jafar Albinmousa, Mohammed Al Hussain (2021)
+
+| Field | Evidence / task |
+| --- | --- |
+| Primary / secondary family | Integral and hybrid; Critical plane |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Reference | Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Forces in Mechanics |
+| DOI | https://doi.org/10.1016/j.finmec.2021.100025 |
+| Reference evidence | DOI and equations from the open-access publisher PDF (CC BY-NC-ND) supplied by the maintainer (2026-11-15); no Crossref record saved |
+| Formulation evidence | Checked against Albinmousa & Al Hussain (2021) Eqs. (1)-(19), Tables 1-5 and Figs. 1-8 on the PDF (2026-11-15) |
+| Principle | Area enclosed by the polar curve of the SWT parameter sigma_max(phi) Delta eps(phi)/2 over every plane perpendicular to the surface, D^s = 1/2 int D(phi)^2 dphi (Eqs. 8, 12-13). |
+| Loading scope | Single-harmonic CA plane stress on the x-y surface, proportional and non-proportional, mean stresses; elastic strains (repository version; the source is strain-controlled LCF). |
+| Inputs / material parameters | E, nu (elastic strains). |
+| Output | Polar damage sum D^s; fitted life via the shared master curve (D^s = alpha N^beta, Eqs. 17-19) |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_polar_damage_sum.py: Eqs. (7a), (7c), (7d) transformations, uniaxial closed form and the peak equal to the critical-plane SWT value (Fig. 2b), Riemann-sum convergence (Eqs. 11-12). The paper prints no per-test value (LCF, measured loops). |
+| Python implementation | [src/multifat/models/integral_methods/polar_damage_sum.py](../../src/multifat/models/integral_methods/polar_damage_sum.py); PolarDamageSumSWT |
+| Automated tests | [tests/methods/test_polar_damage_sum.py](../../tests/methods/test_polar_damage_sum.py) |
+| Limitations | Elastic reading of a strain-controlled LCF method (no plastic strains, no measured loops). Plane stress on the x-y surface only. Master curve fitted on the R = -1 uniaxial tests (the paper fits axial and shear together). |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External source discovery | no_accessible_source_identified; not integrated or independently validated |
+| Missing tasks | Elastic-plastic version with measured or modelled stabilised loops (the published LCF procedure). |
+| Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
+| Roadmap rank | — |
+| Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
+| Feasibility / effort / priority | A / Low / Medium |
+| Provenance / prior status | N59; Already implemented, active |
+| Related catalogue ID | None recorded |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N59+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN59%5D+Albinmousa%E2%80%93Al+Hussain+polar+damage+sum%2C+Smith%E2%80%93Watson%E2%80%93Topper+parameter) (no live Issue linked) |
+
+### N60
+
+**Albinmousa–Al Hussain polar damage sum, Fatemi–Socie parameter** — Jafar Albinmousa, Mohammed Al Hussain (2021)
+
+| Field | Evidence / task |
+| --- | --- |
+| Primary / secondary family | Integral and hybrid; Critical plane |
+| Record / counting | implementation; Second damage parameter of the N59 polar damage sum concept; counted once. |
+| Reference | Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Forces in Mechanics |
+| DOI | https://doi.org/10.1016/j.finmec.2021.100025 |
+| Reference evidence | DOI and equations from the open-access publisher PDF (CC BY-NC-ND) supplied by the maintainer (2026-11-15); no Crossref record saved |
+| Formulation evidence | Checked against Albinmousa & Al Hussain (2021) Eqs. (1)-(19), Tables 1-5 and Figs. 1-8 on the PDF (2026-11-15) |
+| Principle | Area enclosed by the polar curve of the FS parameter Delta gamma(phi)/2 (1 + k_phi sigma_n,max(phi)/sigma_yt) over every plane perpendicular to the surface (Eqs. 9, 12, 14); k_phi collapses the axial and shear life curves. |
+| Loading scope | Single-harmonic CA plane stress on the x-y surface, proportional and non-proportional, mean stresses; elastic strains (repository version; the source is strain-controlled LCF). |
+| Inputs / material parameters | E, nu (elastic strains); Sy (sigma_yt); k_PDS (k_phi), calibrated by scatter minimisation on the R = -1 tension and torsion failures when absent. |
+| Output | Polar damage sum D^s; fitted life via the shared master curve (D^s = alpha N^beta, Eqs. 17-19) |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_polar_damage_sum.py: Eqs. (7a), (7c), (7d) transformations, uniaxial closed form and the peak equal to the critical-plane SWT value (Fig. 2b), Riemann-sum convergence (Eqs. 11-12). The paper prints no per-test value (LCF, measured loops). |
+| Python implementation | [src/multifat/models/integral_methods/polar_damage_sum.py](../../src/multifat/models/integral_methods/polar_damage_sum.py); PolarDamageSumFS |
+| Automated tests | [tests/methods/test_polar_damage_sum.py](../../tests/methods/test_polar_damage_sum.py) |
+| Limitations | Elastic reading of a strain-controlled LCF method. k_PDS calibrated within [0, 10] (paper values 0.1-5); not identifiable where the scatter keeps decreasing (42CrMo4_Santus). Plane stress only. Master curve on the R = -1 uniaxial tests. |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External source discovery | not_individually_searched; not integrated or independently validated |
+| Missing tasks | Elastic-plastic version with measured or modelled stabilised loops (the published LCF procedure). |
+| Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
+| Roadmap rank | — |
+| Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
+| Feasibility / effort / priority | A / Low / Medium |
+| Provenance / prior status | N60; Already implemented, active |
+| Related catalogue ID | [N59](../../METHODS.md#n59) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N60+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN60%5D+Albinmousa%E2%80%93Al+Hussain+polar+damage+sum%2C+Fatemi%E2%80%93Socie+parameter) (no live Issue linked) |

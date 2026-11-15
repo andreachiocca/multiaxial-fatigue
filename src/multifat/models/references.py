@@ -118,6 +118,14 @@ REFERENCES = {
         "Golos, Debski & Debski (2014), A stress-based fatigue criterion to assess high-cycle fatigue under in-phase multiaxial loading conditions, Eqs. (29)-(32)",
         "10.1016/j.tafmec.2014.07.005",
     ),
+    "PDS_SWT": (
+        "Albinmousa & Al Hussain (2021), Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Eqs. (8), (12)-(13), (17)-(18)",
+        "10.1016/j.finmec.2021.100025",
+    ),
+    "PDS_FS": (
+        "Albinmousa & Al Hussain (2021), Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Eqs. (9), (12), (14), (17), (19)",
+        "10.1016/j.finmec.2021.100025",
+    ),
     "MATSUBARA": (
         "Matsubara, Hayashida & Kano (2018), Predicting the multiaxial fatigue limit and the multiaxial high-cycle fatigue life based on the unified equivalent shear stress from axial strength characteristics with various waveforms, Eqs. (9), (13)-(15)",
         "10.1016/j.ijfatigue.2017.12.001",

@@ -18,7 +18,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | --- | --- | --- | --- | --- | --- |
 | Critical plane | 11 | 1 | 7 | 0 | 19 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
+| Integral and hybrid | 6 | 0 | 4 | 0 | 10 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
@@ -27,11 +27,11 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 43 | 2 | 68 | 5 | 118 |
+| **TOTAL** | 44 | 2 | 68 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 162 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -797,6 +797,8 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [L01](#l01) | Kenmeugne–Vidal-Salle–Robert–Bahuaud selective integral (Fatigue 1996) | Not implemented | not_tested | Low | unresolved_lead |
 | [L02](#l02) | Fogue–Bahuaud early global criterion | Not implemented | not_tested | Low | unresolved_lead |
 | [L06](#l06) | Grubisic–Simbürger original | Not implemented | not_tested | Low | related_publication |
+| [N59](#n59) | Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter | Fully implemented | basic_numerical_tests | Medium | Yes |
+| [N60](#n60) | Albinmousa–Al Hussain polar damage sum, Fatemi–Socie parameter | Fully implemented | basic_numerical_tests | Medium | implementation |
 
 ### I_BP
 
@@ -941,6 +943,30 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | not_individually_searched; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#l06) |
+
+### N59
+
+**Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter** — Jafar Albinmousa, Mohammed Al Hussain (2021)
+
+| Field | Evidence / task |
+| --- | --- |
+| Reference / DOI | Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Forces in Mechanics; https://doi.org/10.1016/j.finmec.2021.100025 |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External sources | no_accessible_source_identified; not integrated or independently validated |
+| Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n59) |
+
+### N60
+
+**Albinmousa–Al Hussain polar damage sum, Fatemi–Socie parameter** — Jafar Albinmousa, Mohammed Al Hussain (2021)
+
+| Field | Evidence / task |
+| --- | --- |
+| Reference / DOI | Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Forces in Mechanics; https://doi.org/10.1016/j.finmec.2021.100025 |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External sources | not_individually_searched; not integrated or independently validated |
+| Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n60) |
 
 <a id="family-invariant-based"></a>
 

@@ -6,7 +6,7 @@ Generated from the external-source records in [catalogue/methods.json](catalogue
 
 | Counted catalogue method/scoped records searched | Confirmed corresponding/bounded-variant source | Possible or related source | No accessible source identified |
 | --- | --- | --- | --- |
-| 118 | 6 | 10 | 102 |
+| 119 | 6 | 10 | 103 |
 
 The 117 records are not a definitive count of independent theories. Two additional future workstreams, C04/ECP and C09/random-spectrum HCF, have confirmed author-associated source links and are reported separately, not added to the 117-method denominator. Other noncounted leads were not individually searched.
 
@@ -401,6 +401,7 @@ This covers every counted record plus the two source-linked future workstreams. 
 | [G49](../METHODS.md#g49) — Leis total octahedral-energy parameter | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | [G52](../METHODS.md#g52) — Wei–Liu critical-plane energy model | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | [N58](../METHODS.md#n58) — Liu–Xie–Hao equivalent stress on the maximum shear stress amplitude plane | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| [N59](../METHODS.md#n59) — Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 
 ## Search method and unresolved leads
 
