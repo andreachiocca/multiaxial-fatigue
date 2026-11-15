@@ -40,6 +40,7 @@ normal(s) themselves.
 | Torsional repeated limit (maximum stress) | t_0 | `t_0` | Tau0 | MPa |
 | Ultimate tensile strength | sigma_f, S_u | `su` | Su | MPa |
 | Ultimate torsional strength | tau_b, T_u | `tu` | Tu | MPa |
+| True fracture strength | sigma_T | `sigma_T` | sigma_T | MPa |
 | Normal stress amplitude / mean on a plane | sigma_a, sigma_m | `sigma_a`, `sigma_m` | - | MPa |
 | Shear stress amplitude / mean on a plane | tau_a, tau_m | `tau_a`, `tau_m` | - | MPa |
 | Hydrostatic amplitude / mean / maximum | sigma_H,a, sigma_H,m | `sigma_H_a`, `sigma_H_m`, `sigma_H_max` | - | MPa |
@@ -158,6 +159,7 @@ gives Young's modulus in GPa (but the shear modulus in MPa): $E_\text{FatPy} = E
 | `Sy` | `yield_strength` | MPa | |
 | `Su` | `ult_tensile_strength` | MPa | |
 | `Tu` | - | - | no FatPy key yet (torsional ultimate strength) |
+| `sigma_T` | - | - | no FatPy key yet (true fracture strength) |
 | `Sigm1` | `fat_lim_ten_m1` or `fat_lim_ben_m1` | MPa | push-pull or bending, per the Summary column `Axial fatigue limit loading` (see `docs/workbook-format.md`); unrecorded sources stay unresolved |
 | `Taum1` | `fat_lim_tor_m1` | MPa | |
 | `Sig0` | `fat_lim_ten_0` | MPa | multifat stores the maximum stress of the R = 0 cycle; FatPy v01 does not state amplitude or maximum |
