@@ -5265,7 +5265,7 @@
             "completeness_evidence": "complete_for_declared_repository_scope",
             "enabled": true,
             "registry_name": "KAKUNO",
-            "validation_status": "reference_examples_reproduced",
+            "validation_status": "basic_numerical_tests",
             "validation_evidence": "tests/methods/test_kakuno_kawada.py: Eqs. (7)-(10) and (12) to machine precision; Fig. 5 tau intercept 0.559 vs 0.557 read; Fig. 5 sigma intercept 0.906 vs about 0.93 drawn (strict xfail). The paper prints no table.",
             "module": "src/multifat/models/invariant_methods/kakuno_kawada.py",
             "symbol": "KakunoKawada",

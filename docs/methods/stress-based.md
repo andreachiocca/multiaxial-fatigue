@@ -52,7 +52,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [N38](../../METHODS.md#n38) | von Mises equivalent-amplitude baseline | Not implemented | not_tested | Medium | Yes |
 | [N39](../../METHODS.md#n39) | Tresca equivalent-amplitude baseline | Not implemented | not_tested | Low | Yes |
 | [N40](../../METHODS.md#n40) | Maximum principal stress / Rankine baseline | Not implemented | not_tested | Low | Yes |
-| [G04](../../METHODS.md#g04) | Kakuno–Kawada | Fully implemented | reference_examples_reproduced | Medium | Yes |
+| [G04](../../METHODS.md#g04) | Kakuno–Kawada | Fully implemented | basic_numerical_tests | Medium | Yes |
 | [G05](../../METHODS.md#g05) | Manson–McKnight–Papuga (MMP) | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [G07](../../METHODS.md#g07) | Modified Mohr–Mises hypothesis (MMMH) | Fully implemented | basic_numerical_tests | High | Yes |
 | [G09](../../METHODS.md#g09) | Moment-adapted COIN LiWI (MA-COIN LiWI) | Not implemented | not_tested | Medium | Yes |
@@ -309,7 +309,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Inputs / material parameters | Sigm1 (f-1), Taum1 (t-1); Sig0 (pulsating limit, maximum stress) for mean normal stresses. |
 | Output | Fatigue index (1 at the limit); fitted life via the shared master curve where valid |
 | Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
-| Validation / evidence | reference_examples_reproduced; tests/methods/test_kakuno_kawada.py: Eqs. (7)-(10) and (12) to machine precision; Fig. 5 tau intercept 0.559 vs 0.557 read; Fig. 5 sigma intercept 0.906 vs about 0.93 drawn (strict xfail). The paper prints no table. |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_kakuno_kawada.py: Eqs. (7)-(10) and (12) to machine precision; Fig. 5 tau intercept 0.559 vs 0.557 read; Fig. 5 sigma intercept 0.906 vs about 0.93 drawn (strict xfail). The paper prints no table. |
 | Python implementation | [src/multifat/models/invariant_methods/kakuno_kawada.py](../../src/multifat/models/invariant_methods/kakuno_kawada.py); KakunoKawada |
 | Automated tests | [tests/methods/test_kakuno_kawada.py](../../tests/methods/test_kakuno_kawada.py) |
 | Limitations | Proportional loading only (principal stress amplitudes). Without Sig0 cases with a mean normal stress are out of scope; the paper's average k1 = 0.83 for steels is not used. Fatigue-limit criterion: finite lives only through the shared master curve. Validated in the source on figures only. |

@@ -9,8 +9,8 @@
  "constants": {
   "42CrMo4_Reis": "Calibrations/42CrMo4_Reis/SSF_published.json"
  },
- "created_utc": "2026-11-15T17:45:38+00:00",
- "git_commit": "1d2d2265b3bf4b9d239cb7abb3a5d0b961a7c3d8",
+ "created_utc": "2026-11-15T17:58:42+00:00",
+ "git_commit": "1cdb4a36e2d9062761fad891b63e3ab4a1d3fb9a",
  "registered_models": [
   "BP",
   "CAIM",
@@ -24,6 +24,7 @@
   "GOLOS",
   "GSA",
   "GSE",
+  "KAKUNO",
   "KHALIJ",
   "KUJAWSKI2021",
   "LI",
@@ -78,6 +79,7 @@
   "GAM",
   "GSA",
   "GSE",
+  "KAKUNO",
   "KHALIJ",
   "KUJAWSKI2021",
   "LI",

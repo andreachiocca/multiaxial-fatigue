@@ -6,6 +6,20 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### KAKUNO: Kakuno & Kawada (1979) criterion (#13, G04)
+
+- New invariant model `KAKUNO` (`invariant_methods/kakuno_kawada.py`): Eq. (4), the octahedral
+  shear stress amplitude against linear octahedral normal amplitude (B) and mean (C) terms, with
+  A, B, C of Eqs. (7)-(9). Constants: `Sigm1`, `Taum1`; `Sig0` (pulsating limit) for mean normal
+  stresses.
+- Proportional loading only (principal stress amplitudes). Without `Sig0` a case with a mean
+  normal stress is out of scope; the paper's k_1 = 0.83 for steels is not used (maintainer
+  decision). Runs on 42CrMo4_Santus and Ti6Al4V_Berto.
+- Evidence (`tests/methods/test_kakuno_kawada.py`): Eqs. (7)-(10) and (12) to machine precision;
+  Fig. 5 tau intercept reproduced, sigma intercept a strict xfail. The paper prints no table.
+- Guide `docs/method-guides/KAKUNO.md`, catalogue record G04, audit row; ranking and batch
+  comparison regenerated.
+
 ### KHALIJ: Khalij, Pagnacco & Troian (2017) criterion (#13, N19)
 
 - New invariant model `KHALIJ` (`invariant_methods/khalij.py`): Eq. (23) with the authors' OP
