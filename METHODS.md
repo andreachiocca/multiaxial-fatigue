@@ -1992,7 +1992,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [N38](#n38) | von Mises equivalent-amplitude baseline | Not implemented | not_tested | Medium | Yes |
 | [N39](#n39) | Tresca equivalent-amplitude baseline | Not implemented | not_tested | Low | Yes |
 | [N40](#n40) | Maximum principal stress / Rankine baseline | Not implemented | not_tested | Low | Yes |
-| [G04](#g04) | Kakuno–Kawada | Fully implemented | reference_examples_reproduced | Medium | Yes |
+| [G04](#g04) | Kakuno–Kawada | Fully implemented | basic_numerical_tests | Medium | Yes |
 | [G05](#g05) | Manson–McKnight–Papuga (MMP) | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [G07](#g07) | Modified Mohr–Mises hypothesis (MMMH) | Fully implemented | basic_numerical_tests | High | Yes |
 | [G09](#g09) | Moment-adapted COIN LiWI (MA-COIN LiWI) | Not implemented | not_tested | Medium | Yes |
@@ -2092,7 +2092,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | A NEW CRITERION OF FATIGUE STRENGTH OF A ROUND BAR SUBJECTED TO COMBINED STATIC AND REPEATED BENDING AND TORSION, Fatigue & Fracture of Engineering Materials and Structures; https://doi.org/10.1111/j.1460-2695.1979.tb01358.x |
-| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/stress-based.md#g04) |
