@@ -6,6 +6,19 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### KHALIJ: Khalij, Pagnacco & Troian (2017) criterion (#13, N19)
+
+- New invariant model `KHALIJ` (`invariant_methods/khalij.py`): Eq. (23) with the authors' OP
+  setting alpha = 1/(3 r^2), evaluated in its frame-invariant form
+  J_2,a/t_-1^2 + (1 - alpha) I_1,a/f_-1. Constants: `Sigm1`, `Taum1`.
+- Table 6 (OP column) reproduced: 51 of 53 rows, with r from the Table 1 limits; two 3%C
+  cast-iron rows are strict xfails (`tests/methods/test_khalij.py`).
+- Zero-mean plane stress only (maintainer decision): the mean-stress terms of Eqs. (29)-(31) are
+  not dimensionless as printed and no reading reproduces Table 7. Cases with a mean stress are out
+  of scope, so the model runs on 42CrMo4_FABEST, 42CrMo4_Reis and the zero-mean limit datasets.
+- Guide `docs/method-guides/KHALIJ.md`, catalogue record N19, audit row; ranking and batch
+  comparison regenerated.
+
 ### Observation type of each Dataset row (decision d113, #18)
 
 - New Dataset column `Observation type (failure/run-out/fatigue limit)`, read by the importer

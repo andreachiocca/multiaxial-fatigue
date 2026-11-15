@@ -1,5 +1,17 @@
 # Development continuation checkpoint
 
+## Issue #13, new methods from the supplied papers (15 November 2026)
+
+- Papers supplied: Khalij 2017 (N19), Kakuno & Kawada 1979 (G04), Matsubara 2018 (N09),
+  Albinmousa & Al Hussain 2021 (polar damage sum, new record). Maintainer decisions: Kakuno k_1
+  from Sig0, else mean normal stress out of scope; Khalij OP zero-mean only (mean terms not
+  reproducible); Matsubara sigma_T = 1.84 Su within 400-1000 MPa unless given; polar damage sum
+  as an elastic version.
+- Stacked branches, one PR each: `feat/khalij-criterion` (done: Table 6 51/53), then
+  `feat/kakuno-kawada-criterion` (committed in a worktree, needs ranking/batch regeneration),
+  then Matsubara and the polar damage sum.
+- Next action: open the KHALIJ PR; regenerate data for KAKUNO on top of it.
+
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 
 - Branch `data/observation-type`: Dataset column `Observation type`, added to all 17 workbooks
