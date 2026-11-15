@@ -118,6 +118,10 @@ REFERENCES = {
         "Golos, Debski & Debski (2014), A stress-based fatigue criterion to assess high-cycle fatigue under in-phase multiaxial loading conditions, Eqs. (29)-(32)",
         "10.1016/j.tafmec.2014.07.005",
     ),
+    "KAKUNO": (
+        "Kakuno & Kawada (1979), A new criterion of fatigue strength of a round bar subjected to combined static and repeated bending and torsion, Eqs. (4), (6)-(10)",
+        "10.1111/j.1460-2695.1979.tb01358.x",
+    ),
     "KHALIJ": (
         "Khalij, Pagnacco & Troian (2017), Fatigue criterion improvement of Gough and Nishihara & Kawamoto to predict the fatigue damage of a wide range of metallic materials, Eqs. (12), (22), (23), (26)",
         "10.1016/j.ijfatigue.2017.02.016",

@@ -162,6 +162,7 @@ constants are missing is skipped and reported; the other models still run.
 | GAM | `Sigm1`, `Taum1` | - |
 | GOLOS | `Sigm1`, `Taum1` | - |
 | KHALIJ | `Sigm1`, `Taum1` | - |
+| KAKUNO | `Sigm1`, `Taum1` | `Sig0`: pulsating (R = 0) limit, maximum stress; needed for mean normal stresses |
 | SINES | `Sigm1`, `Su`, `Taum1` | - |
 | PAPADOPOULOS | `Sigm1`, `Taum1` | - |
 | PCR | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Su`: only to estimate Sig0 |

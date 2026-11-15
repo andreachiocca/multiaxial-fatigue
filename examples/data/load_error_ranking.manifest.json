@@ -1,8 +1,8 @@
 {
  "csv": "load_error_ranking.csv",
- "csv_sha256": "6eeaa17a2f76a434c5d78c612e336447eff75992bdc99272b5fbf9adf594f90d",
- "created_utc": "2026-11-15T17:49:09+00:00",
- "git_commit": "1d2d2265b3bf4b9d239cb7abb3a5d0b961a7c3d8",
+ "csv_sha256": "9537c08ea5878ae8728561f9e811a0e31c9ae807395c3efd22cda7292b9ef3df",
+ "created_utc": "2026-11-15T18:03:09+00:00",
+ "git_commit": "1cdb4a36e2d9062761fad891b63e3ab4a1d3fb9a",
  "implementation_revision": "2026-11-12",
  "registered_models": [
   "BP",
@@ -17,6 +17,7 @@
   "GOLOS",
   "GSA",
   "GSE",
+  "KAKUNO",
   "KHALIJ",
   "KUJAWSKI2021",
   "LI",
@@ -95,6 +96,7 @@
   "GAM",
   "GSA",
   "GSE",
+  "KAKUNO",
   "KHALIJ",
   "KUJAWSKI2021",
   "LI",

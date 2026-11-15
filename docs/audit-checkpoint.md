@@ -8,9 +8,9 @@
   reproducible); Matsubara sigma_T = 1.84 Su within 400-1000 MPa unless given; polar damage sum
   as an elastic version.
 - Stacked branches, one PR each: `feat/khalij-criterion` (done: Table 6 51/53), then
-  `feat/kakuno-kawada-criterion` (committed in a worktree, needs ranking/batch regeneration),
-  then Matsubara and the polar damage sum.
-- Next action: open the KHALIJ PR; regenerate data for KAKUNO on top of it.
+  `feat/kakuno-kawada-criterion` (done: runs on Santus and Berto; PR stacked on KHALIJ), then
+  `feat/matsubara-criterion` (implemented; data regeneration pending) and the polar damage sum.
+- Next action: Matsubara data regeneration and PR; then the polar damage sum.
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 
