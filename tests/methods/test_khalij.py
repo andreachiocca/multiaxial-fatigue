@@ -36,7 +36,9 @@ def eq23(x, y, t, s_m1, t_m1, alpha, cos_phi=1.0):
 
 
 def _rows():
-    reason = "Table 6 prints a Damage that Eq. (23) does not give for this row (0.025 and 0.053 off)"
+    reason = (
+        "Table 6 prints a Damage that Eq. (23) does not give for this row (0.025 and 0.053 off)"
+    )
     return [
         (
             pytest.param(r, marks=pytest.mark.xfail(strict=True, reason=reason))
