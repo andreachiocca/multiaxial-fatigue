@@ -4,7 +4,7 @@ Generated from `catalogue/methods.json`; every inherited permanent ID is checked
 
 ## Answer to “about 100 reviewed, but about 20 in the roadmap?”
 
-The **69 missing method/scoped candidates** describe the implementation backlog. The **6 roadmap entries** are an intentionally selected initial development sequence. The other **63** are retained, individually accounted for and open to proposals. The prior 23-step research shortlist was itself selective; the published initial roadmap had 22 additions. Neither was the literature census. The only difference between the earlier 23-entry shortlist and the 22-entry published sequence is **G14, Glinka–Shen–Plumtree**: it remains in the catalogue as an overlap-review record pending an equation-level comparison with GSE/GSA. This is not proof that the laws are equivalent. The missing explanation is corrected here.
+The **68 missing method/scoped candidates** describe the implementation backlog. The **6 roadmap entries** are an intentionally selected initial development sequence. The other **62** are retained, individually accounted for and open to proposals. The prior 23-step research shortlist was itself selective; the published initial roadmap had 22 additions. Neither was the literature census. The only difference between the earlier 23-entry shortlist and the 22-entry published sequence is **G14, Glinka–Shen–Plumtree**: it remains in the catalogue as an overlap-review record pending an equation-level comparison with GSE/GSA. This is not proof that the laws are equivalent. The missing explanation is corrected here.
 
 There is no evidence of an inherited record being lost: all **161/161 IDs** survive, and all **51/51 numbered FABER publications** have dispositions. The weakness was that the selection policy and the nonselected backlog were not prominent enough. This update adds explicit development dispositions and browse links; it does not fabricate additional fatigue laws.
 
@@ -20,7 +20,7 @@ There is no evidence of an inherited record being lost: all **161/161 IDs** surv
 | L | Historical bibliographic/identity leads | 14 | 0 | 14 |
 | TOTAL | — | 162 | 118 | 44 |
 
-**161 = 117 + 44; 117 = 20 implementation records + 97 missing candidates; 97 = 6 prioritized additions + 63 nonselected candidates.** Of the 97 missing candidates, 57 have preliminary A/B feasibility and 12 have C feasibility. Feasibility does not certify available measured data, equations or a reproducible algorithm.
+**161 = 117 + 44; 117 = 20 implementation records + 97 missing candidates; 97 = 6 prioritized additions + 62 nonselected candidates.** Of the 97 missing candidates, 56 have preliminary A/B feasibility and 12 have C feasibility. Feasibility does not certify available measured data, equations or a reproducible algorithm.
 
 ## What these numbers do and do not count
 
@@ -45,8 +45,8 @@ Broader workstreams are excluded from the narrow method-progress denominator bec
 | Track | Records |
 | --- | --- |
 | application_comparison | 1 |
-| available_not_scheduled | 52 |
-| available_validate | 42 |
+| available_not_scheduled | 51 |
+| available_validate | 43 |
 | broader_workstream | 10 |
 | deferred_major_extension | 9 |
 | identity_or_relationship_review | 30 |
@@ -89,7 +89,7 @@ Use the catalogue link for full references, loading/data scope and scientific li
 | [N06](../METHODS.md#n06) — Zhang–Yao nonlinear critical-plane HCF criterion | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [N07](../METHODS.md#n07) — Sectional critical-plane criterion | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Case-level branching, global normal/shear maxima and branch-boundary continuity. |
 | [N08](../METHODS.md#n08) — Gonçalves–Araújo–Mamiya prismatic-hull criterion for hard metals | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
-| [N09](../METHODS.md#n09) — Unified equivalent shear stress | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. True-fracture-strength field, invariant amplitude and native axial-curve conversion. Review's Su-based estimate is range-limited, not universal. |
+| [N09](../METHODS.md#n09) — Unified equivalent shear stress | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [N10](../METHODS.md#n10) — Modified Marin-type mean-shear criterion | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Measured t0 and coefficient/domain checks; no unsupported NP extension. |
 | [N11](../METHODS.md#n11) — Ninić Damage Function (quadratic damage-plane criterion) | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [N12](../METHODS.md#n12) — Revised multiaxial fatigue damage function | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Revised coefficients, stated ratio domain and mean-stress rule. |

@@ -6,6 +6,21 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### MATSUBARA: Matsubara, Hayashida & Kano (2018) criterion (#13, N09)
+
+- New invariant model `MATSUBARA` (`invariant_methods/matsubara.py`): unified equivalent shear
+  stress amplitude sqrt(J_2,amp,eq) = sigma_T sqrt(J_2,amp)/(sigma_T - S_max + sqrt3 sqrt(J_2,amp))
+  (Eq. 15) with the Mamiya amplitude (Eq. 13) and the maximum S_max of the largest-range normal
+  stress; life from the master curve on the R = -1 uniaxial tests (the paper's unified S-N curve).
+- New optional constant `sigma_T` (true fracture strength, `docs/notation.md`); without it
+  sigma_T = 1.84 Su for 400 <= Su <= 1000 MPa, else the material is out of scope (maintainer
+  decision). Runs on 8 materials.
+- Evidence (`tests/methods/test_matsubara.py`): Eq. (15) against Eq. (9) and the uniaxial line,
+  the Mamiya amplitude in the time domain, S_max against a brute-force search. The paper prints no
+  per-test value.
+- Guide `docs/method-guides/MATSUBARA.md`, catalogue record N09, audit row; ranking and batch
+  comparison regenerated.
+
 ### KAKUNO: Kakuno & Kawada (1979) criterion (#13, G04)
 
 - New invariant model `KAKUNO` (`invariant_methods/kakuno_kawada.py`): Eq. (4), the octahedral

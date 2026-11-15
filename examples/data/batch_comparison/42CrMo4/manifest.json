@@ -9,8 +9,8 @@
  "constants": {
   "42CrMo4_Reis": "Calibrations/42CrMo4_Reis/SSF_published.json"
  },
- "created_utc": "2026-11-15T17:58:42+00:00",
- "git_commit": "1cdb4a36e2d9062761fad891b63e3ab4a1d3fb9a",
+ "created_utc": "2026-11-15T18:12:30+00:00",
+ "git_commit": "7760f3995fad42fb4e21155852d91a5936bf9570",
  "registered_models": [
   "BP",
   "CAIM",
@@ -32,6 +32,7 @@
   "LIU2025",
   "LIUMAHADEVAN",
   "MATAKE",
+  "MATSUBARA",
   "MCD",
   "MDC",
   "MGSE_YU",
@@ -87,6 +88,7 @@
   "LIU2025",
   "LIUMAHADEVAN",
   "MATAKE",
+  "MATSUBARA",
   "MCD",
   "MDC",
   "MGSE_YU",

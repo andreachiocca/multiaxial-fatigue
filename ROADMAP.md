@@ -8,7 +8,7 @@ First resolve LIU2021 Eq. (27), then MGSE_ZHU, MKBM, LI and scalar MSWT scope. T
 
 ## Why the roadmap is shorter than the catalogue
 
-This roadmap selects **6 of 69 missing method/scoped candidates** for an initial programme. **63 remain outside the sequence**: 54 with preliminary A/B feasibility and 9 requiring major extensions. They remain contribution opportunities, including medium/low-priority candidates. The five existing repairs and five existing-source reviews above form separate tracks.
+This roadmap selects **6 of 68 missing method/scoped candidates** for an initial programme. **62 remain outside the sequence**: 53 with preliminary A/B feasibility and 9 requiring major extensions. They remain contribution opportunities, including medium/low-priority candidates. The five existing repairs and five existing-source reviews above form separate tracks.
 
 Selection balances recognized CA fatigue relevance, additional scientific capability, methodological diversity, reuse of current utilities, reference/benchmark leads, material data and shared prerequisites. Numerical simplicity is not the sole criterion: volumetric, mesoscopic and probabilistic extensions are deliberately retained. Order is advisory and may change when original papers/data establish better feasibility.
 
