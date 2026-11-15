@@ -25,12 +25,15 @@ Repository choices:
     concept, not the published LCF procedure;
   - k_phi (`k_PDS`) is calibrated like k_FS, by minimising the life scatter of the R = -1 tension
     and torsion failures (cli/calibrate.py), which is the paper's collapse of the axial and shear
-    curves; sigma_yt is the workbook yield strength `Sy`;
+    curves; sigma_yt is the workbook yield strength `Sy`. On a fatigue-limit dataset k_phi is set,
+    like k_FS, so that the R = -1 tension and torsion limits give the same D^s;
   - the life law D^s = alpha N^beta is the shared master curve, fitted on the R = -1 uniaxial
     tension failures (the paper fits axial and shear tests together);
   - D(phi) is taken as max(D(phi), 0) before squaring: a negative D (a compressive sigma_max for
     SWT, or 1 + k_phi sigma_n,max/sigma_yt < 0 for FS) would otherwise add damage;
-  - plane stress on the x-y surface: a stress with a z component raises LoadingScopeError;
+  - plane stress on the x-y surface: a stress with a z component raises LoadingScopeError. An
+    in-phase equibiaxial state has no in-plane shear on any surface plane, so D_FS = 0 there (the
+    two-dimensional polar sum does not see the out-of-plane shear) and its load factor is undefined;
   - the integral uses N_PHI equally spaced planes over [0, 2 pi) (exact for the trigonometric
     polynomials of one harmonic up to high order).
 
@@ -49,6 +52,7 @@ from ..invariant_methods.stress_invariants import harmonic_parts
 
 N_PHI = 720
 SCOPE_TOL = 1e-9
+ZERO_RTOL = 1e-9  # in-plane shear strain below this fraction of the strain scale is zero
 _PHI = np.linspace(0.0, 2.0 * np.pi, N_PHI, endpoint=False)
 _N = np.column_stack([np.cos(_PHI), np.sin(_PHI), np.zeros(N_PHI)])
 _T = np.column_stack([-np.sin(_PHI), np.cos(_PHI), np.zeros(N_PHI)])
@@ -72,6 +76,10 @@ def polar_damage(
         return sigma_max * eps_amp
     if kind == "FS":
         gam_amp = 2.0 * np.hypot(_shear(E_sin), _shear(E_cos))  # Delta gamma_max(phi)/2
+        # round-off of a state without in-plane shear (in-phase equibiaxial) is no damage
+        scale = max(float(np.max(np.abs(E_sin))), float(np.max(np.abs(E_cos))))
+        if np.isfinite(scale):  # undefined strains (no E, nu) stay NaN
+            gam_amp = np.where(gam_amp > ZERO_RTOL * scale, gam_amp, 0.0)
         return gam_amp * (1.0 + float(k_PDS) * sigma_max / float(sigma_yt))
     raise ValueError(f"polar damage kind must be 'SWT' or 'FS', got {kind!r}")
 

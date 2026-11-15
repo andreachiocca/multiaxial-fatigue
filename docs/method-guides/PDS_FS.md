@@ -70,6 +70,9 @@ harmonic stresses and their elastic strains. The integral uses 720 equally space
 
 1. **Original procedure.** $k_\varphi$ is changed until the $D^s$–life points of the cyclic axial and cyclic shear tests fall on one scatter band (Fig. 4); then $\alpha_s$, $\beta_s$ are fitted (Eq. 19). Table 3 lists $k_\varphi$ from 0.1 (7075-T651) to 5.0 (AL6XN).
 2. **Repository.** `multifat-calibrate` and the pipeline fit `k_PDS` like `k_FS`: the life scatter of the R = −1 tension and torsion failures is minimised over $0 \le k_\varphi \le 10$. A value stopped by the upper bound is not identifiable and is not used; the model is then skipped. On the supplied workbooks: FABEST 2.78, AISI316L 0.40, Ti6Al4V_Berto 9.06; 42CrMo4_Santus not identifiable (the scatter keeps decreasing). The torsion tests used for $k_\varphi$ are reported as design points (`Flag = 0`). The life law is the shared master curve on the R = −1 uniaxial tension failures.
+3. **Fatigue-limit datasets.** As for `k_FS`, $k_\varphi$ is set so that the R = −1 tension and
+   torsion limits give the same $D^s$ (`eval/endurance.py`, search over $[0, 10]$); on GGG60 no
+   value in that interval equalises them and the model is skipped.
 
 ## Worked example
 

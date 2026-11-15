@@ -6,6 +6,22 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### PDS_SWT, PDS_FS: Albinmousa & Al Hussain (2021) polar damage sum (#13, new N59/N60)
+
+- New integral models `PDS_SWT` and `PDS_FS` (`integral_methods/polar_damage_sum.py`): the area
+  1/2 int D(phi)^2 dphi of the polar curve of the SWT or Fatemi-Socie parameter over every plane
+  perpendicular to the surface (Eqs. 8-9, 12-14), life via the master curve (Eqs. 17-19).
+- Elastic, high-cycle reading of a strain-controlled LCF method (maintainer decision): linear-elastic
+  strains replace the measured loops; documented in the module, guides and audit.
+- New calibrated constant `k_PDS` (k_phi), fitted like `k_FS` on the R = -1 tension and torsion
+  failures within [0, 10] (`cli/calibrate.py`, block `PDS_FS`) and set by the limit equalisation on
+  fatigue-limit datasets (`eval/endurance.py`). Identified on FABEST (2.78), AISI316L (0.40),
+  Ti6Al4V_Berto (9.06); not identifiable on Santus, Reis and Al7075_T6.
+- New catalogue records N59 (PDS_SWT) and N60 (PDS_FS, variant), guides, audit rows; ranking and
+  batch comparison regenerated.
+- `docs/calibration-workflow.md`: the initial design-test tolerance is |R + 1| <= 1e-3 since #77
+  (it still said 0.02).
+
 ### MATSUBARA: Matsubara, Hayashida & Kano (2018) criterion (#13, N09)
 
 - New invariant model `MATSUBARA` (`invariant_methods/matsubara.py`): unified equivalent shear

@@ -117,3 +117,17 @@ def test_models_and_scope():
         PolarDamageSumSWT().evaluate_case(
             S0=S3, E0=None, S1=-S3, E1=None, params={}, harmonics={**harm, "S_sin": S3}
         )
+
+
+def test_equibiaxial_has_no_in_plane_shear():
+    """In-phase sigma_x = sigma_y: no shear on any surface plane, so D_FS = 0 exactly."""
+    S = plane(300.0, 300.0, 0.0)
+    assert polar_damage_sum("FS", ZERO, S, ZERO, strain(S), ZERO, 1.0, 600.0) == 0.0
+    assert polar_damage_sum("SWT", ZERO, S, ZERO, strain(S), ZERO) > 0.0
+
+
+def test_undefined_strains_give_nan():
+    """Without E and nu the strains are NaN: both sums stay undefined (strain models are skipped)."""
+    S, nan = plane(0.0, 200.0, 90.0), np.full((3, 3), np.nan)
+    assert np.isnan(polar_damage_sum("FS", ZERO, S, ZERO, nan, nan, 1.0, 600.0))
+    assert np.isnan(polar_damage_sum("SWT", ZERO, S, ZERO, nan, nan))
