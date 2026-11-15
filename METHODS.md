@@ -19,7 +19,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Critical plane | 11 | 1 | 7 | 0 | 19 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
 | Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 6 | 0 | 7 | 0 | 13 |
+| Invariant based | 7 | 0 | 6 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 4 | 0 | 9 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 40 | 2 | 71 | 5 | 118 |
+| **TOTAL** | 41 | 2 | 70 | 5 | 118 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
@@ -955,7 +955,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [N09](#n09) | Unified equivalent shear stress | Not implemented | not_tested | High | Yes |
 | [N10](#n10) | Modified Marin-type mean-shear criterion | Not implemented | not_tested | Medium | Yes |
 | [N18](#n18) | Piecewise ruled S–N surface | Not implemented | not_tested | Medium | Yes |
-| [N19](#n19) | Improved Gough / Nishihara–Kawamoto criterion | Not implemented | not_tested | Medium | Yes |
+| [N19](#n19) | Improved Gough / Nishihara–Kawamoto criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N20](#n20) | Stress-invariant endurance criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N33](#n33) | Published proportional Hershey–Hosford–Sines reduction | Not implemented | not_tested | Low | related_scope |
 | [N47](#n47) | Original Marin mean-stress criterion | Not implemented | not_tested | Low | Yes |
@@ -1054,7 +1054,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | Fatigue criterion improvement of Gough and Nishihara & Kawamoto to predict the fatigue damage of a wide range of metallic materials, International Journal of Fatigue; https://doi.org/10.1016/j.ijfatigue.2017.02.016 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/invariant-based.md#n19) |

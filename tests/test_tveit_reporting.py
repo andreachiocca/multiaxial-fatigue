@@ -227,7 +227,7 @@ def test_all_registered_methods_have_explicitly_verified_comparison_semantics():
     from multifat.models.comparison import capabilities_for_model
 
     names = sorted({**_available_cp_methods(), **_available_direct_models()})
-    assert len(names) == 46
+    assert len(names) == 47
     native_methods = {"TVEIT2025", "MOREL", "MDC", "MMCCM", "LIUMAHADEVAN"}
     for name in names:
         model = get_models([name])[0]
