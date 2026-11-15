@@ -60,6 +60,7 @@ from .cp_methods.dangvan import DangVan
 from .invariant_methods.crossland import Crossland
 from .invariant_methods.goncalves_araujo_mamiya import GoncalvesAraujoMamiya
 from .invariant_methods.golos import Golos
+from .invariant_methods.kakuno_kawada import KakunoKawada
 from .invariant_methods.khalij import Khalij
 from .invariant_methods.sines import Sines
 from .integral_methods.papadopoulos import Papadopoulos
@@ -120,6 +121,7 @@ def _available_direct_models():
         "GAM": GoncalvesAraujoMamiya(),
         "GOLOS": Golos(),
         "KHALIJ": Khalij(),
+        "KAKUNO": KakunoKawada(),
         "SINES": Sines(),
         "PAPADOPOULOS": Papadopoulos(),
         "PCR": PapugaCriticalPlane(),

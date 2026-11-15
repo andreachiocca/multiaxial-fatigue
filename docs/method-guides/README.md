@@ -56,6 +56,7 @@ All 46 registered criteria have a dedicated guide below, grouped by family.
 | [Sines](SINES.md) | `SINES` | Stress invariants | $(\sqrt{J_{2,a}} + \kappa\,\sigma_{H,m})/t_{-1}$ (index) | `Sigm1`, `Taum1`, `Su` |
 | [Golos–Dębski–Dębski](GOLOS.md) | `GOLOS` | Limit curve (in-phase bending–torsion) | $A(\sigma/f_{-1})^2 + B\,\sigma/f_{-1} + (\tau/t_{-1})^2$ (index) | `Sigm1`, `Taum1` |
 | [Gonçalves–Araújo–Mamiya](GAM.md) | `GAM` | Stress invariants (prismatic hull) | $(\sqrt{\textstyle\sum a_i^2} + \kappa\,\sigma_{p\max})/\lambda$ (index) | `Sigm1`, `Taum1` |
+| [Kakuno–Kawada](KAKUNO.md) | `KAKUNO` | Stress invariants (octahedral) | $(\tau_{oct,a} + B\,\lvert\mathrm{tr}\,\mathbf S_a\rvert + C\,\mathrm{tr}\,\mathbf S_m)/A$ (index) | `Sigm1`, `Taum1`, `Sig0` |
 | [Khalij–Pagnacco–Troian](KHALIJ.md) | `KHALIJ` | Stress invariants (prismatic hull) | $J_{2,a}/t_{-1}^2 + (1 - 1/3r^2)\,I_{1,a}/s_{-1}$ (damage $\mathfrak D$) | `Sigm1`, `Taum1` |
 | [Reduced Ottosen](OTT.md) | `OTT` | Stress invariants (Hershey–Hosford) | $\sigma_{e,a} + A\,I_{1,m}$ (MPa) | `Sigm1`, `Taum1`; `m_OTT`, `A_OTT`, `Sig0` or `Su` |
 | [Vu–Halm–Nadot](VHN.md) | `VHN` | Stress invariants | $f_{\max}/t_{-1}$, Eq. (8) (index) | `Sigm1`, `Taum1`, `Su` |
