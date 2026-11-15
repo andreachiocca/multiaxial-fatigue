@@ -1,0 +1,55 @@
+% multifat method sheets: one section per registered criterion, for the FABER WG4.3 review.
+% Build: latexmk -pdf -interaction=nonstopmode -halt-on-error methods.tex
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=22mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,amsmath,amssymb,booktabs,array,longtable,xcolor,enumitem}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!55!black]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist{leftmargin=5mm,topsep=2pt,itemsep=1pt}
+\numberwithin{equation}{section}
+
+% ---- shared notation (defined in notation.tex, Section 1) ----
+\newcommand{\Tsig}{\boldsymbol\sigma}            % Cauchy stress tensor
+\newcommand{\Teps}{\boldsymbol\varepsilon}        % elastic strain tensor
+\newcommand{\Sm}{\boldsymbol\sigma_m}             % mean tensor
+\newcommand{\Ss}{\boldsymbol\sigma_s}             % sine coefficient tensor
+\newcommand{\Sc}{\boldsymbol\sigma_c}             % cosine coefficient tensor
+\newcommand{\dev}{\operatorname{dev}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\n}{\mathbf n}
+\newcommand{\MPa}{\,\mathrm{MPa}}
+\newcommand{\fm}{f_{-1}}                          % fully reversed axial limit
+\newcommand{\tm}{t_{-1}}                          % fully reversed torsion limit
+
+% one block per method; \methodhead{registry name}{title}
+\newcommand{\methodhead}[2]{\section{#2 \texorpdfstring{\normalfont\small(\texttt{#1})}{(#1)}}}
+\newcommand{\block}[1]{\par\smallskip\textbf{#1.}\ }
+
+\title{Multiaxial fatigue criteria in \texttt{multifat}\\[2pt]\large Method sheets}
+\author{FABER WG4.3}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\noindent Each sheet states a criterion as its original paper defines it, every symbol it uses, how
+its constants are obtained, how a life follows, the loading it covers, and every choice the
+repository makes where the paper is silent or departs. The worked example of each sheet is the
+one the repository's tests execute. Section~\ref{sec:notation} defines the notation shared by all
+sheets; a sheet restates only what is particular to its method.
+
+\tableofcontents
+
+\input{notation}
+
+% ---- method sheets (one file per method in sheets/) ----
+\input{sheets/KAKUNO}
+\input{sheets/KHALIJ}
+\input{sheets/MATSUBARA}
+\input{sheets/PDS}
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+\end{document}

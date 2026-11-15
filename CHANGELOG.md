@@ -6,6 +6,18 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### LaTeX method sheets for the review article
+
+- New `docs/method-sheets/`: one LaTeX document (`methods.tex`) with a shared notation section
+  (frame, harmonic loading, invariants, plane quantities, material constants, master curve,
+  load-equivalent error, plane search) and one sheet per method in `sheets/`, each with Source,
+  Idea and scope, Inputs (every symbol and unit), Formulation, Constants and calibration, Life,
+  Repository choices, Worked example and Verification; bibliography in `references.bib`.
+- First sheets: KAKUNO, KHALIJ, MATSUBARA, PDS_SWT/PDS_FS. The other 46 models are listed as
+  pending in `tests/test_method_sheets.py`, a list that may only shrink.
+- `tests/test_method_sheets.py` checks coverage of the registry, `\input` targets, the block order,
+  citation keys and balanced braces and environments.
+
 ### PDS_SWT, PDS_FS: Albinmousa & Al Hussain (2021) polar damage sum (#13, new N59/N60)
 
 - New integral models `PDS_SWT` and `PDS_FS` (`integral_methods/polar_damage_sum.py`): the area
