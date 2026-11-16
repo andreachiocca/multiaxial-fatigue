@@ -3,6 +3,7 @@
 1. Critical-plane damage on the sphere of plane normals (header)
 2. Biaxial fatigue limit envelopes in normalized stress space
 3. Method ranking by the load-equivalent error across materials
+4. Cross-batch transfer of the constants (42CrMo4)
 """
 
 import sys
@@ -14,6 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from examples.plot_batch_transfer import plot_batch_transfer  # noqa: E402
 from examples.plot_damage_sphere import plot_damage_sphere  # noqa: E402
 from examples.plot_fatigue_limit import plot_fatigue_limit_envelopes  # noqa: E402
 from examples.plot_load_error_ranking import plot_load_error_ranking  # noqa: E402
@@ -23,6 +25,7 @@ FIGURES = (
     ("critical_plane_sphere.png", plot_damage_sphere, "Critical-plane damage sphere"),
     ("fatigue_limit_envelopes.png", plot_fatigue_limit_envelopes, "Fatigue limit envelopes"),
     ("load_error_ranking.png", plot_load_error_ranking, "Load-equivalent error ranking"),
+    ("batch_transfer.png", plot_batch_transfer, "Cross-batch transfer"),
 )
 
 

@@ -136,10 +136,23 @@ Data in `examples/data/load_error_ranking.csv`, rebuilt with `examples/build_loa
 
 ![Method ranking by the load-equivalent error](docs/images/load_error_ranking.png)
 
-How the same methods carry over between batches of one material (42CrMo4: three laboratories;
-Ti6Al4V: two), each calibrated on its own batch and predicted from the others, is in the
-[cross-batch comparison](docs/batch-comparison.md)
+### Same steel, another batch
+
+A designer rarely has fatigue tests on the very batch of the component. Three laboratories tested
+the same 42CrMo4 +QT steel (Santus: Su = 875 MPa; Reis and FABEST: about 1100 MPa). Every method
+was calibrated on one batch and used to predict the tests of another:
+
+- constants from the **weaker** batch (Santus) misjudge the load of the stronger batches by
+  **+27–28 %**, on the safe side;
+- constants from a **stronger** batch predict the Santus tests **non-conservatively**
+  (−10 % from Reis, −15 % from FABEST);
+- the two high-strength batches transfer well into each other (−1 % and +13 %).
+
+Without tests on the batch, a margin of about 15–25 % on the load is needed. The same analysis
+covers Ti6Al4V (two batches) in the [cross-batch comparison](docs/batch-comparison.md)
 ([issue #71](https://github.com/andreachiocca/multiaxial-fatigue/issues/71)).
+
+![Constants from another batch of the same steel](docs/images/batch_transfer.png)
 
 ## Method coverage
 
