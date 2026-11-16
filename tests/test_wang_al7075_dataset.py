@@ -44,3 +44,21 @@ def test_imported_as_a_fatigue_life_dataset():
     (block,) = load_material_workbook(WORKBOOK).values()
     assert len(block["cases"]) == 52
     assert classify_dataset(block, "Al7075_T651_Wang")["workflow"] == "fatigue_life"
+
+
+def test_fingerprint_ignores_last_bit_trigonometric_differences():
+    """30 and 45 deg failures hold cos/sin values that differ by one ulp between platforms
+    (Windows CI); their histories are hashed rounded to 1e-6 MPa, so the fingerprint agrees."""
+    import copy
+
+    import numpy as np
+
+    from multifat.report.subsets import dataset_fingerprint
+
+    (block,) = load_material_workbook(WORKBOOK).values()
+    perturbed = copy.deepcopy(block)
+    for case in perturbed["cases"].values():
+        for key, value in case.get("harmonics", {}).items():
+            if key.startswith("S_"):
+                case["harmonics"][key] = np.nextafter(np.asarray(value, float), np.inf)
+    assert dataset_fingerprint(perturbed) == dataset_fingerprint(block)

@@ -20,6 +20,10 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
     (t_-1/f_-1 = 0.573).
   - Skipped for missing constants: TVEIT2025, SSF.
   - WANG2018 ranks first on it; this is the dataset its authors used, not an independent check.
+- `dataset_fingerprint` hashes the failure histories rounded to 1e-6 MPa when a failure has a
+  phase that is not a multiple of 90 deg, as for the run-outs. Their cos/sin values differ in the
+  last bit between platforms, which made the Windows fingerprint of this workbook differ. Every
+  other recorded fingerprint is unchanged.
 
 ### Plane shear amplitude selectable for every method (maintainer decision, 16 November 2026)
 

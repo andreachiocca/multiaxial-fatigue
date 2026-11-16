@@ -66,9 +66,19 @@ def dataset_fingerprint(block: dict, runouts: bool = False) -> str:
     props = {k: v for k, v in block["material"].items() if k != "extra"}
     props.update(block["material"].get("extra") or {})
 
+    # Failures at a phase that is not a multiple of 90 deg hold trigonometric values whose last
+    # bits differ between platforms (first in 18_Al7075_T651_Wang): such a dataset hashes its
+    # failure histories rounded to 1e-6 MPa, like the run-outs. Every other recorded
+    # fingerprint is unchanged.
+    decimals = RUNOUT_DECIMALS if _has_oblique_phase(block["cases"]) else None
+
     def histories(cases) -> list[str]:
+        def history(c):
+            h = _history(c)
+            return h if decimals is None else _rounded(h, decimals)
+
         return sorted(
-            json.dumps(json_value({"N": c["meta"]["Nf_cycles"], **_history(c)}), sort_keys=True)
+            json.dumps(json_value({"N": c["meta"]["Nf_cycles"], **history(c)}), sort_keys=True)
             for c in cases.values()
         )
 
@@ -87,6 +97,21 @@ def dataset_fingerprint(block: dict, runouts: bool = False) -> str:
 
 
 RUNOUT_DECIMALS = 6
+
+
+def _has_oblique_phase(cases) -> bool:
+    """True when a case has a load phase that is not a multiple of 90 deg."""
+    for c in cases.values():
+        for key, value in c.get("meta", {}).items():
+            if "phase" not in key.lower():
+                continue
+            try:
+                phase = float(value)
+            except (TypeError, ValueError):
+                continue
+            if np.isfinite(phase) and phase % 90.0 != 0.0:
+                return True
+    return False
 
 
 def _rounded(value, decimals: int):
