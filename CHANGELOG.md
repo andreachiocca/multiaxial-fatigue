@@ -74,6 +74,13 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 - `tests/test_method_sheets.py` checks coverage of the registry, `\input` targets, the block order,
   citation keys and balanced braces and environments.
 
+### Homepage: cross-batch transfer figure (#71)
+
+- New README section "Same steel, another batch" and figure `docs/images/batch_transfer.png`
+  (`examples/plot_batch_transfer.py`, homepage style, part of `generate_gallery.py`): median and
+  quartiles over the methods of the signed load error of each 42CrMo4 batch with its own constants
+  and with those of the other two batches. A test ties the quoted percentages to the data.
+
 ### PDS_SWT, PDS_FS: Albinmousa & Al Hussain (2021) polar damage sum (#13, new N59/N60)
 
 - New integral models `PDS_SWT` and `PDS_FS` (`integral_methods/polar_damage_sum.py`): the area
