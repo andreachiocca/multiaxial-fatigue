@@ -24,7 +24,9 @@
 - Branch `feat/shear-amplitude-option` (stacked on #110): `--shear-amplitude-algorithm` of
   multifat-run / multifat-calibrate for every model exposing `np_shear_rule` (all CP methods, SIH);
   pipeline guard generalised; pipeline itself still method_default.
-- Next action: open the option PR; then the 7075-T651 workbook PR; then backfill LaTeX sheets.
+- #107-#111 merged (16 Nov). Branch `data/al7075-t651-wang`: workbook 18_Al7075_T651_Wang,
+  45 models run, ranking regenerated.
+- Next action: dataset PR; then backfill the LaTeX sheets family by family (46 pending).
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 

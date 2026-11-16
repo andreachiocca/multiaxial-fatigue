@@ -271,7 +271,9 @@ methods keep the RSS convention.
 The CSVs in `Results/archive/pre-audit/` predate the numerical audit and are kept as history only
 (see [Results/README.md](Results/README.md)). The experimental collection is the revised
 October 2026 set (upstream 71eaac3, 15 workbooks, of which 7 fatigue-limit sets and 2 notched-only), plus `16_42CrMo4_FABEST` from the FABEST database (doi:10.5281/zenodo.23359038) and the fatigue-limit
-set `17_Ti6Al4V_Delahay`, built from Delahay & Palin-Luc 2006 (doi:10.1016/j.ijfatigue.2005.06.048).
+set `17_Ti6Al4V_Delahay`, built from Delahay & Palin-Luc 2006 (doi:10.1016/j.ijfatigue.2005.06.048),
+and the life set `18_Al7075_T651_Wang` (52 tension-torsion tests with mean stresses), built from
+Wang et al. 2018 (doi:10.1016/j.tafmec.2017.10.007).
 The provenance of each workbook, with its open questions, is in
 [Experimental_Data/PROVENANCE.md](Experimental_Data/PROVENANCE.md).
 
