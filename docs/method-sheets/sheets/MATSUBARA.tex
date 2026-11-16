@@ -1,0 +1,77 @@
+% registry: MATSUBARA
+\methodhead{MATSUBARA}{Matsubara, Hayashida and Kano (2018): unified equivalent shear stress amplitude}\label{sheet:MATSUBARA}
+
+\block{Source} G.~Matsubara, A.~Hayashida, D.~Kano, \emph{Int.\ J.\ Fatigue} (2018), accepted
+manuscript \cite{matsubara2018}, Eqs.~(7)--(9), (13)--(15); Section~2.2.3.4.1.
+
+\block{Idea and scope} Two parameters describe a multiaxial cycle: an equivalent shear stress
+amplitude (crack initiation, Stage~I) and the maximum $S_{max}$ of the normal stress with the
+largest range (crack growth, Stage~II, which carries the mean-stress effect). Every state is mapped,
+at equal life, onto the fully reversed uniaxial line; there the value is read on the axial S--N
+curve. Only axial fatigue data and the true fracture strength are needed, no torsion test.
+Proposed for limits and high-cycle lives of steels and aluminium alloys under axial, torsion and
+biaxial loading, in and out of phase, with mean stresses and sinusoidal, triangular or trapezoidal
+waveforms.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$s_{ij}$ & MPa & deviatoric stress, $s_{ij}=\sigma_{ij}-\tfrac13\sigma_{kk}\delta_{ij}$ (Eq.~7)\\
+$S_1,\dots,S_5$ & MPa & deviatoric components in the basis of Eq.~\eqref{eq:ms-basis}\\
+$\sqrt{J_{2,amp}}$ & MPa & equivalent shear stress amplitude (Mamiya), Eq.~\eqref{eq:ms-j2}\\
+$S_{max}$ & MPa & maximum over the cycle of the normal stress whose range is the largest over all planes\\
+$\sigma_T$ & MPa & true fracture strength\\
+$\sigma_w=\fm$ & MPa & fully reversed axial fatigue limit\\
+$\sqrt{J_{2,amp,eq}}$ & MPa & unified equivalent shear stress amplitude, Eq.~\eqref{eq:ms-eq}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation}
+\begin{gather}
+S_1=\tfrac{\sqrt3}{2}s_{xx},\quad S_2=\tfrac12(s_{yy}-s_{zz}),\quad S_3=s_{xy},\quad S_4=s_{yz},\quad S_5=s_{zx},
+\label{eq:ms-basis}\\
+\sqrt{J_{2,amp}}=\sqrt{\sum_{i=1}^{5}\Bigl(\frac{S_{i,\max}-S_{i,\min}}{2}\Bigr)^2} ,
+\label{eq:ms-j2}\\
+\sqrt{J_{2,amp,eq}} = \frac{\sigma_T\sqrt{J_{2,amp}}}{\sigma_T - S_{max} + \sqrt3\sqrt{J_{2,amp}}} .
+\label{eq:ms-eq}
+\end{gather}
+Eq.~\eqref{eq:ms-eq} is the intersection of the constant-life line through the state, which passes
+through $(S_{max},\sqrt{J_2})=(\sigma_T,0)$, with the uniaxial line $\sqrt{J_{2,amp}}/S_{max}=1/\sqrt3$
+(Figs.~3--4). On that line $\sqrt{J_{2,amp,eq}}=\sigma_a/\sqrt3$. The fatigue limit (Eq.~9) is
+$\sqrt{J_{2,amp,eq}}=\sigma_w/\sqrt3$, i.e.
+$\sqrt{J_{2,amp}} + \frac{\sigma_w/\sqrt3}{\sigma_T-\sigma_w}S_{max} = \frac{\sigma_w}{\sqrt3}\frac{\sigma_T}{\sigma_T-\sigma_w}$.
+
+\block{Constants and calibration} $\sigma_T$ from tensile data; when unknown, the paper uses
+$\sigma_T=1.84\,S_u$ for $400\le S_u\le1000\MPa$ (its ref.~[23]).
+
+\block{Life} The unified equivalent S--N curve is the reversed axial S--N curve with ordinate
+$\sigma_a/\sqrt3$; the life of a state is read at $\sqrt{J_{2,amp,eq}}$. Without axial fatigue data the
+paper also estimates this curve from $S_u$ and $\sigma_w$ (Eqs.~16--17).
+
+\block{Repository choices}
+\begin{itemize}
+\item For one harmonic the half-ranges of $S_i$ are component amplitudes, so $\sqrt{J_{2,amp}}$ is
+  the $\sqrt{J_{2,a}}$ of Eq.~\eqref{eq:invariants}.
+\item $S_{max}=\sigma_{n,m}+\sigma_{n,a}$ on the plane of the largest $\sigma_{n,a}$, found by a
+  search over the sphere of normals; ties go to the larger $S_{max}$ (the paper is silent).
+\item $\sigma_T$: workbook constant \texttt{sigma\_T}; otherwise $1.84\,S_u$ only for
+  $400\le S_u\le1000\MPa$, else the material is out of scope.
+\item Life: the master curve with $\mathrm{DP}=\sqrt{J_{2,amp,eq}}$ fitted on the R~$=-1$ uniaxial
+  tests, which is the paper's route; Eqs.~(16)--(17) are not implemented.
+\item $S_{max}\ge\sigma_T+\sqrt3\sqrt{J_{2,amp}}$ leaves Eq.~\eqref{eq:ms-eq} undefined and is out of scope.
+\end{itemize}
+
+\block{Worked example} Hard steel of Nishihara and Kawamoto ($S_u=680$, $\sigma_w=314$,
+$\tm=196\MPa$): $\sigma_T=1.84\cdot680=1251.2\MPa$; fatigue limit $\sigma_w/\sqrt3=181.3\MPa$.
+Bending 314: $\sqrt{J_{2,amp}}=181.3$, $S_{max}=314$, $\sqrt{J_{2,amp,eq}}=181.3\MPa$ (onto itself).
+Torsion 196: $\sqrt{J_{2,amp}}=S_{max}=196$, $\sqrt{J_{2,amp,eq}}=1251.2\cdot196/(1251.2-196+339.5)=175.8\MPa$,
+3\% below the limit. Bending 150.2 with torsion 181.7 at $90^\circ$: $\sqrt{J_{2,amp}}=201.3$,
+$S_{max}=199.5$, $\sqrt{J_{2,amp,eq}}=179.9\MPa$.
+
+\block{Verification} The paper reports only error histograms and scatter plots, no per-test value.
+Checked: Eq.~\eqref{eq:ms-eq} maps uniaxial states onto $\sigma_a/\sqrt3$ and Eq.~(9) states onto
+$\sigma_w/\sqrt3$; Eq.~\eqref{eq:ms-j2} against a time-domain evaluation; $S_{max}$ against a
+brute-force search.

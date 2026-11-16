@@ -1,0 +1,80 @@
+% registry: KAKUNO
+\methodhead{KAKUNO}{Kakuno and Kawada (1979): octahedral criterion with amplitude and mean terms}\label{sheet:KAKUNO}
+
+\block{Source} H.~Kakuno, Y.~Kawada, \emph{Fatigue Engng Mater.\ Struct.} 2 (1979) 229--236
+\cite{kakuno1979}, Eqs.~(4), (6)--(12); Figs.~2--6.
+
+\block{Idea and scope} A correction of Sines' criterion: the octahedral shear stress amplitude at
+the fatigue limit decreases linearly with the octahedral normal stress, with \emph{different}
+slopes for its amplitude and its mean. Sines keeps only the mean term, which forces
+$\tm/\fm=1/\sqrt3$ without mean stresses. Proposed for fatigue limits of round bars under repeated
+bending and torsion with superimposed static bending and torsion; plain and moderately notched
+members.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\sigma_{a_i}$, $\sigma_{m_i}$ ($i=1,2,3$) & MPa & principal stress amplitudes and principal mean stresses\\
+$\sigma_a,\sigma_m$; $\tau_a,\tau_m$ & MPa & bending and torsion amplitude and mean (round bar)\\
+$\sigma_{wb}=\fm$, $\tau_w=\tm$ & MPa & fully reversed bending and torsion limits\\
+$\sigma_{up}=f_0$ & MPa & pulsating ($R=0$) bending limit, maximum stress of the cycle\\
+$k_1=\sigma_{up}/(2\sigma_{wb})$ & -- & ratio of the pulsating amplitude to the reversed limit\\
+$A$, $B$, $C$ & MPa, --, -- & material constants, Eqs.~\eqref{eq:kk-A}--\eqref{eq:kk-C}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The criterion (Eq.~4) is
+\begin{equation}
+\tfrac13\sqrt{(\sigma_{a_1}-\sigma_{a_2})^2+(\sigma_{a_2}-\sigma_{a_3})^2+(\sigma_{a_3}-\sigma_{a_1})^2}
+ = A - B\,(\sigma_{a_1}+\sigma_{a_2}+\sigma_{a_3}) - C\,(\sigma_{m_1}+\sigma_{m_2}+\sigma_{m_3}) ,
+\label{eq:kk}
+\end{equation}
+whose left-hand side is the octahedral shear stress amplitude $\tau_{oct,a}=\sqrt{2/3}\sqrt{J_{2,a}}$.
+For bending and torsion it becomes $\tfrac13(2\sigma_a^2+6\tau_a^2)^{1/2}=A-B\sigma_a-C\sigma_m$
+(Eq.~6). Imposing the reversed torsion limit, the reversed bending limit and the pulsating bending
+limit ($\sigma_a=\sigma_m=\sigma_{up}/2$) gives (Eqs.~7--9)
+\begin{align}
+A &= \sqrt{\tfrac23}\,\tau_w , \label{eq:kk-A}\\
+B &= \frac{\sqrt2}{3}\left(\sqrt3\,\frac{\tau_w}{\sigma_{wb}} - 1\right), \label{eq:kk-B}\\
+C &= \sqrt{\tfrac23}\,\frac{1-k_1}{k_1}\,\frac{\tau_w}{\sigma_{wb}} . \label{eq:kk-C}
+\end{align}
+Substituting, the limit curve of combined bending and torsion (Eq.~10) is
+\begin{equation}
+\Bigl(\frac{\tau_a}{\tau_w}\Bigr)^2\frac{1}{p^2}
++ \Bigl(\frac{\sigma_a}{\sigma_{wb}}\Bigr)^2\frac{\tfrac{2}{\sqrt3}\tfrac{\sigma_{wb}}{\tau_w}-1}{p^2}
++ \frac{\sigma_a}{\sigma_{wb}}\,\frac{2-\tfrac{2}{\sqrt3}\tfrac{\sigma_{wb}}{\tau_w}}{p} = 1 ,
+\qquad p = 1 - \frac{\sigma_m}{\sigma_{wb}}\frac{1-k_1}{k_1} ,
+\end{equation}
+and $p=1$ without mean stresses (Eq.~11). A torsional mean stress does not enter. The paper
+recommends $k_1=0.83$ as an average for structural carbon and alloy steels.
+
+\block{Constants and calibration} $A$, $B$, $C$ from $\tau_w$, $\sigma_{wb}$, $\sigma_{up}$; nothing
+is fitted.
+
+\block{Life} The paper gives none; finite lives use the master curve on the index below
+(Section~\ref{sec:mastercurve}), a repository extension.
+
+\block{Repository choices}
+\begin{itemize}
+\item The model returns the index
+  $\bigl(\tau_{oct,a} + B\,\lvert\tr\boldsymbol\sigma_a\rvert + C\,\tr\Sm\bigr)/A$, equal to 1 on the
+  limit, with $\boldsymbol\sigma_a$ the amplitude tensor; the sum of the principal amplitudes is
+  taken as $\lvert\tr\boldsymbol\sigma_a\rvert$, positive like any amplitude.
+\item Proportional loading only (principal stress amplitudes are undefined otherwise): a case with
+  non-parallel $\Ss$, $\Sc$ is out of scope. The mean may have any direction.
+\item $\sigma_{wb}$, $\tau_w$, $\sigma_{up}$ are the workbook $\fm$, $\tm$, $f_0$. Without $f_0$, $C$
+  is undefined: a case with $\tr\Sm\neq0$ is out of scope; $k_1=0.83$ is not used as a default.
+\end{itemize}
+
+\block{Worked example} Ni--Cr--Mo steel of Fig.~5, stresses divided by $\sigma_{wb}$:
+$\tau_w=0.617$, $k_1=0.83$, so $A=0.5038$, $B=0.0324$, $C=0.1032$. With $\sigma_m=0.46$,
+$p = 1-0.46\cdot0.17/0.83 = 0.906$, and the curve meets the $\tau$ axis at
+$\tau_a = p\,\tau_w = 0.559$: $\tau_{oct,a}=\sqrt{2/3}\cdot0.559=0.4563$, index
+$(0.4563+0+0.1032\cdot0.46)/0.5038 = 1.000$, with or without a static torsion.
+
+\block{Verification} Eqs.~(7)--(10) and (12) hold to machine precision. Fig.~5: the $\tau$
+intercept is 0.559 against 0.557 read from the figure; the $\sigma$ intercept is 0.906 against
+about 0.93 drawn (unexplained). The paper prints no table.

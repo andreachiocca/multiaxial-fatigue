@@ -1,0 +1,91 @@
+% registry: PDS_SWT, PDS_FS
+\methodhead{PDS\_SWT, PDS\_FS}{Albinmousa and Al Hussain (2021): polar damage sum}\label{sheet:PDS}
+
+\block{Source} J.~Albinmousa, M.~Al~Hussain, \emph{Forces in Mechanics} 4 (2021) 100025
+\cite{albinmousa2021}, Eqs.~(7)--(19); Tables~3 and~5.
+
+\block{Idea and scope} Damage is not confined to the critical plane: every plane perpendicular to
+the free surface contributes, and the damage is the area enclosed by the polar curve of a
+critical-plane parameter. The critical-plane value is the peak of that curve. Proposed for
+strain-controlled low-cycle fatigue (six alloys, 241 tests) under proportional and
+non-proportional tension--torsion, with measured stabilised hysteresis loops.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\varphi$ & rad & orientation of a plane perpendicular to the surface ($x$--$y$ plane)\\
+$\sigma_\varphi$, $\varepsilon_\varphi$, $\gamma_\varphi$ & MPa, --, -- & normal stress, normal strain, engineering shear strain on plane $\varphi$\\
+$\sigma_{\max}(\varphi)$, $\sigma_{n,\max}(\varphi)$ & MPa & maximum over the cycle of $\sigma_\varphi$\\
+$\Delta\varepsilon_{\max}(\varphi)$, $\Delta\gamma_{\max}(\varphi)$ & -- & ranges of $\varepsilon_\varphi$ and $\gamma_\varphi$\\
+$\sigma_{yt}$ & MPa & tensile yield strength\\
+$k_\varphi$ & -- & Fatemi--Socie constant of the polar sum\\
+$\nu^{el}$, $\nu^{pl}$ & -- & elastic and plastic Poisson's ratios\\
+$D(\varphi)$, $D^s$ & & plane damage and polar damage sum\\
+$\alpha$, $\beta$ & & constants of the life law\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} With $\sigma_x=0$, the plane transformations are (Eqs.~7a--7e)
+\begin{gather}
+\sigma_\varphi = \tfrac{\sigma_y}{2}+\tfrac{\sigma_y}{2}\cos2\varphi-\tau_{xy}\sin2\varphi ,\qquad
+\varepsilon_\varphi = \tfrac{\varepsilon_x+\varepsilon_y}{2}-\tfrac{\varepsilon_x-\varepsilon_y}{2}\cos2\varphi-\tfrac{\gamma_{xy}}{2}\sin2\varphi ,\\
+\tfrac{\gamma_\varphi}{2} = \tfrac{\gamma_{xy}}{2}\cos2\varphi-\tfrac{\varepsilon_x-\varepsilon_y}{2}\sin2\varphi ,\qquad
+\varepsilon_x = -(\nu^{el}\varepsilon_y^{el}+\nu^{pl}\varepsilon_y^{pl}) .
+\end{gather}
+The plane damage is the SWT (Eq.~8) or the Fatemi--Socie (Eq.~9) parameter,
+\begin{equation}
+D_{SWT}(\varphi) = \sigma_{\max}(\varphi)\,\frac{\Delta\varepsilon_{\max}(\varphi)}{2} ,\qquad
+D_{FS}(\varphi) = \frac{\Delta\gamma_{\max}(\varphi)}{2}\Bigl(1+k_\varphi\frac{\sigma_{n,\max}(\varphi)}{\sigma_{yt}}\Bigr) ,
+\end{equation}
+and the polar damage sum is the enclosed area (Eqs.~10--14),
+\begin{equation}
+D^s = \frac12\int_0^{2\pi} D(\varphi)^2\,d\varphi .
+\label{eq:pds}
+\end{equation}
+
+\block{Constants and calibration} $k_\varphi$ is varied until the $D^s$--life points of the axial
+and shear tests fall on one band (Fig.~4); $\alpha$, $\beta$ by a power fit. Table~3 reports
+$k_\varphi$ from 0.1 to 5.0.
+
+\block{Life} A power law on the polar sum, $D^s=\alpha_n N_f^{\beta_n}$ (SWT) and
+$D^s=\alpha_s N_f^{\beta_s}$ (FS), Eqs.~(17)--(19), fitted on axial and shear tests together.
+
+\block{Repository choices}
+\begin{itemize}
+\item \emph{Elastic version} (maintainer decision): the strains are the linear-elastic strains of
+  the stress (Section~\ref{sec:notation}), not measured loops; this is a high-cycle reading of a
+  low-cycle method.
+\item For one harmonic, on $\n=(\cos\psi,\sin\psi,0)$ with tangent $\mathbf t$:
+  $\sigma=\n^{\mathsf T}\Tsig\n$, $\varepsilon=\n^{\mathsf T}\Teps\n$,
+  $\gamma=2\,\mathbf t^{\mathsf T}\Teps\n$; maxima and half ranges from Eq.~\eqref{eq:scalar}.
+  The integral uses 720 equally spaced planes.
+\item $D(\varphi)$ is replaced by $\max(D(\varphi),0)$ before squaring.
+\item $k_\varphi$ (\texttt{k\_PDS}) is fitted like $k_{FS}$: minimum life scatter of the R~$=-1$
+  tension and torsion failures, $0\le k_\varphi\le10$; on fatigue-limit sets it is set so that both
+  limits give the same $D^s$. A value at the search bound is not identifiable.
+\item Life: the master curve on $D^s$, fitted on the uniaxial tests (the paper fits axial and shear
+  together).
+\item Plane stress on the surface only. An in-phase equibiaxial state has no in-plane shear, so
+  $D_{FS}=0$ and its load factor is undefined.
+\end{itemize}
+
+\block{Worked example} Steel, $E=206\,000\MPa$, $\nu=0.3$, $\sigma_{yt}=727\MPa$, $k_\varphi=1$;
+paths with the same von Mises amplitude $400\MPa$:
+\begin{center}\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Path & $D^s_{SWT}$ (MPa$^2$) & peak $D_{SWT}$ (MPa) & $D^s_{FS}$\\\midrule
+tension 400 & 0.4778 & 0.777 & $1.646\cdot10^{-5}$\\
+torsion 231 & 0.1335 & 0.337 & $1.728\cdot10^{-5}$\\
+tension 283 + torsion 163 at $90^\circ$ & 0.2124 & 0.389 & $1.862\cdot10^{-5}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+For tension the peak is $\sigma_a^2/E=0.777\MPa$, the critical-plane SWT value.
+
+\block{Verification} The paper's results rest on measured LCF loops; no per-test value is printed.
+Checked: Eqs.~(7a), (7c), (7d); the uniaxial closed form and its peak; convergence of the sum to
+Eq.~\eqref{eq:pds}.
