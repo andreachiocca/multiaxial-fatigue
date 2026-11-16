@@ -143,9 +143,9 @@ the same 42CrMo4 +QT steel (Santus: Su = 875 MPa; Reis and FABEST: about 1100 MP
 was calibrated on one batch and used to predict the tests of another:
 
 - constants from the **weaker** batch (Santus) misjudge the load of the stronger batches by
-  **+28 %**, on the safe side;
+  **+27–28 %**, on the safe side;
 - constants from a **stronger** batch predict the Santus tests **non-conservatively**
-  (−8 % from Reis, −15 % from FABEST);
+  (−10 % from Reis, −15 % from FABEST);
 - the two high-strength batches transfer well into each other (−1 % and +13 %).
 
 Without tests on the batch, a margin of about 15–25 % on the load is needed. The same analysis

@@ -98,8 +98,8 @@ def test_readme_batch_transfer_numbers_follow_the_data():
     def pct(design, target):
         return round(100 * (np.exp(s[(f"42CrMo4_{design}", f"42CrMo4_{target}")]) - 1))
 
-    assert pct("Santus", "Reis") == pct("Santus", "FABEST") == 28
-    assert "+28 %" in readme
+    lo, hi = sorted((pct("Santus", "Reis"), pct("Santus", "FABEST")))
+    assert (f"+{lo} %" if lo == hi else f"+{lo}–{hi} %") in readme
     assert f"−{-pct('Reis', 'Santus')} % from Reis" in readme
     assert f"−{-pct('FABEST', 'Santus')} % from FABEST" in readme
     assert f"(−{-pct('FABEST', 'Reis')} % and +{pct('Reis', 'FABEST')} %)" in readme
