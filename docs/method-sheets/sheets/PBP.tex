@@ -1,0 +1,81 @@
+% registry: PBP
+\methodhead{PBP}{Cristofori, Susmel and Tovo (2008): projection-by-projection criterion}\label{sheet:PBP}
+
+\block{Source} A.~Cristofori, L.~Susmel, R.~Tovo, \emph{Int.\ J.\ Fatigue} 30 (2008) 1646--1658
+\cite{cristofori2008}, Eqs.~(4)--(13), (A.3), Appendix~B.
+
+\block{Idea and scope} The deviatoric stress is written as a 5-vector whose norm squared is $J_2$. Its
+path is projected on the principal directions of its covariance matrix; each projection is cycle
+counted, and the projection amplitudes are recombined quadratically into an equivalent deviatoric
+amplitude $\Gamma$. $\Gamma$ is compared with a reference strength that is linear in the ratio of the
+hydrostatic stress to $\Gamma$. Proposed for fatigue damage under multiaxial constant and variable
+amplitude loading, proportional and non-proportional; the repository uses the constant-amplitude,
+single-harmonic, fatigue-limit form.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\fm$, $\tm$ & MPa & fully reversed axial (bending) and torsion fatigue limits\\
+$\mathbf s(t)$ & MPa & deviatoric stress 5-vector with $\lVert\mathbf s\rVert^2=J_2$ (Eq.~A.3)\\
+$\mathbf e_i$ & -- & principal directions of the covariance matrix of $\mathbf s(t)$ (Eqs.~4--5), $i=1,\dots,5$\\
+$\sqrt{J_{2a,i}}$ & MPa & amplitude of the projection $\mathbf e_i\cdot\mathbf s(t)$\\
+$\Gamma$ & MPa & equivalent deviatoric amplitude, Eq.~\eqref{eq:pbp-gamma}\\
+$\sigma_{H,a}$, $\sigma_{H,m}$ & MPa & amplitude and mean of the hydrostatic stress\\
+$\sigma_{H,\mathrm{ref}}$ & MPa & reference hydrostatic stress, $\sigma_{H,a}+\sigma_{H,m}$ (repository)\\
+$\rho_{\mathrm{ref}}$ & -- & hydrostatic stress ratio (Eq.~6)\\
+$\sqrt{J_{2A,\rho}}$ & MPa & reference fatigue strength at $\rho_{\mathrm{ref}}$ (Eq.~8)\\
+$\mathbf a$, $\mathbf b$ & MPa & sine and cosine 5-vectors of a single-harmonic deviatoric path\\
+$\mathbf A$, $\mathbf B$ & MPa & the corresponding stress tensors, $\Ss$ and $\Sc$\\
+$k_\rho$ & -- & slope parameter of the paper's finite-life Eqs.~(9)--(11) (not implemented)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Combining the projection amplitudes gives (Eqs.~12--13)
+\begin{equation}
+\Gamma = \sqrt{\sum_{i=1}^{5}\Bigl(\sqrt{J_{2a,i}}\Bigr)^2} ,
+\label{eq:pbp-gamma}
+\end{equation}
+with the hydrostatic stress ratio (Eq.~6) and the reference fatigue strength (Eq.~8)
+\begin{equation}
+\rho_{\mathrm{ref}} = \frac{\sqrt3\,\sigma_{H,\mathrm{ref}}}{\Gamma} , \qquad
+\sqrt{J_{2A,\rho}} = \tm + \rho_{\mathrm{ref}}\Bigl(\frac{\fm}{\sqrt3} - \tm\Bigr) .
+\label{eq:pbp-ref}
+\end{equation}
+Fully reversed axial loading gives $\rho_{\mathrm{ref}}=1$ and $\sqrt{J_{2A,1}}=\fm/\sqrt3$; fully
+reversed torsion gives $\rho_{\mathrm{ref}}=0$ and $\sqrt{J_{2A,0}}=\tm$. The repository returns the
+index $\mathrm{DP}=\Gamma/\sqrt{J_{2A,\rho}}$, equal to 1 at both limits.
+
+\block{Constants and calibration} Paper and repository: no fitted constant at the fatigue limit;
+Eq.~\eqref{eq:pbp-ref} uses $\fm$ and $\tm$ only. There are no optional constants. Only the
+master-curve constants are fitted.
+
+\block{Life} No native life law in the repository: the paper's finite-life Eqs.~(9)--(11) with $k_\rho$
+are not implemented. The index is the damage parameter of the shared master curve
+(Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item Constant-amplitude single harmonic: for $\mathbf s(t)=\mathbf a\sin\omega t+\mathbf b\cos\omega t$,
+  every orthonormal projection has one harmonic cycle of amplitude
+  $\sqrt{(\mathbf e_i\cdot\mathbf a)^2+(\mathbf e_i\cdot\mathbf b)^2}$, so
+  $\Gamma^2=J_2(\mathbf A)+J_2(\mathbf B)$ in any basis, without the covariance eigendecomposition. This
+  $\Gamma$ is the $\sqrt{J_{2,a}}$ of Eq.~\eqref{eq:invariants}.
+\item $\sigma_{H,\mathrm{ref}}=\sigma_{H,a}+\sigma_{H,m}$.
+\item The $\sqrt3$ of Eq.~(6) is kept (Eq.~B.5 omits it), so reversed axial loading gives
+  $\rho_{\mathrm{ref}}=1$.
+\item The index is 0 when $\Gamma=0$ and $\infty$ when $\sqrt{J_{2A,\rho}}\le0$.
+\end{itemize}
+
+\block{Worked example} Steel with $\fm=313.9$, $\tm=196.2\MPa$; bending $\sigma_a=200\MPa$ and torsion
+$\tau_a=120\MPa$: index $0.8962$ both in phase and at $90^\circ$ (no phase effect for one harmonic).
+
+\block{Verification} The paper prints only W\"ohler constants (Table~1) and figures, so no table is
+reproduced. Checked: the 5-vector norm identity $\lVert\mathbf s\rVert^2=J_2$; the covariance-projection
+procedure on an 8000-point sampled path against the closed form $\Gamma$; the calibration of
+Eqs.~(6)--(8) (index~1 at both limits); phase-shift invariance in bending--torsion (the closed form
+Eq.~B.9 has no phase either); the mean-stress dependence through $\rho_{\mathrm{ref}}$. Source issues
+noted: the cross-term sign of Eq.~(2); Eqs.~(4)--(5) without $1/T$ (irrelevant to the eigenbasis); the
+missing $\sqrt3$ of Eq.~(B.5); $N_A$ undefined (life part not implemented).

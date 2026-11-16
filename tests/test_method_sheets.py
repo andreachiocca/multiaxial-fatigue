@@ -12,13 +12,7 @@ SHEETS_DIR = ROOT / "docs" / "method-sheets"
 
 # Registered models whose sheet is still to be written. This list may only shrink:
 # a new method must arrive with its sheet.
-PENDING = {
-    "BP", "CAIM", "COIN", "CROSSLAND", "DANGVAN", "EK", "FIN", "FS", "GAM", "GOLOS", "GSA",
-    "GSE", "KUJAWSKI2021", "LI", "LIU2021", "LIU2025", "LIUMAHADEVAN", "MATAKE", "MCD", "MDC",
-    "MGSE_YU", "MGSE_ZHU", "MKBM", "MMCCM", "MMMH", "MMP", "MOREL", "MSWT", "MWCM", "MWHS",
-    "NINIC", "OTT", "PAPADOPOULOS", "PBP", "PCR", "PI", "RFB", "SINES", "SSF", "SWT", "SWTD",
-    "TVEIT2025", "VHN", "VSE", "WANG2022", "ZHANGYAO",
-}  # fmt: skip
+PENDING: set[str] = set()
 
 BLOCKS = (
     "Source",
