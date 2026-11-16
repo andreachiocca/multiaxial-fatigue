@@ -1,0 +1,90 @@
+% registry: MKBM
+\methodhead{MKBM}{Li, Zhang, Sun and Li (2011): modified Kandil--Brown--Miller parameter}\label{sheet:MKBM}
+
+\block{Source} J.~Li, Z.~Zhang, Q.~Sun, C.~Li, \emph{Int.\ J.\ Fatigue} 33 (2011) 90--101
+\cite{li2011}, Eqs.~(7)--(8), (13), (15)--(16), (19), (27).
+
+\block{Idea and scope} Strain-based critical-plane criterion. The Kandil--Brown--Miller parameter
+combines the maximum shear strain and the normal strain on the same plane. Li et al.\ multiply the
+normal-strain term by $1+\sigma_{n,\max}/\sigma_y$, so that the additional hardening and the crack
+opening produced by non-proportional loading also enter the parameter. Proposed for low-cycle
+multiaxial fatigue of steels, aluminium and titanium alloys under proportional and out-of-phase
+tension--torsion.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\Delta\gamma_{\max}$, $\Delta\gamma$ & -- & engineering shear strain range: maximum over the planes (paper); on a candidate plane (repository)\\
+$\gamma_a=\Delta\gamma/2$ & -- & engineering shear strain amplitude on the plane\\
+$\Delta\varepsilon_n$, $\varepsilon_{n,a}$ & -- & normal strain range and amplitude $\Delta\varepsilon_n/2$ on the plane\\
+$\sigma_{n,\max}$ & MPa & maximum normal stress on the plane over the cycle\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane\\
+$\sigma_y$, $S_y$ & MPa & yield strength (paper); workbook monotonic yield strength (repository)\\
+$E$, $\nu$ & MPa, -- & Young's modulus and Poisson's ratio (elastic strains)\\
+$\Delta\varepsilon^*_{eq}/2$ & -- & equivalent strain amplitude, Eq.~\eqref{eq:mkbm-main}\\
+$\sigma_a$, $\tau_a$ & MPa & axial and torsional stress amplitudes of the worked example\\
+$\mathrm{DP}$ & -- & damage parameter, Eq.~\eqref{eq:mkbm-dp}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the plane of maximum shear strain range (Eq.~27),
+\begin{equation}
+\frac{\Delta\varepsilon^*_{eq}}{2}=\frac{\Delta\gamma_{\max}}{2}
++\left(1+\frac{\sigma_{n,\max}}{\sigma_y}\right)\frac{\Delta\varepsilon_n}{2} .
+\label{eq:mkbm-main}
+\end{equation}
+For general paths the shear range is the longest chord of the shear-strain path on the plane
+(Eq.~19). The repository evaluates on every candidate plane
+\begin{equation}
+\mathrm{DP}=\gamma_a+\left(1+\frac{\sigma_{n,\max}}{S_y}\right)\varepsilon_{n,a},\qquad
+\sigma_{n,\max}=\max(\sigma_{n,m}+\sigma_{n,a},\,0).
+\label{eq:mkbm-dp}
+\end{equation}
+\texttt{MKBM} takes the plane of largest $\Delta\gamma$ (the source's rule; among tied planes the
+larger DP); \texttt{MKBM\_ext} the largest DP over all planes (Section~\ref{sec:planes}). With
+elastic strains and no mean stress, reversed tension on the $45^\circ$ plane and reversed torsion
+give
+\begin{equation}
+\mathrm{DP}_\text{ten}=(1+\nu)\frac{\sigma_a}{E}+\Bigl(1+\frac{\sigma_a}{2S_y}\Bigr)\frac{(1-\nu)\sigma_a}{2E},\qquad
+\mathrm{DP}_\text{tor}=\frac{2(1+\nu)\tau_a}{E} ,
+\label{eq:mkbm-limits}
+\end{equation}
+so the implied ratio of the torsion and tension limits depends on $\sigma_a/S_y$.
+
+\block{Constants and calibration} No criterion-specific constant. In the paper the strain--life
+constants of the material give the life; in the repository only the master-curve constants $A$,
+$b$ are fitted on the uniaxial $R=-1$ design tests.
+
+\block{Life} The paper relates $\Delta\varepsilon^*_{eq}/2$ to life through the uniaxial
+strain--life curve. The repository uses the master curve on DP (Section~\ref{sec:mastercurve}). DP
+is not homogeneous in the load, so the load-equivalent error (Eq.~\eqref{eq:eload}) is the
+scale-free comparison metric.
+
+\block{Repository choices}
+\begin{itemize}
+\item $\sigma_{n,\max}<0$ is clipped to 0, so compression never lowers the factor below 1.
+\item The workbook monotonic yield strength $S_y$ replaces $\sigma_y$.
+\item Strains are linear-elastic from $E$ and $\nu$; the cyclic plasticity and additional hardening
+  that motivate the correction are not simulated.
+\item Out-of-phase shear range: longest chord of the shear-strain path
+  (\texttt{np\_shear\_rule = "longest\_chord"}), as in Eq.~(19).
+\item Life from the master curve instead of the strain--life curve.
+\item \texttt{MKBM\_ext} is a repository variant.
+\end{itemize}
+
+\block{Worked example} Synthetic material (not experimental data): $E=200$\,GPa, $\nu=0.3$,
+$S_y=400\MPa$. Reversed tension $\sigma_a=300\MPa$: MKBM $=0.002672$ (\texttt{MKBM\_ext}
+$0.003372$, on a plane closer to the load axis); reversed torsion $\tau_a=200\MPa$: $0.002600$; both
+equal Eq.~\eqref{eq:mkbm-limits}. Equal DP gives $\tm/\fm=0.685$ for $\fm=300\MPa$. At $90^\circ$
+out of phase with $\sigma_a=200$, $\tau_a=100\MPa$: $0.002800$ for both variants. Every plane
+containing the radial direction has the same shear range; the tie goes to the plane normal to the
+axis, where $\varepsilon_{n,a}=\sigma_a/E$ and $\sigma_{n,\max}=\sigma_a$.
+
+\block{Verification} Checked: the thin-walled tube plane strains, Eqs.~(7)--(8), at every instant;
+the harmonic evaluator against Eqs.~(15)--(16); the critical-plane angle of Eq.~(13); the
+normal-stress factor of Eq.~\eqref{eq:mkbm-main}, with the clipping of compression; the
+longest-chord shear range of Eq.~(19). The paper swaps the mean-strain terms of Eqs.~(9) and (10);
+Eqs.~(15)--(16) are consistent with Eqs.~(7)--(8). Not reproduced: the experimental lives.

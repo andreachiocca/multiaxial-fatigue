@@ -1,0 +1,98 @@
+% registry: FS
+\methodhead{FS}{Fatemi and Socie (1988): critical plane approach including out-of-phase loading}\label{sheet:FS}
+
+\block{Source} A.~Fatemi, D.~F.~Socie, \emph{Fatigue Fract.\ Eng.\ Mater.\ Struct.} 11 (1988)
+149--165 \cite{fatemi1988}, Eqs.~(8)--(10).
+
+\block{Idea and scope} Strain-based critical-plane criterion. Cracks nucleate and grow on the
+planes of maximum shear strain; a tensile normal stress on those planes opens the crack faces,
+reduces the friction between them and accelerates growth. Proposed for low- and high-cycle fatigue
+of ductile metals that fail by shear cracking, including out-of-phase loading with additional
+(non-proportional) hardening.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\Delta\gamma_{\max}/2$ & -- & maximum engineering shear strain amplitude over the planes\\
+$\gamma_a$ & -- & engineering shear strain amplitude on a candidate plane (repository)\\
+$\sigma_n^{\max}$, $\sigma_{n,\max}$ & MPa & largest normal stress over the cycle on that plane\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane\\
+$\sigma_y$, $S_y$ & MPa & (cyclic) yield strength in the paper; workbook monotonic yield strength in the repository\\
+$n=k_\mathrm{FS}$ & -- & normal-stress sensitivity, material constant\\
+$E$, $\nu$ & MPa, -- & Young's modulus and Poisson's ratio (elastic strains)\\
+$\nu_e$, $\nu_p$ & -- & elastic and plastic Poisson's ratios of Eq.~\eqref{eq:fs-life}\\
+$\sigma_f'$, $b$, $\varepsilon_f'$, $c$ & MPa, --, --, -- & axial strain--life constants\\
+$N_f$ & cycles & life\\
+$\fm$, $\tm$ & MPa & fully reversed axial and torsion limits (fatigue-limit calibration)\\
+$\theta$ & rad & angle between a plane normal and the load axis (uniaxial example)\\
+$\mathrm{DP}$ & -- & damage parameter, Eq.~\eqref{eq:fs-dp}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the plane of maximum shear strain amplitude (Eq.~8),
+\begin{equation}
+\frac{\Delta\gamma_{\max}}{2}\left(1+n\,\frac{\sigma_n^{\max}}{\sigma_y}\right)=\text{constant} .
+\label{eq:fs-main}
+\end{equation}
+With the uniaxial strain--life curve the paper obtains (Eq.~9)
+\begin{equation}
+\frac{\Delta\gamma_{\max}}{2}\left(1+n\frac{\sigma_n^{\max}}{\sigma_y}\right)
+=(1+\nu_e)\frac{\sigma_f'}{E}(2N_f)^b+\frac n2(1+\nu_e)\frac{\sigma_f'^2}{E\,\sigma_y}(2N_f)^{2b}
++(1+\nu_p)\,\varepsilon_f'(2N_f)^c+\frac n2(1+\nu_p)\frac{\varepsilon_f'\sigma_f'}{\sigma_y}(2N_f)^{b+c} ,
+\label{eq:fs-life}
+\end{equation}
+whose coefficients become those of Eq.~(10) with $n=0.6$, $\nu_e=0.29$, $\nu_p=0.5$. The repository
+evaluates on every candidate plane
+\begin{equation}
+\mathrm{DP}=\gamma_a\left(1+k_\mathrm{FS}\,\frac{\sigma_{n,\max}}{S_y}\right),\qquad
+\sigma_{n,\max}=\max(\sigma_{n,m}+\sigma_{n,a},\,0),
+\label{eq:fs-dp}
+\end{equation}
+where $\gamma_a$ is the norm of the range of the tensorial shear strain on the plane, which equals
+the engineering shear amplitude ($\gamma=2\varepsilon$), so no factor 2 is applied. \texttt{FS}
+takes the plane of largest $\gamma_a$ (the source's plane rule; among tied planes the larger DP);
+\texttt{FS\_ext} takes the largest DP over all planes (Section~\ref{sec:planes}).
+
+\block{Constants and calibration} In the paper, $n$ is chosen so that uniaxial and torsional data
+collapse on the FS parameter, i.e.\ by equating Eq.~\eqref{eq:fs-life} with the torsional
+strain--life curve at the lives of interest. In the repository $k_\mathrm{FS}$ comes from the
+workbook, from \texttt{--constants}, or from the pipeline: $k_\mathrm{FS}\in[0,3]$ minimises the
+standard deviation of $\ln N_f$ of the $R=-1$ tension and torsion failures about one master curve
+(one constant for all lives). These failures become design rows. The FS plane does not depend on
+$k_\mathrm{FS}$, because it is chosen by $\gamma_a$. On fatigue-limit datasets $k_\mathrm{FS}$
+equalises the DP of the reversed tension and torsion limits; with elastic strains,
+$k_\mathrm{FS}=2\,(2\tm/\fm-1)\,S_y/\fm$.
+
+\block{Life} The paper uses Eq.~\eqref{eq:fs-life}. The repository uses the master curve on DP
+(Section~\ref{sec:mastercurve}) instead.
+
+\block{Repository choices}
+\begin{itemize}
+\item $\sigma_{n,\max}<0$ is clipped to 0, so compression never lowers DP.
+\item The workbook monotonic yield strength $S_y$ replaces the cyclic yield strength.
+\item Strains are linear-elastic from $E$ and $\nu$; cyclic plasticity and non-proportional
+  hardening, a key motivation of the original model, are not modelled. In the high-cycle regime of
+  the supplied datasets $\gamma_a=\tau_a/G$.
+\item Out-of-phase loading: $\gamma_a$ is half the longest chord of the shear-strain ellipse
+  (\texttt{np\_shear\_rule = "longest\_chord"}), the maximum shear range on the plane over the
+  cycle, as the source defines it.
+\item $k_\mathrm{FS}$ is calibrated as above and assumed independent of life.
+\item \texttt{FS\_ext} is a repository variant. Closed forms for this maximum under proportional
+  elastic loading exist (Chiocca et al., 2024); the repository uses the numerical plane search.
+\end{itemize}
+
+\block{Worked example} Synthetic material (not experimental data): $E=200$\,GPa, $\nu=0.3$,
+$S_y=400$, $\fm=300$, $\tm=200\MPa$. Equal DP at the two limits gives $k_\mathrm{FS}=0.8889$. Then
+FS at the limits: tension 0.002600, torsion 0.002600. \texttt{FS\_ext} in tension: 0.002676 on the
+plane at $38.5^\circ$ from the axis, where
+$\mathrm{DP}(\theta)=(1+\nu)\frac{\sigma_a}{E}\sin2\theta\,(1+k_\mathrm{FS}\,\sigma_a\cos^2\theta/S_y)$
+is largest. Tension with $\sigma_m=100$, $\sigma_a=250\MPa$: FS $=0.002257$, equal to the closed form
+$(1+\nu)\frac{\sigma_a}{E}\bigl(1+k_\mathrm{FS}\frac{\sigma_m+\sigma_a}{2S_y}\bigr)$.
+
+\block{Verification} Checked: the Eq.~(10) coefficients from Eq.~\eqref{eq:fs-life}; uniaxial
+tension with mean stress (45$^\circ$ plane, $\gamma_a=(1+\nu)\varepsilon_a$,
+$\sigma_n^{\max}=\sigma_{\max}/2$); engineering shear in pure torsion; the longest-chord shear range
+out of phase. Not reproduced: the experimental data of the paper.

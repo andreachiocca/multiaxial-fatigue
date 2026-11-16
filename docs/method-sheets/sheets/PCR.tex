@@ -1,0 +1,85 @@
+% registry: PCR
+\methodhead{PCR}{Papuga and R\r{u}\v{z}i\v{c}ka (2008): critical-plane criterion PCr}\label{sheet:PCR}
+
+\block{Source} J.~Papuga, M.~R\r{u}\v{z}i\v{c}ka, \emph{Int.\ J.\ Fatigue} 30 (2008) 58--66
+\cite{papuga2008}, Eqs.~(1), (5), (17); Appendix~B.
+
+\block{Idea and scope} On each plane, a quadratic combination of the shear amplitude and a linear term
+in the normal stress amplitude and mean; the critical plane maximises it. The coefficients are chosen
+so that both fully reversed limits are met exactly, with two branches in $\kappa=\fm/\tm$. Proposed
+for the high-cycle fatigue limit of metals under in-phase and out-of-phase loading with mean stresses.
+(The paper also proposes the integral criterion PI, a separate registry entry.)
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\n$ & -- & unit normal of the material plane\\
+$C_a$ & MPa & shear stress amplitude on the plane: radius of the smallest circle enclosing the shear path (p.~4)\\
+$N_a$, $N_m$ & MPa & normal stress amplitude and mean on the plane\\
+$\fm$, $\tm$ & MPa & fully reversed axial and torsion fatigue limits\\
+$f_0$ & MPa & repeated ($R=0$) axial fatigue limit, as a maximum stress (workbook \texttt{Sig0})\\
+$S_u$ & MPa & ultimate tensile strength, used only to estimate $f_0$\\
+$\kappa=\fm/\tm$ & -- & limit ratio\\
+$a_c$ & -- & weight of the shear term, Eq.~\eqref{eq:pcr-coef}\\
+$b_c$ & MPa & weight of the normal stress term, Eq.~\eqref{eq:pcr-coef}\\
+$\mathrm{DP}$ & -- & repository index, LHS$/\fm$, equal to 1 on the limit\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The criterion (Eq.~17) is
+\begin{equation}
+\max_{\n}\sqrt{a_c\,C_a^2 + b_c\Bigl(N_a + \frac{\tm}{f_0}\,N_m\Bigr)} \le \fm ,
+\label{eq:pcr}
+\end{equation}
+with the coefficients of Appendix~B
+\begin{equation}
+\begin{aligned}
+\kappa<\sqrt{4/3}:&\quad a_c=\tfrac12\bigl(\kappa^2+\sqrt{\kappa^4-\kappa^2}\bigr),\quad b_c=\fm;\\
+\kappa\ge\sqrt{4/3}:&\quad a_c=\Bigl(\frac{4\kappa^2}{4+\kappa^2}\Bigr)^2,\quad
+b_c=\frac{8\fm\kappa^2(4-\kappa^2)}{(4+\kappa^2)^2}.
+\end{aligned}
+\label{eq:pcr-coef}
+\end{equation}
+The two branches meet at $\kappa=\sqrt{4/3}$. In the paper $f_0$ comes from Morrow's formula (Eq.~1).
+Eq.~(A.17) prints $\sin2\varphi_t$ as the common factor of Eq.~(A.16), which factors as $\sin2\psi_t$
+(misprint). The repository returns $\mathrm{DP}=\mathrm{LHS}/\fm$; the paper's fatigue index error
+(Eq.~5) is $100\,(\mathrm{DP}-1)$. \emph{Critical plane}: the maximum of Eq.~\eqref{eq:pcr} over a
+$24\times48$ sphere grid of normals, refined by pattern search; the maximum value is unique, so no tie rule is
+needed. \emph{Shear amplitude}: the minimum circumscribed circle of the source (MCC, the major
+semi-axis for one harmonic). The model is case-level and its amplitude is fixed by its definition:
+the global selection of \texttt{docs/shear-amplitude.md} leaves it unchanged.
+
+\block{Constants and calibration} Paper: closed-form $a_c$, $b_c$ from $\fm$, $\tm$ (Appendix~B); $f_0$
+from Morrow's formula. Repository: the same closed forms from workbook \texttt{Sigm1}, \texttt{Taum1};
+$f_0$ is \texttt{Sig0}, else estimated from \texttt{Su} by Eq.~(1) of B\"ohme et al.\ (2026), as for
+BP: $f_0=4\fm S_u/(\fm+2S_u)$. Nothing is fitted except the master-curve constants on the uniaxial
+$R=-1$ design tests.
+
+\block{Life} The paper gives none; finite lives use the master curve on the index
+(Section~\ref{sec:mastercurve}), a repository extension. On fatigue-limit datasets the index error is
+$\mathrm{DP}-1$ (Eq.~5).
+
+\block{Repository choices}
+\begin{itemize}
+\item A negative radicand (compressive mean normal stress) is clipped to 0.
+\item $f_0$: workbook \texttt{Sig0}, else the B\"ohme et al.\ (2026) Eq.~(1) estimate from $S_u$, not
+  Morrow's formula.
+\item The maximum over planes is numerical: a $24\times48$ sphere grid refined by pattern search.
+\item Life: the index is the DP of the shared master curve. No \texttt{\_ext} variant.
+\end{itemize}
+
+\block{Worked example} Synthetic material, $\fm=300$, $\tm=187.5\MPa$ ($\kappa=1.6$, second branch),
+$f_0=450\MPa$: $a_c=2.4366$, $b_c=205.59\MPa$, and both reversed limits give index 1. For tension
+$\sigma_a=200$ with mean $\sigma_m=100\MPa$, a plane at $\theta$ from the load axis has
+$C_a=\sigma_a\sin\theta\cos\theta$, $N_a=\sigma_a\cos^2\theta$, $N_m=\sigma_m\cos^2\theta$; the
+maximum over $x=\cos^2\theta$ of $a_c\sigma_a^2x(1-x)+b_c(\sigma_a+\tm\sigma_m/f_0)x$, checked against a
+fine sweep, gives index 0.7856.
+
+\block{Verification} Appendix~B calibration in both branches, continuity at $\kappa=\sqrt{4/3}$,
+rotation invariance, the plane maximum against a dense sweep for out-of-phase loading, and the $f_0$
+fallback. The paper prints no per-test values. On the 43 Papadopoulos et al.\ \cite{papadopoulos1997}
+tests, PI/PCr give mean $-0.4/+1.2\%$ and standard deviation $5.0/4.7\%$, close to the paper's Table~2
+(an agreement of statistics, not a per-test reproduction).

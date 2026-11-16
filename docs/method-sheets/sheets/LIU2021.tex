@@ -1,0 +1,93 @@
+% registry: LIU2021
+\methodhead{LIU2021}{Liu, Ran, Wei and Zhang (2021): modified shear strain amplitude with material sensitivity}\label{sheet:LIU2021}
+
+\block{Source} Liu, Ran, Wei, Zhang, \emph{Int.\ J.\ Press.\ Vessels Pip.} 194 (2021) 104532
+\cite{liu2021}, Eqs.~(18), (19), (23), (27); Table~2.
+
+\block{Idea and scope} Strain-based critical-plane criterion of the TNP family. The maximum
+engineering shear strain amplitude is modified by a normal-stress and normal-strain interaction
+term scaled by $G$ and the shear fatigue strength coefficient $\tau_f'$, which replaces the
+empirical fitting constant of earlier models by material constants. The mean stress enters through
+the tensile peak normal stress. Proposed for multiaxial fatigue life prediction of metals under
+proportional and non-proportional loading.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\Delta\gamma_{\max}$, $\Delta\gamma$ & -- & engineering shear strain range: maximum over the planes (paper); on a candidate plane (repository)\\
+$\Delta\varepsilon$, $\Delta\varepsilon_n$ & -- & unsubscripted strain range printed in Eqs.~(23), (27); read as the normal strain range on the plane\\
+$\varepsilon_{xz}$, $\varepsilon_{yz}$, $\varepsilon_{zz}$ & -- & tensorial strain components in the plane frame ($z$ = plane normal)\\
+$\sigma_{n,\max}$ & MPa & maximum normal stress on the plane over the cycle\\
+$\sigma_{zz,0}$, $\sigma_{zz,1}$ & MPa & normal stress on the plane at the two load steps\\
+$E$, $\nu$, $G$ & MPa, --, MPa & Young's modulus, Poisson's ratio, $G=E/[2(1+\nu)]$ (Eq.~18)\\
+$\tau_f'$, $\sigma_f'$ & MPa & shear and axial fatigue strength coefficients\\
+$S_u$ & MPa & ultimate tensile strength (fallback for $\tau_f'$)\\
+$k'$ & -- & material sensitivity factor, Eq.~\eqref{eq:liu21-k}\\
+$\gamma^*_{\max}/2$ & -- & modified shear strain amplitude, Eq.~\eqref{eq:liu21-main}\\
+$\sigma_a$, $\tau_a$ & MPa & axial and torsional stress amplitudes of the worked example\\
+$\mathrm{DP}$ & -- & damage parameter, Eq.~\eqref{eq:liu21-dp}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} With the material sensitivity factor (Eq.~23) in Eq.~(19),
+\begin{equation}
+k'=\frac{\sqrt{\sigma_{n,\max}\,E\,\Delta\varepsilon}}{2\,G\,\Delta\gamma_{\max}},\qquad
+\frac{\gamma^*_{\max}}{2}=\frac{\Delta\gamma_{\max}}{2}\left(1+k'\,\frac{\sigma_{n,\max}}{\tau_f'}\right),
+\label{eq:liu21-k}
+\end{equation}
+the modified shear strain amplitude on the maximum shear strain plane is (Eq.~27)
+\begin{equation}
+\frac{\gamma^*_{\max}}{2}=\frac{\Delta\gamma_{\max}}{2}
+\left(1+\frac{\sigma_{n,\max}\sqrt{\sigma_{n,\max}\,E\,\Delta\varepsilon}}{2\,G\,\Delta\gamma_{\max}\,\tau_f'}\right).
+\label{eq:liu21-main}
+\end{equation}
+The repository evaluates the expanded product on every candidate plane:
+\begin{equation}
+\mathrm{DP}=\frac{\Delta\gamma}{2}+\frac{\sigma_{n,\max}\sqrt{\max(\sigma_{n,\max}\,E\,\Delta\varepsilon_n,\,0)}}{4\,G\,\tau_f'},
+\label{eq:liu21-dp}
+\end{equation}
+with $\Delta\gamma=2\lVert(\Delta\varepsilon_{xz},\Delta\varepsilon_{yz})\rVert$,
+$\Delta\varepsilon_n=\lvert\Delta\varepsilon_{zz}\rvert$ and
+$\sigma_{n,\max}=\max(\sigma_{zz,0},\sigma_{zz,1},0)$. \texttt{LIU2021} takes the plane of largest
+$\Delta\gamma$ (ties to the larger DP); \texttt{LIU2021\_ext} the largest DP over all planes
+(Section~\ref{sec:planes}).
+
+\block{Constants and calibration} No fitted criterion constant. In the paper $\tau_f'$ comes from
+the torsional fatigue properties, or from $\sigma_f'/\sqrt3$ (Eq.~18). In the repository $\tau_f'$
+is the workbook or \texttt{--constants} value; otherwise it is estimated from $S_u$ (see Repository
+choices). The master-curve constants $A$, $b$ are fitted on the uniaxial $R=-1$ design tests.
+
+\block{Life} The paper maps $\gamma^*_{\max}/2$ through the torsional strain--life curve. The
+repository uses the master curve on DP (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item The unsubscripted $\Delta\varepsilon$ of Eqs.~(23) and (27) is read as the normal strain range
+  $\Delta\varepsilon_n$ on the candidate plane (unresolved interpretation).
+\item Expanding the outer $\Delta\gamma_{\max}/2$, Eq.~\eqref{eq:liu21-dp}, keeps DP finite when
+  $\Delta\gamma=0$.
+\item $\sigma_{n,\max}<0$ is clipped to 0.
+\item $\tau_f'$ is optional; when missing, the uniform material law $\sigma_f'=1.5\,S_u$ and von
+  Mises $\tau_f'=\sigma_f'/\sqrt3$ give it, with a warning. Fitted Basquin constants of the
+  pipeline are not passed to this model, so the documented fallback is kept.
+\item Out-of-phase shear range: longest chord (\texttt{np\_shear\_rule = "longest\_chord"}).
+\item Linear-elastic strains; life from the master curve. \texttt{LIU2021\_ext} is a repository
+  variant.
+\end{itemize}
+
+\block{Worked example} GH4169 constants of Table~2: $E=182$\,GPa, $\nu=0.325$, $S_u=1400\MPa$,
+$\tau_f'=1565.2/\sqrt3\MPa$, with linear-elastic strains (a demonstration, not a life validation).
+Reversed tension $\sigma_a=400\MPa$ on the $45^\circ$ plane
+($\Delta\gamma=2(1+\nu)\sigma_a/E$, $\Delta\varepsilon_n=(1-\nu)\sigma_a/E$,
+$\sigma_{n,\max}=\sigma_a/2$): DP $=0.003099$ (\texttt{LIU2021\_ext} $0.003144$). Reversed torsion
+$\tau_a=250\MPa$: $\sigma_{n,\max}=0$, DP $=\tau_a/G=0.003640$.
+
+\block{Verification} Checked: Eq.~\eqref{eq:liu21-main} equals Eq.~(19) with $k'$ of Eq.~(23); the
+zero normal-stress and the removable zero-shear limits; the $\tau_f'$ fallback warning; the
+closed-form plane value. Paper inconsistencies recorded but not used by the code: Eq.~(3) prints
+$\tfrac{\tau_{xy}}{2}\sin2\theta$ (the standard transform has $\tau_{xy}\sin2\theta$); Eq.~(6)
+writes the range $\Delta\gamma$ with the loading amplitude $\varepsilon_a$ in front, half of
+Li et al.\ (2011) Eq.~(15). Not reproduced: the experimental lives of the paper.

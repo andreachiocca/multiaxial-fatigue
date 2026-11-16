@@ -1,0 +1,101 @@
+% registry: NINIC
+\methodhead{NINIC}{Nini\'c (2006): stress-based multiaxial damage function}\label{sheet:NINIC}
+
+\block{Source} D.~Nini\'c, \emph{Int.\ J.\ Fatigue} 28 (2006) 103--113 \cite{ninic2006}, Eqs.~(1)--(4),
+(14); Tables~1--5.
+
+\block{Idea and scope} On every plane, the shear stress amplitude and the maximum normal stress are
+each normalised by the corresponding endurance limit and combined as a vector sum. The plane of
+maximum damage is the critical plane, searched in three dimensions, so planes tilted into the surface
+are included. Proposed for high-cycle fatigue limits of metals from brittle to ductile (mild and hard
+steel, cast iron, aluminium alloy) under in-phase and out-of-phase bending--torsion.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$(l,m,n)$ & -- & direction cosines of the plane normal\\
+$\tau_a$ & MPa & shear stress amplitude on the plane\\
+$\sigma_{n,\max}$ & MPa & maximum normal stress on the plane over the cycle, $\sigma_{n,m}+\sigma_{n,a}$\\
+$a\ge b$ & MPa & semi-axes of the elliptical shear path of an out-of-phase cycle\\
+$S_e=\fm$, $T_e=\tm$ & MPa & fully reversed tension (bending) and torsion endurance limits\\
+$S_N$, $T_N$ & MPa & fatigue strengths at a finite life (paper's suggestion, not implemented)\\
+$k$ & -- & normal stress sensitivity factor, Eq.~\eqref{eq:nin-k} (workbook \texttt{k\_NIN} optional)\\
+$D$ & -- & damage function, Eq.~\eqref{eq:nin}; the repository DP\\
+$I$ & \% & error index, $I=100\,(D-1)$ (Eq.~14)\\
+$\theta$, $c=\cos^2\theta$ & rad, -- & angle between the plane normal and a uniaxial load, and its squared cosine\\
+$S$ & MPa & amplitude of a fully reversed uniaxial stress\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The damage function on the plane $(l,m,n)$ and the criterion (Eqs.~1--3) are
+\begin{equation}
+D(l,m,n) = \left[\Bigl(\frac{\tau_a(l,m,n)}{T_e}\Bigr)^2 + k\Bigl(\frac{\sigma_{n,\max}(l,m,n)}{S_e}\Bigr)^2\right]^{1/2},
+\qquad \max_{l,m,n} D \le 1 ,
+\label{eq:nin}
+\end{equation}
+with $k$ obtained by maximising $D$ for uniaxial loading (Eq.~4):
+\begin{equation}
+k = \Bigl(\frac{S_e}{T_e}\Bigr)^2\left[1-\Bigl(\frac{S_e}{2T_e}\Bigr)^2\right] .
+\label{eq:nin-k}
+\end{equation}
+For fully reversed uniaxial $S$ on a plane with $c=\cos^2\theta$,
+$D^2 = (S/T_e)^2 c(1-c) + k(S/S_e)^2c^2$; with Eq.~\eqref{eq:nin-k} the maximum lies at
+$c^*=2(T_e/S_e)^2$, where $D(S_e)=1$. This holds only for $c^*\le1$, i.e.\ $S_e/T_e\ge\sqrt2$; for
+$S_e/T_e<\sqrt2$ the maximum moves to the principal plane and the uniaxial limit gives
+$D=\sqrt k<1$ (the paper's cast-iron row 4-5, $I=-10.4\%$). In torsion the plane of $\tau_a=T_e$
+carries no normal stress, so $D=1$ for any $k$. The repository evaluates on every plane
+\begin{equation}
+\mathrm{DP} = \sqrt{\Bigl(\frac{\tau_a}{\tm}\Bigr)^2 + k\Bigl(\frac{\max(\sigma_{n,\max},0)}{\fm}\Bigr)^2} .
+\label{eq:nin-dp}
+\end{equation}
+\emph{Critical plane}: the plane of maximum DP (DP is both damage and metric, so the \texttt{\_ext}
+value equals the standard one); ties go to the larger damage. \emph{Shear amplitude}: default
+\texttt{rss}, $\tau_a=\sqrt{a^2+b^2}$ (MCE); the global selection of \texttt{docs/shear-amplitude.md}
+can switch it to the longest chord (MCC, $\tau_a=a$).
+
+\block{Constants and calibration} Paper: $k$ from Eq.~\eqref{eq:nin-k}, so that the uniaxial limit
+gives $\max D=1$. Repository: the same from workbook \texttt{Sigm1}, \texttt{Taum1}, unless the
+Summary supplies \texttt{k\_NIN}; a warning is issued for $S_e/T_e<\sqrt2$. In that range $k=1$ would
+put both limits on $D=1$ and joins Eq.~\eqref{eq:nin-k} continuously at $S_e/T_e=\sqrt2$; this is a
+suggestion of the guide, not the source's rule, and can be supplied as \texttt{k\_NIN}. Nothing else
+is fitted except the master-curve constants on the uniaxial $R=-1$ design tests.
+
+\block{Life} Paper: for finite lives, replace $S_e$ and $T_e$ by $S_N$ and $T_N$ at the life of
+interest. Repository: the master curve on the index (Section~\ref{sec:mastercurve}), an extension of
+the endurance criterion, not the $S_N$, $T_N$ substitution. On fatigue-limit datasets
+$\mathrm{DP}-1$ is $I/100$.
+
+\block{Repository choices}
+\begin{itemize}
+\item Out-of-phase shear amplitude: \texttt{rss}. The paper does not define $\tau_a$ for
+  non-proportional paths; \texttt{rss} reproduces Tables~2--4, the longest chord misses rows 2-9 and
+  2-10 by 1.7--1.9 points.
+\item Compression clipped: $\sigma_{n,\max}<0$ is set to 0, because Eq.~\eqref{eq:nin} squares it and a
+  compressive normal stress would otherwise add damage. The paper's critical planes all carry tensile
+  normal stresses.
+\item $k$ from Eq.~\eqref{eq:nin-k} unless \texttt{k\_NIN} is supplied; Eq.~\eqref{eq:nin-k} is kept
+  for $S_e/T_e<\sqrt2$, with a warning.
+\item Life from the shared master curve $\mathrm{DP}=AN_f^b$.
+\end{itemize}
+
+\block{Worked example} Mild steel of Nishihara and Kawamoto (Table~1): $S_e=235.4$, $T_e=137.3\MPa$,
+$S_e/T_e=1.71\ge\sqrt2$, so both limits give $D=1$; $k=0.7793$. The uniaxial critical-plane normal
+lies at $34.4^\circ$ from the bar axis, a crack trace at $55.6^\circ$ (paper: $56^\circ$, row 2-5).
+With $\sigma_y=\sigma_a\sin\omega t$, $\tau_{xy}=\tau_a\sin(\omega t-\varphi)$, $\varphi=90^\circ$:
+Table~2 row 8 ($\sigma_a=108.9$, $\tau_a=131.5\MPa$) gives $I=+4.12\%$; row 9 ($\sigma_a=201.1$,
+$\tau_a=100.6\MPa$) gives $I=+6.81\%$, both as printed; row 9's critical plane is tilted into the
+surface ($\theta_z=-23^\circ$ in the paper).
+
+\block{Verification} Eq.~(4) against $k$ of Table~1 for the four materials. Tables~2--4: 29 of 32 rows
+evaluated with the full plane search within 0.08 points. Table~5 (6082-T6) within 0.6 points (its
+printed plane stresses imply slightly different loads). Row 2-11 restricted to planes normal to the
+surface: within 0.04 points of the text value $I=0.0735\%$ (the table prints 0.735). The printed plane
+stresses give the printed index on every row; the uniaxial limit on both sides of
+$S_e/T_e=\sqrt2$, the torsion limit and the clipping are checked. Strict xfails: rows 2-7 and 3-12
+(the printed plane is not the maximum of $D$; the search finds 0.24 and 1.8 points more); row 3-13
+(surface re-evaluation of the row 3-12 load, 1.8 points off); row 3-4 (printed
+$\tau_{xy,a}=21.9\MPa$ contradicts its printed ratio 0.2; Gon\c{c}alves et al.\ (2005) list
+$62.8\MPa$); row 5-6 (printed $\sigma_{n,\max}$ exceeds every principal stress of the printed load).

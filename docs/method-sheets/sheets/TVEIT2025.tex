@@ -1,0 +1,104 @@
+% registry: TVEIT2025
+\methodhead{TVEIT2025}{Tveit, Ottosen, Erduran and Reyes (2025): continuum fatigue model with a moving endurance surface}\label{sheet:TVEIT2025}
+
+\block{Source} Tveit, N.~S.~Ottosen, E.~Erduran, A.~Reyes, \emph{Mech.\ Mater.}\ 209 (2025) 105452
+\cite{tveit2025}, Eqs.~(1)--(12), pp.~2--4, and Eq.~(24), p.~5; Figs.~5--6, Table~1. This sheet is
+written from the method guide and the module docstring only (the model is maintained by another
+contributor).
+
+\block{Idea and scope} An incremental continuum damage model integrated cycle by cycle. A back-stress
+tensor $\boldsymbol\alpha$ and a scalar damage $D$ evolve whenever the stress leaves a moving endurance
+surface ($\beta>0$) and moves outward ($d\beta>0$). Failure (crack initiation) occurs at $D=1$; a path
+that the moved surface ends up enclosing accumulates no more damage and has an infinite life. The
+deviatoric measure carries a $J_3$ term, so arbitrary ratios $\tm/\fm$ are represented.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\fm$, $\tm$ & MPa & fully reversed axial and torsion fatigue limits the constants were calibrated with\\
+$\mathbf s$ & MPa & deviatoric stress\\
+$\boldsymbol\alpha$ & MPa & back-stress (deviatoric), $\boldsymbol\alpha=\mathbf 0$ initially\\
+$J_2$, $J_3$ & MPa$^2$, MPa$^3$ & second and third invariants of $\mathbf s-\boldsymbol\alpha$\\
+$I_1$ & MPa & first stress invariant, $\tr\Tsig$\\
+$\sigma_e$ & MPa & effective stress, Eq.~\eqref{eq:tveit-se}\\
+$\lambda$ & MPa & weight of the $J_3$ term, Eq.~\eqref{eq:tveit-lambda} (not the $\lambda$ of other sheets)\\
+$\beta$ & -- & endurance function, Eq.~\eqref{eq:tveit-beta}\\
+$\mathbf G$ & -- & gradient $\partial\sigma_e/\partial\mathbf s$\\
+$A$ & -- & weight of $I_1$ in the endurance surface (not the master-curve $A$)\\
+$C$ & -- & back-stress evolution constant\\
+$K$, $L$ & --, -- & damage evolution constants\\
+$D$ & -- & damage, $D=0$ initially, failure at $D=1$\\
+$N_f$ & cycles & native life\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The moving endurance surface (Eqs.~1--5, 24):
+\begin{gather}
+\beta = \frac{\sigma_e + A\,I_1 - \fm}{\fm} , \label{eq:tveit-beta}\\
+\sigma_e = \sqrt{3J_2} - \lambda\Bigl(1 - \frac{27}{4}\frac{J_3^2}{J_2^3}\Bigr) , \label{eq:tveit-se}\\
+\lambda = \sqrt3\,\tm - \fm , \label{eq:tveit-lambda}
+\end{gather}
+with $J_2$, $J_3$ of $\mathbf s-\boldsymbol\alpha$. While $\beta>0$ and $d\beta>0$ (Eq.~8), the
+evolution laws are (Eqs.~6, 7, 9--12)
+\begin{gather}
+d\boldsymbol\alpha = C\,(\mathbf s-\boldsymbol\alpha)\,d\beta , \qquad
+dD = K\,e^{L\beta}\,d\beta , \label{eq:tveit-evol}\\
+d\beta = \frac{\mathbf G:d\mathbf s + A\,dI_1}{\fm + C\,\mathbf G:(\mathbf s-\boldsymbol\alpha)} , \qquad
+\mathbf G = \frac{\partial\sigma_e}{\partial\mathbf s} . \label{eq:tveit-dbeta}
+\end{gather}
+Starting from $\boldsymbol\alpha=\mathbf 0$ and $D=0$, the number of cycles to $D=1$ is the life.
+
+\block{Constants and calibration} Paper: $\fm$, $\tm$ from fully reversed tests; $A$ from a fatigue
+limit at a tensile mean stress (Eqs.~22--23), else an estimate (FKM, Eq.~26); $C$, $K$, $L$ by
+Eq.~(25) on three failures of the axial $R=-1$ S--N curve, after Ottosen et al.\ \cite{ottosen2008}.
+Repository: without supplied constants, \texttt{multifat-pipeline} calibrates \texttt{A\_TVEIT},
+\texttt{C\_TVEIT}, \texttt{K\_TVEIT} and \texttt{L\_TVEIT} by this procedure
+(\texttt{eval/tveit2025\_calibration.py}). The limits are the workbook Summary values; $A$ comes, in
+this order, from a mean-stress fatigue limit, a hand-entered value, FKM for a declared material type,
+or Goodman, $A=\fm/S_u$; the three points are the lowest and highest stress levels above $\fm$ and the
+level closest to their geometric mean (the median replicate at each), and they become design rows.
+Uniaxial data do not identify $C$, so Eq.~(25) is profiled over $C$ (8 values per decade) and the grid
+point of lowest error is kept whose closed form has a unique root and whose time-integrated life agrees
+with it within 0.1 decade. Each calibration reports a confidence (high, medium, low) from named
+findings. A \texttt{--constants} file takes precedence; it may also set \texttt{Sigm1\_TVEIT} and
+\texttt{Taum1\_TVEIT}, which replace the workbook \texttt{Sigm1}, \texttt{Taum1} for this model only,
+since the constants hold only with the $\fm$, $\tm$ they were calibrated with.
+
+\block{Life} Native life law: the integration of Eqs.~\eqref{eq:tveit-beta}--\eqref{eq:tveit-dbeta} to
+$D=1$ (\texttt{life\_prediction = "native"}); $N_f=\infty$ when the path is enclosed by the moved
+surface. Only native lives are compared with experiments; the damage-parameter comparison is disabled
+(\texttt{dp\_comparison = False}).
+
+\block{Repository choices}
+\begin{itemize}
+\item The cycle is sampled at 1001 points of one closed period and repeated as blocks (one block = one
+  cycle), with explicit increments between consecutive points.
+\item Blocks are repeated until: \emph{failure}, $D\ge1$ inside a block, the life interpolated linearly
+  in the crossing increment; \emph{shakedown}, a block (from the second on) without damage increment,
+  infinite life; \emph{cyclic steady state}, from block 400 on, when the back-stress has no net drift
+  over the last 200 blocks (distance to its position 200 blocks earlier at most 0.01 times its path
+  length) and the mean damage per block agrees within 0.1\,\% with the 200 blocks before, unless the
+  trend of the peak of $\beta$ over the block reaches zero before the extrapolated failure; the life is
+  then $N=n+(1-D)/\overline{dD}$; after 60\,000 blocks the life is extrapolated in the same way, with a
+  warning.
+\item These settings are optional constants (\texttt{npts\_TVEIT}, \texttt{min\_blocks\_TVEIT},
+  \texttt{max\_blocks\_TVEIT}, \texttt{tol\_alpha\_TVEIT}, \texttt{tol\_damage\_TVEIT}). With 1001 points
+  per cycle the life is about 0.02 decade shorter than converged (Table~1 NiCrMo steel).
+\item $\mathbf G$ uses the deviatoric projection $\mathbf s\mathbf s-\tfrac23J_2\mathbf I$ of
+  $\partial J_3/\partial\mathbf s$; Eq.~(10) prints a different isotropic part, which has no effect
+  because $\mathbf G$ is contracted only with deviatoric tensors.
+\item The reported value is the fatigue index $\max_t(\sigma_e+A\,I_1)/\fm$ at $\boldsymbol\alpha=\mathbf 0$
+  ($\beta+1$ of the virgin material); the model's prediction is the native life.
+\end{itemize}
+
+\block{Worked example} Stage~1 constants for 42CrMo4 Q\&T (constants file
+\texttt{Calibrations/42CrMo4\_Santus/TVEIT2025\_stage1.json}): $\fm=433$, $\tm=344\MPa$, $A=0.245625$,
+$C=0.0040672184319305$, $K=1.91047799401683\times10^{-5}$, $L=10.1293188952565$. Bending
+$\sigma_a=660\MPa$ and torsion $\tau_a=340\MPa$ at $90^\circ$: index $1.8986$, $N_f=263$ cycles.
+
+\block{Verification} The model S--N curves of Figs.~5--6 (Table~1 constants) are reproduced within 1\,\%
+in stress; also checked: the Eq.~(24) torsional limit, infinite life inside the endurance surface and
+after shakedown under mean shear, and the constants-file overrides.

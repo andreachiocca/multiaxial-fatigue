@@ -1,0 +1,88 @@
+% registry: SWT
+\methodhead{SWT}{Smith, Watson and Topper (1970): stress--strain function, critical-plane extension}\label{sheet:SWT}
+
+\block{Source} K.~N.~Smith, P.~Watson, T.~H.~Topper, \emph{J.\ Mater.} 5(4) (1970) 767--778
+\cite{smith1970}, p.~769. The paper has no DOI. The critical-plane extension is not in the 1970
+paper; the repository's guide attributes it to later work (Socie 1987; Socie and Marquis 2000).
+
+\block{Idea and scope} Damage is driven by the normal strain amplitude multiplied by the largest
+tensile stress that opens the crack. The product accounts for the mean stress without a separate
+correction, and a fully compressive cycle causes no damage. Proposed for uniaxial mean-stress
+effects; in its critical-plane form, for materials that fail mainly by tensile (mode~I) cracking.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\sigma_{\max}$ & MPa & maximum tensile stress of the uniaxial cycle\\
+$\varepsilon_a$ & -- & uniaxial strain amplitude\\
+$E$, $\nu$ & MPa, -- & Young's modulus and Poisson's ratio (elastic strains, Section~\ref{sec:notation})\\
+$\n$ & -- & unit normal of a candidate plane (local $z$ axis)\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane, Eqs.~\eqref{eq:plane}, \eqref{eq:scalar}\\
+$\sigma_{n,\max}$ & MPa & largest normal stress on the plane over the cycle, clipped at zero\\
+$\Delta\varepsilon_n$, $\varepsilon_{n,a}$ & -- & range and amplitude ($\Delta\varepsilon_n/2$) of the normal strain on the plane\\
+$\sigma_f'$, $\varepsilon_f'$ & MPa, -- & fatigue strength and ductility coefficients of the strain--life curve\\
+$b$, $c$ & -- & fatigue strength and ductility exponents of the strain--life curve\\
+$N_f$ & cycles & life to failure\\
+$\sigma_a$, $\tau_a$ & MPa & fully reversed axial and shear stress amplitudes (closed forms)\\
+$\mathrm{DP}$ & MPa & damage parameter returned by the repository\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The paper defines the damage function as $\sigma_{\max}\varepsilon_a$ and uses
+it as the equivalent stress (p.~769)
+\begin{equation}
+\sqrt{\sigma_{\max}\,\varepsilon_a\,E} = \text{constant at a given life},
+\qquad \sigma_{\max}>0 .
+\label{eq:swt-main}
+\end{equation}
+A cycle with $\sigma_{\max}\le0$ causes no damage. Combined with the Basquin and Manson--Coffin
+curves it gives the common life relation
+\begin{equation}
+\sigma_{\max}\,\varepsilon_a = \frac{\sigma_f'^2}{E}(2N_f)^{2b} + \sigma_f'\,\varepsilon_f'\,(2N_f)^{b+c} .
+\label{eq:swt-life}
+\end{equation}
+The critical-plane extension evaluates, on each plane,
+\begin{equation}
+\mathrm{DP} = \sigma_{n,\max}\,\varepsilon_{n,a},\qquad
+\varepsilon_{n,a} = \tfrac12\lvert\Delta\varepsilon_n\rvert,\qquad
+\sigma_{n,\max} = \max(\sigma_{n,m}+\sigma_{n,a},\,0) .
+\label{eq:swt-plane}
+\end{equation}
+\emph{Critical plane}: the plane of largest normal strain range $\Delta\varepsilon_n$; ties go to
+the larger DP (Section~\ref{sec:planes}). \texttt{SWT\_ext} is the largest DP over all planes.
+\emph{Shear amplitude}: the parameter uses no shear quantity, so the plane shear rule
+(\texttt{np\_shear\_rule}, default \texttt{rss}) and the global selection of
+\texttt{docs/shear-amplitude.md} do not change its value.
+
+\block{Constants and calibration} None. In the original form the constants of the life relation
+are $\sigma_f'$, $b$, $\varepsilon_f'$, $c$ of the uniaxial strain--life curve. The repository fits
+only the master curve. With elastic strains, fully reversed tension gives $\mathrm{DP}=\sigma_a^2/E$
+and fully reversed torsion (plane at $45^\circ$) $\mathrm{DP}=(1+\nu)\tau_a^2/E$, so equal damage at
+the two limits implies $\tm/\fm = 1/\sqrt{1+\nu}\approx0.88$ for $\nu=0.3$.
+
+\block{Life} The paper uses Eq.~\eqref{eq:swt-life}. The repository uses the master curve on DP,
+Eq.~\eqref{eq:mastercurve}, fitted on the uniaxial $R=-1$ design set.
+
+\block{Repository choices}
+\begin{itemize}
+\item DP is the product $\sigma_{\max}\varepsilon_a$, not $\sqrt{\sigma_{\max}\varepsilon_a E}$. The
+  transform is monotone: master-curve lives are unchanged, but the fitted exponent and the
+  log-damage errors are doubled.
+\item $\sigma_{n,\max}$ is clipped at zero, so a fully compressive cycle gives $\mathrm{DP}=0$.
+\item The critical-plane extension is not in the 1970 paper.
+\item Strains are linear elastic (Section~\ref{sec:notation}).
+\item Life from the shared master curve instead of Eq.~\eqref{eq:swt-life}.
+\end{itemize}
+
+\block{Worked example} Synthetic material, $E=200\,000\MPa$, $\nu=0.3$, zero-mean unless stated:
+tension $\sigma_a=300\MPa$ gives $\mathrm{DP}=0.4500\MPa$ ($=\sigma_a^2/E$); torsion
+$\tau_a=200\MPa$ gives $0.2600\MPa$ ($=(1+\nu)\tau_a^2/E$); tension $\sigma_a=300\MPa$ with a mean of
+$150\MPa$ gives $0.6750\MPa$ ($=(150+300)\cdot300/E$); a cycle of mean $-400\MPa$ and amplitude
+$100\MPa$ gives $0.0$. The limit ratio of equal DP is $1/\sqrt{1+\nu}=0.877$.
+
+\block{Verification} \texttt{tests/methods/test\_swt.py}: the uniaxial product with tensile, zero
+and compressive means, and zero damage for a fully compressive cycle. Not reproduced: the 1970
+experimental data or any multiaxial dataset.

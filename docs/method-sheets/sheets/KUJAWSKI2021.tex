@@ -1,0 +1,98 @@
+% registry: KUJAWSKI2021
+\methodhead{KUJAWSKI2021}{Kujawski (2021): interpretation and modification of the SWT function}\label{sheet:KUJAWSKI2021}
+
+\block{Source} D.~Kujawski, \emph{Fatigue Fract.\ Engng Mater.\ Struct.} 44(8) (2021) 2202--2209
+\cite{kujawski2021}, Eqs.~(9)--(13b), pp.~2205--2207; Figs.~7--11.
+
+\block{Idea and scope} The SWT product $\sigma_{\max}\varepsilon_a$ is read as the total damaging
+energy density $W_D$ in the first quadrant of shifted ``damaging'' axes (Eq.~9). Under a negative
+mean stress the stabilised hysteresis loop keeps about one third of the mean, so the SWT maximum
+stress is augmented by $\lvert\sigma_m\rvert/3$. The function equals SWT for $\sigma_m\ge0$ and is
+more damaging for $\sigma_m<0$, where SWT is non-conservative; compression--compression cycles can
+be damaging. Proposed for uniaxial $R$-ratio effects (ductile iron, 7075-T651). The paper is
+uniaxial.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\sigma_{\max}$, $\sigma_m$, $\sigma_a$ & MPa & maximum, mean and amplitude of the uniaxial stress cycle\\
+$\varepsilon_a$ & -- & uniaxial strain amplitude\\
+$W_D$ & MPa & total damaging energy density (MJ/m$^3$), the damage parameter\\
+$\sigma_{ar}$ & MPa & equivalent fully reversed stress amplitude\\
+$R_\varepsilon$ & -- & strain ratio of the tests behind the factor 1/3 (Fig.~7, $R_\varepsilon=-2$)\\
+$E$, $\nu$ & MPa, -- & Young's modulus and Poisson's ratio (elastic strains, Section~\ref{sec:notation})\\
+$\n$ & -- & unit normal of a candidate plane (local $z$ axis)\\
+$\sigma_{n,\max}$, $\sigma_{n,m}$ & MPa & maximum and mean normal stress on the plane, Eqs.~\eqref{eq:plane}, \eqref{eq:scalar}\\
+$\Delta\varepsilon_{zz}$, $\varepsilon_{n,a}$ & -- & range and amplitude of the normal strain on the plane\\
+$[\,\cdot\,]$ & -- & Iverson bracket: 1 if the condition holds, else 0\\
+$N_f$ & cycles & life; the reference curve is plotted against reversals $2N_f$\\
+$\mathrm{DP}$ & MPa & damage parameter returned by the repository\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Kujawski (Eqs.~11a--11b):
+\begin{equation}
+W_D = \sigma_{\max}\,\varepsilon_a \quad (\sigma_m\ge0),\qquad
+W_D = \Bigl(\sigma_{\max}+\frac{\lvert\sigma_m\rvert}{3}\Bigr)\varepsilon_a \quad (\sigma_m<0) .
+\label{eq:kuj21-main}
+\end{equation}
+The stress-based forms (Eqs.~12a--13b) are
+$\sigma_{ar}=\sqrt{\sigma_{\max}\sigma_a}$ for $\sigma_m\ge0$,
+$\sigma_{ar}=\sqrt{(\sigma_{\max}+\lvert\sigma_m\rvert/3)\,\sigma_a}$ for $\sigma_m<0$, and, with
+the strain amplitude, $\sigma_{ar}=\sqrt{E\varepsilon_a(\sigma_{\max}+\lvert\sigma_m\rvert/3)}$.
+The repository applies Eq.~\eqref{eq:kuj21-main} on every plane:
+\begin{equation}
+\mathrm{DP} = \max\Bigl(\sigma_{n,\max}+\frac{\lvert\sigma_{n,m}\rvert}{3}\,[\sigma_{n,m}<0],\ 0\Bigr)\,\varepsilon_{n,a},
+\qquad \varepsilon_{n,a}=\tfrac12\lvert\Delta\varepsilon_{zz}\rvert .
+\label{eq:kuj21-plane}
+\end{equation}
+\emph{Critical plane}: the plane of largest normal strain range, the plane rule of SWT
+(sheet~\ref{sheet:SWT}); ties go to the larger DP. \texttt{KUJAWSKI2021\_ext} is the largest DP over
+all planes. \emph{Shear amplitude}: none is used, so \texttt{np\_shear\_rule} (default
+\texttt{rss}) and the global selection do not change the value.
+
+\block{Constants and calibration} Nothing is fitted in the function. The paper's life curve is the
+fully reversed ($R=-1$) $\sigma_{ar}$-- or $W_D$--life curve of the material; the repository fits
+only the master curve, on the uniaxial $R=-1$ design tests, where $W_D$ equals the SWT value.
+
+\block{Life} The paper reads $\sigma_{ar}$ or $W_D$ on the fully reversed curve against $2N_f$. The
+repository uses the master curve on $W_D$, Eq.~\eqref{eq:mastercurve}.
+
+\block{Repository choices}
+\begin{itemize}
+\item Multiaxial extension (maintainer decision): the source is uniaxial; the function is applied
+  on the planes of the repository's SWT critical-plane extension, with the normal stress and strain
+  of each plane. Without a compressive normal mean on the plane it is identical to SWT.
+\item The bracket $\sigma_{\max}+\lvert\sigma_m\rvert/3=\sigma_a-2\lvert\sigma_m\rvert/3$ is clipped
+  at zero, as SWT clips a fully compressive cycle: $\mathrm{DP}=0$ when
+  $\lvert\sigma_m\rvert\ge1.5\,\sigma_a$.
+\item The applied mean stress is used: the factor 1/3 already stands for its stabilised relaxation,
+  and the strains are linear elastic.
+\item DP is $W_D$, not $\sigma_{ar}$ (a monotone transform); life from the shared master curve.
+\end{itemize}
+
+\block{Worked example} 7075-T651, $E=71\,700\MPa$, $\nu=0.33$; uniaxial cycles:
+\begin{center}\small
+\begin{tabular}{@{}rrccc@{}}
+\toprule
+$\sigma_a$ (MPa) & $\sigma_m$ (MPa) & $W_D$ (MPa) & SWT (MPa) & $\sigma_{ar}=\sqrt{EW_D}$ (MPa)\\\midrule
+200 & 100 & 0.8368 & 0.8368 & 244.9\\
+200 & 0 & 0.5579 & 0.5579 & 200.0\\
+200 & $-90$ & 0.3905 & 0.3068 & 167.3\\
+150 & $-180$ & 0.0628 & 0.0000 & 67.1\\
+\bottomrule
+\end{tabular}
+\end{center}
+For $\sigma_m=-90\MPa$, $\sigma_{ar}=\sqrt{(110+30)\cdot200}=167.3\MPa$ (Eq.~12b), against
+$\sqrt{110\cdot200}=148.3\MPa$ for SWT. The compression--compression cycle ($\sigma_{\max}=-30\MPa$)
+is damaging, as in Fig.~10. In phase, $\sigma_a=150$, $\sigma_m=100$, $\tau_a=90\MPa$: 0.7879 for
+both KUJAWSKI2021 and SWT.
+
+\block{Verification} \texttt{tests/methods/test\_kujawski2021.py}: the stress factor of
+Eqs.~(11a)--(11b), both branches and the compression--compression range; Eqs.~(12a)--(13b),
+$\sqrt{EW_D}=\sigma_{ar}$ in uniaxial elastic loading; the ratio to SWT under a negative mean;
+identity with SWT, at case and plane level, without a compressive normal mean. Not reproduced:
+Figs.~8--11, which plot data of other authors and print no table.

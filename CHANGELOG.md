@@ -31,8 +31,25 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
   revision) is reused from `Calibrations/<material>/` or the run's archive.
 - Optional inputs `Calibrations/<material>/TVEIT2025_inputs.json` (schema 2) for Al7075_T6,
   42CrMo4_Santus, 42CrMo4_Reis, Ti6Al4V_Meneghetti and Ti6Al4V_Berto, and their first records.
+- The TVEIT2025 method sheet (`docs/method-sheets/sheets/TVEIT2025.tex`) describes this
+  calibration.
 - Changed numerically: TVEIT2025 now runs, with calibrated constants, in pipeline runs without
   `--constants` (it was skipped for missing constants); no other model changes.
+
+### LaTeX method sheets for every registered model
+
+- 46 new sheets in `docs/method-sheets/sheets/`; every registered model now has one (52 files,
+  PDS_SWT/PDS_FS sharing one).
+- `methods.tex` groups them by family. The pending list of `tests/test_method_sheets.py` is empty,
+  so a new method cannot be registered without its sheet.
+- Each sheet states, from the method's guide, docstring, audit row and tests:
+  - the original equations and every symbol;
+  - calibration and life law;
+  - repository choices and verification.
+- Worked-example numbers are those printed by the tested guides.
+- `references.bib` holds the original papers (DOI-checked, duplicates merged).
+- `docs/method-guides/SWTD.md`: Table 3 torsion rows match (2/sqrt3) SWTD = tau_a gamma_a/sqrt3,
+  as the test asserts. The guide printed the inverse factor.
 
 ### New dataset: 7075-T651 of Wang, Shang, Sun & Chen (2018) (maintainer decision, 16 November 2026)
 

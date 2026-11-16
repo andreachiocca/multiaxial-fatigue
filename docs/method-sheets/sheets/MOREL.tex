@@ -1,0 +1,94 @@
+% registry: MOREL
+\methodhead{MOREL}{Morel (1998): mesoscopic life prediction under constant amplitude}\label{sheet:MOREL}
+
+\block{Source} F.~Morel, \emph{Fatigue Fract.\ Eng.\ Mater.\ Struct.}\ 21 (1998) 241--256
+\cite{morel1998}, Eqs.~(9)--(11), (33)--(38); worked example pp.~252--253. The generalised shear
+amplitude is that of Papadopoulos \cite{papadopoulos2001}.
+
+\block{Idea and scope} Mesoscopic (grain-scale plasticity) model with a native life law. Fatigue damage
+is the plastic slip accumulated in the worst-oriented grains. A fatigue limit follows from
+Papadopoulos' generalised shear amplitude and the hydrostatic stress; the life above the limit follows
+from a three-parameter law in the critical-plane shear amplitude, which accounts for the shape of the
+load path through a phase-difference coefficient. Proposed for constant-amplitude multiaxial
+high-cycle fatigue, including out-of-phase loading.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\fm$, $\tm$ & MPa & fully reversed tension (bending) and torsion fatigue limits\\
+$\n$, $\psi$ & --, rad & plane normal and the angle of a line in that plane\\
+$\tau_a(\n,\psi)$ & MPa & resolved shear stress amplitude on the line $\psi$ of the plane $\n$\\
+$T_a$ & MPa & generalised shear amplitude of Papadopoulos (2001)\\
+$T_S$ & MPa & maximum over planes of $\sqrt{\int_0^{2\pi}\tau_a^2\,d\psi}$, Eq.~\eqref{eq:morel-limit}\\
+$P$; $P_a$, $P_m$, $P_{\max}$ & MPa & hydrostatic stress; its amplitude, mean and maximum\\
+$a$, $b$ & --, MPa & constants of the endurance criterion (Eq.~10)\\
+$f$ & -- & loading-path ratio $T_S/P_a$\\
+$T_{S,\lim}$ & MPa & limit value of $T_S$ for the same loading path (Eq.~33)\\
+$C_A$ & MPa & half the longest chord of the shear path on the critical plane\\
+$H$ & -- & phase-difference coefficient (Eq.~35)\\
+$\tau_{\lim}$ & MPa & limit shear amplitude (Eq.~37)\\
+$p$, $q$, $r$ & cycles, cycles, cycles$\cdot$MPa & material constants of the life law\\
+$N_i$ & cycles & life to crack initiation (Eq.~38)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Endurance criterion (Eqs.~9--11):
+\begin{gather}
+T_S + a\,P_{\max} \le b , \qquad
+T_S = \max_{\n}\sqrt{\int_0^{2\pi}\tau_a(\n,\psi)^2\,d\psi} = \sqrt\pi\,T_a , \label{eq:morel-limit}\\
+a = \frac{\sqrt\pi\,(\tm - \fm/2)}{\fm/3} , \qquad b = \sqrt\pi\,\tm . \label{eq:morel-ab}
+\end{gather}
+For the similar-loading group, with $f=T_S/P_a$, the limit loading is (Eq.~33)
+\begin{equation}
+T_{S,\lim} = \frac{f\,(b - a\,P_m)}{a + f} .
+\label{eq:morel-tslim}
+\end{equation}
+The phase-difference coefficient is $H=T_S/C_A$ (Eq.~35); $H=\sqrt\pi$ for proportional and $\sqrt{2\pi}$
+for circular paths. The limit shear amplitude is $\tau_{\lim}=T_{S,\lim}/H$ (Eq.~37), and the life is
+(Eq.~38)
+\begin{equation}
+N_i = p\,\ln\frac{C_A}{C_A-\tau_{\lim}} + q\,\frac{\tau_{\lim}}{C_A-\tau_{\lim}} - \frac{r}{C_A} ,
+\qquad C_A > \tau_{\lim}\quad(\text{else } N_i=\infty) .
+\label{eq:morel-life}
+\end{equation}
+
+\block{Constants and calibration} Paper: $a$, $b$ from the two fatigue limits (Eq.~10); $p$, $q$, $r$
+fitted to one S--N curve, without a stated objective and without printed values. Repository: $a$, $b$ as
+in Eq.~(10); $p$, $q$, $r$ fitted on the uniaxial tension $R=-1$ failures above the Morel limit (at least
+three), by linear least squares on the relative life error (Eq.~\eqref{eq:morel-life} is linear in $p$,
+$q$, $r$), and recorded with the run. These tests are design rows.
+
+\block{Life} Native life law, Eq.~\eqref{eq:morel-life} with the fitted $p$, $q$, $r$
+(\texttt{life\_prediction = "native"}). Tests below the limit get $N_i=\infty$, which is kept and
+counted. With fewer than three design tests above the limit there is no native prediction, and it is
+not replaced by the master curve. An empirical master curve on $\mathrm{DP}=T_S/T_{S,\lim}$ is also
+fitted for the damage-parameter comparison; it does not assess Eq.~(38).
+
+\block{Repository choices}
+\begin{itemize}
+\item Fitting objective for $p$, $q$, $r$: relative life error, at least three design tests above the
+  limit (the paper states no objective).
+\item Damage parameter $\mathrm{DP}=T_S/T_{S,\lim}$, which equals the Papadopoulos (2001) Eq.~(41) index
+  exactly (same iso-life planes).
+\item For one harmonic, $T_s^2=\pi(|\mathbf t_s|^2+|\mathbf t_c|^2)$ on a plane, with $\mathbf t_s$,
+  $\mathbf t_c$ the sine and cosine parts of the shear vector. The critical plane maximises $T_S$ on a
+  sphere grid with pattern-search refinement; $C_A$ is the exact semi-major axis of the shear ellipse
+  on that plane.
+\item Below the limit the native life is infinite and reported as such.
+\item Misprint: the worked example prints $b=775\MPa$; Eq.~(10) gives $\sqrt\pi\cdot426=755\MPa$, and only
+  755 reproduces the printed $T_{S,\lim}=633\MPa$.
+\end{itemize}
+
+\block{Worked example} The paper's example: 30NCD16, $\fm=680$, $\tm=426\MPa$, $\sigma_{11,a}=600\MPa$ and
+$\sigma_{12,a}=335\MPa$ at $90^\circ$. Printed: $T_S=697$, $a=0.67$, $T_{S,\lim}=633$, $C_A=282\MPa$,
+$H=2.47$. Repository: $a=0.6725$, $b=755.1\MPa$, $T_S=697.5$, $T_{S,\lim}=633.0$, $C_A=285.1\MPa$,
+$H=2.447$; index $T_S/T_{S,\lim}=1.1019$, above the limit, hence a finite life. A synthetic check recovers
+known $p$, $q$, $r$ from lives generated with Eq.~(38) (relative tolerance $10^{-8}$).
+
+\block{Verification} Checked: the Eq.~(10) parameters and the $b$ misprint; $T_S$ and $T_{S,\lim}$ of the
+worked example; $C_A$ printed 282 against 285.1 computed is a strict xfail (unresolved, 1\,\%); the
+bounds of $H$; the identity with the Papadopoulos index; Eq.~(38) and the recovery of $p$, $q$, $r$. Not
+reproduced: the example's life $N_i=2\cdot10^5$, because $p$, $q$, $r$ are not printed.
