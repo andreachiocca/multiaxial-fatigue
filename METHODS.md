@@ -18,7 +18,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | --- | --- | --- | --- | --- | --- |
 | Critical plane | 12 | 1 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 6 | 0 | 3 | 0 | 9 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 45 | 2 | 67 | 5 | 119 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
@@ -801,7 +801,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [I_BP](#i_bp) | Böhme–Papuga | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_CAIM](#i_caim) | Critical–integral approach (CAIM) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [N03](#n03) | Papadopoulos, specified 2001 formulation | Fully implemented | reference_examples_reproduced | High | Yes |
-| [N15](#n15) | Original Liu–Zenner integral criterion | Not implemented | not_tested | Medium | Yes |
+| [N15](#n15) | Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N50](#n50) | Grubisic–Simbürger formulation | Not implemented | not_tested | Low | Yes |
 | [N53](#n53) | Substitute-amplitude/NP-damage method, CA branch | Not implemented | not_tested | Medium | Yes |
 | [G02](#g02) | Papuga–Růžička integral criterion (PI; later PIN) | Fully implemented | reference_examples_reproduced | High | Yes |
@@ -850,12 +850,12 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N15
 
-**Original Liu–Zenner integral criterion** — H Zenner (2000)
+**Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion** — H Zenner (2000)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | On the fatigue limit of ductile metals under complex multiaxial loading, International Journal of Fatigue; https://doi.org/10.1016/s0142-1123(99)00107-3 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n15) |

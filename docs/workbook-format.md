@@ -172,6 +172,7 @@ constants are missing is skipped and reported; the other models still run.
 | PCR | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Su`: only to estimate Sig0 |
 | PI | `Sigm1`, `Taum1` | - |
 | RFB | `Sigm1`, `Taum1` | `Sig0`: estimated from Su and Sigm1 by Eq. (1) of Boehme et al. 2026; `Su`: used only to estimate Sig0 |
+| SIH | `Sigm1`, `Taum1` | `Sig0`: required for mean stresses (Table 1); `Tau0`: Eq. (7): 4 Taum1 / (2 Sigm1 / Sig0 + 1) |
 | VHN | `Sigm1`, `Su`, `Taum1` | - |
 | PBP | `Sigm1`, `Taum1` | - |
 | COIN | `Sigm1`, `Taum1` | `k_phi`: 1.0 (RMS formulation) |

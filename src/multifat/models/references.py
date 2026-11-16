@@ -94,6 +94,10 @@ REFERENCES = {
         "Kujawski (2021), An interpretation and modification of the SWT function, Eqs. (9)-(13)",
         "10.1111/ffe.13488",
     ),
+    "SIH": (
+        "Zenner, Simbuerger & Liu (2000), On the fatigue limit of ductile metals under complex multiaxial loading, Eqs. (6)-(7), Table 1 (shear stress intensity hypothesis of Zenner, Heidenreich & Richter)",
+        "10.1016/S0142-1123(99)00107-3",
+    ),
     "WANG2018": (
         "Wang, Shang, Sun & Chen (2018), Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Eqs. (2)-(9), (15)-(20)",
         "10.1016/j.tafmec.2017.10.007",
