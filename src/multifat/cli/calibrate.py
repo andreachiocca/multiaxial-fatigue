@@ -9,6 +9,7 @@ It was later extended to cover further material constants:
 - L_LI (Li 2021 CP method)
 - k_MGSE (MGSE_ZHU CP method)
 - a_MSWT (MSWT CP method)
+- k_PDS (PDS_FS polar damage sum, Albinmousa & Al Hussain 2021)
 ZHU_EDP calibration was dropped after the numerical audit; see docs/method-audit.md.
 
 Project layout (v6)
@@ -30,7 +31,7 @@ through the project helper multifat.eval.fitting.fit_power_law_with_survival_std
 
 Datasets
 --------
-- FS, FIN, LI, MGSE_ZHU, MSWT:
+- FS, FIN, LI, MGSE_ZHU, MSWT, PDS_FS:
     uniaxial axial + uniaxial torsion points are used (target R=-1, with fallbacks).
 
 Notes
@@ -63,16 +64,22 @@ from multifat.eval.evaluator import (
 )
 from multifat.eval.findley_calibration import (
     amplitude_identity,
-    findley_method,
     require_stress_harmonics,
+)
+from multifat.eval.shear_amplitude_option import (
+    SELECTIONS,
+    apply_shear_amplitude,
+    resolved_algorithm,
 )
 from multifat.eval.fitting import fit_power_law_with_survival_std
 from multifat.eval.plane_search import frames_from_normals
 
+from multifat.models.cp_methods.fin import Findley
 from multifat.models.cp_methods.fs import FatemiSocie
 from multifat.models.cp_methods.li import LI
 from multifat.models.cp_methods.mgse_zhu import MGSE_Zhu
 from multifat.models.cp_methods.mswt import MSWT
+from multifat.models.integral_methods.polar_damage_sum import PolarDamageSumFS
 
 
 # -----------------------------
@@ -422,14 +429,15 @@ def calibrate_material_params(
     bounds_L_LI: Tuple[float, float] = (0.0, 20.0),
     bounds_k_MGSE: Tuple[float, float] = (0.0, 5.0),
     bounds_a_MSWT: Tuple[float, float] = (0.0, 1.0),
+    bounds_k_PDS: Tuple[float, float] = (0.0, 10.0),
     shear_amplitude_algorithm: str = "method_default",
 ) -> Dict[str, Any]:
     """Calibrate FS/FIN and the remaining constants for a single material.
 
-    ``shear_amplitude_algorithm`` (method_default, mce_harmonic, rss, mcc_harmonic) controls
-    the shear amplitude used by the Findley criterion during the k_FI calibration only
-    (A. Chiocca, 36ff0a1); the default preserves the established path. Production runs
-    evaluate Findley with MCE.
+    ``shear_amplitude_algorithm`` (multifat.eval.shear_amplitude_option.SELECTIONS) sets the
+    plane shear amplitude of every calibrated critical-plane criterion; ``method_default`` keeps
+    each method's own rule (A. Chiocca, 36ff0a1, for Findley). An explicit selection records the
+    resolved amplitude of each criterion in ``amplitude_settings``.
     """
 
     if material_name not in data:
@@ -493,7 +501,7 @@ def calibrate_material_params(
     for cid in combined_ids:
         c = cases[int(cid)]
         Nf = float(c["meta"]["Nf_cycles"])
-        if shear_amplitude_algorithm != "method_default" and "FI" in requested_blocks:
+        if shear_amplitude_algorithm != "method_default":
             require_stress_harmonics(c, material_name, int(cid))
         S0, E0, S1, E1, H = exp.extract_tensor(
             data, material_name, int(cid), node=node, include_harmonics=True
@@ -517,10 +525,14 @@ def calibrate_material_params(
     # Build the criteria
     # ------------------
     fs_method = FatemiSocie()
-    fin_method = findley_method(shear_amplitude_algorithm)
+    fin_method = Findley()
     li_method = LI()
     mgse_method = MGSE_Zhu()
     mswt_method = MSWT()
+    # The selected plane shear amplitude applies to every calibrated critical-plane criterion.
+    for method in (fs_method, fin_method, li_method, mgse_method, mswt_method):
+        apply_shear_amplitude(method, shear_amplitude_algorithm)
+    pds_method = PolarDamageSumFS()
 
     # The critical plane depends on the case and, for some criteria, on the parameter
     # being calibrated. For every case/method pair a plane pool is assembled once from
@@ -597,10 +609,20 @@ def calibrate_material_params(
         best = _pick_best_plane(case_dict, mswt_method, {"a_MSWT": float(a)})
         return float(best.ext)
 
+    def pds_eval(case_dict: Dict[str, Any], k: float) -> float:
+        # direct model: no plane search, the polar sum covers every surface plane
+        params = {"k_PDS": float(k), "Sy": float(sigma_y)}
+        return float(
+            pds_method.evaluate_case(
+                S0=case_dict["S0"], E0=case_dict["E0"], S1=case_dict["S1"],
+                E1=case_dict["E1"], params=params, harmonics=case_dict["H"],
+            ).values[""]
+        )  # fmt: skip
+
     # ------------------
     # Fit the 1D parameters on the uniaxial dataset
     # ------------------
-    FS_cal = FI_cal = LI_cal = MGSE_cal = MSWT_cal = None
+    FS_cal = FI_cal = LI_cal = MGSE_cal = MSWT_cal = PDS_cal = None
     if sigma_y is not None and "FS" in requested_blocks:
         FS_cal = _fit_single_param(
             cases_data=uniax_cases,
@@ -655,6 +677,18 @@ def calibrate_material_params(
             n_refine=n_refine_1d,
             param_name="a_MSWT",
             block="MSWT",
+        )
+
+    if sigma_y is not None and "PDS_FS" in requested_blocks:
+        PDS_cal = _fit_single_param(
+            cases_data=uniax_cases,
+            damage_fn=pds_eval,
+            bounds=bounds_k_PDS,
+            stdnum=stdnum,
+            n_grid=n_grid_1d,
+            n_refine=n_refine_1d,
+            param_name="k_PDS",
+            block="PDS_FS",
         )
 
     # ------------------
@@ -720,6 +754,16 @@ def calibrate_material_params(
                 "plateau": MSWT_cal.plateau,
             }
         ),
+        "PDS_FS": (
+            None
+            if PDS_cal is None
+            else {
+                "k_PDS": PDS_cal.p_opt,
+                "scatter_STD": PDS_cal.scatter_STD,
+                "fit": PDS_cal.fit,
+                "plateau": PDS_cal.plateau,
+            }
+        ),
     }
 
     # Search bounds, so that a constant stopped by a bound can be reported as such.
@@ -732,8 +776,24 @@ def calibrate_material_params(
     ):
         if out[block] is not None:
             out[block]["bounds"] = tuple(float(x) for x in param_sweep[method_name][1])
-    if "FI" in requested_blocks:
-        out["amplitude_settings"] = {"FIN": amplitude}
+    if out["PDS_FS"] is not None:
+        out["PDS_FS"]["bounds"] = tuple(float(x) for x in bounds_k_PDS)
+    if shear_amplitude_algorithm == "method_default":
+        if "FI" in requested_blocks:
+            out["amplitude_settings"] = {"FIN": amplitude}
+    else:
+        # Constants fitted with an explicit amplitude are valid only with that amplitude.
+        settings = {}
+        for block, method in (
+            ("FS", fs_method),
+            ("FI", fin_method),
+            ("LI", li_method),
+            ("MGSE_ZHU", mgse_method),
+            ("MSWT", mswt_method),
+        ):
+            if block in requested_blocks:
+                settings[method.name] = {**amplitude, "algorithm": resolved_algorithm(method)}
+        out["amplitude_settings"] = settings
     return out
 
 
@@ -755,6 +815,7 @@ CALIBRATED = {
     "LI": "L_LI",
     "MGSE_ZHU": "k_MGSE",
     "MSWT": "a_MSWT",
+    "PDS_FS": "k_PDS",
 }
 
 
@@ -775,7 +836,8 @@ def calibrate_workbook(
 ) -> dict:
     """Calibrate one workbook's constants; JSON-ready, and the workbook is left untouched.
 
-    planes: critical-plane constants k_FS, k_FI, L_LI, k_MGSE, a_MSWT (scatter minimisation
+    planes: critical-plane constants k_FS, k_FI, L_LI, k_MGSE, a_MSWT and the polar-sum constant
+    k_PDS (scatter minimisation
     over the uniaxial and torsion tests). constants: Basquin curves fitted on the fully
     reversed tension and torsion tests (only identifiable curves) plus uniform-material-law
     plastic strain-life terms (estimates). The returned dict is {"material", "params",
@@ -862,6 +924,7 @@ def calibrate_workbook(
                 "LI": "LI",
                 "MGSE_ZHU": "MGSE_ZHU",
                 "MSWT": "MSWT",
+                "PDS_FS": "PDS_FS",
             }
             blocks = {b for b, m in names.items() if m in stress_only_models()}
         try:
@@ -1037,9 +1100,10 @@ def main(argv=None) -> None:
     ap.add_argument(
         "--shear-amplitude-algorithm",
         default="method_default",
-        choices=("method_default", "mcc_harmonic", "mce_harmonic", "rss"),
-        help="Findley k_FI calibration only; method_default keeps the established MCE (RSS) "
-        "amplitude. Production runs still use MCE: do not feed an MCC k_FI to multifat-pipeline",
+        choices=SELECTIONS,
+        help="plane shear amplitude of the calibrated critical-plane criteria (FS, FIN, LI, "
+        "MGSE_ZHU, MSWT); method_default keeps each method's own rule. Evaluate with the same "
+        "option (multifat-run or multifat-pipeline --shear-amplitude-algorithm)",
     )
     ap.add_argument(
         "--no-overlay",
@@ -1111,6 +1175,8 @@ def main(argv=None) -> None:
         print(f"  L_LI     = {cal['LI']['L_LI']:.6g}")
         print(f"  k_MGSE   = {cal['MGSE_ZHU']['k_MGSE']:.6g}")
         print(f"  a_MSWT   = {cal['MSWT']['a_MSWT']:.6g}")
+        if cal["PDS_FS"] is not None:
+            print(f"  k_PDS    = {cal['PDS_FS']['k_PDS']:.6g}")
         for block, name in CALIBRATED.items():
             if cal[block] is not None and cal[block]["plateau"][1] > cal[block]["plateau"][0]:
                 lo, hi = cal[block]["plateau"]

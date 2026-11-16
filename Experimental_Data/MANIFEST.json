@@ -66,5 +66,9 @@
   "Al7075_T6.xlsx": {
     "sha256": "2a378823426639986ba534f6fda4adefce621d1757def2531f157818306f94fc",
     "dataset_fingerprint": "b5007cc636a17ef396693df62aa66cca3c293567442c36f5454045140ec89cad"
+  },
+  "18_Al7075_T651_Wang.xlsx": {
+    "sha256": "7ae0c8cc2f40a3ec00e5eb667ea21ab50bd017f84e4b0c408618e84ae2dcb0e1",
+    "dataset_fingerprint": "a5dac85f0f32b65b5eccfce17e49ce0253e892619c94d83b0b995d8129052e3d"
   }
 }

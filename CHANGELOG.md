@@ -30,6 +30,158 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 - Changed numerically: TVEIT2025 now runs, with calibrated constants, in pipeline runs without
   `--constants` (it was skipped for missing constants); no other model changes.
 
+### New dataset: 7075-T651 of Wang, Shang, Sun & Chen (2018) (maintainer decision, 16 November 2026)
+
+- New workbook `18_Al7075_T651_Wang.xlsx`: 52 constant-amplitude failures of thin-walled tubes.
+  - Tests: uniaxial and torsion at R = -1 and with means; tension-torsion with means at 0-180
+    deg.
+  - Built by `tools/build_wang_al7075_t651.py` from Tables 1-5. The transcription is shared with
+    the WANG2018 tests.
+  - Sigm1 and Taum1 are the Table 2 S-N curves at 1e6 cycles; nu = E/(2G) - 1.
+- Manifest, provenance and dataset tests (`tests/test_wang_al7075_dataset.py`).
+- The dataset joins the homepage ranking: 45 models run on it.
+  - Skipped for scope: WANG2022, GOLOS, KHALIJ, KAKUNO (no Sig0), RFB and SIH
+    (t_-1/f_-1 = 0.573).
+  - Skipped for missing constants: TVEIT2025, SSF.
+  - WANG2018 ranks first on it; this is the dataset its authors used, not an independent check.
+- `dataset_fingerprint` hashes the failure histories rounded to 1e-6 MPa when a failure has a
+  phase that is not a multiple of 90 deg, as for the run-outs. Their cos/sin values differ in the
+  last bit between platforms, which made the Windows fingerprint of this workbook differ. Every
+  other recorded fingerprint is unchanged.
+
+### Plane shear amplitude selectable for every method (maintainer decision, 16 November 2026)
+
+- `--shear-amplitude-algorithm` of `multifat-run` and `multifat-calibrate` used to cover Findley
+  only. It now applies to every model that exposes a plane shear amplitude: all critical-plane
+  methods and SIH (`multifat.eval.shear_amplitude_option`).
+- Choices:
+  - `method_default`: each method's own amplitude; unchanged outputs;
+  - `longest_chord` = `mcc_harmonic`: for one harmonic, half the longest chord equals the MCC
+    radius;
+  - `mce_harmonic` = `rss`.
+- Models whose amplitude is fixed by their definition (BP, RFB, PAPADOPOULOS, LIUMAHADEVAN), or
+  that use none, run unchanged with a warning.
+- `multifat-calibrate` fits FS, FIN, LI, MGSE_ZHU and MSWT with the selection. An explicit
+  selection records `amplitude_settings` for each of them.
+- `multifat-pipeline --constants` refuses constants calibrated with an amplitude other than a
+  method's own (generalising the Findley guard). The pipeline itself still evaluates
+  `method_default`.
+
+### SIH: shear stress intensity hypothesis, Zenner, Simbürger & Liu (2000) (#13, N15)
+
+- New integral model `SIH` (`integral_methods/sih.py`): sigma_eq,a = {15/(8 pi) int [a tau_a^2
+  (1 + m tau_m^2) + b sigma_a^2 (1 + n sigma_m)] dOmega}^(1/2) (Eq. 6). The constants a, b, m, n
+  come from Table 1 and tau_Sch from Eq. (7). The model returns the index sigma_eq,a / sigma_W.
+- Maintainer decisions:
+  - shear amplitude on a plane: the longest-chord amplitude (`np_shear_rule`), because the
+    available source does not define it for rotating shear vectors; `rss` is selectable;
+  - mean stresses need `Sig0`.
+- Material scope: 0.577 <= tau_W/sigma_W <= 0.866.
+- Evidence reviewed by the maintainer, who confirmed the longest chord: the Section 3 statement that Eq. (5) does not depend on
+  the phase holds exactly with `rss`, not with the longest chord (-7 % at 90 deg).
+- Checked: the Table 1 factors (12/7, 4/21, 15/14) as sphere integrals; the four limits; Eqs.
+  (5) and (5b).
+- Guide, LaTeX sheet, catalogue N15, audit row; ranking and batch comparison regenerated.
+- Runs on Reis, FABEST, CX18, 982FA and Delahay. Skipped on the others: mean stresses without
+  Sig0, or the ratio outside the material scope.
+
+### WANG2018: Wang, Shang, Sun & Chen (2018) weighted-plane criterion with mean shear stress (#13, N17)
+
+- New case-level model `WANG2018` (`cp_methods/wang2018.py`):
+  - the critical plane is the weighted mean of the instantaneous maximum-shear planes over one
+    cycle (Eqs. 3-7);
+  - of the candidates phi_hat and phi_hat + 90 deg, the larger tau_eq is kept;
+  - tau_eq = sqrt([tau_a + k_tau |tau_m|]^2 + 1/3 [sigma_a + k_sigma sigma_m]^2) (Eq. 18), with
+    k_tau and k_sigma from t_-1, f_0, t_0 (Eq. 15) or from the Eq. (19) estimates.
+- Tension-torsion only, the paper's loading; other stress components are out of scope (maintainer
+  decision). Constants that violate Eq. (17) are out of material scope.
+- Life on the R = -1 torsion failures (`design_loading = "torsion"`), the paper's torsional S-N
+  curve. The variable-amplitude procedure is not implemented.
+- Paper data: Tables 3-5 transcribed in `tests/data/papers/wang2018_tables3_5.csv`. The Section 5.1
+  estimated crack orientation (70 deg) is reproduced for every 30 and 90 deg out-of-phase test.
+- Catalogue N17 is now implemented. Its family is corrected from integral and hybrid to critical
+  plane.
+- Also added: guide, LaTeX sheet, audit row. The ranking and the batch comparison were
+  regenerated. WANG2018 runs on 6 life and 6 limit datasets. It is skipped on Ti6Al4V_Meneghetti
+  (4 torsion tests) and on 25CrMo4 and 34Cr4 (biaxial normal stresses).
+
+### LaTeX method sheets for the review article
+
+- New `docs/method-sheets/`: one LaTeX document (`methods.tex`) with a shared notation section
+  (frame, harmonic loading, invariants, plane quantities, material constants, master curve,
+  load-equivalent error, plane search) and one sheet per method in `sheets/`, each with Source,
+  Idea and scope, Inputs (every symbol and unit), Formulation, Constants and calibration, Life,
+  Repository choices, Worked example and Verification; bibliography in `references.bib`.
+- First sheets: KAKUNO, KHALIJ, MATSUBARA, PDS_SWT/PDS_FS. The other 46 models are listed as
+  pending in `tests/test_method_sheets.py`, a list that may only shrink.
+- `tests/test_method_sheets.py` checks coverage of the registry, `\input` targets, the block order,
+  citation keys and balanced braces and environments.
+
+### Homepage: cross-batch transfer figure (#71)
+
+- New README section "Same steel, another batch" and figure `docs/images/batch_transfer.png`
+  (`examples/plot_batch_transfer.py`, homepage style, part of `generate_gallery.py`): median and
+  quartiles over the methods of the signed load error of each 42CrMo4 batch with its own constants
+  and with those of the other two batches. A test ties the quoted percentages to the data.
+
+### PDS_SWT, PDS_FS: Albinmousa & Al Hussain (2021) polar damage sum (#13, new N59/N60)
+
+- New integral models `PDS_SWT` and `PDS_FS` (`integral_methods/polar_damage_sum.py`): the area
+  1/2 int D(phi)^2 dphi of the polar curve of the SWT or Fatemi-Socie parameter over every plane
+  perpendicular to the surface (Eqs. 8-9, 12-14), life via the master curve (Eqs. 17-19).
+- Elastic, high-cycle reading of a strain-controlled LCF method (maintainer decision): linear-elastic
+  strains replace the measured loops; documented in the module, guides and audit.
+- New calibrated constant `k_PDS` (k_phi), fitted like `k_FS` on the R = -1 tension and torsion
+  failures within [0, 10] (`cli/calibrate.py`, block `PDS_FS`) and set by the limit equalisation on
+  fatigue-limit datasets (`eval/endurance.py`). Identified on FABEST (2.78), AISI316L (0.40),
+  Ti6Al4V_Berto (9.06); not identifiable on Santus, Reis and Al7075_T6.
+- New catalogue records N59 (PDS_SWT) and N60 (PDS_FS, variant), guides, audit rows; ranking and
+  batch comparison regenerated.
+- `docs/calibration-workflow.md`: the initial design-test tolerance is |R + 1| <= 1e-3 since #77
+  (it still said 0.02).
+
+### MATSUBARA: Matsubara, Hayashida & Kano (2018) criterion (#13, N09)
+
+- New invariant model `MATSUBARA` (`invariant_methods/matsubara.py`): unified equivalent shear
+  stress amplitude sqrt(J_2,amp,eq) = sigma_T sqrt(J_2,amp)/(sigma_T - S_max + sqrt3 sqrt(J_2,amp))
+  (Eq. 15) with the Mamiya amplitude (Eq. 13) and the maximum S_max of the largest-range normal
+  stress; life from the master curve on the R = -1 uniaxial tests (the paper's unified S-N curve).
+- New optional constant `sigma_T` (true fracture strength, `docs/notation.md`); without it
+  sigma_T = 1.84 Su for 400 <= Su <= 1000 MPa, else the material is out of scope (maintainer
+  decision). Runs on 8 materials.
+- Evidence (`tests/methods/test_matsubara.py`): Eq. (15) against Eq. (9) and the uniaxial line,
+  the Mamiya amplitude in the time domain, S_max against a brute-force search. The paper prints no
+  per-test value.
+- Guide `docs/method-guides/MATSUBARA.md`, catalogue record N09, audit row; ranking and batch
+  comparison regenerated.
+
+### KAKUNO: Kakuno & Kawada (1979) criterion (#13, G04)
+
+- New invariant model `KAKUNO` (`invariant_methods/kakuno_kawada.py`): Eq. (4), the octahedral
+  shear stress amplitude against linear octahedral normal amplitude (B) and mean (C) terms, with
+  A, B, C of Eqs. (7)-(9). Constants: `Sigm1`, `Taum1`; `Sig0` (pulsating limit) for mean normal
+  stresses.
+- Proportional loading only (principal stress amplitudes). Without `Sig0` a case with a mean
+  normal stress is out of scope; the paper's k_1 = 0.83 for steels is not used (maintainer
+  decision). Runs on 42CrMo4_Santus and Ti6Al4V_Berto.
+- Evidence (`tests/methods/test_kakuno_kawada.py`): Eqs. (7)-(10) and (12) to machine precision;
+  Fig. 5 tau intercept reproduced, sigma intercept a strict xfail. The paper prints no table.
+- Guide `docs/method-guides/KAKUNO.md`, catalogue record G04, audit row; ranking and batch
+  comparison regenerated.
+
+### KHALIJ: Khalij, Pagnacco & Troian (2017) criterion (#13, N19)
+
+- New invariant model `KHALIJ` (`invariant_methods/khalij.py`): Eq. (23) with the authors' OP
+  setting alpha = 1/(3 r^2), evaluated in its frame-invariant form
+  J_2,a/t_-1^2 + (1 - alpha) I_1,a/f_-1. Constants: `Sigm1`, `Taum1`.
+- Table 6 (OP column) reproduced: 51 of 53 rows, with r from the Table 1 limits; two 3%C
+  cast-iron rows are strict xfails (`tests/methods/test_khalij.py`).
+- Zero-mean plane stress only (maintainer decision): the mean-stress terms of Eqs. (29)-(31) are
+  not dimensionless as printed and no reading reproduces Table 7. Cases with a mean stress are out
+  of scope, so the model runs on 42CrMo4_FABEST, 42CrMo4_Reis and the zero-mean limit datasets.
+- Guide `docs/method-guides/KHALIJ.md`, catalogue record N19, audit row; ranking and batch
+  comparison regenerated.
+
 ### Observation type of each Dataset row (decision d113, #18)
 
 - New Dataset column `Observation type (failure/run-out/fatigue limit)`, read by the importer

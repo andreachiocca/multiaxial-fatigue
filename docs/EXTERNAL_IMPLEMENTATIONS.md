@@ -6,7 +6,7 @@ Generated from the external-source records in [catalogue/methods.json](catalogue
 
 | Counted catalogue method/scoped records searched | Confirmed corresponding/bounded-variant source | Possible or related source | No accessible source identified |
 | --- | --- | --- | --- |
-| 118 | 6 | 10 | 102 |
+| 119 | 6 | 10 | 103 |
 
 The 117 records are not a definitive count of independent theories. Two additional future workstreams, C04/ECP and C09/random-spectrum HCF, have confirmed author-associated source links and are reported separately, not added to the 117-method denominator. Other noncounted leads were not individually searched.
 
@@ -314,7 +314,7 @@ This covers every counted record plus the two source-linked future workstreams. 
 | [N11](../METHODS.md#n11) — Ninić Damage Function (quadratic damage-plane criterion) | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | [N12](../METHODS.md#n12) — Revised multiaxial fatigue damage function | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | [N13](../METHODS.md#n13) — Golos–Dębski–Dębski modified Gough limit curve | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
-| [N15](../METHODS.md#n15) — Original Liu–Zenner integral criterion | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| [N15](../METHODS.md#n15) — Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | [N16](../METHODS.md#n16) — Liu–Mahadevan critical-plane criterion and life model | possible_or_related_source | possible_or_related_source; [EXT11](EXTERNAL_IMPLEMENTATIONS.md#ext11); not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | [N17](../METHODS.md#n17) — Mean-shear-sensitive weighted-plane criterion, CA branch | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | [N18](../METHODS.md#n18) — Piecewise ruled S–N surface | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
@@ -401,6 +401,7 @@ This covers every counted record plus the two source-linked future workstreams. 
 | [G49](../METHODS.md#g49) — Leis total octahedral-energy parameter | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | [G52](../METHODS.md#g52) — Wei–Liu critical-plane energy model | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | [N58](../METHODS.md#n58) — Liu–Xie–Hao equivalent stress on the maximum shear stress amplitude plane | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| [N59](../METHODS.md#n59) — Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter | no_accessible_source_identified | no_accessible_source_identified; not integrated or independently validated | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 
 ## Search method and unresolved leads
 

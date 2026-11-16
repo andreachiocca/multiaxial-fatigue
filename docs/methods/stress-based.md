@@ -16,22 +16,22 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 11 | 1 | 7 | 0 | 19 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 6 | 0 | 7 | 0 | 13 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
 | Specialized | 0 | 0 | 3 | 0 | 3 |
 | Strain based | 4 | 0 | 9 | 2 | 15 |
-| Stress based | 4 | 0 | 9 | 0 | 13 |
+| Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 40 | 2 | 71 | 5 | 118 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 162 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](../../docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](../../docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -52,7 +52,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [N38](../../METHODS.md#n38) | von Mises equivalent-amplitude baseline | Not implemented | not_tested | Medium | Yes |
 | [N39](../../METHODS.md#n39) | Tresca equivalent-amplitude baseline | Not implemented | not_tested | Low | Yes |
 | [N40](../../METHODS.md#n40) | Maximum principal stress / Rankine baseline | Not implemented | not_tested | Low | Yes |
-| [G04](../../METHODS.md#g04) | Kakuno–Kawada | Not implemented | not_tested | Medium | Yes |
+| [G04](../../METHODS.md#g04) | Kakuno–Kawada | Fully implemented | basic_numerical_tests | Medium | Yes |
 | [G05](../../METHODS.md#g05) | Manson–McKnight–Papuga (MMP) | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [G07](../../METHODS.md#g07) | Modified Mohr–Mises hypothesis (MMMH) | Fully implemented | basic_numerical_tests | High | Yes |
 | [G09](../../METHODS.md#g09) | Moment-adapted COIN LiWI (MA-COIN LiWI) | Not implemented | not_tested | Medium | Yes |
@@ -299,29 +299,29 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Stress based; Stress interaction |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | A NEW CRITERION OF FATIGUE STRENGTH OF A ROUND BAR SUBJECTED TO COMBINED STATIC AND REPEATED BENDING AND TORSION, Fatigue & Fracture of Engineering Materials and Structures |
 | DOI | https://doi.org/10.1111/j.1460-2695.1979.tb01358.x |
 | Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Preliminary; full equation-level verification pending |
-| Principle | Fatigue-strength interaction for combined static and cyclic bending/torsion. |
-| Loading scope | CA round-bar bending/torsion; static components; broader NP domain unverified |
-| Inputs / material parameters | Bending/torsion stresses and matching fatigue properties |
-| Output | Fatigue strength |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; Original round-bar experimental results |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Not Kawamoto/Nishihara; original full equations still required |
+| Formulation evidence | Checked against Kakuno & Kawada (1979) Eqs. (1)-(12) and Figs. 1-6 on the PDF (2026-11-15) |
+| Principle | Octahedral shear stress amplitude decreasing linearly with the octahedral normal stress amplitude (B) and mean (C), Eq. (4); A, B, C from t-1, f-1 and the pulsating limit (Eqs. 7-9). |
+| Loading scope | Proportional single-harmonic CA with superimposed static stresses of any direction; mean normal stress needs the pulsating limit Sig0. |
+| Inputs / material parameters | Sigm1 (f-1), Taum1 (t-1); Sig0 (pulsating limit, maximum stress) for mean normal stresses. |
+| Output | Fatigue index (1 at the limit); fitted life via the shared master curve where valid |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_kakuno_kawada.py: Eqs. (7)-(10) and (12) to machine precision; Fig. 5 tau intercept 0.559 vs 0.557 read; Fig. 5 sigma intercept 0.906 vs about 0.93 drawn (strict xfail). The paper prints no table. |
+| Python implementation | [src/multifat/models/invariant_methods/kakuno_kawada.py](../../src/multifat/models/invariant_methods/kakuno_kawada.py); KakunoKawada |
+| Automated tests | [tests/methods/test_kakuno_kawada.py](../../tests/methods/test_kakuno_kawada.py) |
+| Limitations | Proportional loading only (principal stress amplitudes). Without Sig0 cases with a mean normal stress are out of scope; the paper's average k1 = 0.83 for steels is not used. Fatigue-limit criterion: finite lives only through the shared master curve. Validated in the source on figures only. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Distinguish bending from axial strength; verify calibration |
+| Missing tasks | No known essential coding gap within the declared repository scope. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Distinguish bending from axial strength; verify calibration |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
-| Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Medium |
-| Provenance / prior status | G04; New distinct formulation candidate |
+| Feasibility / effort / priority | A / Medium (preliminary; exact scope and data determine effort) / Medium |
+| Provenance / prior status | G04; Already implemented, active |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=G04+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BG04%5D+Kakuno%E2%80%93Kawada) (no live Issue linked) |
 

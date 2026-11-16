@@ -86,3 +86,20 @@ def test_homepage_manifest_detects_staleness(tmp_path, monkeypatch):
     assert any("sha256" in p for p in homepage_data.check_manifest(csv_path, ["M"]))
     mpath.unlink()
     assert any("missing manifest" in p for p in homepage_data.check_manifest(csv_path, ["M"]))
+
+
+def test_readme_batch_transfer_numbers_follow_the_data():
+    """The percentages quoted in the README section are those of the committed batch data."""
+    from examples.plot_batch_transfer import transfer_summary
+
+    readme = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8")
+    s = transfer_summary().set_index(["design", "target"])["median"]
+
+    def pct(design, target):
+        return round(100 * (np.exp(s[(f"42CrMo4_{design}", f"42CrMo4_{target}")]) - 1))
+
+    lo, hi = sorted((pct("Santus", "Reis"), pct("Santus", "FABEST")))
+    assert (f"+{lo} %" if lo == hi else f"+{lo}–{hi} %") in readme
+    assert f"−{-pct('Reis', 'Santus')} % from Reis" in readme
+    assert f"−{-pct('FABEST', 'Santus')} % from FABEST" in readme
+    assert f"(−{-pct('FABEST', 'Reis')} % and +{pct('Reis', 'FABEST')} %)" in readme

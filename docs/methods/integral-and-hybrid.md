@@ -16,22 +16,22 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 11 | 1 | 7 | 0 | 19 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 6 | 0 | 7 | 0 | 13 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
 | Specialized | 0 | 0 | 3 | 0 | 3 |
 | Strain based | 4 | 0 | 9 | 2 | 15 |
-| Stress based | 4 | 0 | 9 | 0 | 13 |
+| Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 40 | 2 | 71 | 5 | 118 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 162 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](../../docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](../../docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -48,8 +48,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [I_BP](../../METHODS.md#i_bp) | Böhme–Papuga | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_CAIM](../../METHODS.md#i_caim) | Critical–integral approach (CAIM) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [N03](../../METHODS.md#n03) | Papadopoulos, specified 2001 formulation | Fully implemented | reference_examples_reproduced | High | Yes |
-| [N15](../../METHODS.md#n15) | Original Liu–Zenner integral criterion | Not implemented | not_tested | Medium | Yes |
-| [N17](../../METHODS.md#n17) | Mean-shear-sensitive weighted-plane criterion, CA branch | Not implemented | not_tested | High | Yes |
+| [N15](../../METHODS.md#n15) | Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N50](../../METHODS.md#n50) | Grubisic–Simbürger formulation | Not implemented | not_tested | Low | Yes |
 | [N53](../../METHODS.md#n53) | Substitute-amplitude/NP-damage method, CA branch | Not implemented | not_tested | Medium | Yes |
 | [G02](../../METHODS.md#g02) | Papuga–Růžička integral criterion (PI; later PIN) | Fully implemented | reference_examples_reproduced | High | Yes |
@@ -57,6 +56,8 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [L01](../../METHODS.md#l01) | Kenmeugne–Vidal-Salle–Robert–Bahuaud selective integral (Fatigue 1996) | Not implemented | not_tested | Low | unresolved_lead |
 | [L02](../../METHODS.md#l02) | Fogue–Bahuaud early global criterion | Not implemented | not_tested | Low | unresolved_lead |
 | [L06](../../METHODS.md#l06) | Grubisic–Simbürger original | Not implemented | not_tested | Low | related_publication |
+| [N59](../../METHODS.md#n59) | Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter | Fully implemented | basic_numerical_tests | Medium | Yes |
+| [N60](../../METHODS.md#n60) | Albinmousa–Al Hussain polar damage sum, Fatemi–Socie parameter | Fully implemented | basic_numerical_tests | Medium | implementation |
 
 ### I_BP
 
@@ -159,69 +160,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N15
 
-**Original Liu–Zenner integral criterion** — H Zenner (2000)
+**Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion** — H Zenner (2000)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Integral and hybrid;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | On the fatigue limit of ductile metals under complex multiaxial loading, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/s0142-1123(99)00107-3 |
 | Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Orientation-integrated amplitude and mean-stress contributions; CA P/NP, F. |
-| Loading scope | Orientation-integrated amplitude and mean-stress contributions; CA P/NP, F. |
-| Inputs / material parameters | S; four reversed/repeated normal/shear strengths or source-sanctioned calibration. |
-| Output | Orientation-integrated amplitude and mean-stress contributions; CA P/NP, F. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Parent-method baseline for BP/CAIM; related but not already implemented by BP. |
+| Formulation evidence | Checked against Zenner, Simbuerger & Liu (2000), Eqs. (4)-(7), Table 1, Section 4 (2026-11-16); the shear amplitude for a rotating shear vector is defined only in the cited Liu (1991) and Liu & Zenner (1993), not available |
+| Principle | sigma_eq,a = {15/(8 pi) int int [a tau_a^2 (1 + m tau_m^2) + b sigma_a^2 (1 + n sigma_m)] sin(gamma) dgamma dphi}^(1/2) = sigma_W (Eq. 6); a, b, m, n from sigma_W, tau_W, sigma_Sch, tau_Sch (Table 1), tau_Sch from Eq. (7). |
+| Loading scope | Single-harmonic CA, in and out of phase, with mean stresses (Sig0 required); 0.577 <= tau_W/sigma_W <= 0.866. |
+| Inputs / material parameters | Sigm1, Taum1; Sig0 for mean stresses; Tau0 optional (Eq. 7). |
+| Output | Fatigue-limit index sigma_eq,a/sigma_W; finite lives via the shared master curve (repository extension) |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_sih.py: the Table 1 factors 12/7, 4/21, 15/14 as sphere integrals; the four calibration limits exact; Eq. (5) ratio 1/sqrt3 (a = 1, b = 0); Eq. (5b) octahedral form; the Section 3 phase independence of Eq. (5) (exact with the quadratic amplitude). The paper prints no per-test value (Table 2 statistics only). |
+| Python implementation | [src/multifat/models/integral_methods/sih.py](../../src/multifat/models/integral_methods/sih.py); SIH |
+| Automated tests | [tests/methods/test_sih.py](../../tests/methods/test_sih.py) |
+| Limitations | Shear amplitude of a rotating shear vector not defined in the source: longest chord by maintainer decision (rss selectable); the Section 3 phase independence holds only with rss. Mean stresses need Sig0. Material scope 0.577-0.866. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Original coefficient equations and measured mean-stress calibration; reuse BP quadrature only. |
+| Missing tasks | Original definition of tau_a for non-proportional loading (Liu 1991; Liu & Zenner 1993); damage-sum life integration (Section 6). |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Original coefficient equations and measured mean-stress calibration; reuse BP quadrature only. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. BP sphere quadrature and projection helpers; preserve source-specific weights. |
-| Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Medium |
-| Provenance / prior status | N15; Already reviewed, not implemented |
+| Feasibility / effort / priority | A / Medium (preliminary; exact scope and data determine effort) / Medium |
+| Provenance / prior status | N15; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N15+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN15%5D+Original+Liu%E2%80%93Zenner+integral+criterion) (no live Issue linked) |
-
-### N17
-
-**Mean-shear-sensitive weighted-plane criterion, CA branch** — Xiao-Wei Wang, De-Guang Shang, Yu-Juan Sun, Hong Chen (2018)
-
-| Field | Evidence / task |
-| --- | --- |
-| Primary / secondary family | Integral and hybrid;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
-| Reference | Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Theoretical and Applied Fracture Mechanics |
-| DOI | https://doi.org/10.1016/j.tafmec.2017.10.007 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Weighted instantaneous shear-plane orientation and mean-shear/normal corrections; CA P/NP, F/L. |
-| Loading scope | Weighted instantaneous shear-plane orientation and mean-shear/normal corrections; CA P/NP, F/L. |
-| Inputs / material parameters | S; f−1/t−1, f0/t0; torsional S–N curve. |
-| Output | Weighted instantaneous shear-plane orientation and mean-shear/normal corrections; CA P/NP, F/L. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Addresses mean shear and changing plane direction; separate from N05. |
-| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
-| External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Stable orientation tracking/averaging, two candidate evaluations and native curve use. |
-| Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Stable orientation tracking/averaging, two candidate evaluations and native curve use. |
-| Roadmap rank | — |
-| Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. BP sphere quadrature and projection helpers; preserve source-specific weights. |
-| Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / High |
-| Provenance / prior status | N17; Already reviewed, not implemented |
-| Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N17+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN17%5D+Mean-shear-sensitive+weighted-plane+criterion%2C+CA+branch) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N15+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN15%5D+Shear+stress+intensity+hypothesis+%28SIH%29%2C+Zenner-Heidenreich-Richter+%2F+Liu-Zenner+integral+criterion) (no live Issue linked) |
 
 ### N50
 
@@ -453,3 +421,69 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Provenance / prior status | L06; Unresolved lead; potential overlap |
 | Related catalogue ID | [N50](../../METHODS.md#n50) |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=L06+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BL06%5D+Grubisic%E2%80%93Simb%C3%BCrger+original) (no live Issue linked) |
+
+### N59
+
+**Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter** — Jafar Albinmousa, Mohammed Al Hussain (2021)
+
+| Field | Evidence / task |
+| --- | --- |
+| Primary / secondary family | Integral and hybrid; Critical plane |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Reference | Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Forces in Mechanics |
+| DOI | https://doi.org/10.1016/j.finmec.2021.100025 |
+| Reference evidence | DOI and equations from the open-access publisher PDF (CC BY-NC-ND) supplied by the maintainer (2026-11-15); no Crossref record saved |
+| Formulation evidence | Checked against Albinmousa & Al Hussain (2021) Eqs. (1)-(19), Tables 1-5 and Figs. 1-8 on the PDF (2026-11-15) |
+| Principle | Area enclosed by the polar curve of the SWT parameter sigma_max(phi) Delta eps(phi)/2 over every plane perpendicular to the surface, D^s = 1/2 int D(phi)^2 dphi (Eqs. 8, 12-13). |
+| Loading scope | Single-harmonic CA plane stress on the x-y surface, proportional and non-proportional, mean stresses; elastic strains (repository version; the source is strain-controlled LCF). |
+| Inputs / material parameters | E, nu (elastic strains). |
+| Output | Polar damage sum D^s; fitted life via the shared master curve (D^s = alpha N^beta, Eqs. 17-19) |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_polar_damage_sum.py: Eqs. (7a), (7c), (7d) transformations, uniaxial closed form and the peak equal to the critical-plane SWT value (Fig. 2b), Riemann-sum convergence (Eqs. 11-12). The paper prints no per-test value (LCF, measured loops). |
+| Python implementation | [src/multifat/models/integral_methods/polar_damage_sum.py](../../src/multifat/models/integral_methods/polar_damage_sum.py); PolarDamageSumSWT |
+| Automated tests | [tests/methods/test_polar_damage_sum.py](../../tests/methods/test_polar_damage_sum.py) |
+| Limitations | Elastic reading of a strain-controlled LCF method (no plastic strains, no measured loops). Plane stress on the x-y surface only. Master curve fitted on the R = -1 uniaxial tests (the paper fits axial and shear together). |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External source discovery | no_accessible_source_identified; not integrated or independently validated |
+| Missing tasks | Elastic-plastic version with measured or modelled stabilised loops (the published LCF procedure). |
+| Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
+| Roadmap rank | — |
+| Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
+| Feasibility / effort / priority | A / Low / Medium |
+| Provenance / prior status | N59; Already implemented, active |
+| Related catalogue ID | None recorded |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N59+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN59%5D+Albinmousa%E2%80%93Al+Hussain+polar+damage+sum%2C+Smith%E2%80%93Watson%E2%80%93Topper+parameter) (no live Issue linked) |
+
+### N60
+
+**Albinmousa–Al Hussain polar damage sum, Fatemi–Socie parameter** — Jafar Albinmousa, Mohammed Al Hussain (2021)
+
+| Field | Evidence / task |
+| --- | --- |
+| Primary / secondary family | Integral and hybrid; Critical plane |
+| Record / counting | implementation; Second damage parameter of the N59 polar damage sum concept; counted once. |
+| Reference | Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Forces in Mechanics |
+| DOI | https://doi.org/10.1016/j.finmec.2021.100025 |
+| Reference evidence | DOI and equations from the open-access publisher PDF (CC BY-NC-ND) supplied by the maintainer (2026-11-15); no Crossref record saved |
+| Formulation evidence | Checked against Albinmousa & Al Hussain (2021) Eqs. (1)-(19), Tables 1-5 and Figs. 1-8 on the PDF (2026-11-15) |
+| Principle | Area enclosed by the polar curve of the FS parameter Delta gamma(phi)/2 (1 + k_phi sigma_n,max(phi)/sigma_yt) over every plane perpendicular to the surface (Eqs. 9, 12, 14); k_phi collapses the axial and shear life curves. |
+| Loading scope | Single-harmonic CA plane stress on the x-y surface, proportional and non-proportional, mean stresses; elastic strains (repository version; the source is strain-controlled LCF). |
+| Inputs / material parameters | E, nu (elastic strains); Sy (sigma_yt); k_PDS (k_phi), calibrated by scatter minimisation on the R = -1 tension and torsion failures when absent. |
+| Output | Polar damage sum D^s; fitted life via the shared master curve (D^s = alpha N^beta, Eqs. 17-19) |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_polar_damage_sum.py: Eqs. (7a), (7c), (7d) transformations, uniaxial closed form and the peak equal to the critical-plane SWT value (Fig. 2b), Riemann-sum convergence (Eqs. 11-12). The paper prints no per-test value (LCF, measured loops). |
+| Python implementation | [src/multifat/models/integral_methods/polar_damage_sum.py](../../src/multifat/models/integral_methods/polar_damage_sum.py); PolarDamageSumFS |
+| Automated tests | [tests/methods/test_polar_damage_sum.py](../../tests/methods/test_polar_damage_sum.py) |
+| Limitations | Elastic reading of a strain-controlled LCF method. k_PDS calibrated within [0, 10] (paper values 0.1-5); not identifiable where the scatter keeps decreasing (42CrMo4_Santus). Plane stress only. Master curve on the R = -1 uniaxial tests. |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External source discovery | not_individually_searched; not integrated or independently validated |
+| Missing tasks | Elastic-plastic version with measured or modelled stabilised loops (the published LCF procedure). |
+| Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
+| Roadmap rank | — |
+| Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
+| Feasibility / effort / priority | A / Low / Medium |
+| Provenance / prior status | N60; Already implemented, active |
+| Related catalogue ID | [N59](../../METHODS.md#n59) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N60+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN60%5D+Albinmousa%E2%80%93Al+Hussain+polar+damage+sum%2C+Fatemi%E2%80%93Socie+parameter) (no live Issue linked) |

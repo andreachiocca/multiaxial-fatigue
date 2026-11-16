@@ -158,14 +158,21 @@ constants are missing is skipped and reported; the other models still run.
 | TVEIT2025 | `A_TVEIT`, `C_TVEIT`, `K_TVEIT`, `L_TVEIT` | `Sigm1_TVEIT`: Sigm1 of the workbook; `Taum1_TVEIT`: Taum1 of the workbook; `npts_TVEIT`: 1001; `min_blocks_TVEIT`: 400; `max_blocks_TVEIT`: 60000; `tol_alpha_TVEIT`: 0.01; `tol_damage_TVEIT`: 0.001 |
 | DANGVAN | `Sigm1`, `Taum1` | - |
 | CROSSLAND | `Sigm1`, `Taum1` | - |
+| WANG2018 | `Sigm1`, `Taum1` | `Sig0`: Eq. (19): sqrt(2) Sigm1; `Tau0`: Eq. (19): 4 Taum1 / (2 Sigm1 / Sig0 + 1) |
 | WANG2022 | `Sigm1`, `Sy`, `Taum1` | - |
 | GAM | `Sigm1`, `Taum1` | - |
 | GOLOS | `Sigm1`, `Taum1` | - |
+| KHALIJ | `Sigm1`, `Taum1` | - |
+| KAKUNO | `Sigm1`, `Taum1` | `Sig0`: pulsating (R = 0) limit, maximum stress; needed for mean normal stresses |
+| MATSUBARA | - | `sigma_T`: true fracture strength; default 1.84 Su for 400 <= Su <= 1000 MPa (ref. [23]); `Su`: used only to estimate sigma_T |
+| PDS_SWT | - | - |
+| PDS_FS | `Sy`, `k_PDS` | - |
 | SINES | `Sigm1`, `Su`, `Taum1` | - |
 | PAPADOPOULOS | `Sigm1`, `Taum1` | - |
 | PCR | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Su`: only to estimate Sig0 |
 | PI | `Sigm1`, `Taum1` | - |
 | RFB | `Sigm1`, `Taum1` | `Sig0`: estimated from Su and Sigm1 by Eq. (1) of Boehme et al. 2026; `Su`: used only to estimate Sig0 |
+| SIH | `Sigm1`, `Taum1` | `Sig0`: required for mean stresses (Table 1); `Tau0`: Eq. (7): 4 Taum1 / (2 Sigm1 / Sig0 + 1) |
 | VHN | `Sigm1`, `Su`, `Taum1` | - |
 | PBP | `Sigm1`, `Taum1` | - |
 | COIN | `Sigm1`, `Taum1` | `k_phi`: 1.0 (RMS formulation) |

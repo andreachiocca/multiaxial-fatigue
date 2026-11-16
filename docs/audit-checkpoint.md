@@ -29,6 +29,34 @@
 - Next action: push `tveit2025-calibration` to the fork and open the PR; later modes `all_eligible`
   and `subset` (#14).
 
+## Issue #13, new methods from the supplied papers (16 November 2026)
+
+- Merged: KHALIJ, KAKUNO, MATSUBARA, PDS_SWT/PDS_FS (#103-#106). Open: #107 (homepage
+  cross-batch figure), #108 (LaTeX method sheets, `docs/method-sheets/`; 46 models pending).
+- Second batch of papers: Zenner, Simbuerger & Liu 2000 (SIH, N15), Bolchoun, Baumgartner &
+  Kaufmann 2017 (N53), Wang, Shang, Sun & Chen 2018 (N17). Maintainer decisions (16 Nov):
+  - WANG2018: tension-torsion only; life on the torsion S-N curve; add Tables 3-5 (7075-T651,
+    52 tests) as a new workbook in a separate data PR.
+  - SIH: shear amplitude = the method's original rule, otherwise longest chord (MCC for one
+    harmonic); Sig0 required for mean stresses, Tau0 from Eq. (7).
+  - A user option must select the shear amplitude (longest chord, MCC, MCE) for every method that
+    uses one (generalise `--shear-amplitude-algorithm`, now FIN only).
+  - Bolchoun deferred: Eq. (15) is garbled in the accepted manuscript, and the method needs an
+    out-of-phase S-N curve as input.
+- Branch `feat/wang2018-criterion` (stacked on `docs/method-sheets`): WANG2018 implemented, guide,
+  sheet, catalogue, audit, ranking regenerated (6 life + 6 limit datasets).
+- WANG2018: PR #109 (stacked on #108).
+- Branch `feat/sih-criterion` (stacked on #109): SIH implemented with the longest chord. Evidence:
+  Section 3 phase independence holds only with rss; the maintainer confirmed the longest
+  chord (16 Nov). Runs on 5 datasets; others lack Sig0 or are outside 0.577-0.866.
+- SIH: PR #110 (stacked on #109); longest chord confirmed by the maintainer (16 Nov).
+- Branch `feat/shear-amplitude-option` (stacked on #110): `--shear-amplitude-algorithm` of
+  multifat-run / multifat-calibrate for every model exposing `np_shear_rule` (all CP methods, SIH);
+  pipeline guard generalised; pipeline itself still method_default.
+- #107-#111 merged (16 Nov). Branch `data/al7075-t651-wang`: workbook 18_Al7075_T651_Wang,
+  45 models run, ranking regenerated.
+- Next action: dataset PR; then backfill the LaTeX sheets family by family (46 pending).
+
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 
 - Branch `data/observation-type`: Dataset column `Observation type`, added to all 17 workbooks

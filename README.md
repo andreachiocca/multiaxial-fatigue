@@ -136,20 +136,33 @@ Data in `examples/data/load_error_ranking.csv`, rebuilt with `examples/build_loa
 
 ![Method ranking by the load-equivalent error](docs/images/load_error_ranking.png)
 
-How the same methods carry over between batches of one material (42CrMo4: three laboratories;
-Ti6Al4V: two), each calibrated on its own batch and predicted from the others, is in the
-[cross-batch comparison](docs/batch-comparison.md)
+### Same steel, another batch
+
+A designer rarely has fatigue tests on the very batch of the component. Three laboratories tested
+the same 42CrMo4 +QT steel (Santus: Su = 875 MPa; Reis and FABEST: about 1100 MPa). Every method
+was calibrated on one batch and used to predict the tests of another:
+
+- constants from the **weaker** batch (Santus) misjudge the load of the stronger batches by
+  **+27–28 %**, on the safe side;
+- constants from a **stronger** batch predict the Santus tests **non-conservatively**
+  (−10 % from Reis, −15 % from FABEST);
+- the two high-strength batches transfer well into each other (−2 % and +13 %).
+
+Without tests on the batch, a margin of about 15–25 % on the load is needed. The same analysis
+covers Ti6Al4V (two batches) in the [cross-batch comparison](docs/batch-comparison.md)
 ([issue #71](https://github.com/andreachiocca/multiaxial-fatigue/issues/71)).
+
+![Constants from another batch of the same steel](docs/images/batch_transfer.png)
 
 ## Method coverage
 
 <!-- METHOD_NAVIGATION_START -->
 
-**71 missing method candidates** are available to explore: 59 have preliminary A/B feasibility (a new criterion or manageable extensions). Pick by scientific interest and available references/data; an off-roadmap proposal is welcome.
+**66 missing method candidates** are available to explore: 54 have preliminary A/B feasibility (a new criterion or manageable extensions). Pick by scientific interest and available references/data; an off-roadmap proposal is welcome.
 
 Browse contribution opportunities by family: [Critical plane](docs/METHOD_INDEX.md#family-critical-plane) · [Energy based](docs/METHOD_INDEX.md#family-energy-based) · [Integral and hybrid](docs/METHOD_INDEX.md#family-integral-and-hybrid) · [Invariant based](docs/METHOD_INDEX.md#family-invariant-based) · [Mesoscopic and damage](docs/METHOD_INDEX.md#family-mesoscopic-and-damage) · [Nonlocal and gradient](docs/METHOD_INDEX.md#family-nonlocal-and-gradient) · [Probabilistic](docs/METHOD_INDEX.md#family-probabilistic) · [Specialized](docs/METHOD_INDEX.md#family-specialized) · [Strain based](docs/METHOD_INDEX.md#family-strain-based) · [Stress based](docs/METHOD_INDEX.md#family-stress-based) · [Tensor and path based](docs/METHOD_INDEX.md#family-tensor-and-path-based).
 
-**Available in the current API:** [FS](METHODS.md#i_fs), [FIN](METHODS.md#i_fin), [SWT](METHODS.md#i_swt), [MATAKE](METHODS.md#i_matake), [MCD](METHODS.md#i_mcd), [MGSE_YU](METHODS.md#i_mgse_yu), [MGSE_ZHU](METHODS.md#i_mgse_zhu), [MSWT](METHODS.md#i_mswt), [MKBM](METHODS.md#i_mkbm), [LIU2021](METHODS.md#i_liu2021), [LI](METHODS.md#i_li), [GSE](METHODS.md#i_gse), [GSA](METHODS.md#i_gsa), [BP](METHODS.md#i_bp), [CAIM](METHODS.md#i_caim), [DANGVAN](METHODS.md#i_dangvan), [OTT](METHODS.md#i_ott), [SWTD](METHODS.md#i_swtd), [CROSSLAND](METHODS.md#n01), [SINES](METHODS.md#n02), [PAPADOPOULOS](METHODS.md#n03), [MWCM](METHODS.md#n04), [WANG2022](METHODS.md#n05), [ZHANGYAO](METHODS.md#n06), [GAM](METHODS.md#n08), [NINIC](METHODS.md#n11), [GOLOS](METHODS.md#n13), [LIUMAHADEVAN](METHODS.md#n16), [VHN](METHODS.md#n20), [SSF](METHODS.md#n24), [KUJAWSKI2021](METHODS.md#n26), [MWHS](METHODS.md#n28), [PBP](METHODS.md#n37), [TVEIT2025](METHODS.md#c02), [PCR](METHODS.md#g01), [PI](METHODS.md#g02), [MMP](METHODS.md#g05), [MDC](METHODS.md#g06), [MMMH](METHODS.md#g07), [COIN](METHODS.md#g08), [VSE](METHODS.md#g15), [EK](METHODS.md#g16), [MMCCM](METHODS.md#g22), [MOREL](METHODS.md#g23), [RFB](METHODS.md#g41), [LIU2025](METHODS.md#n58). Each link states the implemented scope and evidence; active does not automatically mean source completeness is established.
+**Available in the current API:** [FS](METHODS.md#i_fs), [FIN](METHODS.md#i_fin), [SWT](METHODS.md#i_swt), [MATAKE](METHODS.md#i_matake), [MCD](METHODS.md#i_mcd), [MGSE_YU](METHODS.md#i_mgse_yu), [MGSE_ZHU](METHODS.md#i_mgse_zhu), [MSWT](METHODS.md#i_mswt), [MKBM](METHODS.md#i_mkbm), [LIU2021](METHODS.md#i_liu2021), [LI](METHODS.md#i_li), [GSE](METHODS.md#i_gse), [GSA](METHODS.md#i_gsa), [BP](METHODS.md#i_bp), [CAIM](METHODS.md#i_caim), [DANGVAN](METHODS.md#i_dangvan), [OTT](METHODS.md#i_ott), [SWTD](METHODS.md#i_swtd), [CROSSLAND](METHODS.md#n01), [SINES](METHODS.md#n02), [PAPADOPOULOS](METHODS.md#n03), [MWCM](METHODS.md#n04), [WANG2022](METHODS.md#n05), [ZHANGYAO](METHODS.md#n06), [GAM](METHODS.md#n08), [MATSUBARA](METHODS.md#n09), [NINIC](METHODS.md#n11), [GOLOS](METHODS.md#n13), [SIH](METHODS.md#n15), [LIUMAHADEVAN](METHODS.md#n16), [WANG2018](METHODS.md#n17), [KHALIJ](METHODS.md#n19), [VHN](METHODS.md#n20), [SSF](METHODS.md#n24), [KUJAWSKI2021](METHODS.md#n26), [MWHS](METHODS.md#n28), [PBP](METHODS.md#n37), [TVEIT2025](METHODS.md#c02), [PCR](METHODS.md#g01), [PI](METHODS.md#g02), [KAKUNO](METHODS.md#g04), [MMP](METHODS.md#g05), [MDC](METHODS.md#g06), [MMMH](METHODS.md#g07), [COIN](METHODS.md#g08), [VSE](METHODS.md#g15), [EK](METHODS.md#g16), [MMCCM](METHODS.md#g22), [MOREL](METHODS.md#g23), [RFB](METHODS.md#g41), [LIU2025](METHODS.md#n58), [PDS_SWT](METHODS.md#n59), [PDS_FS](METHODS.md#n60). Each link states the implemented scope and evidence; active does not automatically mean source completeness is established.
 
 <!-- METHOD_NAVIGATION_END -->
 
@@ -167,18 +180,18 @@ the calibration, and a worked example whose numbers are checked by the test suit
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 11 | 1 | 7 | 0 | 19 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 6 | 0 | 7 | 0 | 13 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
 | Specialized | 0 | 0 | 3 | 0 | 3 |
 | Strain based | 4 | 0 | 9 | 2 | 15 |
-| Stress based | 4 | 0 | 9 | 0 | 13 |
+| Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 40 | 2 | 71 | 5 | 118 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 <!-- METHOD_PROGRESS_END -->
 
@@ -190,7 +203,7 @@ experimental data.
 
 <!-- METHOD_RECONCILIATION_START -->
 
-The catalogue contains **71 missing method/scoped candidates**; the roadmap selects **6** for an initial, dependency-aware programme. The other **65 remain available for proposals**. The complete index retains **162 research records**, including **118 identifiable method/scoped records** and **44 bundles, related sources, unresolved overlaps/leads and wider workstreams** outside that progress denominator. These are not 162 independent fatigue theories.
+The catalogue contains **66 missing method/scoped candidates**; the roadmap selects **6** for an initial, dependency-aware programme. The other **60 remain available for proposals**. The complete index retains **164 research records**, including **119 identifiable method/scoped records** and **45 bundles, related sources, unresolved overlaps/leads and wider workstreams** outside that progress denominator. These are not 164 independent fatigue theories.
 
 <!-- METHOD_RECONCILIATION_END -->
 
@@ -258,7 +271,9 @@ methods keep the RSS convention.
 The CSVs in `Results/archive/pre-audit/` predate the numerical audit and are kept as history only
 (see [Results/README.md](Results/README.md)). The experimental collection is the revised
 October 2026 set (upstream 71eaac3, 15 workbooks, of which 7 fatigue-limit sets and 2 notched-only), plus `16_42CrMo4_FABEST` from the FABEST database (doi:10.5281/zenodo.23359038) and the fatigue-limit
-set `17_Ti6Al4V_Delahay`, built from Delahay & Palin-Luc 2006 (doi:10.1016/j.ijfatigue.2005.06.048).
+set `17_Ti6Al4V_Delahay`, built from Delahay & Palin-Luc 2006 (doi:10.1016/j.ijfatigue.2005.06.048),
+and the life set `18_Al7075_T651_Wang` (52 tension-torsion tests with mean stresses), built from
+Wang et al. 2018 (doi:10.1016/j.tafmec.2017.10.007).
 The provenance of each workbook, with its open questions, is in
 [Experimental_Data/PROVENANCE.md](Experimental_Data/PROVENANCE.md).
 

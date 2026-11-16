@@ -20,7 +20,7 @@ numbers are checked on every CI run.
 
 ## Available guides
 
-All 46 registered criteria have a dedicated guide below, grouped by family.
+All 53 registered criteria have a dedicated guide below, grouped by family.
 
 | Guide | Registry name | Family | Damage parameter (DP) | Material constants |
 | --- | --- | --- | --- | --- |
@@ -42,6 +42,8 @@ All 46 registered criteria have a dedicated guide below, grouped by family.
 | [Deviatoric SWT](SWTD.md) | `SWTD` | Energy-based, deviatoric | $\max_i \max(S_{\max,i}\lvert e_{a,i}\rvert,\, S_{\min,i}\lvert e_{a,i}\rvert)$ (MJ/m$^3$) | none |
 | [Ellyin–Kujawski](EK.md) | `EK` | Energy-based, distortional | $\Delta W_d\,(1 + \alpha\sigma_m/\bar{\sigma})/\bar{\rho}^{\,n}$ (MJ/m$^3$) | `E`, `nu`; `alpha_EK`, `n_EK`, `K_prime`, `n_prime` |
 | [Liu–Mahadevan](LIUMAHADEVAN.md) | `LIUMAHADEVAN` | Critical plane, stress (native life) | $\sqrt{[\sigma_{a,c}(1+\eta\sigma_{m,c}/f)/f]^2 + (\tau_{a,c}/t)^2 + k(\sigma^H_a/f)^2}/\beta$ (index) | `Sigm1`, `Taum1`, `sigma_f`, `b_fat`, `tau_f`, `b0` |
+| [Shear stress intensity hypothesis](SIH.md) | `SIH` | Integral (sphere average) | $\{\tfrac{15}{8\pi}\iint[a\tau_a^2(1+m\tau_m^2)+b\sigma_a^2(1+n\sigma_m)]\,d\Omega\}^{1/2}/\sigma_W$ (index) | `Sigm1`, `Taum1`; `Sig0` for means |
+| [Wang et al. 2018](WANG2018.md) | `WANG2018` | Critical plane, stress (weighted plane) | $\sqrt{[\tau_a + k_\tau\lvert\tau_m\rvert]^2 + \tfrac13[\sigma_a + k_\sigma\sigma_m]^2}$ (MPa) | `Sigm1`, `Taum1` |
 | [Wang et al. 2022](WANG2022.md) | `WANG2022` | Critical plane, stress | $\sqrt{C_a^2 + k(1 - \sqrt{N_{\max}N_a}/2\sigma_y)^2N_a^2}$ (MPa) | `Sigm1`, `Taum1`, `Sy` |
 | [Zhang–Yao](ZHANGYAO.md) | `ZHANGYAO`, `ZHANGYAO_ext` | Critical plane, stress | $\sqrt{C_a^2 - C_aN^* + (t_{-1}^2/f_{-1}^2)(f_{-1}+2C_a)N^*}/t_{-1}$ (index) | `Sigm1`, `Taum1`; `Su` |
 | [Ninić Damage Function](NINIC.md) | `NINIC` | Critical plane, stress | $\sqrt{(\tau_a/t_{-1})^2 + k(\sigma_{n,\max}/f_{-1})^2}$ (index) | `Sigm1`, `Taum1`; `k_NIN` |
@@ -56,6 +58,11 @@ All 46 registered criteria have a dedicated guide below, grouped by family.
 | [Sines](SINES.md) | `SINES` | Stress invariants | $(\sqrt{J_{2,a}} + \kappa\,\sigma_{H,m})/t_{-1}$ (index) | `Sigm1`, `Taum1`, `Su` |
 | [Golos–Dębski–Dębski](GOLOS.md) | `GOLOS` | Limit curve (in-phase bending–torsion) | $A(\sigma/f_{-1})^2 + B\,\sigma/f_{-1} + (\tau/t_{-1})^2$ (index) | `Sigm1`, `Taum1` |
 | [Gonçalves–Araújo–Mamiya](GAM.md) | `GAM` | Stress invariants (prismatic hull) | $(\sqrt{\textstyle\sum a_i^2} + \kappa\,\sigma_{p\max})/\lambda$ (index) | `Sigm1`, `Taum1` |
+| [Kakuno–Kawada](KAKUNO.md) | `KAKUNO` | Stress invariants (octahedral) | $(\tau_{oct,a} + B\,\lvert\mathrm{tr}\,\mathbf S_a\rvert + C\,\mathrm{tr}\,\mathbf S_m)/A$ (index) | `Sigm1`, `Taum1`, `Sig0` |
+| [Khalij–Pagnacco–Troian](KHALIJ.md) | `KHALIJ` | Stress invariants (prismatic hull) | $J_{2,a}/t_{-1}^2 + (1 - 1/3r^2)\,I_{1,a}/s_{-1}$ (damage $\mathfrak D$) | `Sigm1`, `Taum1` |
+| [Matsubara–Hayashida–Kano](MATSUBARA.md) | `MATSUBARA` | Stress invariants (prismatic hull + Stage II normal stress) | $\sigma_T\sqrt{J_{2,amp}}/(\sigma_T - S_{max} + \sqrt3\sqrt{J_{2,amp}})$ (MPa) | `sigma_T` or `Su` |
+| [Polar damage sum, SWT](PDS_SWT.md) | `PDS_SWT` | Integral over surface planes (polar area) | $\tfrac12\int_0^{2\pi} D_{SWT}(\varphi)^2\,d\varphi$ | `E`, `nu` |
+| [Polar damage sum, FS](PDS_FS.md) | `PDS_FS` | Integral over surface planes (polar area) | $\tfrac12\int_0^{2\pi} D_{FS}(\varphi)^2\,d\varphi$ | `E`, `nu`, `Sy`, `k_PDS` |
 | [Reduced Ottosen](OTT.md) | `OTT` | Stress invariants (Hershey–Hosford) | $\sigma_{e,a} + A\,I_{1,m}$ (MPa) | `Sigm1`, `Taum1`; `m_OTT`, `A_OTT`, `Sig0` or `Su` |
 | [Vu–Halm–Nadot](VHN.md) | `VHN` | Stress invariants | $f_{\max}/t_{-1}$, Eq. (8) (index) | `Sigm1`, `Taum1`, `Su` |
 | [Projection-by-Projection](PBP.md) | `PBP` | Stress invariants (deviatoric covariance) | $\Gamma/\sqrt{J_{2A,\rho}}$ (index) | `Sigm1`, `Taum1` |

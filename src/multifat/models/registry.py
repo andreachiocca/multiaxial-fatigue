@@ -35,6 +35,7 @@ from .cp_methods.ninic import Ninic
 from .cp_methods.mwhs import MWHS
 from .cp_methods.liu2025 import Liu2025
 from .cp_methods.zhang_yao import ZhangYao
+from .cp_methods.wang2018 import Wang2018
 from .cp_methods.wang2022 import Wang2022
 from .cp_methods.kujawski2021 import Kujawski2021
 
@@ -60,10 +61,15 @@ from .cp_methods.dangvan import DangVan
 from .invariant_methods.crossland import Crossland
 from .invariant_methods.goncalves_araujo_mamiya import GoncalvesAraujoMamiya
 from .invariant_methods.golos import Golos
+from .invariant_methods.kakuno_kawada import KakunoKawada
+from .invariant_methods.khalij import Khalij
+from .invariant_methods.matsubara import Matsubara
 from .invariant_methods.sines import Sines
 from .integral_methods.papadopoulos import Papadopoulos
+from .integral_methods.polar_damage_sum import PolarDamageSumFS, PolarDamageSumSWT
 from .integral_methods.papuga_ruzicka import PapugaCriticalPlane, PapugaIntegral
 from .integral_methods.robert_fogue_bahuaud import RobertFogueBahuaud
+from .integral_methods.sih import SIH
 from .invariant_methods.vu_halm_nadot import VuHalmNadot
 from .invariant_methods.pbp import ProjectionByProjection
 from .invariant_methods.coin_liwi import CoinLiwi
@@ -115,14 +121,21 @@ def _available_direct_models():
         "TVEIT2025": Tveit2025(),
         "DANGVAN": DangVan(),
         "CROSSLAND": Crossland(),
+        "WANG2018": Wang2018(),
         "WANG2022": Wang2022(),
         "GAM": GoncalvesAraujoMamiya(),
         "GOLOS": Golos(),
+        "KHALIJ": Khalij(),
+        "KAKUNO": KakunoKawada(),
+        "MATSUBARA": Matsubara(),
+        "PDS_SWT": PolarDamageSumSWT(),
+        "PDS_FS": PolarDamageSumFS(),
         "SINES": Sines(),
         "PAPADOPOULOS": Papadopoulos(),
         "PCR": PapugaCriticalPlane(),
         "PI": PapugaIntegral(),
         "RFB": RobertFogueBahuaud(),
+        "SIH": SIH(),
         "VHN": VuHalmNadot(),
         "PBP": ProjectionByProjection(),
         "COIN": CoinLiwi(),

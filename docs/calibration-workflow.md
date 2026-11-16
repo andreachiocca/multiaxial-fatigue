@@ -85,7 +85,7 @@ Symbols (`DP`, `N`, `A`, `b`, the plane coefficients) are the ones of
 |---|---|---|
 | Elastic constants, yield/ultimate strengths, supplied fatigue strengths and strain-life properties | Material inputs, including existing optional-property estimates where explicitly reported | Excel |
 | `K` | Existing ratio of fatigue strengths; not an optimisation output | Excel |
-| `k_FS`, `k_FI`, `L_LI`, `k_MGSE`, `a_MSWT` | Dimensionless coefficients of the existing FS, Findley, Li, MGSE_ZHU and scalar MSWT implementations | JSON |
+| `k_FS`, `k_FI`, `L_LI`, `k_MGSE`, `a_MSWT`, `k_PDS` | Dimensionless coefficients of the existing FS, Findley, Li, MGSE_ZHU, scalar MSWT and PDS_FS implementations | JSON |
 | `A`, `b`, `A_surv` | Master curve `DP = A*N**b` and its existing damage-space shift | JSON, separately for standard and `_ext` variants |
 | `STD`, `STD_ln_DP`, `R2_log`, `n` | Fit diagnostics and number of usable failure observations | JSON |
 | Plane grid, search bounds, refinement counts, selection tolerances and scatter settings | Numerical calibration settings, distinct from material properties | JSON metadata and versioned procedure |
@@ -148,8 +148,8 @@ constants absent, so the model is skipped with the reason. The run report notes 
 | `error` | An unexpected exception, kept with its traceback in the log | exit code 1 |
 
 The search intervals are k_FS, k_FI in [0, 3], L_LI in [0, 20] (widened from [0, 5] in November 2026:
-on both 42CrMo4 datasets the minimum lay just outside it, at 7.07 and 5.36), k_MGSE in [0, 5] and
-a_MSWT in [0, 1]. The lower bound 0 and the upper bound 1 of a_MSWT (a weight) are limits of the
+on both 42CrMo4 datasets the minimum lay just outside it, at 7.07 and 5.36), k_MGSE in [0, 5],
+a_MSWT in [0, 1] and k_PDS in [0, 10] (Albinmousa & Al Hussain 2021 report 0.1 to 5.0). The lower bound 0 and the upper bound 1 of a_MSWT (a weight) are limits of the
 constants themselves; the other upper bounds only limit the search. A scatter minimum on such a
 search bound is not a calibrated optimum: it is listed under `at_bound` and `unidentified` in the
 sidecar and handed to no model, so a model that requires it is skipped with that reason (Ti6Al4V:
@@ -166,8 +166,8 @@ appended to their reason. Block isolation (`partial`) is reserved for a later ch
 produced.
 
 **Tests outside R = −1 (issue #77, decision d107).** The plane constants (`k_FS`, `k_FI`, `L_LI`,
-`k_MGSE`, `a_MSWT`) are defined on fully reversed tension and torsion tests, selected with
-|R + 1| ≤ 0.02. When a material has none, the selection relaxes the tolerance (0.05, 0.1, 0.2, 0.5)
+`k_MGSE`, `a_MSWT`, `k_PDS`) are defined on fully reversed tension and torsion tests, selected with
+|R + 1| ≤ 10⁻³, the tolerance shared by every design-test selector (#77). When a material has none, the selection relaxes the tolerance (0.02, 0.05, 0.1, 0.2, 0.5)
 and, as a last resort, accepts any stress ratio. The maintainer accepts this fallback, with two
 conditions:
 
@@ -283,11 +283,12 @@ schema-version-1 files to remain readable without rewriting them.
 ## Findley amplitude selection
 
 > **In this repository.** The option is `multifat-calibrate --shear-amplitude-algorithm`; it sets the
-> Findley shear amplitude (MCE or MCC) in the k_FI calibration through the plane shear rule of the
-> established search and returns `amplitude_settings` with the result. No record is written, so the
+> shear amplitude (MCE or MCC/longest chord) of every calibrated critical-plane criterion (FS, FIN,
+> LI, MGSE_ZHU, MSWT) through the plane shear rule of the established search and returns
+> `amplitude_settings` with the result. No record is written, so the
 > store-specific text below (Script 0/1, JSON signatures, compatibility table, fingerprints) describes
-> upstream only; `multifat-pipeline --constants` rejects a record whose Findley amplitude is not MCE
-> and does not expose the option. See [harmonic shear amplitudes](shear-amplitude.md#findley-calibration-selection).
+> upstream only; `multifat-pipeline --constants` rejects a record whose amplitude differs from a
+> method's own and does not expose the option. See [harmonic shear amplitudes](shear-amplitude.md#findley-calibration-selection).
 
 Upstream's Findley calibration accepts the following Script 0 option. The mathematical
 definitions and amplitude/range conventions are given in

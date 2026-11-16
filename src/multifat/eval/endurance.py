@@ -33,6 +33,7 @@ ENDURANCE_CONSTANTS = {
     "L_LI": (0.0, 20.0),
     "k_MGSE": (0.0, 5.0),
     "a_MSWT": (0.0, 1.0),
+    "k_PDS": (0.0, 10.0),
 }
 
 

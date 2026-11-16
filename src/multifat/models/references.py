@@ -94,6 +94,14 @@ REFERENCES = {
         "Kujawski (2021), An interpretation and modification of the SWT function, Eqs. (9)-(13)",
         "10.1111/ffe.13488",
     ),
+    "SIH": (
+        "Zenner, Simbuerger & Liu (2000), On the fatigue limit of ductile metals under complex multiaxial loading, Eqs. (6)-(7), Table 1 (shear stress intensity hypothesis of Zenner, Heidenreich & Richter)",
+        "10.1016/S0142-1123(99)00107-3",
+    ),
+    "WANG2018": (
+        "Wang, Shang, Sun & Chen (2018), Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Eqs. (2)-(9), (15)-(20)",
+        "10.1016/j.tafmec.2017.10.007",
+    ),
     "WANG2022": (
         "Wang, Sun, Liu, Liu & Shang (2022), Multiaxial high-cycle fatigue failure and life prediction based on critical plane method, Eqs. (10), (15), (18)-(24)",
         "10.1177/10567895221091308",
@@ -117,6 +125,26 @@ REFERENCES = {
     "GOLOS": (
         "Golos, Debski & Debski (2014), A stress-based fatigue criterion to assess high-cycle fatigue under in-phase multiaxial loading conditions, Eqs. (29)-(32)",
         "10.1016/j.tafmec.2014.07.005",
+    ),
+    "PDS_SWT": (
+        "Albinmousa & Al Hussain (2021), Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Eqs. (8), (12)-(13), (17)-(18)",
+        "10.1016/j.finmec.2021.100025",
+    ),
+    "PDS_FS": (
+        "Albinmousa & Al Hussain (2021), Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Eqs. (9), (12), (14), (17), (19)",
+        "10.1016/j.finmec.2021.100025",
+    ),
+    "MATSUBARA": (
+        "Matsubara, Hayashida & Kano (2018), Predicting the multiaxial fatigue limit and the multiaxial high-cycle fatigue life based on the unified equivalent shear stress from axial strength characteristics with various waveforms, Eqs. (9), (13)-(15)",
+        "10.1016/j.ijfatigue.2017.12.001",
+    ),
+    "KAKUNO": (
+        "Kakuno & Kawada (1979), A new criterion of fatigue strength of a round bar subjected to combined static and repeated bending and torsion, Eqs. (4), (6)-(10)",
+        "10.1111/j.1460-2695.1979.tb01358.x",
+    ),
+    "KHALIJ": (
+        "Khalij, Pagnacco & Troian (2017), Fatigue criterion improvement of Gough and Nishihara & Kawamoto to predict the fatigue damage of a wide range of metallic materials, Eqs. (12), (22), (23), (26)",
+        "10.1016/j.ijfatigue.2017.02.016",
     ),
     "GAM": (
         "Goncalves, Araujo & Mamiya (2005), Multiaxial fatigue: a stress based criterion for hard metals, Eqs. (11)-(13), (A.17)",

@@ -30,6 +30,7 @@ from pathlib import Path
 from multifat.cli import run as runmod
 import multifat.imp.experimental_data as exp
 from multifat.eval.fitting import stdnum_for_survival
+from multifat.eval.shear_amplitude_option import resolved_algorithm
 from multifat.imp.schema import WorkbookError, material_id, workbook_files
 from multifat.models.errors import (
     DesignSetError,
@@ -449,13 +450,18 @@ def load_constants(path: Path, material: str, n_failures: int | None = None) -> 
         raise ValueError(
             f"{path} holds constants for material '{declared_material}', not '{material}'"
         )
-    algorithm = ((record.get("amplitude_settings") or {}).get("FIN") or {}).get("algorithm")
-    if algorithm not in (None, "mce_harmonic"):
-        # Production Findley evaluates MCE (A. Chiocca, 36ff0a1); an MCC k_FI would be misapplied.
-        raise ValueError(
-            f"{path}: k_FI was calibrated with the Findley amplitude '{algorithm}', but the "
-            "pipeline evaluates Findley with mce_harmonic"
-        )
+    from multifat.models.registry import get_models
+
+    for method_name, setting in (record.get("amplitude_settings") or {}).items():
+        # The pipeline evaluates every method with its own amplitude (method_default; Findley
+        # MCE, A. Chiocca 36ff0a1): a constant fitted with another amplitude would be misapplied.
+        algorithm = (setting or {}).get("algorithm")
+        expected = resolved_algorithm(get_models([method_name])[0])
+        if algorithm not in (None, expected):
+            raise ValueError(
+                f"{path}: the {method_name} constant was calibrated with the shear amplitude "
+                f"'{algorithm}', but the pipeline evaluates {method_name} with {expected}"
+            )
     return constants, origin
 
 
