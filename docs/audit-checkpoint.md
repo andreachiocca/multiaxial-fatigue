@@ -20,7 +20,11 @@
 - Branch `feat/sih-criterion` (stacked on #109): SIH implemented with the longest chord. Evidence:
   Section 3 phase independence holds only with rss; the maintainer confirmed the longest
   chord (16 Nov). Runs on 5 datasets; others lack Sig0 or are outside 0.577-0.866.
-- Next action: SIH PR; then the global shear-amplitude option; then the 7075-T651 workbook PR.
+- SIH: PR #110 (stacked on #109); longest chord confirmed by the maintainer (16 Nov).
+- Branch `feat/shear-amplitude-option` (stacked on #110): `--shear-amplitude-algorithm` of
+  multifat-run / multifat-calibrate for every model exposing `np_shear_rule` (all CP methods, SIH);
+  pipeline guard generalised; pipeline itself still method_default.
+- Next action: open the option PR; then the 7075-T651 workbook PR; then backfill LaTeX sheets.
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 

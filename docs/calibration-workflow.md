@@ -271,11 +271,12 @@ schema-version-1 files to remain readable without rewriting them.
 ## Findley amplitude selection
 
 > **In this repository.** The option is `multifat-calibrate --shear-amplitude-algorithm`; it sets the
-> Findley shear amplitude (MCE or MCC) in the k_FI calibration through the plane shear rule of the
-> established search and returns `amplitude_settings` with the result. No record is written, so the
+> shear amplitude (MCE or MCC/longest chord) of every calibrated critical-plane criterion (FS, FIN,
+> LI, MGSE_ZHU, MSWT) through the plane shear rule of the established search and returns
+> `amplitude_settings` with the result. No record is written, so the
 > store-specific text below (Script 0/1, JSON signatures, compatibility table, fingerprints) describes
-> upstream only; `multifat-pipeline --constants` rejects a record whose Findley amplitude is not MCE
-> and does not expose the option. See [harmonic shear amplitudes](shear-amplitude.md#findley-calibration-selection).
+> upstream only; `multifat-pipeline --constants` rejects a record whose amplitude differs from a
+> method's own and does not expose the option. See [harmonic shear amplitudes](shear-amplitude.md#findley-calibration-selection).
 
 Upstream's Findley calibration accepts the following Script 0 option. The mathematical
 definitions and amplitude/range conventions are given in

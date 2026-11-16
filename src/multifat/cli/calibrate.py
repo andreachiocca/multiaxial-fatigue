@@ -64,12 +64,17 @@ from multifat.eval.evaluator import (
 )
 from multifat.eval.findley_calibration import (
     amplitude_identity,
-    findley_method,
     require_stress_harmonics,
+)
+from multifat.eval.shear_amplitude_option import (
+    SELECTIONS,
+    apply_shear_amplitude,
+    resolved_algorithm,
 )
 from multifat.eval.fitting import fit_power_law_with_survival_std
 from multifat.eval.plane_search import frames_from_normals
 
+from multifat.models.cp_methods.fin import Findley
 from multifat.models.cp_methods.fs import FatemiSocie
 from multifat.models.cp_methods.li import LI
 from multifat.models.cp_methods.mgse_zhu import MGSE_Zhu
@@ -429,10 +434,10 @@ def calibrate_material_params(
 ) -> Dict[str, Any]:
     """Calibrate FS/FIN and the remaining constants for a single material.
 
-    ``shear_amplitude_algorithm`` (method_default, mce_harmonic, rss, mcc_harmonic) controls
-    the shear amplitude used by the Findley criterion during the k_FI calibration only
-    (A. Chiocca, 36ff0a1); the default preserves the established path. Production runs
-    evaluate Findley with MCE.
+    ``shear_amplitude_algorithm`` (multifat.eval.shear_amplitude_option.SELECTIONS) sets the
+    plane shear amplitude of every calibrated critical-plane criterion; ``method_default`` keeps
+    each method's own rule (A. Chiocca, 36ff0a1, for Findley). An explicit selection records the
+    resolved amplitude of each criterion in ``amplitude_settings``.
     """
 
     if material_name not in data:
@@ -496,7 +501,7 @@ def calibrate_material_params(
     for cid in combined_ids:
         c = cases[int(cid)]
         Nf = float(c["meta"]["Nf_cycles"])
-        if shear_amplitude_algorithm != "method_default" and "FI" in requested_blocks:
+        if shear_amplitude_algorithm != "method_default":
             require_stress_harmonics(c, material_name, int(cid))
         S0, E0, S1, E1, H = exp.extract_tensor(
             data, material_name, int(cid), node=node, include_harmonics=True
@@ -520,10 +525,13 @@ def calibrate_material_params(
     # Build the criteria
     # ------------------
     fs_method = FatemiSocie()
-    fin_method = findley_method(shear_amplitude_algorithm)
+    fin_method = Findley()
     li_method = LI()
     mgse_method = MGSE_Zhu()
     mswt_method = MSWT()
+    # The selected plane shear amplitude applies to every calibrated critical-plane criterion.
+    for method in (fs_method, fin_method, li_method, mgse_method, mswt_method):
+        apply_shear_amplitude(method, shear_amplitude_algorithm)
     pds_method = PolarDamageSumFS()
 
     # The critical plane depends on the case and, for some criteria, on the parameter
@@ -770,8 +778,22 @@ def calibrate_material_params(
             out[block]["bounds"] = tuple(float(x) for x in param_sweep[method_name][1])
     if out["PDS_FS"] is not None:
         out["PDS_FS"]["bounds"] = tuple(float(x) for x in bounds_k_PDS)
-    if "FI" in requested_blocks:
-        out["amplitude_settings"] = {"FIN": amplitude}
+    if shear_amplitude_algorithm == "method_default":
+        if "FI" in requested_blocks:
+            out["amplitude_settings"] = {"FIN": amplitude}
+    else:
+        # Constants fitted with an explicit amplitude are valid only with that amplitude.
+        settings = {}
+        for block, method in (
+            ("FS", fs_method),
+            ("FI", fin_method),
+            ("LI", li_method),
+            ("MGSE_ZHU", mgse_method),
+            ("MSWT", mswt_method),
+        ):
+            if block in requested_blocks:
+                settings[method.name] = {**amplitude, "algorithm": resolved_algorithm(method)}
+        out["amplitude_settings"] = settings
     return out
 
 
@@ -1078,9 +1100,10 @@ def main(argv=None) -> None:
     ap.add_argument(
         "--shear-amplitude-algorithm",
         default="method_default",
-        choices=("method_default", "mcc_harmonic", "mce_harmonic", "rss"),
-        help="Findley k_FI calibration only; method_default keeps the established MCE (RSS) "
-        "amplitude. Production runs still use MCE: do not feed an MCC k_FI to multifat-pipeline",
+        choices=SELECTIONS,
+        help="plane shear amplitude of the calibrated critical-plane criteria (FS, FIN, LI, "
+        "MGSE_ZHU, MSWT); method_default keeps each method's own rule. Evaluate with the same "
+        "option (multifat-run or multifat-pipeline --shear-amplitude-algorithm)",
     )
     ap.add_argument(
         "--no-overlay",
