@@ -1,8 +1,8 @@
 {
  "csv": "load_error_ranking.csv",
- "csv_sha256": "1716fb5f2516e990f765ebfef59a4f8d3980df42bed2416a98eeb2dcc466b352",
- "created_utc": "2026-11-16T06:17:44+00:00",
- "git_commit": "cecf7cd2e9a63b9bc524fdeae1a4e64510761a0d",
+ "csv_sha256": "dec4d29ed00966e486ed6abda8f24073620b05d05917bb5cd29ab51e5c1e0439",
+ "created_utc": "2026-11-16T08:17:06+00:00",
+ "git_commit": "5ea6c2808696086ddfd03a40f60d1b236e1012b7",
  "implementation_revision": "2026-11-12",
  "registered_models": [
   "BP",
@@ -69,6 +69,7 @@
   "982FA",
   "AISI316L",
   "Al7075_T6",
+  "Al7075_T651_Wang",
   "S65A",
   "Ti6Al4V_Berto",
   "Ti6Al4V_Delahay",
@@ -84,6 +85,7 @@
   "982FA": "ce647e918afd652e9fb0c21b88c3f7c46069030489b1af78e7ed4c5d7d5f8098",
   "AISI316L": "e245074653e53c978ee11a94812ba9d9fd6e48c0721b98a6f80c5f7a6ee2d9f5",
   "Al7075_T6": "b5007cc636a17ef396693df62aa66cca3c293567442c36f5454045140ec89cad",
+  "Al7075_T651_Wang": "8ff7d1d8a361c5c241fe1ea333429d64beca3530c5233aaf10100240a065bebd",
   "S65A": "aa099751638f8788cee0eda6c8e94c389ec4723336738cdffd79b1a36e2df996",
   "Ti6Al4V_Berto": "75758708c36215a60aad7e144b9a18dc8ff4304726226aa3295e557026a38f02",
   "Ti6Al4V_Delahay": "a1632ba0d20f1cf6fc71e76e77b2de1e45f7d5cad8fcda7e2be496a029b57280",

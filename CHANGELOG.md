@@ -6,6 +6,21 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### New dataset: 7075-T651 of Wang, Shang, Sun & Chen (2018) (maintainer decision, 16 November 2026)
+
+- New workbook `18_Al7075_T651_Wang.xlsx`: 52 constant-amplitude failures of thin-walled tubes.
+  - Tests: uniaxial and torsion at R = -1 and with means; tension-torsion with means at 0-180
+    deg.
+  - Built by `tools/build_wang_al7075_t651.py` from Tables 1-5. The transcription is shared with
+    the WANG2018 tests.
+  - Sigm1 and Taum1 are the Table 2 S-N curves at 1e6 cycles; nu = E/(2G) - 1.
+- Manifest, provenance and dataset tests (`tests/test_wang_al7075_dataset.py`).
+- The dataset joins the homepage ranking: 45 models run on it.
+  - Skipped for scope: WANG2022, GOLOS, KHALIJ, KAKUNO (no Sig0), RFB and SIH
+    (t_-1/f_-1 = 0.573).
+  - Skipped for missing constants: TVEIT2025, SSF.
+  - WANG2018 ranks first on it; this is the dataset its authors used, not an independent check.
+
 ### Plane shear amplitude selectable for every method (maintainer decision, 16 November 2026)
 
 - `--shear-amplitude-algorithm` of `multifat-run` and `multifat-calibrate` used to cover Findley
