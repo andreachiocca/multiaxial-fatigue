@@ -6,6 +6,24 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### SIH: shear stress intensity hypothesis, Zenner, Simbürger & Liu (2000) (#13, N15)
+
+- New integral model `SIH` (`integral_methods/sih.py`): sigma_eq,a = {15/(8 pi) int [a tau_a^2
+  (1 + m tau_m^2) + b sigma_a^2 (1 + n sigma_m)] dOmega}^(1/2) (Eq. 6). The constants a, b, m, n
+  come from Table 1 and tau_Sch from Eq. (7). The model returns the index sigma_eq,a / sigma_W.
+- Maintainer decisions:
+  - shear amplitude on a plane: the longest-chord amplitude (`np_shear_rule`), because the
+    available source does not define it for rotating shear vectors; `rss` is selectable;
+  - mean stresses need `Sig0`.
+- Material scope: 0.577 <= tau_W/sigma_W <= 0.866.
+- Evidence recorded for a future decision: the Section 3 statement that Eq. (5) does not depend on
+  the phase holds exactly with `rss`, not with the longest chord (-7 % at 90 deg).
+- Checked: the Table 1 factors (12/7, 4/21, 15/14) as sphere integrals; the four limits; Eqs.
+  (5) and (5b).
+- Guide, LaTeX sheet, catalogue N15, audit row; ranking and batch comparison regenerated.
+- Runs on Reis, FABEST, CX18, 982FA and Delahay. Skipped on the others: mean stresses without
+  Sig0, or the ratio outside the material scope.
+
 ### WANG2018: Wang, Shang, Sun & Chen (2018) weighted-plane criterion with mean shear stress (#13, N17)
 
 - New case-level model `WANG2018` (`cp_methods/wang2018.py`):

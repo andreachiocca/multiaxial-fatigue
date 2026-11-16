@@ -69,6 +69,7 @@ from .integral_methods.papadopoulos import Papadopoulos
 from .integral_methods.polar_damage_sum import PolarDamageSumFS, PolarDamageSumSWT
 from .integral_methods.papuga_ruzicka import PapugaCriticalPlane, PapugaIntegral
 from .integral_methods.robert_fogue_bahuaud import RobertFogueBahuaud
+from .integral_methods.sih import SIH
 from .invariant_methods.vu_halm_nadot import VuHalmNadot
 from .invariant_methods.pbp import ProjectionByProjection
 from .invariant_methods.coin_liwi import CoinLiwi
@@ -134,6 +135,7 @@ def _available_direct_models():
         "PCR": PapugaCriticalPlane(),
         "PI": PapugaIntegral(),
         "RFB": RobertFogueBahuaud(),
+        "SIH": SIH(),
         "VHN": VuHalmNadot(),
         "PBP": ProjectionByProjection(),
         "COIN": CoinLiwi(),

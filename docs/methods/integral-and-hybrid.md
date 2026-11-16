@@ -18,7 +18,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | --- | --- | --- | --- | --- | --- |
 | Critical plane | 12 | 1 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 6 | 0 | 3 | 0 | 9 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 45 | 2 | 67 | 5 | 119 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
@@ -48,7 +48,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [I_BP](../../METHODS.md#i_bp) | Böhme–Papuga | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_CAIM](../../METHODS.md#i_caim) | Critical–integral approach (CAIM) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [N03](../../METHODS.md#n03) | Papadopoulos, specified 2001 formulation | Fully implemented | reference_examples_reproduced | High | Yes |
-| [N15](../../METHODS.md#n15) | Original Liu–Zenner integral criterion | Not implemented | not_tested | Medium | Yes |
+| [N15](../../METHODS.md#n15) | Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N50](../../METHODS.md#n50) | Grubisic–Simbürger formulation | Not implemented | not_tested | Low | Yes |
 | [N53](../../METHODS.md#n53) | Substitute-amplitude/NP-damage method, CA branch | Not implemented | not_tested | Medium | Yes |
 | [G02](../../METHODS.md#g02) | Papuga–Růžička integral criterion (PI; later PIN) | Fully implemented | reference_examples_reproduced | High | Yes |
@@ -160,36 +160,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N15
 
-**Original Liu–Zenner integral criterion** — H Zenner (2000)
+**Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion** — H Zenner (2000)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Integral and hybrid;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | On the fatigue limit of ductile metals under complex multiaxial loading, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/s0142-1123(99)00107-3 |
 | Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Orientation-integrated amplitude and mean-stress contributions; CA P/NP, F. |
-| Loading scope | Orientation-integrated amplitude and mean-stress contributions; CA P/NP, F. |
-| Inputs / material parameters | S; four reversed/repeated normal/shear strengths or source-sanctioned calibration. |
-| Output | Orientation-integrated amplitude and mean-stress contributions; CA P/NP, F. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Parent-method baseline for BP/CAIM; related but not already implemented by BP. |
+| Formulation evidence | Checked against Zenner, Simbuerger & Liu (2000), Eqs. (4)-(7), Table 1, Section 4 (2026-11-16); the shear amplitude for a rotating shear vector is defined only in the cited Liu (1991) and Liu & Zenner (1993), not available |
+| Principle | sigma_eq,a = {15/(8 pi) int int [a tau_a^2 (1 + m tau_m^2) + b sigma_a^2 (1 + n sigma_m)] sin(gamma) dgamma dphi}^(1/2) = sigma_W (Eq. 6); a, b, m, n from sigma_W, tau_W, sigma_Sch, tau_Sch (Table 1), tau_Sch from Eq. (7). |
+| Loading scope | Single-harmonic CA, in and out of phase, with mean stresses (Sig0 required); 0.577 <= tau_W/sigma_W <= 0.866. |
+| Inputs / material parameters | Sigm1, Taum1; Sig0 for mean stresses; Tau0 optional (Eq. 7). |
+| Output | Fatigue-limit index sigma_eq,a/sigma_W; finite lives via the shared master curve (repository extension) |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_sih.py: the Table 1 factors 12/7, 4/21, 15/14 as sphere integrals; the four calibration limits exact; Eq. (5) ratio 1/sqrt3 (a = 1, b = 0); Eq. (5b) octahedral form; the Section 3 phase independence of Eq. (5) (exact with the quadratic amplitude). The paper prints no per-test value (Table 2 statistics only). |
+| Python implementation | [src/multifat/models/integral_methods/sih.py](../../src/multifat/models/integral_methods/sih.py); SIH |
+| Automated tests | [tests/methods/test_sih.py](../../tests/methods/test_sih.py) |
+| Limitations | Shear amplitude of a rotating shear vector not defined in the source: longest chord by maintainer decision (rss selectable); the Section 3 phase independence holds only with rss. Mean stresses need Sig0. Material scope 0.577-0.866. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Original coefficient equations and measured mean-stress calibration; reuse BP quadrature only. |
+| Missing tasks | Original definition of tau_a for non-proportional loading (Liu 1991; Liu & Zenner 1993); damage-sum life integration (Section 6). |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Original coefficient equations and measured mean-stress calibration; reuse BP quadrature only. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. BP sphere quadrature and projection helpers; preserve source-specific weights. |
-| Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Medium |
-| Provenance / prior status | N15; Already reviewed, not implemented |
+| Feasibility / effort / priority | A / Medium (preliminary; exact scope and data determine effort) / Medium |
+| Provenance / prior status | N15; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N15+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN15%5D+Original+Liu%E2%80%93Zenner+integral+criterion) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N15+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN15%5D+Shear+stress+intensity+hypothesis+%28SIH%29%2C+Zenner-Heidenreich-Richter+%2F+Liu-Zenner+integral+criterion) (no live Issue linked) |
 
 ### N50
 

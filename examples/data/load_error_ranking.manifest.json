@@ -1,8 +1,8 @@
 {
  "csv": "load_error_ranking.csv",
- "csv_sha256": "f62bcfdf08f66cf5d5dac26cad0a65e75bc97e9071a9668b9ed5282be7a230d5",
- "created_utc": "2026-11-16T06:04:44+00:00",
- "git_commit": "a8b89223b80b0931c4b6b6205de7f69c7016c64a",
+ "csv_sha256": "1716fb5f2516e990f765ebfef59a4f8d3980df42bed2416a98eeb2dcc466b352",
+ "created_utc": "2026-11-16T06:17:44+00:00",
+ "git_commit": "cecf7cd2e9a63b9bc524fdeae1a4e64510761a0d",
  "implementation_revision": "2026-11-12",
  "registered_models": [
   "BP",
@@ -47,6 +47,7 @@
   "PDS_SWT",
   "PI",
   "RFB",
+  "SIH",
   "SINES",
   "SSF",
   "SWT",
@@ -130,6 +131,7 @@
   "PDS_SWT",
   "PI",
   "RFB",
+  "SIH",
   "SINES",
   "SWT",
   "SWTD",

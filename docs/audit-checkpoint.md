@@ -16,8 +16,11 @@
     out-of-phase S-N curve as input.
 - Branch `feat/wang2018-criterion` (stacked on `docs/method-sheets`): WANG2018 implemented, guide,
   sheet, catalogue, audit, ranking regenerated (6 life + 6 limit datasets).
-- Next action: WANG2018 PR; then the 7075-T651 workbook PR; then SIH; then the global
-  shear-amplitude option.
+- WANG2018: PR #109 (stacked on #108).
+- Branch `feat/sih-criterion` (stacked on #109): SIH implemented with the longest chord. Evidence:
+  Section 3 phase independence holds only with rss, so the default needs a maintainer
+  confirmation. Runs on 5 datasets; others lack Sig0 or are outside 0.577-0.866.
+- Next action: SIH PR; then the global shear-amplitude option; then the 7075-T651 workbook PR.
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 
