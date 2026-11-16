@@ -30,9 +30,9 @@ from multifat.models.errors import DesignSetError, MissingParamsError, NativeLif
 from multifat.eval.findley_calibration import (
     FindleyCalibrationUnavailable,
     amplitude_identity,
-    findley_method,
     require_stress_harmonics,
 )
+from multifat.eval.shear_amplitude_option import SELECTIONS, apply_shear_amplitude, plane_rule
 from multifat.models.references import IMPLEMENTATION_REVISION
 from multifat.models.registry import get_models
 from multifat.models.comparison import capabilities_for_model
@@ -375,13 +375,14 @@ def check_fit(base_name: str, variant_key: str, cal: dict) -> None:
 
 
 def shear_amplitude_for(base_name: str, selection: str) -> dict | None:
-    """Explicit Findley amplitude of a run, or None for the production path (method_default)."""
+    """Explicit plane shear amplitude of a run, or None for the production path (method_default).
+
+    Any model exposing ``np_shear_rule`` accepts it (see multifat.eval.shear_amplitude_option);
+    `base_name` is kept for the call sites. The returned identity labels the output CSV.
+    """
     if selection == "method_default":
         return None
-    if base_name != "FIN":
-        raise ValueError(
-            f"--shear-amplitude-algorithm applies to FIN and FIN_ext only, not {base_name}"
-        )
+    plane_rule(selection)  # validates the selection
     return {**amplitude_identity(selection), "selected_option": selection}
 
 
@@ -454,7 +455,15 @@ def evaluate_model(
     if R_list is None:
         R_list = build_R_list(n1=DCMESH_N1, n2=DCMESH_N2)
     amplitude = shear_amplitude_for(base_name, shear_amplitude_algorithm)
-    mdl = findley_method(shear_amplitude_algorithm) if amplitude else get_models([base_name])[0]
+    mdl = get_models([base_name])[0]
+    if amplitude and not apply_shear_amplitude(mdl, shear_amplitude_algorithm):
+        warnings.warn(
+            f"{base_name} exposes no selectable plane shear amplitude: "
+            f"--shear-amplitude-algorithm {shear_amplitude_algorithm} is ignored for it",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        amplitude = None
 
     # Fail early, before the possibly costly calibration.
     absent = [k for k in mdl.required_params() if params.get(k, None) is None]
@@ -1148,8 +1157,10 @@ def cli(argv=None) -> None:
     arg_parser.add_argument(
         "--shear-amplitude-algorithm",
         default=SHEAR_AMPLITUDE_ALGORITHM,
-        choices=("method_default", "mcc_harmonic", "mce_harmonic", "rss"),
-        help="Findley (FIN, FIN_ext) only; needs a calibration made with the same option",
+        choices=SELECTIONS,
+        help="plane shear amplitude of every model exposing one (critical-plane methods, SIH): "
+        "longest_chord = mcc_harmonic (MCC), mce_harmonic = rss (MCE); method_default keeps "
+        "each method's own rule. Needs a calibration made with the same option",
     )
     opts = arg_parser.parse_args(argv)
     exp.OVERLAYS_ENABLED = not opts.no_overlay

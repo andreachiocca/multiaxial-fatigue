@@ -99,25 +99,54 @@ The automated two-plane example goes further and reverses the ranking. Along nor
 
 The search is confined to the finite plane set supplied. The input assumptions and arbitrary-path restrictions of the shared library continue to hold. At ordinary stress scales, explicit MCE and legacy harmonic MCE agree to within float64 rounding; the explicit route bypasses the legacy synthetic-shear endpoint cutoff and the mean subtraction. The omitted-selection path is left exactly as it was. Arithmetic in the normal-extrema helper keeps the existing float64 limits, overflow included, when normal coefficients are squared at extreme scales. These checks are numerical verifications; they do not constitute independent experimental validation of Findley with alternative amplitudes.
 
-The separate entry point is deliberate. Upstream calibration fingerprints hash whole production source files; keeping the entry point separate leaves production results unchanged here. Neither the general adapter, nor the production registry, nor the material dictionary gains an algorithm parameter (the module is unregistered, and production code does not import it). A Findley-specific calibration option in `multifat-calibrate` is described below. This selection cannot be inherited by other criteria. The diagnostic function neither loads nor applies a damage-life curve. In particular, an MCE-calibrated curve must not be used with MCC damage parameters.
+The separate entry point is deliberate. Upstream calibration fingerprints hash whole production source files; keeping the entry point separate leaves production results unchanged here. Neither the general adapter, nor the production registry, nor the material dictionary gains an algorithm parameter (the module is unregistered, and production code does not import it). The calibration and assessment options described below now cover every criterion that exposes a plane shear amplitude (see [Selection for every method](#selection-for-every-method)). The diagnostic function neither loads nor applies a damage-life curve. In particular, an MCE-calibrated curve must not be used with MCC damage parameters.
 
 ## Findley calibration selection
 
-`multifat-calibrate --shear-amplitude-algorithm method_default|mcc_harmonic|mce_harmonic` (with `rss` also accepted as a canonicalised MCE alias) sets the shear amplitude used by the Findley criterion during k_FI calibration, through `calibrate_material_params(..., shear_amplitude_algorithm=...)`. The default follows the established MCE path, whose results are unchanged. An explicit selection requires the stored stress sine and cosine tensors for every uniaxial tension and torsion failure employed; inspecting the original case in this way avoids the proportional endpoint fallback of the general tensor extractor. Only the `FI` block is affected, and the remaining constants are calibrated exactly as before. The result records `amplitude_settings` (`FIN`: the resolved algorithm, `DEFINITION_VERSION`, and the evaluation path).
+`multifat-calibrate --shear-amplitude-algorithm method_default|mcc_harmonic|mce_harmonic` (with `rss` also accepted as a canonicalised MCE alias) sets the shear amplitude used by the Findley criterion during k_FI calibration, through `calibrate_material_params(..., shear_amplitude_algorithm=...)`. The default follows the established MCE path, whose results are unchanged. An explicit selection requires the stored stress sine and cosine tensors for every uniaxial tension and torsion failure employed; inspecting the original case in this way avoids the proportional endpoint fallback of the general tensor extractor. Since November 2026 the selection applies to every calibrated critical-plane criterion (FS, FIN, LI, MGSE_ZHU, MSWT). With `method_default` the result is unchanged and records `amplitude_settings` for `FIN` only; an explicit selection records, for each calibrated criterion, the resolved algorithm, `DEFINITION_VERSION` and the evaluation path.
 
 Upstream commits 36ff0a1 and 0105b69 perform calibration with a separate Findley model and a versioned JSON store. In the present implementation the choice is instead the plane shear rule of the established search (`np_shear_rule` in `multifat.eval.evaluator.SHEAR_RULES`). As in production Findley, MCE is `rss`, the root-sum-square of the shear semiaxes. MCC corresponds to `longest_chord`, half the longest chord of the shear path, that is, the major semiaxis (`FindleyMCC` in `multifat/eval/findley_calibration.py`). Both choices therefore share the refined plane search, the plane pools and the bounds of the calibration. `tests/test_findley_calibration.py` verifies the rules against `evaluate_findley` (MCC and MCE) on prescribed planes, including the reversed plane ranking reported above.
 
 For axial and torsion calibration failures the shear path degenerates to a line; MCC and MCE are then equal and the fitted k_FI is the same (as in the upstream example). The choice becomes relevant for non-proportional calibration data. Production Findley (`multifat-run`, `multifat-pipeline`) evaluates MCE, so a k_FI calibrated with MCC must not be used there. The option is not exposed by `multifat-pipeline`, and `--constants` rejects any record whose `amplitude_settings.FIN.algorithm` is neither absent nor `mce_harmonic`. Predicting life with MCC in production would require an integration approved separately. Upstream's record format and numerical example are given in the [calibration workflow](calibration-workflow.md#findley-amplitude-selection). Neither the calibration agreement nor the software checks presented here establish independent experimental validation of Findley with alternative amplitudes.
 ## Explicit amplitude in production assessment
 
-`multifat-run` takes `--shear-amplitude-algorithm {method_default,mcc_harmonic,mce_harmonic,rss}`
-for FIN and FIN_ext only; any other model rejects an explicit value. `method_default` (the default)
-is the production path and its output is unchanged. An explicit selection calibrates the Findley
-constant k_FI with the same criterion it assesses with, so the two cannot disagree; `rss` resolves to
-`mce_harmonic`. Its results are written as `FIN.mcc_harmonic` / `FIN.mce_harmonic` (`_ext` kept), so
+`multifat-run` takes `--shear-amplitude-algorithm {method_default,longest_chord,mcc_harmonic,mce_harmonic,rss}`
+for every model that exposes a plane shear amplitude (see below). `method_default` (the default)
+is the production path and its output is unchanged. An explicit selection calibrates a model's
+constants with the same criterion it assesses with, so the two cannot disagree; `rss` resolves to
+`mce_harmonic`, `longest_chord` to `mcc_harmonic`. Results are written as, e.g.,
+`FIN.mcc_harmonic` / `FS.mce_harmonic` (`_ext` kept), so
 `multifat-compare` reads them by name, and a `.meta.json` next to each CSV records the selected option,
 the resolved algorithm, the evaluation path, the definition version and the SHA-256 of the CSV.
 
 Cases without stored stress sine and cosine tensors cannot be assessed on the explicit path; they are
 skipped with a `RuntimeWarning`. The option is not exposed by `multifat-pipeline`, which evaluates
 production Findley (MCE) only.
+
+## Selection for every method
+
+Maintainer decision (16 November 2026): the user selects the plane shear amplitude of every method
+that uses one; each method's default is the amplitude of its source, otherwise the longest chord.
+`multifat.eval.shear_amplitude_option` implements the selection:
+
+| Selection | Plane rule (`np_shear_rule`) | Single harmonic |
+| --- | --- | --- |
+| `method_default` | the method's own | as documented in each guide |
+| `longest_chord`, `mcc_harmonic` | `longest_chord` | MCC radius = major semiaxis $a$ = half the longest chord |
+| `mce_harmonic`, `rss` | `rss` | MCE amplitude $\sqrt{a^2 + b^2}$ |
+
+For one harmonic the longest chord and the MCC coincide, so a method has at most two results. The
+selection reaches every critical-plane method (through the plane preparation) and every case-level
+model declaring `np_shear_rule` (SIH). Models whose amplitude is fixed by their definition (for
+example BP and RFB use the MCC, PAPADOPOULOS the quadratic mean of its resolved shear, LIUMAHADEVAN
+the rss by maintainer decision) or that use none (invariant criteria, WANG2018 with its scalar shear)
+run unchanged, with a `RuntimeWarning`, and their outputs keep the plain name.
+
+`multifat-calibrate --shear-amplitude-algorithm` fits FS, FIN, LI, MGSE_ZHU and MSWT with the
+selection; `multifat-run --shear-amplitude-algorithm` assesses with it, taking calibrated constants
+(e.g. k_FS) from the workbook, which must have been calibrated with the same option.
+`multifat-pipeline` evaluates `method_default` only, and its `--constants` refuses a record whose
+`amplitude_settings` hold another amplitude for any method. `tests/test_shear_amplitude_option.py`
+checks that every critical-plane method and SIH follow the selection, that a selection does not
+leak into other instances, and that in-phase values are unchanged while out-of-phase values move.
+

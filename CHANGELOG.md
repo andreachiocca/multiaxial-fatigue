@@ -6,6 +6,24 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### Plane shear amplitude selectable for every method (maintainer decision, 16 November 2026)
+
+- `--shear-amplitude-algorithm` of `multifat-run` and `multifat-calibrate` used to cover Findley
+  only. It now applies to every model that exposes a plane shear amplitude: all critical-plane
+  methods and SIH (`multifat.eval.shear_amplitude_option`).
+- Choices:
+  - `method_default`: each method's own amplitude; unchanged outputs;
+  - `longest_chord` = `mcc_harmonic`: for one harmonic, half the longest chord equals the MCC
+    radius;
+  - `mce_harmonic` = `rss`.
+- Models whose amplitude is fixed by their definition (BP, RFB, PAPADOPOULOS, LIUMAHADEVAN), or
+  that use none, run unchanged with a warning.
+- `multifat-calibrate` fits FS, FIN, LI, MGSE_ZHU and MSWT with the selection. An explicit
+  selection records `amplitude_settings` for each of them.
+- `multifat-pipeline --constants` refuses constants calibrated with an amplitude other than a
+  method's own (generalising the Findley guard). The pipeline itself still evaluates
+  `method_default`.
+
 ### SIH: shear stress intensity hypothesis, Zenner, Simbürger & Liu (2000) (#13, N15)
 
 - New integral model `SIH` (`integral_methods/sih.py`): sigma_eq,a = {15/(8 pi) int [a tau_a^2

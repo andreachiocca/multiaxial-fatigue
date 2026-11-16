@@ -48,9 +48,13 @@ def test_explicit_mcc_uses_the_mcc_criterion():
 
 
 @pytest.mark.parametrize("model", ["SWT", "BP", "MATAKE"])
-def test_other_models_reject_an_explicit_selection(model):
-    with pytest.raises(ValueError, match="FIN and FIN_ext only"):
-        shear_amplitude_for(model, "mcc_harmonic")
+def test_every_model_accepts_a_valid_selection_and_rejects_an_unknown_one(model):
+    """The selection is no longer Findley-only (multifat.eval.shear_amplitude_option); a model
+    without a selectable amplitude (BP) runs unchanged, with a warning, in evaluate_model."""
+    assert shear_amplitude_for(model, "mcc_harmonic")["algorithm"] == "mcc_harmonic"
+    assert shear_amplitude_for(model, "longest_chord")["algorithm"] == "mcc_harmonic"
+    with pytest.raises(ValueError):
+        shear_amplitude_for(model, "mcc")
 
 
 def test_cases_without_stored_harmonics_are_skipped_with_a_warning():

@@ -130,8 +130,9 @@ uv run multifat-run --model BP --material 42CrMo4_Santus
 # Run a stress-invariant criterion without generating individual plots
 uv run multifat-run --model SINES --material 42CrMo4_Santus --no-plots
 
-# Run Findley with explicit shear amplitude algorithm
+# Run a method with an explicit plane shear amplitude (any critical-plane method, SIH)
 uv run multifat-run --model FIN --material 42CrMo4_Santus --shear-amplitude-algorithm mce_harmonic
+uv run multifat-run --model FS --material 42CrMo4_Santus --shear-amplitude-algorithm longest_chord
 
 # Design curve with a 90 % survival probability instead of the median (also on multifat-pipeline)
 uv run multifat-run --model SINES --material 42CrMo4_Santus --survival-probability 0.9
@@ -151,7 +152,7 @@ To compute the material constants that the models need, without evaluating them:
 # Calibrate every workbook in Experimental_Data and print the constants
 uv run multifat-calibrate --data-folder Experimental_Data
 
-# Choose the shear-amplitude algorithm of the Findley fit
+# Choose the plane shear amplitude of the critical-plane fits (longest_chord = mcc_harmonic, or mce_harmonic)
 uv run multifat-calibrate --data-folder Experimental_Data --shear-amplitude-algorithm mce_harmonic
 ```
 
