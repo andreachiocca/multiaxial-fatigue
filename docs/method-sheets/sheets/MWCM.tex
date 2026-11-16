@@ -1,0 +1,82 @@
+% registry: MWCM
+\methodhead{MWCM}{Susmel and Lazzarin (2002): Modified W\"ohler Curve Method, high-cycle form}\label{sheet:MWCM}
+
+\block{Source} L.~Susmel, P.~Lazzarin, \emph{Fatigue Fract.\ Engng Mater.\ Struct.} 25 (2002) 63--78
+\cite{susmel2002}, Eqs.~(5)--(13), pp.~66--72; Table~1.
+
+\block{Idea and scope} On the plane of maximum shear stress amplitude, the ratio $\rho$ between the
+maximum normal stress and the shear amplitude measures how much the normal stress opens the cracks.
+The admissible shear amplitude decreases linearly with $\rho$, between the torsion limit ($\rho=0$)
+and the tension limit ($\rho=1$). Proposed for high-cycle fatigue of plain and notched components
+under proportional and non-proportional loading; the repository covers the plain, high-cycle form.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\tau_a$ & MPa & shear stress amplitude on the plane: radius of the smallest circle enclosing the shear path (p.~66)\\
+$\sigma_{n,\max}$ & MPa & maximum normal stress on the plane, $\sigma_{n,m}+\sigma_{n,a}$ (signed)\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane\\
+$\rho$ & -- & stress ratio on the critical plane, Eq.~\eqref{eq:mwcm-rho}\\
+$\sigma_A=\fm$, $\tau_A=\tm$ & MPa & fully reversed axial and torsion fatigue limits (reference values at the same number of cycles)\\
+$\tau_{A,\mathrm{Ref}}(\rho)$ & MPa & admissible (reference) shear amplitude, Eq.~\eqref{eq:mwcm-ref}\\
+$k_\tau(\rho)$ & -- & inverse slope of the modified W\"ohler curves (finite-life form, not implemented)\\
+$E$ & -- & error index, Eq.~(13)\\
+$\mathrm{DP}$ & -- & repository index $\tau_a/\tau_{A,\mathrm{Ref}}(\rho)=E+1$, Eq.~\eqref{eq:mwcm-dp}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the plane where $\tau_a$ is largest (Eqs.~5, 8, 9--11),
+\begin{gather}
+\rho = \frac{\sigma_{n,\max}}{\tau_a} , \label{eq:mwcm-rho}\\
+\tau_{A,\mathrm{Ref}}(\rho) = \tau_A + \rho\Bigl(\frac{\sigma_A}{2}-\tau_A\Bigr),\qquad
+\tau_a \le \tau_{A,\mathrm{Ref}}(\rho) . \label{eq:mwcm-ref}
+\end{gather}
+The error index (Eq.~13) is $E=\tau_a/\tau_{A,\mathrm{Ref}}(\rho)-1$. A finite-life form (Eq.~7) also
+interpolates $k_\tau(\rho)$. The repository evaluates on every candidate plane
+\begin{equation}
+\mathrm{DP} = \frac{\tau_a}{\tau_{A,\mathrm{Ref}}(\rho)}
+ = \frac{\tau_a^2}{\tm\,\tau_a - (\tm-\fm/2)\,\sigma_{n,\max}} ,
+\label{eq:mwcm-dp}
+\end{equation}
+with $\mathrm{DP}=+\infty$ when $\tau_{A,\mathrm{Ref}}(\rho)\le0$, i.e.\ for
+$\rho\ge\tm/(\tm-\fm/2)$ (the paper applies Eq.~11 for $\rho>1$ without a cut-off), and $\mathrm{DP}=0$
+when $\tau_a=0$ with no tension. Torsion has $\rho=0$, reversed tension $\rho=1$; both give
+$\mathrm{DP}=1$. \emph{Critical plane}: the plane of largest $\tau_a$. \emph{Ties} in $\tau_a$ go to
+the larger DP (the paper gives no rule). \emph{Shear amplitude}: the minimum circumscribed circle of
+the source, i.e.\ \texttt{longest\_chord} (MCC, the major semi-axis for one harmonic) by default; the
+global selection of \texttt{docs/shear-amplitude.md} can switch it to \texttt{rss} (MCE).
+
+\block{Constants and calibration} Paper: two fully reversed fatigue curves (tension and torsion)
+define $\tau_{A,\mathrm{Ref}}(\rho)$ and, at finite life, $k_\tau(\rho)$. Repository: the endurance
+form with workbook \texttt{Sigm1}, \texttt{Taum1}; nothing is fitted except the master-curve
+constants on the uniaxial $R=-1$ design tests.
+
+\block{Life} Paper: modified W\"ohler curves through $k_\tau(\rho)$ (Eq.~7). Repository: the master
+curve on the index (Section~\ref{sec:mastercurve}); infinite DP values have undefined errors and are
+not counted in statistics. On fatigue-limit datasets $\mathrm{DP}-1$ is the $E$ of Eq.~(13).
+
+\block{Repository choices}
+\begin{itemize}
+\item No \texttt{\_ext} variant (\texttt{ext\_variant = False}): $\rho$ diverges where $\tau_a\to0$,
+  so a maximum of DP over all planes is not meaningful.
+\item Ties of the maximum $\tau_a$ resolve to the larger DP; the paper gives no rule, and on the
+  Papadopoulos et al.\ (1997) tests this choice changes several rows.
+\item $\sigma_{n,\max}$ is not clipped: a compressive mean gives $\rho<0$.
+\item High-cycle form only: the finite-life branch with $k_\tau(\rho)$ is not implemented; life from
+  the shared master curve.
+\end{itemize}
+
+\block{Worked example} Synthetic material, $\fm=300$, $\tm=200\MPa$: both limits give
+$\mathrm{DP}=1$. Tension $\sigma_a=200$ with mean $\sigma_m=100\MPa$: $\tau_a=\sigma_a/2$,
+$\sigma_{n,\max}=(\sigma_m+\sigma_a)/2$, so $\rho=1.50$, $\tau_{A,\mathrm{Ref}}=125.0\MPa$ and the index
+is 0.8000. The cut-off is $\rho\ge4.0$.
+
+\block{Verification} Eq.~(8) reference points, calibration at both limits, Eq.~(13) as
+$\mathrm{DP}-1$, mean stress and cut-off, and the tie rule (torsion with an axial mean). The paper
+lists series constants and error bands only (about $\pm20\%$ in phase, $\pm30\%$ out of phase). On the
+43 Papadopoulos et al.\ \cite{papadopoulos1997} tests the larger-damage tie rule gives 12/16 in-phase
+rows within $\pm20\%$ and 24/27 out-of-phase rows within $\pm30\%$ (row~30: $+173\%$); the
+smaller-damage rule gives 14/16 and 20/27. Unresolved; not used as a test oracle.

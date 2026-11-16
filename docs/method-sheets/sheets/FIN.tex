@@ -1,0 +1,107 @@
+% registry: FIN
+\methodhead{FIN}{Findley (1959): shear amplitude plus maximum normal stress on the critical plane}\label{sheet:FIN}
+
+\block{Source} W.~N.~Findley, \emph{J.\ Eng.\ Ind.} (1959) \cite{findley1959}, Eqs.~(2), (8)--(10),
+(13), (18), (19), (24), pp.~302--305.
+
+\block{Idea and scope} Fatigue damage on a material plane is driven by the alternating shear stress
+on that plane, increased linearly by the largest normal stress acting on it. The critical plane is
+the plane where this combination is largest. Proposed for high-cycle fatigue of metals under
+combined bending (or axial load) and torsion with mean stresses; the paper treats proportional
+(in-phase) loading. The repository evaluates constant-amplitude, single-harmonic loading.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\theta$ & rad & orientation of the material plane (normal measured from the greatest principal stress in Eq.~(13))\\
+$\tau_{\theta A}=\tau_a$ & MPa & shear stress amplitude on the plane\\
+$\sigma_{\theta M}=\sigma_{n,\max}$ & MPa & maximum normal stress on the plane over the cycle, $\sigma_{n,m}+\sigma_{n,a}$ (Eq.~\eqref{eq:scalar})\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane\\
+$\Delta\tau$ & MPa & shear stress range on the plane, $\tau_a=\Delta\tau/2$\\
+$a\ge b$ & MPa & semi-axes of the elliptical shear path of an out-of-phase cycle\\
+$k$ ($k_\mathrm{FI}$) & -- & normal stress sensitivity, material constant (workbook \texttt{k FI})\\
+$f$ & MPa & Findley fatigue strength at the life considered\\
+$\sigma_A$, $\tau_A$ & MPa & bending and torsion stress amplitudes (in-phase loading)\\
+$\sigma_M$, $\tau_M$ & MPa & bending and torsion maximum stresses (in-phase loading)\\
+$\fm$, $\tm$ & MPa & fully reversed bending and torsion fatigue limits\\
+$r=\tm/\fm$ & -- & limit ratio, $\tfrac12<r<1$\\
+$\mathrm{DP}$ & MPa & repository damage parameter, Eq.~\eqref{eq:fin-dp}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the plane of orientation $\theta$ (Eqs.~2, 8--10, p.~302),
+\begin{equation}
+\tau_{\theta A} + k\,\sigma_{\theta M} = f ,
+\label{eq:fin-main}
+\end{equation}
+and the critical plane is the one that maximises the left-hand side. For in-phase bending and
+torsion the maximum over the planes is (Eq.~18)
+\begin{equation}
+f = \sqrt{\Bigl(\frac{\sigma_A}{2}\Bigr)^2 + \tau_A^2 + k^2\Bigl[\Bigl(\frac{\sigma_M}{2}\Bigr)^2 + \tau_M^2\Bigr]} + k\,\frac{\sigma_M}{2} .
+\label{eq:fin-eq18}
+\end{equation}
+Fully reversed torsion (Eq.~19) and fully reversed bending (Eq.~24) give
+\begin{equation}
+f = \tm\sqrt{1+k^2},\qquad f = \frac{\fm}{2}\left(k+\sqrt{1+k^2}\right),
+\end{equation}
+so the limit ratio fixes $k$:
+\begin{equation}
+\frac{\tm}{\fm} = \frac{k+\sqrt{1+k^2}}{2\sqrt{1+k^2}}
+\quad\Longleftrightarrow\quad
+k = \frac{2r-1}{\sqrt{1-(2r-1)^2}} ,\qquad r=\frac{\tm}{\fm}\in\left(\tfrac12,1\right).
+\label{eq:fin-k}
+\end{equation}
+$k\to0$ for $r\to\tfrac12$ and $k\to\infty$ for $r\to1$. With zero mean stress the critical plane lies
+at $\tan2\theta=1/k$ from the greatest principal stress (Eq.~13). In the repository, on every
+candidate plane,
+\begin{equation}
+\mathrm{DP} = \tau_a + k_\mathrm{FI}\,\sigma_{n,\max},\qquad \tau_a=\tfrac12\Delta\tau,\qquad
+\sigma_{n,\max}=\sigma_{n,m}+\sigma_{n,a} .
+\label{eq:fin-dp}
+\end{equation}
+\emph{Critical plane}: the plane of largest DP (the selection metric is DP itself, so \texttt{FIN} and
+\texttt{FIN\_ext} coincide); ties go to the larger damage (Section~\ref{sec:planes}).
+\emph{Shear amplitude}: proportional loading gives $\tau_a=a$; out of phase, the default rule is
+\texttt{rss}, $\tau_a=\sqrt{a^2+b^2}$ (MCE). The global selection of \texttt{docs/shear-amplitude.md}
+can switch it to the longest chord (MCC, $\tau_a=a$).
+
+\block{Constants and calibration} Paper: $k$ from the ratio of the fully reversed torsion and bending
+limits, Eq.~\eqref{eq:fin-k}, or from fatigue strengths in two loading modes at the same life.
+Repository: $k_\mathrm{FI}$ from the workbook, a \texttt{-{}-constants} record, or the pipeline
+calibration. By default the pipeline searches $k_\mathrm{FI}\in[0,3]$ for the value that minimises
+the standard deviation of $\ln N_f$ of the $R=-1$ tension and torsion failures about one master
+curve, re-selecting the critical plane for each trial $k$; these tests become design rows. On
+fatigue-limit datasets $k_\mathrm{FI}$ makes the $R=-1$ tension and torsion limits give the same DP,
+which is the original procedure.
+
+\block{Life} The 1959 paper prescribes no life law. The repository uses the master curve on DP
+(Section~\ref{sec:mastercurve}); $\mathrm{DP}/f$ is a fatigue index.
+
+\block{Repository choices}
+\begin{itemize}
+\item $\sigma_{n,\max}$ keeps its sign: a compressive normal stress lowers DP; no clipping.
+\item Out-of-phase shear amplitude: \texttt{rss} of the shear-ellipse semi-axes; the paper gives no
+  rule. A $k_\mathrm{FI}$ calibrated with the MCC amplitude is rejected by the production (MCE)
+  assessment.
+\item Life from the shared master curve $\mathrm{DP}=AN_f^b$, not a Findley-specific law.
+\item $k_\mathrm{FI}$ calibrated by default on the life scatter of tension and torsion failures, not
+  on the fatigue-limit ratio; it reduces to Eq.~\eqref{eq:fin-k} only if the two S--N curves are
+  parallel and the limit ratio holds at every life.
+\item The mean shear stress does not enter DP, as in the original criterion.
+\end{itemize}
+
+\block{Worked example} Synthetic material, $\fm=300$, $\tm=200\MPa$: Eq.~\eqref{eq:fin-k} gives
+$k_\mathrm{FI}=0.3536$ and $f=\tm\sqrt{1+k^2}=212.13\MPa$. The plane search returns
+$\mathrm{DP}=212.13\MPa$ at both limits. Bending with $\sigma_a=200$, $\sigma_m=100\MPa$
+($\sigma_M=300\MPa$) gives $\mathrm{DP}=166.23\MPa$, as Eq.~\eqref{eq:fin-eq18}, a fatigue index
+of 0.784; without the mean the DP would be $100\,(k+\sqrt{1+k^2})=141.4\MPa$.
+
+\block{Verification} The plane search reproduces the closed forms Eqs.~(18), (19), (24) and the
+critical-plane angle of Eq.~(13) for $k=0.1$, 0.2, 0.3, 1.1, and the limit ratios of p.~303. The
+angles printed on p.~305 differ from Eq.~(13) by up to $0.65^\circ$ and between loadings; they appear
+read from a figure (paper inconsistency). Also tested: analytical plane values, MCC/MCE amplitudes,
+calibration and the explicit-amplitude path. Not reproduced: the experimental data of the paper or
+an independent multiaxial dataset.

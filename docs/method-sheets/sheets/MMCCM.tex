@@ -1,0 +1,94 @@
+% registry: MMCCM
+\methodhead{MMCCM}{Wang and Susmel (2016): Modified Manson--Coffin Curve Method}\label{sheet:MMCCM}
+
+\block{Source} Y.~Wang, L.~Susmel, \emph{Int.\ J.\ Fatigue} (2016) \cite{wang2016},
+Eqs.~(1)--(8), (25); Table~1.
+
+\block{Idea and scope} Critical-plane strain--stress criterion with its own life law. It extends
+the Modified W\"ohler Curve Method of Susmel and Lazzarin to the low- and medium-cycle strain--life
+regime: the Manson--Coffin constants are interpolated between the axial and the torsional curves
+through the plane stress ratio $\rho$. Proposed for constant and variable amplitude multiaxial
+fatigue; the repository implements the constant-amplitude Eqs.~(1)--(8).
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\gamma_a$ & -- & engineering shear strain amplitude on the plane\\
+$\tau_a$ & MPa & shear stress amplitude on the plane\\
+$\sigma_{n,\max}$ & MPa & maximum normal stress on the plane over the cycle\\
+$\rho$ & -- & plane stress ratio, Eq.~\eqref{eq:mmccm-rho}\\
+$E$, $\nu$, $G$ & MPa, --, MPa & Young's modulus, Poisson's ratio, $G=E/[2(1+\nu)]$\\
+$\nu_e$, $\nu_p$ & -- & elastic and plastic Poisson's ratios\\
+$\sigma_f'$, $\varepsilon_f'$, $b$, $c$ & MPa, --, --, -- & axial Manson--Coffin constants\\
+$\tau_f'$, $\gamma_f'$, $b_0$, $c_0$ & MPa, --, --, -- & torsional Manson--Coffin constants\\
+$\tau_f'(\rho)$, $\gamma_f'(\rho)$, $b(\rho)$, $c(\rho)$ & MPa, --, --, -- & interpolated curve constants, Eqs.~\eqref{eq:mmccm-coef}--\eqref{eq:mmccm-exp}\\
+$N_f$ & cycles & life\\
+$\sigma_a$, $\tau_a$ & MPa & bending and torsion amplitudes of the worked example\\
+$D=1/N_f$ & -- & damage returned by the model\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The critical plane is the plane of largest engineering shear strain amplitude
+$\gamma_a$; ties among planes sharing the maximum are broken in favour of the largest $\rho$
+(p.~5). On it (Eqs.~1--2),
+\begin{gather}
+\rho=\frac{\sigma_{n,\max}}{\tau_a},
+\label{eq:mmccm-rho}\\
+\gamma_a=\frac{\tau_f'(\rho)}{G}\,(2N_f)^{b(\rho)}+\gamma_f'(\rho)\,(2N_f)^{c(\rho)},
+\label{eq:mmccm-main}
+\end{gather}
+with constants varying linearly with $\rho$ (Eqs.~5--6) and exponents given by weighted harmonic
+means (Eqs.~7--8):
+\begin{gather}
+\frac{\tau_f'(\rho)}{G}=\rho\,(1+\nu_e)\,\frac{\sigma_f'}{E}+(1-\rho)\,\frac{\tau_f'}{G},\qquad
+\gamma_f'(\rho)=\rho\,(1+\nu_p)\,\varepsilon_f'+(1-\rho)\,\gamma_f',
+\label{eq:mmccm-coef}\\
+b(\rho)=\frac{b\,b_0}{(b_0-b)\,\rho+b},\qquad
+c(\rho)=\frac{c\,c_0}{(c_0-c)\,\rho+c}.
+\label{eq:mmccm-exp}
+\end{gather}
+At $\rho=1$ (reversed uniaxial loading) Eq.~\eqref{eq:mmccm-main} is the axial curve (Eq.~3),
+$\gamma_a=(1+\nu_e)\frac{\sigma_f'}{E}(2N_f)^b+(1+\nu_p)\varepsilon_f'(2N_f)^c$; at $\rho=0$
+(reversed torsion) it is the torsional curve (Eq.~4),
+$\gamma_a=\frac{\tau_f'}{G}(2N_f)^{b_0}+\gamma_f'(2N_f)^{c_0}$.
+
+\block{Constants and calibration} The eight Manson--Coffin constants come from the axial and
+torsional strain--life curves of the material; Table~1 of the paper prints torsional constants
+estimated by Eq.~(25), e.g.\ $\tau_f'=\sigma_f'/\sqrt3$. \texttt{multifat-run}
+requires all eight constants with $E$ and $\nu$, with no uniform-material-law fallback inside the
+model. \texttt{multifat-pipeline} fills missing ones: $\sigma_f'$, $b$, $\tau_f'$, $b_0$ from Basquin
+fits on the workbook's $R=-1$ tension and torsion tests (only identifiable curves; the torsion tests
+become design rows), and $\varepsilon_f'$, $c$, $\gamma_f'$, $c_0$ as uniform-material-law estimates
+(steel form), because elastic high-cycle data cannot identify them.
+
+\block{Life} Native: Eq.~\eqref{eq:mmccm-main} solved for $N_f$ on the critical plane. The model
+returns $D=1/N_f$; the predicted life is $1/D$. No master curve is used.
+
+\block{Repository choices}
+\begin{itemize}
+\item Out-of-phase shear: \texttt{np\_shear\_rule = "longest\_chord"}, which for a single harmonic
+  gives the same half-range as the paper's maximum-variance direction.
+\item Ties on $\gamma_a$ go to the largest damage $1/N_f$; since a larger $\rho$ lowers the curve at
+  fixed $\gamma_a$, this is the paper's largest-$\rho$ rule.
+\item Elastic workbook strains with $\nu_e=\nu$; $\nu_p=0.5$ unless the optional \texttt{nu\_p} is
+  supplied (the paper does not specify it).
+\item Eq.~\eqref{eq:mmccm-main} is inverted by bisection in $\log(2N_f)$ over $[1,\,2\cdot10^{12}]$;
+  beyond $10^{12}$ cycles the damage is 0.
+\item No cut-off on $\rho$ (none in the paper). Past a pole of Eqs.~\eqref{eq:mmccm-exp}
+  (non-positive coefficient or non-negative exponent) the damage is $+\infty$; therefore no
+  \texttt{\_ext} variant is exposed.
+\end{itemize}
+
+\block{Worked example} Steel parameter set (illustrative, not from the paper): $E=200$\,GPa,
+$\nu=0.3$, $\sigma_f'=900\MPa$, $\varepsilon_f'=0.4$, $b=-0.09$, $c=-0.6$, $\tau_f'=520\MPa$,
+$\gamma_f'=0.69$, $b_0=-0.08$, $c_0=-0.55$. In-phase reversed bending $\sigma_a=280\MPa$ with
+torsion $\tau_a=140\MPa$: $D=9.072641\cdot10^{-6}$, $N_f=110\,221$ cycles.
+
+\block{Verification} The per-test predictions of the paper are figures only (Figs.~6--11), so the
+tests check the formulation: exact reduction to Eqs.~(3)--(4) at $\rho\in\{0,1\}$; the harmonic
+interpolation of Eqs.~(7)--(8); the life inversion; the plane search in tension and torsion; the
+largest-$\rho$ tie rule (torsion amplitude with an axial mean); run-out truncation and the pole of
+Eq.~(7); the printed Eq.~(25) estimate of Table~1 (Al5083: $780/\sqrt3=450.3\MPa$, printed 451).

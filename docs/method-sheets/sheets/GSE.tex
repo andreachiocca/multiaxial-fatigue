@@ -1,0 +1,92 @@
+% registry: GSE
+\methodhead{GSE}{Ince and Glinka (2014): generalized strain energy}\label{sheet:GSE}
+
+\block{Source} A.~Ince, G.~Glinka, \emph{Int.\ J.\ Fatigue} 62 (2014) 34--41 \cite{ince2014},
+Eq.~(1), p.~35. The strain-amplitude form of the same paper (Eq.~5) is the separate model GSA.
+
+\block{Idea and scope} On each material plane the damage is an energy density with four terms:
+elastic and plastic, shear and normal. The elastic terms are weighted by the \emph{maximum}
+stresses, so a mean stress increases damage; the plastic terms by the stress \emph{amplitudes}.
+The critical plane is the plane on which this energy is largest. Proposed for low- and high-cycle
+multiaxial fatigue under proportional and non-proportional loading, with mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\n$ & -- & unit normal of a candidate plane (local $z$ axis; shear components $xz$, $yz$)\\
+$\tau_{\max}$ & MPa & largest magnitude of the shear stress vector on the plane over the cycle, mean included\\
+$\sigma_{n,\max}$ & MPa & largest normal stress on the plane over the cycle, clipped at zero\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane, Eqs.~\eqref{eq:plane}, \eqref{eq:scalar}\\
+$\Delta\tau$, $\Delta\sigma_n$ & MPa & shear and normal stress ranges on the plane\\
+$\Delta\gamma_e$, $\Delta\gamma_p$ & -- & elastic and plastic engineering shear strain ranges on the plane\\
+$\Delta\varepsilon_e$, $\Delta\varepsilon_p$ & -- & elastic and plastic normal strain ranges on the plane\\
+$\gamma_a$, $\varepsilon_{n,a}$ & -- & engineering shear and normal strain amplitudes (elastic case)\\
+$\varepsilon$, $\varepsilon_e(\Tsig;E,\nu)$, $\varepsilon_p$ & -- & total strain, isotropic elastic strain of the stress, plastic strain\\
+$E$, $\nu$ & MPa, -- & Young's modulus and Poisson's ratio\\
+$\theta$, $c=\cos^2\theta$ & rad, -- & angle between the plane normal and the load axis in uniaxial tension\\
+$\sigma_a$, $\tau_a$ & MPa & fully reversed axial and shear stress amplitudes (closed forms)\\
+$W^*_{gen}$, $\mathrm{DP}$ & MPa & damage parameter (MJ/m$^3$)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Ince and Glinka (Eq.~1), on the maximum damage plane:
+\begin{equation}
+W^*_{gen} = \left[\tau_{\max}\frac{\Delta\gamma_e}{2} + \frac{\Delta\tau}{2}\frac{\Delta\gamma_p}{2}
+ + \sigma_{n,\max}\frac{\Delta\varepsilon_e}{2} + \frac{\Delta\sigma_n}{2}\frac{\Delta\varepsilon_p}{2}\right]_{\max} .
+\label{eq:gse-main}
+\end{equation}
+The repository evaluates the bracket on every plane with
+$\varepsilon_p=\varepsilon-\varepsilon_e(\Tsig;E,\nu)$, applied to the harmonic tensors before the
+ranges are taken, and $\sigma_{n,\max}=\max(\sigma_{n,m}+\sigma_{n,a},0)$. With the elastic
+workbook strains the plastic terms vanish and
+\begin{equation}
+\mathrm{DP} = \tau_{\max}\,\gamma_a + \sigma_{n,\max}\,\varepsilon_{n,a} .
+\label{eq:gse-elastic}
+\end{equation}
+\emph{Critical plane}: the plane of maximum $W^*_{gen}$; the selection metric is the DP itself, so
+ties are immaterial and the \texttt{\_ext} value is identical. \emph{Shear amplitude}: default
+\texttt{np\_shear\_rule = "rss"}, the MCE amplitude $\sqrt{a^2+b^2}$ of the elliptical shear path;
+the longest chord (MCC) can be selected globally (\texttt{docs/shear-amplitude.md}, ``Selection for
+every method''). $\tau_{\max}$ is obtained from 720 time samples.
+
+In fully reversed tension with elastic strains,
+\begin{equation}
+\mathrm{DP}(\theta) = \frac{\sigma_a^2}{E}\bigl[(2+\nu)\,c-(1+\nu)\,c^2\bigr],\qquad
+c^* = \frac{2+\nu}{2(1+\nu)},\qquad
+\mathrm{DP}_{\max} = \frac{\sigma_a^2}{E}\,\frac{(2+\nu)^2}{4(1+\nu)} ,
+\label{eq:gse-tension}
+\end{equation}
+so the critical plane is inclined (about $20^\circ$ from the load axis for $\nu=0.3$). In fully
+reversed torsion $\mathrm{DP}=2(1+\nu)\tau_a^2/E$; equal damage at the two limits gives
+$\tm/\fm=(2+\nu)/[2\sqrt2(1+\nu)]\approx0.63$ for $\nu=0.3$.
+
+\block{Constants and calibration} None. The paper relates $W^*_{gen}$ to life through an
+energy--life curve derived from the material's strain--life constants; the repository fits only
+the master curve.
+
+\block{Life} The repository uses the master curve on DP, Eq.~\eqref{eq:mastercurve}, fitted on the
+uniaxial $R=-1$ design set, instead of the energy--life curve.
+
+\block{Repository choices}
+\begin{itemize}
+\item $\sigma_{n,\max}<0$ is set to 0.
+\item Elastic workbook strains: only the two elastic terms are active,
+  Eq.~\eqref{eq:gse-elastic}; the plastic terms appear only with total-strain histories that carry
+  a plastic part, which the importer does not produce.
+\item The elastic/plastic split is applied to the harmonic tensors before the ranges are taken, so
+  synthetic extrema cannot create fictitious plastic strain.
+\item Life from the shared master curve.
+\end{itemize}
+
+\block{Worked example} Synthetic material, $E=200\,000\MPa$, $\nu=0.3$. Tension $\sigma_a=300\MPa$:
+$\mathrm{DP}=0.4578\MPa$ on the plane at $19.9^\circ$ from the axis, Eq.~\eqref{eq:gse-tension}.
+Torsion $\tau_a=200\MPa$: $0.5200\MPa$. Limit ratio of equal DP: 0.626. Tension of amplitude
+$250\MPa$ with a $100\MPa$ mean: $0.4451\MPa$, against $0.4578\,(250/300)^2=0.318\MPa$ for the
+fully reversed amplitude alone; the mean raises $\tau_{\max}$ and $\sigma_{n,\max}$.
+
+\block{Verification} \texttt{tests/methods/test\_gse\_gsa.py} checks the four terms of Eq.~(1) on a
+plane state with explicit elastic and plastic strain amplitudes (paper checked on p.~35). Not
+reproduced: the experimental lives of the paper.

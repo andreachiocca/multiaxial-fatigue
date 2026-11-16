@@ -1,0 +1,83 @@
+% registry: PI
+\methodhead{PI}{Papuga and R\r{u}\v{z}i\v{c}ka (2008): integral criterion PI}\label{sheet:PI}
+
+\block{Source} J.~Papuga, M.~R\r{u}\v{z}i\v{c}ka, \emph{Int.\ J.\ Fatigue} 30 (2008) 58--66
+\cite{papuga2008}, Eq.~(16), Appendix~A (Eqs.~A.2, A.5); Table~2.
+
+\block{Idea and scope} Stress-based integral fatigue-limit criterion, the companion of the
+critical-plane criterion PCr of the same paper: the same kind of per-plane quantity, averaged over
+all plane orientations instead of maximised. Proposed for the high-cycle fatigue limit of metals
+under multiaxial loading.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\psi,\varphi$ & rad & polar and azimuth angles of the plane normal\\
+$C_a$ & MPa & shear stress amplitude on the plane: radius of the minimum circumscribed circle of the shear path\\
+$N_a$, $N_m$ & MPa & normal stress amplitude and mean on the plane\\
+$f_{-1}=\fm$, $t_{-1}=\tm$ & MPa & fully reversed axial and torsion fatigue limits\\
+$\kappa=f_{-1}/t_{-1}$ & -- & limit ratio\\
+$a_I$, $b_I$ & --, MPa & weights, Eq.~\eqref{eq:pi-coef}\\
+$\sigma_{H,m}$ & MPa & mean hydrostatic stress\\
+$\sigma_a$, $\sigma_m$ & MPa & uniaxial amplitude and mean of the worked example\\
+$\mathrm{DP}$ & -- & index, left-hand side of Eq.~\eqref{eq:pi-main} divided by $f_{-1}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Eq.~(16):
+\begin{gather}
+\sqrt{\frac{1}{4\pi}\int_0^{2\pi}\!\!\int_0^{\pi}
+\left[a_I\,C_a^2+b_I\left(N_a+\kappa\,N_m\right)\right]\sin\psi\,d\psi\,d\varphi}\le f_{-1},
+\label{eq:pi-main}\\
+a_I=\tfrac52\,\kappa^2,\qquad b_I=f_{-1}\,(3-\kappa^2).
+\label{eq:pi-coef}
+\end{gather}
+The orientation average of $N_m$ is $\sigma_{H,m}$, so the mean enters as $b_I\kappa\sigma_{H,m}$. In
+uniaxial loading the averages are $\langle C_a^2\rangle=2\sigma_a^2/15$,
+$\langle N_a\rangle=\sigma_a/3$, $\langle N_m\rangle=\sigma_m/3$, hence
+\begin{equation}
+(f_{-1}\,\mathrm{DP})^2=\frac{\kappa^2}{3}\,\sigma_a^2+\frac{f_{-1}(3-\kappa^2)}{3}\,(\sigma_a+\kappa\,\sigma_m).
+\label{eq:pi-uni}
+\end{equation}
+Appendix~A (Eq.~A.2) integrates $N_a=t_{-1}\sin2\varphi\sin^2\psi$ in torsion as a \emph{signed}
+quantity (integral 0). An amplitude is non-negative; with $\lvert N_a\rvert$ ($\langle\lvert N_a\rvert\rangle=4t_{-1}/(3\pi)$)
+reversed torsion at $t_{-1}$ gives
+\begin{equation}
+\mathrm{DP}=\sqrt{1+(3-\kappa^2)\,\frac{4}{3\pi\kappa}} ,
+\label{eq:pi-tor}
+\end{equation}
+not 1. The axial calibration (Eq.~A.5) holds.
+
+\block{Constants and calibration} $a_I$, $b_I$ in closed form from $f_{-1}$ and $t_{-1}$
+(Appendix~A). The repository uses the workbook \texttt{Sigm1}, \texttt{Taum1}; nothing is fitted
+except the master-curve constants on the uniaxial $R=-1$ design tests.
+
+\block{Life} None: a fatigue-limit criterion. The repository reads finite lives on the master curve
+of the index (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item Eq.~\eqref{eq:pi-main} as printed, with $N_a\ge0$. Reversed tension gives exactly 1; reversed
+  torsion gives Eq.~\eqref{eq:pi-tor}. This property of the published criterion is kept visible,
+  not re-calibrated.
+\item Sphere average on a 48$\times$192 Gauss--Legendre/azimuth grid (weights summing to 1); the
+  non-smooth $\lvert N_a\rvert$ integrates to about $4\cdot10^{-4}$ relative.
+\item A negative radicand (compressive mean normal stress) is clipped to 0.
+\item The index is the DP of the master curve. No \texttt{\_ext} variant.
+\end{itemize}
+
+\block{Worked example} Synthetic material: $f_{-1}=300$, $t_{-1}=187.5\MPa$ ($\kappa=1.6$). The index
+is 1 in reversed tension at $f_{-1}$ (Eq.~A.5). Reversed torsion at $t_{-1}$: index 1.0567, equal to
+Eq.~\eqref{eq:pi-tor}. Tension $\sigma_a=200$ with $\sigma_m=100\MPa$: index 0.7452, equal to
+Eq.~\eqref{eq:pi-uni}.
+
+\block{Verification} The paper prints no per-test values (its 119 tests are listed in Papuga's
+thesis), only group statistics (Table~2). Checked: the parameters of Eq.~\eqref{eq:pi-coef}; the
+Appendix~A sphere averages ($\langle C_a^2\rangle=\tfrac25t^2$ in torsion, $\tfrac{2}{15}f^2$ and
+$\langle N_a\rangle=f/3$ in axial loading); the axial calibration and the torsion inconsistency;
+the hydrostatic mean term; rotation invariance. The method audit reports that on the 43 tests of
+Papadopoulos et al.\ (1997), Table~1, PI gives a mean of $-0.4\%$ and an SD of $5.0\%$, close to the
+paper's Table~2; this comparison is not a test.

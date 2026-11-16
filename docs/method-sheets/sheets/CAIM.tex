@@ -1,0 +1,88 @@
+% registry: CAIM
+\methodhead{CAIM}{B\"ohme, Papuga and Lange (2026): critical-amplitude integral-mean criterion}\label{sheet:CAIM}
+
+\block{Source} S.~A.~B\"ohme, J.~Papuga, H.~Lange, \emph{Fatigue Fract.\ Eng.\ Mater.\ Struct.}
+49 (2026) \cite{bohme2026}, Eqs.~(1), (2), (7), (9), (18); Tables~1, 2, 4. The coefficients and
+clipping rule were checked against the supplied MATLAB file \texttt{damage\_criteria\_CAIM.m}.
+
+\block{Idea and scope} Hybrid stress criterion, successor of BP (Sheet~\ref{sheet:BP}) by the same
+authors. Amplitude effects are governed by the most loaded plane (a critical-plane maximum),
+whereas mean-stress effects are better described by an average over all planes (an integral); the
+two are decoupled. Proposed for the high-cycle fatigue limit of metals under multiaxial loading with
+mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\n$, $S^2$ & -- & plane normal and the unit sphere of normals\\
+$\tau_a$, $\tau_m$ & MPa & shear stress amplitude and mean on the plane\\
+$\sigma_{n,a}$, $\sigma_{n,m}$ & MPa & normal stress amplitude and mean on the plane\\
+$s_{-1}=\fm$, $t_{-1}=\tm$ & MPa & fully reversed axial and torsion fatigue strengths (amplitudes)\\
+$s_0$, $t_0$ & MPa & repeated ($R=0$) axial and torsion strengths, maximum stress\\
+$\sigma_u$ & MPa & ultimate tensile strength (estimate of $s_0$)\\
+$\kappa=s_{-1}/t_{-1}$ & -- & limit ratio\\
+$a,b$ & -- & amplitude weights, Eq.~\eqref{eq:caim-ab}\\
+$c,d$ & -- & mean-stress weights, those of BP, Eq.~\eqref{eq:caim-cd}\\
+$\sigma_a$, $\sigma_m$ & MPa & uniaxial (or biaxial) amplitude and mean of the worked example\\
+$\sigma_{eq,CAIM}$ & MPa & equivalent stress, Eq.~\eqref{eq:caim-main}\\
+$\mathrm{DP}$ & -- & fatigue index $\sigma_{eq,CAIM}/s_{-1}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation}
+\begin{gather}
+\sigma_{eq,CAIM}^2=\max_{\n}\left(a\,\tau_a^2+b\,\sigma_{n,a}^2\right)
++\frac{1}{4\pi}\int_{S^2}\left(c\,\tau_a\tau_m+d\,\sigma_{n,a}\sigma_{n,m}\right)dS,
+\qquad \sigma_{eq,CAIM}\le s_{-1},
+\label{eq:caim-main}\\
+a=\kappa^2,\qquad
+b=\begin{cases}1, & \kappa^2<2,\\ \kappa^2-\kappa^4/4, & \kappa^2\ge2,\end{cases}
+\label{eq:caim-ab}\\
+c=\tfrac52\,\kappa^2\left[\Bigl(\frac{2t_{-1}}{t_0}\Bigr)^2-1\right],\qquad
+d=5\left[\Bigl(\frac{2s_{-1}}{s_0}\Bigr)^2-1-\frac{2c}{15}\right],
+\label{eq:caim-cd}
+\end{gather}
+with $s_0$, $t_0$ estimated, when not measured, by Eqs.~(1)--(2) as for BP:
+$s_0=4s_{-1}\sigma_u/(s_{-1}+2\sigma_u)$ and $4t_{-1}/t_0-2s_{-1}/s_0=1$. A negative squared
+equivalent stress is clipped to zero, as in the MATLAB code. In uniaxial loading with $\kappa^2<2$
+the amplitude maximum is on the plane normal to the load, $\max(a\tau_a^2+\sigma_{n,a}^2)=\sigma_a^2$,
+and the mean term is that of BP, so
+$\sigma_{eq,CAIM}^2=\sigma_a^2+\sigma_a\sigma_m[(2s_{-1}/s_0)^2-1]$, as for BP.
+
+\block{Constants and calibration} $a,b,c,d$ in closed form from $s_{-1}$, $t_{-1}$, $s_0$, $t_0$. The
+repository takes them from the workbook \texttt{Sigm1}, \texttt{Taum1}, \texttt{Sig0},
+\texttt{Tau0}, with the BP estimates when the $R=0$ strengths are missing (needs \texttt{Su});
+nothing is fitted except the master-curve constants on the uniaxial $R=-1$ design tests.
+
+\block{Life} None: a fatigue-limit criterion. The repository reads finite lives on the master curve
+of the index $\sigma_{eq,CAIM}/s_{-1}$ (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item Amplitude term: maximum over a 24$\times$48 sphere grid, refined by a pattern search from the 12
+  best grid normals and the three axes. Mean term: the same 24$\times$48 orientation average as BP.
+  These replace the uniform angular summation of the MATLAB code; agreement is within
+  discretisation error, and the global maximum is searched, not proven.
+\item $\tau_a$ is the radius of the minimum circumscribed circle of the shear ellipse on each plane;
+  $\tau_m$ the magnitude of the mean shear vector.
+\item Estimated $R=0$ strengths when \texttt{Sig0}/\texttt{Tau0} are missing.
+\item Single-harmonic loading only; no \texttt{\_ext} variant.
+\end{itemize}
+
+\block{Worked example} Synthetic material: $s_{-1}=300$, $t_{-1}=220$, $\sigma_u=800\MPa$
+($\kappa^2=1.86<2$, so $b=1$). Index 1 in reversed tension at $s_{-1}$ and in reversed torsion at
+$t_{-1}$. Tension $\sigma_a=200$ with $\sigma_m=150\MPa$: CAIM $0.7623$ = BP $0.7623$. Equibiaxial
+amplitude $\sigma_{xx}=\sigma_{yy}=200\sin\omega t$: every plane containing the $z$ axis carries
+$\sigma_{n,a}=\sigma_a$, $\tau_a=0$, and CAIM gives $0.6667=\sigma_a/s_{-1}$, whereas BP gives
+$0.9754$.
+
+\block{Verification} Checked: the four loading limits and both branches of $b$; an independent dense
+angular evaluation of the MATLAB equations; the clipping; BP and CAIM distinct; the closed forms of
+Eq.~(18) for equibiaxial and equitriaxial amplitudes. Table~4 statistics of the 18 Table~2 cases are
+reproduced from the 17 computable cases, with CAIM identical to BP there, as the paper states (see
+Sheet~\ref{sheet:BP}; PM10 $=79.0\%$ is a misprint). Eq.~(7) prints the integral without
+$1/(4\pi)$; only the sphere average reproduces the uniaxial limits, so this is a misprint. Not
+reproduced: the database statistics beyond Table~4.

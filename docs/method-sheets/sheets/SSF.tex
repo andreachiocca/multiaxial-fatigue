@@ -1,0 +1,92 @@
+% registry: SSF
+\methodhead{SSF}{Anes, Reis, Li, Fonte and de Freitas (2014): stress scale factor}\label{sheet:SSF}
+
+\block{Source} V.~Anes, L.~Reis, B.~Li, M.~Fonte, M.~de Freitas, \emph{Int.\ J.\ Fatigue} 62 (2014)
+21--33 \cite{anes2014}, Eqs.~(29)--(31); Tables~4--10, Section~4.5, Figs.~12--14.
+
+\block{Idea and scope} Criteria such as Crossland, Matake or Dang Van weight the axial stress against
+the shear stress with a constant derived from the fatigue limits. Anes et al.\ measure this ``stress
+scale factor'' (ssf) on proportional tension--torsion tests, find that it depends on the axial stress
+level and on the amplitude ratio, and fit an ssf surface. Along a non-proportional path the
+instantaneous ssf turns each instant of the axial stress into an equivalent shear stress, compared
+with the pure-shear S--N curve. Proposed for finite-life tension--torsion fatigue of high-strength
+42CrMo4; mean stresses are not addressed (all tests at $R=-1$).
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\sigma(t)$, $\tau(t)$ & MPa & axial normal stress and shear stress acting in the same plane (tension--torsion)\\
+$\sigma_a$, $\tau_a$ & MPa & their amplitudes\\
+$\lambda$ & rad & load angle, Eq.~\eqref{eq:ssf-lambda}\\
+$\mathrm{ssf}(\sigma,\lambda)$ & -- & stress scale factor, Eq.~\eqref{eq:ssf-surface}\\
+$a$; $b$, $c$, $d$ & --; MPa$^{-1}$, MPa$^{-2}$, MPa$^{-3}$ & stress coefficients of the ssf surface\\
+$f$, $g$, $h$, $i$ & rad$^{-2}$, \dots, rad$^{-5}$ & angle coefficients of the ssf surface (no $e$ term)\\
+$\tau_{eqv}$ & MPa & equivalent shear stress, Eq.~\eqref{eq:ssf-main}\\
+$N_f$ & cycles & life\\
+$AB$, $AC$, $AD$ & MPa & S--N trend lines at a given life: shear stress of a case, pure-shear reference, axial stress of the case; $BC=AC-AB$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Eqs.~(29)--(31):
+\begin{gather}
+\tau_{eqv} = \max_t\Bigl[\tau(t) + \mathrm{ssf}(\lambda,\sigma)\,\sigma(t)\Bigr] , \label{eq:ssf-main}\\
+\lambda = \tan^{-1}\frac{\tau}{\sigma} , \label{eq:ssf-lambda}\\
+\mathrm{ssf}(\sigma,\lambda) = a + b\sigma + c\sigma^2 + d\sigma^3 + f\lambda^2 + g\lambda^3 + h\lambda^4 + i\lambda^5 ,
+\label{eq:ssf-surface}
+\end{gather}
+with, for the paper's 42CrMo4, $a=2.69$, $b=-9.90\times10^{-3}$, $c=1.69\times10^{-5}$,
+$d=-9.52\times10^{-9}$, $f=-5.99$, $g=11.72$, $h=-8.04$, $i=1.63$ ($\sigma$ in MPa, $\lambda$ in rad).
+Under non-proportional loading the instantaneous stresses enter Eq.~\eqref{eq:ssf-surface}, so
+$\lambda(t)$ and $\mathrm{ssf}(t)$ vary along the cycle (Section~4.5).
+
+\block{Constants and calibration} Paper (Tables~4--9): for each proportional case, axial ($AD$) and shear
+($AB$) S--N trend lines are fitted, together with the pure-shear reference ($AC$, case~2:
+$\tau_a=864.78\,N_f^{-0.061}$). At each life $\mathrm{ssf}=(AC-AB)/AD$, the shear increment needed to
+reach the pure-shear curve per unit axial stress, and Eq.~(31) is regressed on these points
+($R^2=0.98$). This needs proportional tension--torsion S--N data at several amplitude ratios plus pure
+tension and pure torsion (cases~1--5). Repository: only the published surface (maintainer decision).
+The eight coefficients are required constants \texttt{a\_SSF}, \dots, \texttt{i\_SSF}, without them the
+model is skipped; the paper's values are in the published-constants record
+\texttt{Calibrations/42CrMo4\_Reis/SSF\_published.json}, read by \texttt{--constants}. No per-material
+recalibration and no refit. The workbook 42CrMo4\_Reis holds the tests the surface was fitted on, so
+its SSF results are in-sample (the paper's case~6 is the only test not used in the fit).
+
+\block{Life} No native life law in the repository. In the paper $\tau_{eqv}$ is read on the pure-shear
+S--N curve; the repository fits the shared master curve (Section~\ref{sec:mastercurve}) with
+$\mathrm{DP}=\tau_{eqv}$ on the pure torsion $R=-1$ failures (design set: torsion), a power law as in
+the paper.
+
+\block{Repository choices}
+\begin{itemize}
+\item Published surface only, with the coefficients as printed (maintainer decisions); they miss the
+  paper's Table~9 by up to 0.06.
+\item Magnitudes: $\lambda=\tan^{-1}(|\tau|/|\sigma|)\in[0,\pi/2]$ and
+  $\tau_{eqv}=\max_t\bigl[|\tau(t)|+\mathrm{ssf}(|\sigma(t)|,\lambda(t))\,|\sigma(t)|\bigr]$, so the result
+  does not depend on axis sign conventions; it equals the signed form of Fig.~14 wherever $\tau$ and
+  $\sigma$ share the sign.
+\item The cycle is sampled at 4096 points.
+\item Scope: fully reversed loading with one normal and one shear stress in the same plane; anything
+  else raises \texttt{LoadingScopeError}.
+\item A warning when $|\sigma|$ exceeds $737\MPa$, the largest axial amplitude behind the fit.
+\item Life: master curve on the pure torsion failures (\texttt{design\_loading = "torsion"}).
+\item Cross-batch use: the surface may be applied to another batch of the same steel only through a
+  transfer with 42CrMo4\_Reis as the design batch; results are then out of sample.
+\end{itemize}
+
+\block{Worked example} Published coefficients. Proportional case~4 at $10^5$ cycles (Table~7),
+$\sigma_a=480$, $\tau_a=277\MPa$: $\lambda=0.52$~rad, $\mathrm{ssf}=0.279$ (Table~7: 0.32),
+$\tau_{eqv}=411.0\MPa$ (pure-shear reference $428\MPa$). Non-proportional case~6, $\sigma_a=510$,
+$\tau_a=294\MPa$ at $90^\circ$: $\tau_{eqv}=415.3\MPa$ (text, p.~31: $434\MPa$). Both gaps come from
+the rounding of the printed coefficients.
+
+\block{Verification} Tables~5--8 are reproduced from the Table~4 trend lines (the calibration
+procedure). Two printed cells are misprints and strict xfails: Table~5 prints $BC=0$ for case~1, where
+it should be $AC-AB=AC$; Table~8 prints $AC=508$ at $10^3$ cycles, where it should be 567; in both, the
+table's own ssf column uses the correct value. Table~9: Eq.~(31) as printed matches within 0.06 (RMS
+gap below 0.035). Case~6: the ssf history spans 0.37--0.79 as in Fig.~13; the peak $\tau_{eqv}$ is
+$415\MPa$ against the printed 434, and matching within 1\,\% is a strict xfail. Also checked:
+proportional peaks, pure torsion as the reference, the scope errors and the published-constants
+record.
