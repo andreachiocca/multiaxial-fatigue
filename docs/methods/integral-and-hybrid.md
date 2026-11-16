@@ -16,9 +16,9 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 11 | 1 | 7 | 0 | 19 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 6 | 0 | 4 | 0 | 10 |
+| Integral and hybrid | 6 | 0 | 3 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 44 | 2 | 68 | 5 | 119 |
+| **TOTAL** | 45 | 2 | 67 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
@@ -49,7 +49,6 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [I_CAIM](../../METHODS.md#i_caim) | Critical–integral approach (CAIM) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [N03](../../METHODS.md#n03) | Papadopoulos, specified 2001 formulation | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N15](../../METHODS.md#n15) | Original Liu–Zenner integral criterion | Not implemented | not_tested | Medium | Yes |
-| [N17](../../METHODS.md#n17) | Mean-shear-sensitive weighted-plane criterion, CA branch | Not implemented | not_tested | High | Yes |
 | [N50](../../METHODS.md#n50) | Grubisic–Simbürger formulation | Not implemented | not_tested | Low | Yes |
 | [N53](../../METHODS.md#n53) | Substitute-amplitude/NP-damage method, CA branch | Not implemented | not_tested | Medium | Yes |
 | [G02](../../METHODS.md#g02) | Papuga–Růžička integral criterion (PI; later PIN) | Fully implemented | reference_examples_reproduced | High | Yes |
@@ -191,39 +190,6 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Provenance / prior status | N15; Already reviewed, not implemented |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N15+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN15%5D+Original+Liu%E2%80%93Zenner+integral+criterion) (no live Issue linked) |
-
-### N17
-
-**Mean-shear-sensitive weighted-plane criterion, CA branch** — Xiao-Wei Wang, De-Guang Shang, Yu-Juan Sun, Hong Chen (2018)
-
-| Field | Evidence / task |
-| --- | --- |
-| Primary / secondary family | Integral and hybrid;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
-| Reference | Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Theoretical and Applied Fracture Mechanics |
-| DOI | https://doi.org/10.1016/j.tafmec.2017.10.007 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Weighted instantaneous shear-plane orientation and mean-shear/normal corrections; CA P/NP, F/L. |
-| Loading scope | Weighted instantaneous shear-plane orientation and mean-shear/normal corrections; CA P/NP, F/L. |
-| Inputs / material parameters | S; f−1/t−1, f0/t0; torsional S–N curve. |
-| Output | Weighted instantaneous shear-plane orientation and mean-shear/normal corrections; CA P/NP, F/L. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Addresses mean shear and changing plane direction; separate from N05. |
-| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
-| External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Stable orientation tracking/averaging, two candidate evaluations and native curve use. |
-| Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Stable orientation tracking/averaging, two candidate evaluations and native curve use. |
-| Roadmap rank | — |
-| Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. BP sphere quadrature and projection helpers; preserve source-specific weights. |
-| Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / High |
-| Provenance / prior status | N17; Already reviewed, not implemented |
-| Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N17+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN17%5D+Mean-shear-sensitive+weighted-plane+criterion%2C+CA+branch) (no live Issue linked) |
 
 ### N50
 

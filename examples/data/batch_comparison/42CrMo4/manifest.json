@@ -9,8 +9,8 @@
  "constants": {
   "42CrMo4_Reis": "Calibrations/42CrMo4_Reis/SSF_published.json"
  },
- "created_utc": "2026-11-15T18:39:35+00:00",
- "git_commit": "2224c76dcb0b10cb44cddb4007f10834a6d762cb",
+ "created_utc": "2026-11-16T06:05:24+00:00",
+ "git_commit": "a8b89223b80b0931c4b6b6205de7f69c7016c64a",
  "registered_models": [
   "BP",
   "CAIM",
@@ -61,6 +61,7 @@
   "TVEIT2025",
   "VHN",
   "VSE",
+  "WANG2018",
   "WANG2022",
   "ZHANGYAO"
  ],
@@ -118,6 +119,7 @@
   "SWTD",
   "VHN",
   "VSE",
+  "WANG2018",
   "WANG2022",
   "ZHANGYAO"
  ],

@@ -6,6 +6,26 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### WANG2018: Wang, Shang, Sun & Chen (2018) weighted-plane criterion with mean shear stress (#13, N17)
+
+- New case-level model `WANG2018` (`cp_methods/wang2018.py`):
+  - the critical plane is the weighted mean of the instantaneous maximum-shear planes over one
+    cycle (Eqs. 3-7);
+  - of the candidates phi_hat and phi_hat + 90 deg, the larger tau_eq is kept;
+  - tau_eq = sqrt([tau_a + k_tau |tau_m|]^2 + 1/3 [sigma_a + k_sigma sigma_m]^2) (Eq. 18), with
+    k_tau and k_sigma from t_-1, f_0, t_0 (Eq. 15) or from the Eq. (19) estimates.
+- Tension-torsion only, the paper's loading; other stress components are out of scope (maintainer
+  decision). Constants that violate Eq. (17) are out of material scope.
+- Life on the R = -1 torsion failures (`design_loading = "torsion"`), the paper's torsional S-N
+  curve. The variable-amplitude procedure is not implemented.
+- Paper data: Tables 3-5 transcribed in `tests/data/papers/wang2018_tables3_5.csv`. The Section 5.1
+  estimated crack orientation (70 deg) is reproduced for every 30 and 90 deg out-of-phase test.
+- Catalogue N17 is now implemented. Its family is corrected from integral and hybrid to critical
+  plane.
+- Also added: guide, LaTeX sheet, audit row. The ranking and the batch comparison were
+  regenerated. WANG2018 runs on 6 life and 6 limit datasets. It is skipped on Ti6Al4V_Meneghetti
+  (4 torsion tests) and on 25CrMo4 and 34Cr4 (biaxial normal stresses).
+
 ### LaTeX method sheets for the review article
 
 - New `docs/method-sheets/`: one LaTeX document (`methods.tex`) with a shared notation section

@@ -94,6 +94,10 @@ REFERENCES = {
         "Kujawski (2021), An interpretation and modification of the SWT function, Eqs. (9)-(13)",
         "10.1111/ffe.13488",
     ),
+    "WANG2018": (
+        "Wang, Shang, Sun & Chen (2018), Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Eqs. (2)-(9), (15)-(20)",
+        "10.1016/j.tafmec.2017.10.007",
+    ),
     "WANG2022": (
         "Wang, Sun, Liu, Liu & Shang (2022), Multiaxial high-cycle fatigue failure and life prediction based on critical plane method, Eqs. (10), (15), (18)-(24)",
         "10.1177/10567895221091308",

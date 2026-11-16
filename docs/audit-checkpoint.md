@@ -1,18 +1,23 @@
 # Development continuation checkpoint
 
-## Issue #13, new methods from the supplied papers (15 November 2026)
+## Issue #13, new methods from the supplied papers (16 November 2026)
 
-- Papers supplied: Khalij 2017 (N19), Kakuno & Kawada 1979 (G04), Matsubara 2018 (N09),
-  Albinmousa & Al Hussain 2021 (polar damage sum, new record). Maintainer decisions: Kakuno k_1
-  from Sig0, else mean normal stress out of scope; Khalij OP zero-mean only (mean terms not
-  reproducible); Matsubara sigma_T = 1.84 Su within 400-1000 MPa unless given; polar damage sum
-  as an elastic version.
-- Stacked branches, one PR each: `feat/khalij-criterion` (done: Table 6 51/53), then
-  `feat/kakuno-kawada-criterion` (done: runs on Santus and Berto; PR stacked on KHALIJ), then
-  `feat/matsubara-criterion` (done: runs on 8 materials; PR stacked on KAKUNO), then
-  `feat/polar-damage-sum` (done: PDS_SWT, PDS_FS, records N59/N60, k_PDS calibrated).
-- Next action: CI of the four stacked PRs and maintainer merges in order (#103, #104, #105, then
-  the polar damage sum PR), retargeting each to main.
+- Merged: KHALIJ, KAKUNO, MATSUBARA, PDS_SWT/PDS_FS (#103-#106). Open: #107 (homepage
+  cross-batch figure), #108 (LaTeX method sheets, `docs/method-sheets/`; 46 models pending).
+- Second batch of papers: Zenner, Simbuerger & Liu 2000 (SIH, N15), Bolchoun, Baumgartner &
+  Kaufmann 2017 (N53), Wang, Shang, Sun & Chen 2018 (N17). Maintainer decisions (16 Nov):
+  - WANG2018: tension-torsion only; life on the torsion S-N curve; add Tables 3-5 (7075-T651,
+    52 tests) as a new workbook in a separate data PR.
+  - SIH: shear amplitude = the method's original rule, otherwise longest chord (MCC for one
+    harmonic); Sig0 required for mean stresses, Tau0 from Eq. (7).
+  - A user option must select the shear amplitude (longest chord, MCC, MCE) for every method that
+    uses one (generalise `--shear-amplitude-algorithm`, now FIN only).
+  - Bolchoun deferred: Eq. (15) is garbled in the accepted manuscript, and the method needs an
+    out-of-phase S-N curve as input.
+- Branch `feat/wang2018-criterion` (stacked on `docs/method-sheets`): WANG2018 implemented, guide,
+  sheet, catalogue, audit, ranking regenerated (6 life + 6 limit datasets).
+- Next action: WANG2018 PR; then the 7075-T651 workbook PR; then SIH; then the global
+  shear-amplitude option.
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 

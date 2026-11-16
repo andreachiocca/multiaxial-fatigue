@@ -13,6 +13,8 @@ grid_metric grid_normals method name n_seeds objective pool prepare refine retur
 seed_normals shear_rule values
 # kind: PDS selector between the SWT and FS damage parameters of Eqs. (8)-(9).
 kind
+# k_tau, k_sigma, phi: WANG2018 mean-shear and mean-normal sensitivities and plane angle, Eqs. (2), (15).
+k_tau k_sigma phi
 # exact: GOLOS switch between the published coefficient forms, Eq. (30) or the approximation (31).
 exact
 

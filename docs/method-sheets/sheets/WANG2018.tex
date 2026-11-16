@@ -1,0 +1,114 @@
+% registry: WANG2018
+\methodhead{WANG2018}{Wang, Shang, Sun and Chen (2018): weighted critical plane with mean shear stress}\label{sheet:WANG2018}
+
+\block{Source} X.-W.~Wang, D.-G.~Shang, Y.-J.~Sun, H.~Chen, \emph{Theor.\ Appl.\ Fract.\ Mech.}
+(2018), accepted manuscript \cite{wang2018}, Eqs.~(1)--(20); Tables~1--5; Section~5.1.
+
+\block{Idea and scope} The critical plane is the weighted time average of the planes of maximum
+shear stress. The weights grow with the instantaneous maximum shear stress. On that plane, the
+shear and normal stress amplitudes are combined in von Mises form. Each is corrected by its own
+mean stress: the shear mean through its absolute value, the normal mean with its sign. The life is
+read on the fully reversed torsion S--N curve. Proposed for high-cycle lives of 7075-T651
+thin-walled tubes under tension--torsion: constant amplitude, in and out of phase, with mean
+stresses, and variable amplitude.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\sigma(t)$, $\tau(t)$ & MPa & axial normal stress and shear stress of the tube ($\sigma_{yy}$, $\tau_{xy}$ in the repository frame)\\
+$\varphi$ & rad & angle between the normal of a plane perpendicular to the surface and the axis\\
+$\sigma_\varphi$, $\tau_\varphi$ & MPa & normal and shear stress on plane $\varphi$, Eq.~\eqref{eq:w18-plane}\\
+$\tau_{\max}(t_k)$ & MPa & maximum shear stress over the surface planes at instant $t_k$\\
+$\varphi_{45}(t_k)$ & rad & orientation of the maximum-shear plane at $t_k$, in $[-45^\circ,45^\circ]$\\
+$W(t_k)$ & -- & weight of instant $t_k$, Eq.~\eqref{eq:w18-weight}\\
+$\hat\varphi$, $\varphi_c$ & rad & weighted maximum-shear plane and critical plane\\
+$\tau_a,\tau_m$; $\sigma_a,\sigma_m$ & MPa & amplitude and mean of $\tau_\varphi$ and $\sigma_\varphi$ on $\varphi_c$\\
+$\tau_{-1}=\tm$, $\sigma_{-1}=\fm$ & MPa & fully reversed torsion and axial limits\\
+$\sigma_0$, $\tau_0$ & MPa & pulsating ($R=0$) axial and torsion limits, maximum stress\\
+$k_\tau$, $k_\sigma$ & -- & mean shear and mean normal stress sensitivities, Eq.~\eqref{eq:w18-k}\\
+$\tau_{eq}$ & MPa & equivalent shear stress, Eq.~\eqref{eq:w18}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the planes perpendicular to the surface (Eq.~2),
+\begin{equation}
+\sigma_\varphi = \tfrac{\sigma}{2}+\tfrac{\sigma}{2}\cos2\varphi+\tau\sin2\varphi ,\qquad
+\tau_\varphi = \tfrac{\sigma}{2}\sin2\varphi-\tau\cos2\varphi .
+\label{eq:w18-plane}
+\end{equation}
+At each instant $t_k$ of one cycle (Eqs.~3--7),
+\begin{gather}
+\tau_{\max}(t_k)=\sqrt{\bigl(\sigma(t_k)/2\bigr)^2+\tau(t_k)^2},\qquad
+\varphi_{45}(t_k)=\tfrac12\arctan\!\left[-\frac{\sigma(t_k)}{2\tau(t_k)}\right],\\
+W(t_k)=\frac{\tau_{\max}(t_k)-\min_k\tau_{\max}}{\max_k\tau_{\max}-\min_k\tau_{\max}},\qquad
+\lvert\hat\varphi\rvert=\frac{\sum_k\lvert\varphi_{45}(t_k)\rvert\,W(t_k)}{\sum_k W(t_k)} ,
+\label{eq:w18-weight}
+\end{gather}
+and $\hat\varphi$ takes the sign of $\sum_k\varphi_{45}(t_k)W(t_k)$. The shear stress has the same
+magnitude on $\hat\varphi$ and $\hat\varphi+90^\circ$, so the candidate with the larger damage is
+$\varphi_c$. When $\tau_{\max}$ is constant (Eqs.~8--9), the plane of the largest normal stress is
+critical. On $\varphi_c$ (Eqs.~11, 15, 18),
+\begin{gather}
+\tau_{eq}=\sqrt{\bigl[\tau_a+k_\tau\lvert\tau_m\rvert\bigr]^2+\tfrac13\bigl[\sigma_a+k_\sigma\sigma_m\bigr]^2}\le\tau_{-1},
+\label{eq:w18}\\
+k_\tau=\frac{2\tau_{-1}}{\tau_0}-1,\qquad
+k_\sigma=\sqrt{\frac{48\tau_{-1}^2}{\sigma_0^2}-\frac{12\tau_{-1}^2}{\tau_0^2}}-1 ,
+\label{eq:w18-k}
+\end{gather}
+obtained by imposing reversed torsion ($\tau_a=\tau_{-1}$), pulsating tension
+($\tau_a=\tau_m=\sigma_a=\sigma_m=\sigma_0/4$ on the $45^\circ$ plane) and pulsating torsion
+($\tau_a=\tau_m=\tau_0/2$), Eqs.~(12)--(14). Eq.~(17) requires $k_\tau>0$ and $k_\sigma>0$.
+Without the pulsating limits (Eq.~19),
+\begin{equation}
+\sigma_0=\sqrt2\,\sigma_{-1},\qquad \tau_0=\frac{4\tau_{-1}}{2\sigma_{-1}/\sigma_0+1},
+\end{equation}
+which gives $k_\tau=(\sqrt2-1)/2$ (Eq.~20). Reversed tension gives $\tau_{eq}=\sigma_a/\sqrt3$: the
+criterion implies $\sigma_{-1}=\sqrt3\,\tau_{-1}$.
+
+\block{Constants and calibration} $k_\tau$, $k_\sigma$ from $\tau_{-1}$, $\sigma_0$, $\tau_0$, or
+from $\sigma_{-1}$, $\tau_{-1}$ through Eq.~(19). The paper takes $\sigma_{-1}$ and $\tau_{-1}$
+from its S--N curves at $N_0=10^6$, $2\cdot10^6$ and $10^7$, and compares the three choices.
+
+\block{Life} $\tau_{eq}$ on the fully reversed torsion S--N curve (Section~4.2). Variable
+amplitude: Wang--Brown reversals on the two candidate planes, Miner's rule, and the larger damage
+(Eqs.~21--24).
+
+\block{Repository choices}
+\begin{itemize}
+\item Scope: tension--torsion only (maintainer decision). Any other stress component is out of
+  scope.
+\item One cycle sampled at 3600 instants for Eqs.~\eqref{eq:w18-weight}. On a plane, the
+  amplitude and mean are exact single-harmonic values.
+\item The two candidates are compared through $\tau_{eq}$: there is one S--N curve, so the larger
+  $\tau_{eq}$ is the larger damage. A zero signed sum gives $\hat\varphi\ge0$.
+\item Constant $\tau_{\max}$: the plane of the largest $\max_t\sigma_\varphi(t)$ is found over
+  3600 planes.
+\item $\sigma_{-1},\tau_{-1}$ are the workbook \texttt{Sigm1}, \texttt{Taum1}. $\sigma_0,\tau_0$
+  are \texttt{Sig0}, \texttt{Tau0}, otherwise Eq.~(19). A violation of Eq.~(17) is out of material
+  scope.
+\item Life: the master curve $\tau_{eq}=AN^b$ is fitted on the $R=-1$ pure torsion failures,
+  which is the paper's torsion S--N curve. The variable-amplitude procedure is not implemented.
+\end{itemize}
+
+\block{Worked example} 7075-T651, Table~2 curves at $N_0=10^6$: $\sigma_{-1}=222.0$,
+$\tau_{-1}=127.1\MPa$, so $k_\tau=0.2071$ and $k_\sigma=0.8698$. Table~5 load
+$\sigma=163.02+144.57\sin\omega t$, $\tau=94.12+83.47\sin(\omega t-\delta)$ (MPa):
+\begin{center}\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+$\delta$ & $\varphi_c$ & $\tau_{eq}$ (MPa) & $N$ from $\tau=688.85N^{-0.12233}$\\\midrule
+$0^\circ$ & $69.6^\circ$ & 159.3 & 157\,636\\
+$30^\circ$ & $-20.4^\circ$ & 160.0 & 152\,280\\
+$90^\circ$ & $-20.1^\circ$ & 160.4 & 149\,120\\
+\bottomrule
+\end{tabular}
+\end{center}
+Experimental lives: 53\,058--65\,046, 64\,231--82\,445 and 70\,333--94\,718 cycles.
+
+\block{Verification} Section~5.1: the estimated crack trace, $90^\circ-\lvert\varphi_c\rvert$, is
+$70^\circ$ for every $30^\circ$ and $90^\circ$ out-of-phase test of Table~5, as in the paper.
+Eqs.~(12)--(14) give $\tau_{eq}=\tau_{-1}$ exactly; Eq.~(20) equals Eq.~(15) with Eq.~(19). The
+paper prints the predicted lives only in figures.
