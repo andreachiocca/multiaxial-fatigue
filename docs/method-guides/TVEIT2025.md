@@ -124,7 +124,8 @@ the predictions:
 
 | Finding | Severity | What to try |
 |---|---|---|
-| `failures_below_limit`: axial R = −1 failures below $f_{-1}$ | major | check $f_{-1}$ against the failures and run-outs of the source |
+| `failures_below_limit`: axial R = −1 failures below $f_{-1}$ before its reference life (the Summary "Number of Cycles"; unknown counts as before) | major | check $f_{-1}$ against the failures and run-outs of the source |
+| `late_failures_below_limit`: failures below $f_{-1}$ after its reference life: they agree with a limit defined at that life, but $f_{-1}$ is a true threshold of the model | minor | for a material without a true fatigue limit, a limit at a longer reference life |
 | `runouts_above_limit`: axial R = −1 run-outs above $f_{-1}$ | minor | the limit may be conservative |
 | `limit_source_differs`: no test from the source of the limits | major | use the limits of the source of the tests |
 | `limit_other_publication`: limits from another paper of the same authors | minor | confirm the same batch |
@@ -139,6 +140,7 @@ the predictions:
 | `poor_fit`: a point missed by more than 0.3 decade | minor | check the limit and the points |
 | `constant_at_bound`: $K$ or $L$ on its search bound, or $C$ when the equivalent sets pin it | major | more informative tests |
 | `C_not_identified`: $C$ over more than one decade among equivalent sets | minor | a mean-shear or 90° out-of-phase test |
+| `point_at_block_limit`: the time integration of a calibration point reached `max_blocks_TVEIT`, so its life is extrapolated (gate G2 still checks it against the closed form) | minor | raise `max_blocks_TVEIT` in `numerical_settings` |
 
 For example, Ti6Al4V_Meneghetti (its axial R = −1 failures lie between 523 and 551 MPa):
 

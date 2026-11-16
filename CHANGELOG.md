@@ -21,8 +21,12 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
   design rows (Flag 0). No model name in `cli/`.
 - Calibration confidence (`eval/calibration_confidence.py`): named findings, major or minor, each
   with what to try (estimated A, failures below `Sigm1`, limits and tests of different sources,
-  points close together, a constant on its search bound, the unidentified `C`, ...); level high,
-  medium or low. Printed, recorded and noted on the run-report row.
+  points close together, a constant on its search bound, the unidentified `C`, a calibration
+  point whose integration reached `max_blocks_TVEIT`, ...); level high, medium or low. Printed,
+  recorded and noted on the run-report row. A failure below `Sigm1` is major only when it failed
+  before the reference life of `Sigm1`; after it, it agrees with a limit defined at that life
+  (minor).
+- The record names the inputs file relative to the repository, not by a local path.
 - An identical calibration (workbook bytes, overlay, inputs file, procedure version, implementation
   revision) is reused from `Calibrations/<material>/` or the run's archive.
 - Optional inputs `Calibrations/<material>/TVEIT2025_inputs.json` (schema 2) for Al7075_T6,

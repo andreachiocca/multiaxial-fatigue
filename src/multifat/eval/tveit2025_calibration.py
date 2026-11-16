@@ -47,8 +47,14 @@ Repository choices:
     papers prescribe three points of one S-N curve, not how they are chosen.
   - The confidence of the calibration (multifat.eval.calibration_confidence) lists what weakens
     it: failures below f_m1, limits and tests of different sources, an estimated A, points close
-    together or near f_m1, single-specimen levels, a poor fit, a constant on its search bound and
-    the unidentified C. Each finding says what data would remove it.
+    together or near f_m1, single-specimen levels, a poor fit, a constant on its search bound, the
+    unidentified C and a calibration point whose time integration reached max_blocks_TVEIT. Each
+    finding says what data would remove it. A failure below f_m1 is major when it failed before
+    the reference life of f_m1 (the Summary "Number of Cycles"; unknown counts as before): the data
+    then contradict the limit. After it, the failure agrees with a limit defined at that life
+    (a material without a true fatigue limit), and the finding is minor: the model, whose f_m1 is
+    a true threshold, still predicts an infinite life for it.
+  - The record names the inputs file relative to the repository, never by a local path.
   - The closed form is solved by a damped Newton method. The physical root is the one connected
     by continuation to the endurance limit sigma_a = f_m1 / (1 + A sigma_m / sigma_a), where it
     is alpha_2 = ((A + 1) sigma_2 - f_m1) / 1.5, alpha_4 = (f_m1 - (A - 1) sigma_4) / 1.5 exactly,
@@ -561,8 +567,8 @@ def numerical_settings(inputs: Dict[str, Any]) -> Dict[str, float]:
     return {key: declared.get(key, default) for key, (_, default) in SETTINGS.items()}
 
 
-def _transient_life(C, K, L, sigma_m, sigma_a, A, f_m1, t_m1, settings) -> float:
-    """Time-integrated life of the model on the axial cycle (axial slot sigma_yy)."""
+def _transient_life(C, K, L, sigma_m, sigma_a, A, f_m1, t_m1, settings):
+    """Time-integrated life of the model on the axial cycle (axial slot sigma_yy): a TveitLife."""
     from multifat.models.invariant_methods.tveit2025 import SETTINGS, tveit2025_life
 
     S_mean = np.zeros((3, 3))
@@ -570,7 +576,7 @@ def _transient_life(C, K, L, sigma_m, sigma_a, A, f_m1, t_m1, settings) -> float
     S_mean[1, 1] = sigma_m
     S_sin[1, 1] = sigma_a
     keywords = {SETTINGS[key][0]: value for key, value in settings.items()}
-    return tveit2025_life(S_mean, S_sin, np.zeros((3, 3)), f_m1, t_m1, A, C, K, L, **keywords).Nf
+    return tveit2025_life(S_mean, S_sin, np.zeros((3, 3)), f_m1, t_m1, A, C, K, L, **keywords)
 
 
 def check_admissible(
@@ -597,7 +603,7 @@ def check_admissible(
             check_unique=True,
         )
         G1 = G1 and closed.status == VALID
-        transient = _transient_life(
+        integration = _transient_life(
             candidate["C"],
             candidate["K"],
             candidate["L"],
@@ -608,6 +614,7 @@ def check_admissible(
             t_m1,
             settings,
         )
+        transient = integration.Nf
         if math.isfinite(transient) and math.isfinite(closed.Nf) and closed.Nf > 0.0:
             gap = math.log10(transient) - math.log10(closed.Nf)
         else:
@@ -621,6 +628,8 @@ def check_admissible(
                 "N_closed": closed.Nf,
                 "status": closed.status,
                 "N_transient": transient,
+                "termination": integration.termination,
+                "blocks": integration.blocks,
                 "log10_transient_minus_closed": gap,
                 "residual_closed": _log10_ratio(closed.Nf, N_exp),
                 "residual_transient": _log10_ratio(transient, N_exp),
@@ -889,20 +898,54 @@ def three_point_rule(candidates: List[Dict[str, Any]], f_m1: float) -> List[Dict
 # ---------------------------------------------------------------------------------------------
 
 
-def _input_findings(f_m1, failures, runouts, matched, slope) -> List[Finding]:
+def reference_life(limits: Dict[str, Any]) -> Optional[float]:
+    """Reference life of Sigm1 (Summary "Number of Cycles") when its source rows agree on one."""
+    values = {
+        float(s["reference_cycles"]) for s in limits.get("sources", []) if s.get("reference_cycles")
+    }
+    return values.pop() if len(values) == 1 else None
+
+
+def _input_findings(
+    f_m1, failures, runouts, matched, slope, reference_cycles: Optional[float] = None
+) -> List[Finding]:
     """Findings on the limits, the source of the tests and A (Steps 1-2 of the method guide)."""
     found = []
     below = [t for t in failures if t["sigma_a"] < f_m1]
-    if below:
+    # A failure below the limit after its reference life agrees with a limit defined at that life
+    late = [t for t in below if reference_cycles and t["N_exp"] >= reference_cycles]
+    early = [t for t in below if t not in late]
+    if early:
+        when = (
+            f"failed before its reference life of {reference_cycles:.3g} cycles"
+            if reference_cycles
+            else "the reference life of Sigm1 is not given"
+        )
         found.append(
             Finding(
                 "failures_below_limit",
                 MAJOR,
-                f"{len(below)} axial R = -1 failure(s) lie below Sigm1 = {f_m1:g} MPa "
-                f"(lowest {min(t['sigma_a'] for t in below):.4g} MPa)",
-                "the model predicts an infinite life for every test below its fatigue limit",
+                f"{len(early)} axial R = -1 failure(s) lie below Sigm1 = {f_m1:g} MPa and {when} "
+                f"(lowest {min(t['sigma_a'] for t in early):.4g} MPa)",
+                "the failures contradict the fatigue limit, and the model predicts an infinite "
+                "life for every test below it",
                 "check Sigm1 against the failures and run-outs of the same source, e.g. with a "
                 "censored fit of the limit",
+            )
+        )
+    if late:
+        lowest = min(late, key=lambda t: t["sigma_a"])
+        found.append(
+            Finding(
+                "late_failures_below_limit",
+                MINOR,
+                f"{len(late)} axial R = -1 failure(s) lie below Sigm1 = {f_m1:g} MPa but failed "
+                f"after its reference life of {reference_cycles:.3g} cycles (lowest "
+                f"{lowest['sigma_a']:.4g} MPa at {lowest['N_exp']:.3g} cycles)",
+                "they agree with a limit defined at that life, but Sigm1 is a true threshold of "
+                "the model, which predicts an infinite life for them",
+                "for a material without a true fatigue limit, a limit at a longer reference life "
+                "(the S-N curve of the same source at that life)",
             )
         )
     above = [t for t in runouts if t["sigma_a"] > f_m1]
@@ -1094,6 +1137,24 @@ def _fit_findings(chosen, family) -> List[Finding]:
                 "a test with a mean shear stress or 90 deg out-of-phase tension-torsion decides C",
             )
         )
+    # Records made before this check do not hold the termination; nothing is said for them
+    capped = [
+        row for row in chosen["points"] if row.get("termination") == "max_block_extrapolation"
+    ]
+    if capped:
+        found.append(
+            Finding(
+                "point_at_block_limit",
+                MINOR,
+                f"the time integration of {len(capped)} calibration point(s) reached the block "
+                f"limit ({capped[0]['blocks']} blocks at "
+                + ", ".join(f"{row['sigma_a']:.4g}" for row in capped)
+                + " MPa); the life is extrapolated",
+                "the damage per block had not settled; gate G2 still found the life within "
+                f"{G2_DECADES:g} decade of the closed form",
+                "raise max_blocks_TVEIT in numerical_settings of the inputs file",
+            )
+        )
     return found
 
 
@@ -1140,10 +1201,18 @@ def reusable_calibration(
                     **entry,
                     "reused_from": {
                         "calibration_id": record.get("calibration_id", path.stem),
-                        "file": path.as_posix(),
+                        "file": repository_path(path),
                     },
                 }
     return None
+
+
+def repository_path(path: Path) -> str:
+    """The path relative to the repository, else the file name: a record holds no local folder."""
+    try:
+        return Path(path).resolve().relative_to(CALIBRATIONS_DIR.parent).as_posix()
+    except ValueError:
+        return Path(path).name
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1204,7 +1273,9 @@ def calibrate_tveit2025(
     try:
         given, digest = read_inputs(path, material)
         record.update(
-            inputs_file=path.as_posix() if digest else None, inputs_sha256=digest, inputs=given
+            inputs_file=repository_path(path) if digest else None,
+            inputs_sha256=digest,
+            inputs=given,
         )
         block = data[material]
         out["identity"] = calibration_identity(Path(workbook), block, digest)
@@ -1223,7 +1294,7 @@ def calibrate_tveit2025(
             calibration_source=matched,
             candidates=len(pool),
         )
-        findings = _input_findings(f_m1, failures, runouts, matched, slope)
+        findings = _input_findings(f_m1, failures, runouts, matched, slope, reference_life(limits))
         points = three_point_rule(pool, f_m1)
     except CalibrationInputError as exc:
         out.update(status="insufficient_calibration_data", reason=str(exc))

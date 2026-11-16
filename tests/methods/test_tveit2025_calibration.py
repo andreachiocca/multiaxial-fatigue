@@ -241,6 +241,40 @@ def test_input_findings():
     assert tc._input_findings(150.0, [], [], {"match": "same reference", "source": ""}, slope) == []
 
 
+def test_failures_below_the_limit_are_judged_at_its_reference_life():
+    """Before the reference life a failure contradicts the limit (major); after it, it agrees."""
+    same = {"match": "same reference", "source": ""}
+    slope = tc.mean_stress_slope({"A": {"value": 0.3, "source": "test"}}, 222.0, {})
+    late = [_test(2, 215.0, 1.19e6), _test(3, 235.0, 8.5e5)]  # 18_Al7075_T651_Wang, N_ref = 1e6
+    found = tc._input_findings(222.0, late, [], same, slope, 1e6)
+    assert _codes(found) == {"late_failures_below_limit": "minor", "A_supplied": "minor"}
+    assert "215 MPa at 1.19e+06 cycles" in found[0].what
+    mixed = [_test(2, 380.0, 1e6), _test(3, 400.0, 3e6), _test(4, 450.0, 1e5)]
+    found = tc._input_findings(433.0, mixed, [], same, slope, 2e6)
+    assert _codes(found) == {
+        "failures_below_limit": "major",
+        "late_failures_below_limit": "minor",
+        "A_supplied": "minor",
+    }
+    assert found[0].what.startswith(
+        "1 axial R = -1 failure(s) lie below Sigm1 = 433 MPa and failed"
+    )
+    # Without a reference life every failure below the limit counts as early
+    found = tc._input_findings(433.0, mixed, [], same, slope, None)
+    assert _codes(found)["failures_below_limit"] == "major" and "not given" in found[0].what
+    assert "late_failures_below_limit" not in _codes(found)
+
+
+def test_reference_life_of_the_limit():
+    def limits(*cycles):
+        return {"sources": [{"reference_cycles": n} for n in cycles]}
+
+    assert tc.reference_life(limits(2e6)) == 2e6
+    assert tc.reference_life(limits(2e6, 2e6)) == 2e6
+    assert tc.reference_life(limits(1e6, 2e6)) is None  # rows that disagree
+    assert tc.reference_life(limits(None)) is None and tc.reference_life({"sources": []}) is None
+
+
 def test_point_findings():
     close = [
         {**_test(2, 523.2, 9e4), "role": "LOW", "replicates": 1},
@@ -276,6 +310,57 @@ def test_fit_findings():
     found = tc._fit_findings(chosen, {"C_range": [1e-4, 5e-4]})
     assert _codes(found) == {"poor_fit": "minor", "constant_at_bound": "major"}
     assert "C, L of the chosen set" in next(f.what for f in found if f.code == "constant_at_bound")
+
+
+def test_a_calibration_point_at_the_block_limit_is_a_minor_finding():
+    def point(sigma_a, termination, blocks):
+        return dict(sigma_a=sigma_a, residual_closed=0.0, residual_transient=0.0,
+                    termination=termination, blocks=blocks)  # fmt: skip
+
+    chosen = {"C": 1.0, "K": 1e-5, "L": 5.0}
+    family = {"C_range": [0.5, 2.0]}
+    settled = [point(300.0, "cyclic_steady_state", 402), point(400.0, "explicit_failure", 90)]
+    assert tc._fit_findings({**chosen, "points": settled}, family) == []
+    capped = settled + [point(250.0, "max_block_extrapolation", 60000)]
+    found = tc._fit_findings({**chosen, "points": capped}, family)
+    assert _codes(found) == {"point_at_block_limit": "minor"}
+    assert "60000 blocks at 250 MPa" in found[0].what
+    # A record made before the check holds no termination: no finding
+    old = [{k: v for k, v in p.items() if k not in ("termination", "blocks")} for p in capped]
+    assert tc._fit_findings({**chosen, "points": old}, family) == []
+
+
+def test_the_admissibility_check_records_how_the_integration_ended():
+    p = SAE4340
+    gates = tc.check_admissible(p, [(0.0, 600.0, 4e4)], p["A"], p["f_m1"], p["f_m1"] / 1.7)
+    row = gates["points"][0]
+    assert row["termination"] in ("cyclic_steady_state", "explicit_failure", "shakedown")
+    assert row["blocks"] >= 1
+
+
+def test_records_name_files_relative_to_the_repository(tmp_path):
+    inputs = ROOT / "Calibrations" / "Al7075_T6" / tc.INPUTS_FILE
+    assert tc.repository_path(inputs) == "Calibrations/Al7075_T6/TVEIT2025_inputs.json"
+    assert tc.repository_path(tmp_path / "x" / "in.json") == "in.json"  # outside: the name only
+
+
+def test_committed_records_hold_no_local_paths():
+    """A committed record names files relative to the repository, never by a local folder."""
+
+    def strings(value):
+        if isinstance(value, dict):
+            for item in value.values():
+                yield from strings(item)
+        elif isinstance(value, list):
+            for item in value:
+                yield from strings(item)
+        elif isinstance(value, str):
+            yield value
+
+    for path in sorted((ROOT / "Calibrations").glob("*/*.json")):
+        record = json.loads(path.read_text(encoding="utf-8"))
+        local = [s for s in strings(record) if s.startswith(("/", "\\")) or s[1:3] in (":/", ":\\")]
+        assert local == [], f"{path.name}: {local[:2]}"
 
 
 # Reuse of an identical calibration
