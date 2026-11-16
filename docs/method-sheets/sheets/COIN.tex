@@ -1,0 +1,81 @@
+% registry: COIN
+\methodhead{COIN}{Schmidt and Kraft (2023): complex invariants, the COIN LiWI method}\label{sheet:COIN}
+
+\block{Source} Schmidt and Kraft, \emph{Int.\ J.\ Fatigue} 168 (2023) 107474 \cite{schmidt2023},
+Eqs.~(21)--(32), pp.~5--6; Tables~3--4.
+
+\block{Idea and scope} The quadratic invariant form of the Modified Mohr--Mises hypothesis,
+$I_1^2-k_a^2I_2$, is written in complex stress-amplitude space for single-frequency (synchronous
+sinusoidal) multiaxial loading. Two complex invariants, a Hermitian magnitude $H$ and a complex square
+$C$, are blended by a phase-sensitivity weight $k_\phi$; the weight decides how much a phase shift
+between the invariant contributions lowers the equivalent amplitude. The source handles mean stresses
+separately, in its damage laws.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$s_{-1}=\fm$, $\tm$ & MPa & fully reversed axial (bending) and torsion fatigue limits\\
+$k_a$ & -- & strength ratio $s_{-1}/\tm$ (Eq.~22)\\
+$\mathbf Z$ & MPa & complex amplitude tensor, $\Tsig(t)=\operatorname{Re}(\mathbf Z\,e^{j\omega t})$ (mean-free part); $\overline{\mathbf Z}$ its complex conjugate\\
+$j$ & -- & imaginary unit\\
+$I_1$, $I_2$ & MPa, MPa$^2$ & stress invariants $I_1=\tr\Tsig$, $I_2=\tfrac12\bigl[(\tr\Tsig)^2-\tr(\Tsig^2)\bigr]$\\
+$\sigma_{\mathrm{eq},ka}$ & MPa & Mertens equivalent stress, Eq.~\eqref{eq:coin-q}\\
+$Q(t)$ & MPa$^2$ & $I_1(t)^2-k_a^2I_2(t)$ of the mean-free stress; $\overline Q$ its time mean\\
+$H$, $C$ & MPa$^2$ & Hermitian magnitude and complex square, Eq.~\eqref{eq:coin-hc}\\
+$k_\phi$ & -- & phase-sensitivity weight\\
+$\sigma_{\mathrm{COIN}}$ & MPa & equivalent stress amplitude, Eq.~\eqref{eq:coin-main}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} With $k_a=s_{-1}/\tm$ (Eq.~22), the quadratic Mertens form (Eq.~21) is
+\begin{equation}
+\sigma_{\mathrm{eq},ka}^2 = I_1^2 - k_a^2\,I_2 .
+\label{eq:coin-q}
+\end{equation}
+For $\Tsig(t)=\operatorname{Re}(\mathbf Z e^{j\omega t})$ it defines
+\begin{equation}
+H = |\tr\mathbf Z|^2 - \frac{k_a^2}{2}\Bigl(|\tr\mathbf Z|^2 - \tr(\mathbf Z\,\overline{\mathbf Z})\Bigr) ,
+\qquad
+C = (\tr\mathbf Z)^2 - \frac{k_a^2}{2}\Bigl((\tr\mathbf Z)^2 - \tr(\mathbf Z^2)\Bigr) ,
+\label{eq:coin-hc}
+\end{equation}
+combined into the equivalent amplitude (Eq.~32)
+\begin{equation}
+\sigma_{\mathrm{COIN}} = \sqrt{k_\phi\,H + (1-k_\phi)\,|C|} .
+\label{eq:coin-main}
+\end{equation}
+They satisfy $H=2\,\overline Q$ and $|C|=2\,(\max_t Q-\overline Q)$: $k_\phi=1$ gives the invariant RMS,
+$k_\phi=0.5$ the time-domain maximum $\sqrt{\max_t Q}$ (the amplitude of MMMH,
+Sheet~\ref{sheet:MMMH}), and $k_\phi=0$ cancels invariants shifted by $90^\circ$. The paper derives
+Eqs.~(24)--(30) for plane stress.
+
+\block{Constants and calibration} Paper: $k_a$ from the two fatigue limits; $k_\phi$ fitted empirically
+per material (Table~3 reports 0.85--1.10), with no identification rule. Repository: $k_a$ from the
+workbook $\fm$, $\tm$ (finite and positive); $k_\phi$ read from the optional constant
+\texttt{k\_phi}, default 1.0. Only the master-curve constants are fitted.
+
+\block{Life} No native life law in the repository. The index $\sigma_{\mathrm{COIN}}/s_{-1}$ is the
+damage parameter of the shared master curve (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item $\mathbf Z=\Sc-j\,\Ss$. The plane-stress Eqs.~(21)--(32) carry over to 3-D stress tensors through
+  $\tr\mathbf Z$, $\tr(\mathbf Z\overline{\mathbf Z})$ and $\tr(\mathbf Z^2)$ without change.
+\item Default $k_\phi=1.0$ (RMS formulation) when \texttt{k\_phi} is absent, since the paper gives no rule.
+\item No mean-stress term, as in the paper's equivalent amplitude (the source injects the mean stress
+  through its PRAM/PRAJ damage laws, which are not implemented).
+\item The returned value is the index $\sigma_{\mathrm{COIN}}/s_{-1}$; a negative radicand is clamped
+  to~0.
+\end{itemize}
+
+\block{Worked example} Steel with $s_{-1}=313.9$, $\tm=196.2\MPa$; bending $\sigma_a=200\MPa$ and torsion
+$\tau_a=120\MPa$ at $90^\circ$: index $0.8832$ with $k_\phi=1.0$ and $0.6371$ with $k_\phi=0.5$.
+
+\block{Verification} The paper prints only scatter-band statistics of lives on external data (Table~4),
+no specimen table, so no table is reproduced. Checked: the plane-stress closed forms Eqs.~(27) and~(30)
+for arbitrary component phases; $k_\phi=1$ against $\sqrt{2\,\overline Q}$ and $k_\phi=0.5$ against
+$\sqrt{\max_t Q}$ from a 20\,000-step time-domain evaluation; exact cancellation at $k_\phi=0$ for
+$\sigma_x=k_a\tau_{xy}$ shifted by $90^\circ$; index~1 at both fatigue limits.

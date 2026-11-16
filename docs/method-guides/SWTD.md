@@ -78,7 +78,7 @@ multifat-run --model SWTD
 
 ## Verification and limitations
 
-- **Software verification (paper reproduction).** In [`tests/methods/test_swtd.py`](../../tests/methods/test_swtd.py), 10 of 11 rows of Table 2 (uniaxial compression–compression using $\nu_{\text{eff}}$) match within $0.7\%$ (row 11 is a strict `xfail` confirmed misprint: `0.335` printed vs `0.324` from Eq. 25), Table 3 torsion rows match $\frac{\sqrt{3}}{2}\,\text{SWTD}$ for 9 of 10 rows (row 10 is an inconsistent strict `xfail`: `0.58` printed vs `0.61`), and rotation plus phase-origin invariance hold.
+- **Software verification (paper reproduction).** In [`tests/methods/test_swtd.py`](../../tests/methods/test_swtd.py), 10 of 11 rows of Table 2 (uniaxial compression–compression using $\nu_{\text{eff}}$) match within $0.7\%$ (row 11 is a strict `xfail` confirmed misprint: `0.335` printed vs `0.324` from Eq. 25), Table 3 torsion rows match $\frac{2}{\sqrt{3}}\,\text{SWTD} = \tau_a\gamma_a/\sqrt3$ for 9 of 10 rows (row 10 is an inconsistent strict `xfail`: `0.58` printed vs `0.61`), and rotation plus phase-origin invariance hold.
 - **Paths B–D limitation.** Table 3 paths B, C, D in Kujawski (2014) do not reconcile with a single tensor convention and the paper omits any out-of-phase algorithm, so experimental non-proportional validation relies on the repository's 360-chord single-harmonic extension.
 
 ## References

@@ -1,0 +1,92 @@
+% registry: MMP
+\methodhead{MMP}{Papuga and Fojt\'ik (2017): Manson--McKnight--Papuga equivalent stress}\label{sheet:MMP}
+
+\block{Source} J.~Papuga, F.~Fojt\'ik, \emph{Int.\ J.\ Fatigue} 104 (2017) 27--42 \cite{papuga2017},
+Eqs.~(19)--(27), variant MMP\_WP; Tables~7, 9--11.
+
+\block{Idea and scope} A von Mises-type equivalent stress is built separately from the component
+amplitudes and from the component means; the shear terms are weighted so that the torsion limits are
+met. The two are combined with a Walker mean-stress correction, and a factor $\beta_P$ from the
+principal stress extremes gives the mean its sign and halves it in repeated torsion. Proposed as a
+quick fatigue-limit estimate that ``can be performed in an ordinary spreadsheet editor'', validated on
+CSN~41~1523 structural steel (tension, bending, torsion, internal and external pressure). The
+components are processed one by one, so the result ignores the phase shift between them; the paper
+names this as the method's weak point.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\fm$, $\tm$ & MPa & fully reversed axial and torsion fatigue limits\\
+$f_0$, $t_0$ & MPa & repeated ($R=0$) axial and torsion limits, maximum stress of the cycle\\
+$b_{-1}$, $b_0$ & MPa & fully reversed and repeated bending limits (plane-bending cases)\\
+$S_u$ & MPa & ultimate tensile strength (estimate of $f_0$ only)\\
+$\kappa$ & -- & $\fm/\tm$\\
+$\sigma_{x,a},\dots,\tau_{zx,a}$ & MPa & component amplitudes\\
+$\sigma_{x,m},\dots,\tau_{zx,m}$ & MPa & component means\\
+$\sigma_a$, $\sigma_m$ & MPa & equivalent amplitude and mean, Eqs.~\eqref{eq:mmp-sa}--\eqref{eq:mmp-sm}\\
+$\sigma_{1,\max}$, $\sigma_{3,\min}$ & MPa & largest and smallest principal stress over the cycle\\
+$\beta_P$ & -- & sign and scale factor of the mean, Eq.~\eqref{eq:mmp-beta}\\
+$w$ & -- & Walker exponent\\
+$X_m$ & -- & weight of the mean shear stresses\\
+$D_p$ & MPa & equivalent stress, Eq.~\eqref{eq:mmp-main}\\
+$\Delta FI$ & \% & error index (Eq.~27)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Eqs.~(19)--(25):
+\begin{gather}
+\sigma_a = \sqrt{\tfrac12\Bigl[(\sigma_{x,a}-\sigma_{y,a})^2 + (\sigma_{y,a}-\sigma_{z,a})^2 + (\sigma_{z,a}-\sigma_{x,a})^2
+ + 2\kappa^2\bigl(\tau_{xy,a}^2+\tau_{yz,a}^2+\tau_{zx,a}^2\bigr)\Bigr]} , \label{eq:mmp-sa}\\
+\sigma_m = \sqrt{\tfrac12\Bigl[(\sigma_{x,m}-\sigma_{y,m})^2 + (\sigma_{y,m}-\sigma_{z,m})^2 + (\sigma_{z,m}-\sigma_{x,m})^2
+ + 2X_m^2\bigl(\tau_{xy,m}^2+\tau_{yz,m}^2+\tau_{zx,m}^2\bigr)\Bigr]} , \label{eq:mmp-sm}\\
+D_p = \sigma_a^{\,w}\bigl(\sigma_a + \beta_P\,\sigma_m\bigr)^{1-w} \le \fm , \label{eq:mmp-main}\\
+\beta_P = \begin{cases}
+\dfrac{\sigma_{1,\max}}{\sigma_{1,\max}-\sigma_{3,\min}} & |\sigma_{1,\max}|\ge|\sigma_{3,\min}| ,\\[2mm]
+\dfrac{\sigma_{3,\min}}{\sigma_{1,\max}-\sigma_{3,\min}} & \text{otherwise},
+\end{cases} \label{eq:mmp-beta}\\
+\kappa = \frac{\fm}{\tm} , \qquad w = \frac{\log(f_0/\fm)}{\log 2} , \qquad
+X_m = 2\kappa\Bigl[\Bigl(\frac{2\tm}{t_0}\Bigr)^{\frac{1}{1-w}} - 1\Bigr] . \label{eq:mmp-const}
+\end{gather}
+The four input limits are met exactly: fully reversed tension and torsion through $\kappa$, repeated
+tension ($\beta_P=1$) through $w$ (Eq.~21), repeated torsion ($\beta_P=1/2$) through $X_m$ (Eq.~25). The
+error index is $\Delta FI=100\,(D_p-\fm)/\fm$ (Eq.~27).
+
+\block{Constants and calibration} Paper: nothing is fitted; $\kappa$, $w$ and $X_m$ follow in closed form
+from $\fm$, $\tm$, $f_0$, $t_0$ (Table~10); plane-bending cases use the bending limits $b_{-1}$, $b_0$
+in place of $\fm$, $f_0$. Repository: the same, with the workbook limits. A missing $f_0$
+(\texttt{Sig0}) is estimated from $S_u$ and $\fm$ by Eq.~(1) of B\"ohme, Papuga and Lange
+\cite{bohme2026}; a missing $t_0$ (\texttt{Tau0}) follows from $4\tm/t_0-2\fm/f_0=1$ (Zenner, quoted by
+the paper as its Eq.~23). The code requires $0<w<1$, i.e.\ $\fm<f_0<2\fm$. Only the master-curve
+constants are fitted, on the uniaxial $R=-1$ design tests.
+
+\block{Life} No native life law. The index $\mathrm{DP}=D_p/\fm$ is the damage parameter of the shared
+master curve (Section~\ref{sec:mastercurve}), an extension of the fatigue-limit criterion. It is
+homogeneous of degree~1 in the load ($\beta_P$ is scale-free).
+
+\block{Repository choices}
+\begin{itemize}
+\item $\mathrm{DP}=D_p/\fm$, the fatigue index (1 on the limit, $\Delta FI=100(\mathrm{DP}-1)$).
+\item Repeated limits (maintainer decision): no supplied workbook gives $f_0$ or $t_0$; missing values
+  are estimated as stated above.
+\item Signed amplitudes (maintainer decision): with harmonics, each component amplitude is
+  $\sqrt{s^2+c^2}$ of its in-phase ($s$) and $90^\circ$ ($c$) parts, with the sign of the in-phase part.
+  Exact for proportional loading; phase-blind for non-proportional loading, as published.
+\item $\sigma_{1,\max}$ and $\sigma_{3,\min}$ are searched over the harmonic cycle.
+\item If $\sigma_a+\beta_P\sigma_m\le0$ (a large compressive mean), Eq.~(20) is undefined and $\mathrm{DP}=0$.
+\item Finite life through the master curve. No \texttt{\_ext} variant.
+\end{itemize}
+
+\block{Worked example} CSN~41~1523 steel (Table~10), $\fm=244.7$, $\tm=169.9$, $f_0=385.8$,
+$t_0=330.8\MPa$: $\kappa=1.440$, $w=0.657$, $X_m=0.234$ (printed 0.233, rounding of $\tm$ and $t_0$).
+Outer-surface stresses of Table~7: FF004 (tension--torsion, $90^\circ$) $\Delta FI=14.6\,\%$; FF005
+(tension--torsion, $R=0$) $-10.6\,\%$; FF059 (tension--torsion with pressure) $23.7\,\%$; all three as
+printed in Table~11.
+
+\block{Verification} Table~11 (MMP\_WP): all 24 load cases reproduced within 0.1 point of $\Delta FI$;
+both surfaces are evaluated and the critical one kept (FF061 is critical on the inner surface, as the
+paper marks). Table~10: $\kappa$ and $w$ to the printed digits, $X_m$ within 0.002 (0.1\MPa\ rounding of
+$t_0$). Also checked: the four calibration limits, $\beta_P$ (Table~9), phase blindness and the
+estimates of \texttt{Sig0} and \texttt{Tau0}.

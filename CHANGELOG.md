@@ -6,6 +6,21 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### LaTeX method sheets for every registered model
+
+- 46 new sheets in `docs/method-sheets/sheets/`; every registered model now has one (52 files,
+  PDS_SWT/PDS_FS sharing one).
+- `methods.tex` groups them by family. The pending list of `tests/test_method_sheets.py` is empty,
+  so a new method cannot be registered without its sheet.
+- Each sheet states, from the method's guide, docstring, audit row and tests:
+  - the original equations and every symbol;
+  - calibration and life law;
+  - repository choices and verification.
+- Worked-example numbers are those printed by the tested guides.
+- `references.bib` holds the original papers (DOI-checked, duplicates merged).
+- `docs/method-guides/SWTD.md`: Table 3 torsion rows match (2/sqrt3) SWTD = tau_a gamma_a/sqrt3,
+  as the test asserts. The guide printed the inverse factor.
+
 ### New dataset: 7075-T651 of Wang, Shang, Sun & Chen (2018) (maintainer decision, 16 November 2026)
 
 - New workbook `18_Al7075_T651_Wang.xlsx`: 52 constant-amplitude failures of thin-walled tubes.

@@ -1,0 +1,96 @@
+% registry: BP
+\methodhead{BP}{B\"ohme and Papuga (2024): data-driven integral criterion}\label{sheet:BP}
+
+\block{Source} S.~A.~B\"ohme, J.~Papuga, \emph{Fatigue Fract.\ Eng.\ Mater.\ Struct.} 47 (2024)
+\cite{bohme2024}, Eq.~(16). The equations and coefficients implemented are those restated by
+B\"ohme, Papuga and Lange (2026) \cite{bohme2026}, Eqs.~(1), (2), (6), (9), (17); Tables~1, 2, 4.
+
+\block{Idea and scope} Stress-based integral criterion. Instead of selecting one critical plane, the
+squared shear and normal stress amplitudes, and their products with the mean stresses, are averaged
+over all plane orientations. The four weights are fixed by four fatigue strengths: fully reversed
+tension and torsion, and repeated ($R=0$) tension and torsion. Proposed, from a data-driven study,
+for the high-cycle fatigue limit of metals under multiaxial loading with mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\n$, $S^2$ & -- & plane normal and the unit sphere of normals\\
+$\tau_a$, $\tau_m$ & MPa & shear stress amplitude and mean on the plane\\
+$\sigma_{n,a}$, $\sigma_{n,m}$ & MPa & normal stress amplitude and mean on the plane\\
+$s_{-1}=\fm$, $t_{-1}=\tm$ & MPa & fully reversed axial and torsion fatigue strengths (amplitudes)\\
+$s_0$, $t_0$ & MPa & repeated ($R=0$) axial and torsion strengths, maximum stress (amplitude and mean $s_0/2$)\\
+$\sigma_u$ & MPa & ultimate tensile strength (estimate of $s_0$)\\
+$\kappa=s_{-1}/t_{-1}$ & -- & limit ratio\\
+$a,b,c,d$ & -- & weights, Eq.~\eqref{eq:bp-coef}\\
+$\sigma_a$, $\sigma_m$ & MPa & uniaxial amplitude and mean of the worked example\\
+$\sigma_{eq,BP}$ & MPa & equivalent stress, Eq.~\eqref{eq:bp-main}\\
+$\mathrm{DP}$ & -- & fatigue index $\sigma_{eq,BP}/s_{-1}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The equivalent stress is the square root of the orientation average of a
+quadratic form of the plane stresses (2026, Eq.~6):
+\begin{equation}
+\sigma_{eq,BP}^2=\frac{1}{4\pi}\int_{S^2}\left(a\,\tau_a^2+b\,\sigma_{n,a}^2+c\,\tau_a\tau_m+d\,\sigma_{n,a}\sigma_{n,m}\right)dS ,
+\qquad \sigma_{eq,BP}\le s_{-1},
+\label{eq:bp-main}
+\end{equation}
+\begin{equation}
+a=\tfrac92\left(\kappa^2-\tfrac43\right),\quad
+b=3\,(3-\kappa^2),\quad
+c=\tfrac52\,\kappa^2\left[\Bigl(\frac{2t_{-1}}{t_0}\Bigr)^2-1\right],\quad
+d=5\left[\Bigl(\frac{2s_{-1}}{s_0}\Bigr)^2-1-\frac{2c}{15}\right].
+\label{eq:bp-coef}
+\end{equation}
+The amplitude weights are non-negative only for $4/3\le\kappa^2\le3$. When $s_0$, $t_0$ are not
+measured (2026, Eqs.~1--2),
+\begin{equation}
+s_0=\frac{4\,s_{-1}\,\sigma_u}{s_{-1}+2\sigma_u},\qquad \frac{4t_{-1}}{t_0}-\frac{2s_{-1}}{s_0}=1 .
+\label{eq:bp-r0}
+\end{equation}
+For uniaxial loading $\langle\cos^4\theta\rangle=1/5$ and $\langle\cos^2\theta\sin^2\theta\rangle=2/15$,
+so
+\begin{equation}
+\sigma_{eq,BP}^2=\sigma_a^2+\sigma_a\sigma_m\left[\Bigl(\frac{2s_{-1}}{s_0}\Bigr)^2-1\right],
+\label{eq:bp-uni}
+\end{equation}
+which equals $s_{-1}^2$ at $s_{-1}$ (fully reversed) and at $s_0$ ($\sigma_a=\sigma_m=s_0/2$).
+
+\block{Constants and calibration} $a,b,c,d$ in closed form from $s_{-1}$, $t_{-1}$, $s_0$, $t_0$, the
+$R=0$ strengths measured or estimated by Eq.~\eqref{eq:bp-r0}. The repository takes them from the
+workbook \texttt{Sigm1}, \texttt{Taum1}, \texttt{Sig0}, \texttt{Tau0} (and \texttt{Su} for the
+estimate); nothing is fitted except the master-curve constants on the uniaxial $R=-1$ design tests.
+
+\block{Life} None: a fatigue-limit criterion. The repository reads finite lives on the master curve
+of the index $\sigma_{eq,BP}/s_{-1}$ (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item $\tau_a$ is the radius of the minimum circumscribed circle of the shear path (the major
+  semi-axis of the single-harmonic ellipse); $\tau_m$ is the magnitude of the mean shear vector.
+\item 24$\times$48 Gauss--Legendre/azimuth quadrature instead of the MATLAB angular grid: agreement
+  within discretisation error, not bitwise.
+\item A negative integral is clipped to 0. The admissible range $4/3\le\kappa^2\le3$ is not enforced.
+\item Missing \texttt{Sig0} and/or \texttt{Tau0} are estimated by Eq.~\eqref{eq:bp-r0}; this needs
+  \texttt{Su}.
+\item Single-harmonic loading only; no \texttt{\_ext} variant (no plane is selected).
+\end{itemize}
+
+\block{Worked example} Synthetic material: $s_{-1}=300$, $t_{-1}=220$, $\sigma_u=800\MPa$
+($\kappa^2=1.86$); Eq.~\eqref{eq:bp-r0} gives $s_0=505.3\MPa$. The index is 1 in reversed tension at
+$s_{-1}$, in reversed torsion at $t_{-1}$ and at the $R=0$ limit. Tension $\sigma_a=200$ with
+$\sigma_m=150\MPa$: index 0.7623, equal to Eq.~\eqref{eq:bp-uni}. Out of phase, $\sigma_{xx}=200\sin\omega t$
+with $\tau_{xy}=100\cos\omega t$: index 0.7859, unchanged by a shift of the time origin.
+
+\block{Verification} Checked: the four loading limits; phase-origin invariance; the $R=0$ estimates;
+the closed forms of the 2026 Eq.~(17) for equibiaxial and equitriaxial amplitudes. Table~4 of the
+2026 paper (statistics of the 18 Table~2 cases, static normal mean with alternating shear) is
+reproduced from the 17 computable cases (case SE gives neither $s_0$ nor $t_0$ nor $\sigma_u$): Min
+$-8.0\%$, Max $16.2\%$, SD $7.8\%$, Range $24.2\%$; BP and CAIM are identical there, as the paper
+states. Its PM10 $=79.0\%$ is not a multiple of $1/18$ (misprint; $83.3\%$ follows from its other
+values). The 2024 Eq.~(16) carries $1/(4\pi)$, the 2026 Eq.~(6) prints the integral without it;
+only the sphere average reproduces the uniaxial limits and the closed forms of Eq.~(17), so the 2026
+omission is a misprint. Not reproduced: the database results of the 2024 paper.

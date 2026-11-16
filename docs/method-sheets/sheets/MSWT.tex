@@ -1,0 +1,91 @@
+% registry: MSWT
+\methodhead{MSWT}{Zhu et al.\ (2018), after Jiang (2000): modified SWT, scalar range form}\label{sheet:MSWT}
+
+\block{Source} S.-P.~Zhu, Z.-Y.~Yu, J.~Correia, A.~De~Jesus, F.~Berto, \emph{Int.\ J.\ Fatigue} 113
+(2018) 213--229 \cite{zhu2018}, Eq.~(13), p.~8; Section~4.1, p.~14. Lineage: Y.~Jiang,
+\emph{Fatigue Fract.\ Engng Mater.\ Struct.} 23(1) (2000) 19--32 \cite{jiang2000}, Eq.~(6), the
+plastic-work increment $dY = a\,\sigma\,d\varepsilon^p + \tfrac{1-a}{2}\,\tau\,d\gamma^p$.
+
+\block{Idea and scope} The scalar range form of Jiang's plastic-work increment, as written by Zhu et
+al.: a weighted sum of a normal (SWT-type) and a shear strain-energy term, the weight $a$ selecting
+tensile, mixed or shear cracking. Proposed for multiaxial fatigue lives of tensile-, mixed- and
+shear-cracking metals. It is not Jiang's incremental cyclic-plasticity criterion.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\n$ & -- & unit normal of a candidate plane (local $z$ axis; shear components $xz$, $yz$)\\
+$\sigma_{\max}=\sigma_{n,\max}$ & MPa & largest normal stress on the plane over the cycle\\
+$\langle x\rangle$ & -- & Macaulay bracket, $\max(x,0)$\\
+$\Delta\varepsilon=\Delta\varepsilon_n$, $\varepsilon_{n,a}$ & -- & range and amplitude of the normal strain on the plane\\
+$\Delta\tau$, $\tau_a$ & MPa & range and amplitude of the shear stress on the plane\\
+$\Delta\gamma$, $\gamma_a$ & -- & range and amplitude of the engineering shear strain on the plane\\
+$\varepsilon_{xz}$, $\varepsilon_{yz}$; $\tau_{xz}$, $\tau_{yz}$ & --; MPa & tensorial shear strain and shear stress components on the plane (local frame)\\
+$a$ & -- & weight of the normal term, $0\le a\le1$ (\texttt{a\_MSWT}, Summary column \texttt{a MSWT})\\
+$\sigma$, $\tau$, $d\varepsilon^p$, $d\gamma^p$ & MPa, MPa, --, -- & stresses and plastic strain increments of Jiang's Eq.~(6)\\
+$E$, $\nu$ & MPa, -- & Young's modulus and Poisson's ratio (elastic strains, Section~\ref{sec:notation})\\
+$\sigma_a$, $\tau_a$ & MPa & fully reversed axial and shear stress amplitudes (closed forms)\\
+$\mathrm{DP}$ & MPa & damage parameter (MJ/m$^3$)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Zhu et al.\ (Eq.~13) write, on the maximum-damage plane,
+\begin{equation}
+\mathrm{DP}_\mathrm{MSWT} = 2\,a\,\Delta\varepsilon\,\langle\sigma_{\max}\rangle
+ + \frac{1-a}{2}\,\Delta\gamma\,\Delta\tau .
+\label{eq:mswt-main}
+\end{equation}
+With a plastic Poisson's ratio of 0.5, $a\le0.375$ favours shear planes, $0.375<a<0.5$ mixed
+planes and $a\ge0.5$ tensile planes. In amplitudes,
+\begin{equation}
+\mathrm{DP} = 4\,a\,\langle\sigma_{n,\max}\rangle\,\varepsilon_{n,a} + 2(1-a)\,\tau_a\,\gamma_a ,
+\qquad \Delta\gamma = 2\lVert(\Delta\varepsilon_{xz},\Delta\varepsilon_{yz})\rVert,\quad
+\Delta\tau = \lVert(\Delta\tau_{xz},\Delta\tau_{yz})\rVert .
+\label{eq:mswt-plane}
+\end{equation}
+\emph{Critical plane}: the plane of maximum DP; the selection metric is DP itself, so ties are
+immaterial and \texttt{MSWT\_ext} equals \texttt{MSWT}. \emph{Shear amplitude}: default
+\texttt{np\_shear\_rule = "rss"}, the MCE amplitude $\sqrt{a_s^2+b_s^2}$ of the elliptical shear
+path with semiaxes $a_s$, $b_s$; the longest chord (MCC) can be selected globally
+(\texttt{docs/shear-amplitude.md}, ``Selection for every method'').
+
+In fully reversed torsion with elastic strains, the shear plane gives $4(1-a)(1+\nu)\tau_a^2/E$ and
+the $45^\circ$ plane $4a(1+\nu)\tau_a^2/E$: the shear plane controls for $a<0.5$.
+
+\block{Constants and calibration} \emph{Paper} (Section~4.1, p.~14): $a$ brings the axial and
+torsional DP--life curves as close together as possible. \emph{Repository}
+(\texttt{multifat-pipeline}), when $a$ is in neither the workbook nor \texttt{--constants}: minimum
+$\ln N_f$ scatter of the $R=-1$ tension and torsion failures around one master curve,
+$a\in[0,1]$; $a=1$ is accepted as a physical upper limit. On fatigue-limit datasets $a\in[0,1]$
+equalises the axial and torsional limit DP. The tests behind $a$ are design rows
+(\texttt{Flag = 0}). In \texttt{multifat-run} without a value, $a=0.5$ with a warning.
+
+\block{Life} The repository uses the master curve on DP, Eq.~\eqref{eq:mastercurve}, fitted on the
+uniaxial $R=-1$ design set.
+
+\block{Repository choices}
+\begin{itemize}
+\item Scalar range form of Eq.~\eqref{eq:mswt-main} on elastic workbook strains, not Jiang's
+  incremental cyclic plasticity.
+\item Non-proportional shear range by the default \texttt{rss} rule.
+\item $\sigma_{n,\max}$ Macaulay-bracketed at zero.
+\item $a$ validated finite in $[0,1]$ (an error outside, not a silent clip); default 0.5 with a
+  warning when omitted.
+\item Weighting correction of 18 October 2026 (finding U2): earlier revisions gave the shear term
+  half its intended weight (the module docstring states the former expression,
+  $\sigma_{\max}\Delta\varepsilon/2+(1-a)\Delta\gamma\Delta\tau/4$); old calibration records are
+  converted by $a'=a/(2-a)$, which yields identical lives.
+\item Life from the shared master curve.
+\end{itemize}
+
+\block{Worked example} Synthetic material, $E=200\,000\MPa$, $\nu=0.3$, zero mean. Tension
+$\sigma_a=300\MPa$ with $a=0.4$: $\mathrm{DP}=0.720000\MPa$ (\texttt{\_ext} identical). Torsion
+$\tau_a=200\MPa$: $\mathrm{DP}=0.624000\MPa$ for both $a=0.4$ and $a=0.6$, i.e.\
+$4\cdot0.6\,(1+\nu)\tau_a^2/E$.
+
+\block{Verification} \texttt{tests/test\_method\_audit.py} checks the Eq.~(13) scalar value;
+\texttt{tests/test\_pipeline.py} checks the $a/(2-a)$ migration of legacy calibration records.
+The attribution and scope review and the paper's experimental benchmarks are not reproduced.

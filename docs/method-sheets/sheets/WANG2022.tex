@@ -1,0 +1,100 @@
+% registry: WANG2022
+\methodhead{WANG2022}{Wang, Sun, Liu, Liu and Shang (2022): equivalent shear stress on the maximum shear amplitude plane}\label{sheet:WANG2022}
+
+\block{Source} Y.~Wang, G.-Q.~Sun, J.~Liu, X.~Liu, D.~Shang, \emph{Int.\ J.\ Damage Mech.} 31 (2022)
+1165--1186 \cite{wang2022}, Eqs.~(10), (15), (18)--(24); Tables~3--7.
+
+\block{Idea and scope} On the plane of maximum shear stress amplitude $C_a$, the shear amplitude and a
+weighted normal stress amplitude are combined into an equivalent shear stress $t_{eq,a}$; the life
+then follows from the material's torsional S--N curve. The weight contains a maximum equivalent normal
+stress of SWT form, $\sqrt{N_{\max}N_a}$, meant to account for mean stress. Proposed for high-cycle
+fatigue under proportional and out-of-phase tension (or bending) and torsion: aluminium alloys,
+30CrMnSiA and SM45C steels. The repository covers fully reversed loading only (see Repository
+choices).
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$C_a$ & MPa & shear stress amplitude on the plane: major semi-axis of the shear path, minimum circumscribed ellipse (Eq.~10)\\
+$N_a$, $N_m$ & MPa & normal stress amplitude and mean on the plane\\
+$N_{\max}=N_a+N_m$ & MPa & maximum normal stress on the plane\\
+$N^*_{\max}$ & MPa & maximum equivalent normal stress, $\sqrt{N_{\max}N_a}$ (SWT form, Eq.~15)\\
+$\sigma_y$ & MPa & yield strength (workbook \texttt{Sy})\\
+$\fm$, $\tm$ & MPa & fully reversed bending (or axial) and torsion fatigue limits\\
+$k$ & -- & material constant, Eq.~\eqref{eq:w22-k}\\
+$\lambda$ & MPa & threshold of Eq.~(18), $\lambda=\tm$\\
+$t_{eq,a}$ & MPa & equivalent shear stress amplitude, Eq.~\eqref{eq:w22}; the repository DP\\
+$\tau_f'$, $b_1$ & MPa, -- & torsional Basquin coefficient and exponent (Eq.~24)\\
+$\kappa$, $b_2$ & --, -- & constants of the three-parameter torsional S--N form (paper's symbols; this $\kappa$ is not the limit ratio of Section~\ref{sec:notation})\\
+$N_f$ & cycles & fatigue life\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the plane of maximum $C_a$ (Eqs.~18--19),
+\begin{gather}
+t_{eq,a} = \sqrt{C_a^2 + k\Bigl(1-\frac{N^*_{\max}}{2\sigma_y}\Bigr)^2 N_a^2} \le \lambda = \tm ,
+\qquad N^*_{\max}=\sqrt{N_{\max}N_a},\quad N_{\max}=N_a+N_m , \label{eq:w22}\\
+k = \frac{4\tm^2-\fm^2}{\fm^2\bigl(1-\fm/(4\sigma_y)\bigr)^2} . \label{eq:w22-k}
+\end{gather}
+$k$ makes both fully reversed limits satisfy the criterion; $k>0$ requires $\tm/\fm>0.5$ (Eq.~21).
+\emph{Critical plane}: the plane of maximum $C_a$. \emph{Ties} of the maximum $C_a$ go to the larger
+$t_{eq,a}$. \emph{Shear amplitude}: $C_a$ is half the longest chord of the shear path
+(\texttt{longest\_chord}, MCC), as Eq.~(10) defines it. The model is registered at case level and its
+amplitude is fixed by its definition: the global selection of \texttt{docs/shear-amplitude.md} leaves
+it unchanged.
+
+\block{Constants and calibration} Paper: $k$ from $\fm$, $\tm$ and $\sigma_y$ (Eq.~19); the life
+curve is the material's torsional S--N curve, fitted on torsion tests. Repository: the same $k$ from
+workbook \texttt{Sigm1}, \texttt{Taum1}, \texttt{Sy}. The master curve $AN_f^b$ is fitted on the
+workbook's fully reversed pure torsion failures (\texttt{design\_loading = "torsion"}), which become
+design rows; tension and multiaxial tests are predictions. A workbook without such torsion failures
+skips the model.
+
+\block{Life} Paper (Eqs.~22--24): $t_{eq,a}$ equals the torsional S--N curve, either
+$\tau_f'(2N_f)^{b_1}$ (Basquin) or $\tm/(1-\kappa N_f^{b_2})$ (three-parameter form). Repository: the
+master curve $t_{eq,a}=AN_f^b$ on the torsion design set (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item Mean stress (maintainer decision). With Eq.~\eqref{eq:w22} as printed, a tensile mean normal
+  stress raises $N^*_{\max}$ and so lowers $t_{eq,a}$, i.e.\ predicts a longer life, contrary to the
+  paper's text and to the experimental evidence. The printed form is kept because it reproduces every
+  predicted life of Tables~4--5 (no mean stress); a ``$+$'' sign reproduces none, and the SM45C
+  mean-stress lives of Table~7 are reproduced by neither. A load that puts a mean normal stress on the
+  critical plane is out of scope (\texttt{LoadingScopeError}): the critical plane is found first, and
+  $|N_m|$ there is checked.
+\item $C_a$ by the longest chord (Eq.~10); ties of the maximum $C_a$ towards the larger $t_{eq,a}$.
+\item Life: a single power law fitted on the pure torsion $R=-1$ failures replaces the
+  three-parameter form of Eq.~(23).
+\item Registered as a case-level model (the scope check needs the critical plane), so there is no
+  \texttt{\_ext} variant.
+\end{itemize}
+
+\block{Worked example} LY12CZ, Table~3 constants: $\fm=168.73$, $\tm=119.62$, $\sigma_y=400\MPa$,
+$\tau_f'=602.8\MPa$, $b_1=-0.1115$, so $k=1.2627$ (Eq.~19). With
+$\sigma_x=\sigma_a\sin\omega t$, $\tau_{xy}=\tau_a\sin(\omega t-\delta)$ and
+$N=\tfrac12(t_{eq,a}/\tau_f')^{1/b_1}$:
+\begin{center}\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Table~4 row & $\sigma_a$, $\tau_a$ (MPa), $\delta$ & $t_{eq,a}$ (MPa) & $N$ & paper\\\midrule
+1 & 126.491, 91.571, $0^\circ$ & 129.1 & 502\,273 & 502\,272\\
+10 & 158.114, 139.111, $90^\circ$ & 199.2 & 10\,284 & 10\,284\\
+\bottomrule
+\end{tabular}
+\end{center}
+Row~1 with a $50\MPa$ axial mean raises \texttt{LoadingScopeError} (mean normal stress on the critical
+plane).
+
+\block{Verification} Tables~4 and~5: every predicted life within 1\% (15 LY12CZ and 7 30CrMnSiA
+tests); the \texttt{rss} amplitude misses the $90^\circ$ rows by factors of 1.4--3.2. Table~6
+(6082-T6): rows 1--5 reproduced; rows 6--11 (phases $94^\circ$ and $125^\circ$) are strict xfails.
+Table~7 (SM45C, three-parameter law): rows 1, 2, 4 reproduced; rows 3 and 5--9 at $90^\circ$ are
+strict xfails (neither a surface-plane restriction nor the maximum $t_{eq,a}$ over planes reproduces
+them all; unresolved); rows 10--18 carry a mean stress and raise \texttt{LoadingScopeError}. Also
+checked: Eq.~(19) at both limits and the printed sign behaviour. Not reproduced: the fatigue-limit
+validation (Fig.~3); Table~1 gives no yield strength and lists ``mild steel'' with the limits of
+42CrMo4.

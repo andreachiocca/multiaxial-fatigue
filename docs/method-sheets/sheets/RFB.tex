@@ -1,0 +1,102 @@
+% registry: RFB
+\methodhead{RFB}{Robert, Fogue and Bahuaud (1994): integral criterion}\label{sheet:RFB}
+
+\block{Source} J.-L.~Robert, M.~Fogue, J.~Bahuaud, in \emph{Automation in Fatigue and Fracture:
+Testing and Analysis}, ASTM STP 1231 (1994) 369--387 \cite{robert1994}, Eqs.~(8), (15)--(25), (27),
+Appendix; Tables~1--3.
+
+\block{Idea and scope} Integral criterion. On each plane a damage indicator combines linearly the
+largest projected shear stress amplitude, the normal stress amplitude and the normal mean stress;
+its quadratic mean over all planes through the point is compared with the fully reversed axial
+strength. Three weights calibrate the integral to reversed tension, reversed torsion and pulsating
+tension. Proposed for periodic multiaxial stress states, and for random ones after counting, at a
+given life; valid for $0.577<t_{-1}/s_{-1}<0.866$.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\mathbf h$, $S$ & -- & plane normal and the unit sphere ($\lvert S\rvert=4\pi$)\\
+$\psi$ & rad & direction of a line in the plane $\mathbf h$\\
+$\tau_{h\psi,a}$ & MPa & amplitude of the shear stress projected on line $\psi$\\
+$\sigma_{hh,a}$, $\sigma_{hh,m}$ & MPa & normal stress amplitude and mean on the plane\\
+$E_h$ & MPa & damage indicator of the plane, Eq.~\eqref{eq:rfb-eh}\\
+$E$ & -- & validity index, Eq.~\eqref{eq:rfb-main}; $I$ in Eq.~(27)\\
+$s_{-1}=\fm$, $t_{-1}=\tm$ & MPa & fully reversed axial and torsion strengths (fatigue limits in the repository)\\
+$s_0$ & MPa & pulsating ($R=0$) axial strength, maximum stress\\
+$\sigma_u$ & MPa & ultimate tensile strength (estimate of $s_0$)\\
+$k=s_{-1}^2/t_{-1}^2$, $D$ & --, -- & limit-ratio square and discriminant of Eq.~\eqref{eq:rfb-ab}\\
+$a$, $b$, $d$ & -- & weights of the shear amplitude, normal amplitude and normal mean\\
+$c$ & -- & further weight of the paper's general indicator, set to 0 by Eq.~(25)\\
+$\sigma_A$, $\sigma_M$; $\tau_A$, $\tau_M$ & MPa & axial and torsional amplitude and mean on the Haigh curves\\
+$\sigma_a$, $\tau_a$ & MPa & bending and torsion amplitudes of the worked example\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} With $c=0$ (Eq.~25), the plane indicator and the failure condition
+(Eqs.~8, 15--16) are
+\begin{gather}
+E_h=a\max_{\psi}\tau_{h\psi,a}+b\,\sigma_{hh,a}+d\,\sigma_{hh,m},
+\label{eq:rfb-eh}\\
+E=\frac{1}{s_{-1}}\sqrt{\frac{1}{4\pi}\int_S E_h^2\,dS}=1 .
+\label{eq:rfb-main}
+\end{gather}
+Reversed tension, reversed torsion and pulsating tension at the limits ($\sigma_A=\sigma_M=s_0/2$)
+give, in this order, the conditions of Eqs.~(20), (21) and (24),
+\begin{equation}
+2a^2+3b^2+4ab=15,\qquad 6a^2+4b^2+7ab=15\,k,\qquad 15+3d^2+6bd+4ad=60\,\frac{s_{-1}^2}{s_0^2},
+\label{eq:rfb-cal}
+\end{equation}
+solved in the Appendix as
+\begin{gather}
+D=225\left(1-\frac{8(k-3)^2}{25}\right),\qquad b^2=\frac{15-\sqrt D}{2},\qquad a^2=\frac{12k-21+b^2}{2},
+\label{eq:rfb-ab}\\
+d=\frac{-(3b+2a)+\sqrt{(3b+2a)^2+3\,(60\,s_{-1}^2/s_0^2-15)}}{3}.
+\label{eq:rfb-d}
+\end{gather}
+Real weights exist only for $4/3<k<3$, i.e.\ $0.577<t_{-1}/s_{-1}<0.866$. The Haigh curves in tension
+(Eq.~19) and torsion (Eq.~23) follow as
+\begin{equation}
+15\,s_{-1}^2E^2=15\,\sigma_A^2+3d^2\sigma_M^2+2d(3b+2a)\,\sigma_A\sigma_M ,\qquad
+15\,s_{-1}^2E^2=15\,k\,\tau_A^2+4d^2\tau_M^2 ,
+\label{eq:rfb-haigh}
+\end{equation}
+where the mean shear acts only through the normal stresses of oblique planes.
+
+\block{Constants and calibration} $a,b,d$ in closed form from $s_{-1}$, $t_{-1}$, $s_0$; nothing is
+fitted statistically. The paper uses the strengths at the target life $N$; the repository uses the
+workbook fatigue limits \texttt{Sigm1}, \texttt{Taum1} and \texttt{Sig0}, or, without
+\texttt{Sig0}, the estimate $s_0=4s_{-1}\sigma_u/(s_{-1}+2\sigma_u)$ of B\"ohme, Papuga and Lange
+(2026), Eq.~(1), from \texttt{Su}. Only the master-curve constants are fitted, on the uniaxial
+$R=-1$ design tests.
+
+\block{Life} The paper applies the criterion with the strengths at life $N$. The repository returns
+the validity index $E$ computed with the fatigue limits and reads finite lives on the master curve
+of $E$ (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item Misprints corrected: Eq.~(16) prints $1/\pi$ instead of the $1/(4\pi)$ required by Eqs.~(8) and
+  (18)--(24); the Appendix omits the $\tfrac12$ under the root of $a$, required by Eqs.~(20) and (24);
+  Eq.~(18) is read with $E^2$ where $E$ is printed.
+\item Fatigue limits replace the strengths at life $N$ (see Life).
+\item $t_{-1}/s_{-1}$ outside $(0.577,0.866)$ raises \texttt{MaterialScopeError}: the model is skipped
+  on that material (eligibility \texttt{out\_of\_scope}), e.g.\ AISI316L with $t_{-1}/s_{-1}=0.517$.
+\item For a single harmonic, $\max_\psi\tau_{h\psi,a}$ is the radius of the minimum circumscribed
+  circle of the shear path on the plane.
+\item Sphere average on a 48$\times$192 Gauss--Legendre grid.
+\end{itemize}
+
+\block{Worked example} Steel of Table~2: $s_{-1}=361$, $t_{-1}=228$, $s_0=600\MPa$. In-phase reversed
+bending $\sigma_a=250\MPa$ with torsion $\tau_a=120\MPa$: $E=0.8698$.
+
+\block{Verification} Checked for the three materials of Tables~1--3
+($s_{-1},t_{-1},s_0$ = 423, 287, 712; 361, 228, 600; 695, 415, 1040\MPa): the Appendix solves
+Eqs.~\eqref{eq:rfb-cal}, and the printed $a$ violates Eq.~(20); the three calibration points give
+$E=1$; the Haigh curves Eqs.~\eqref{eq:rfb-haigh}, to $4\cdot10^{-4}$; the validity range. Tables~1--3:
+the validity parameter $I$ is reproduced to print rounding (0.006) on 52 of 59 tests. Strict
+\texttt{xfail}s: Table~1 rows 1, 2, 5, 6, 7, 12 (biaxial tension--pressure, 0.006--0.015 off,
+unresolved) and Table~3 row 11 ($\delta=45^\circ$, printed 1.04 against 1.073 from Eq.~(16), which
+breaks the paper's own phase series).

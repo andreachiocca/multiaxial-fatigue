@@ -26,7 +26,10 @@
   pipeline guard generalised; pipeline itself still method_default.
 - #107-#111 merged (16 Nov). Branch `data/al7075-t651-wang`: workbook 18_Al7075_T651_Wang,
   45 models run, ranking regenerated.
-- Next action: dataset PR; then backfill the LaTeX sheets family by family (46 pending).
+- #112 merged. Branch `docs/method-sheets-backfill`: 46 sheets written (four parallel groups),
+  bibliography merged, PENDING emptied. Inconsistencies found between guides, docstrings, audit
+  and code are listed in the PR for the maintainer.
+- Next action: sheets PR; then the doc-consistency fixes the maintainer approves.
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 

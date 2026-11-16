@@ -1,0 +1,87 @@
+% registry: VSE
+\methodhead{VSE}{Liu (1993): virtual strain-energy parameters}\label{sheet:VSE}
+
+\block{Source} K.~C.~Liu, in \emph{Advances in Multiaxial Fatigue}, ASTM STP 1191 (1993) 67--84
+\cite{liu1993}, Eqs.~(6)--(11), pp.~70--73; out-of-phase rules pp.~80--81; Fig.~9.
+
+\block{Idea and scope} On a material plane the ``virtual'' strain energy is the product of the
+stress ranges and the strain ranges on that plane, split into a tensile part (mode~I, normal stress
+range times normal strain range) and a shear part (mode~II, shear stress range times tensorial
+shear strain range). Failure is governed by the plane on which the energy of the dominant cracking
+mode is largest. Proposed for low- and high-cycle multiaxial fatigue of metals whose cracking mode
+depends on material and temperature; the paper gives no rule to choose the mode a priori.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\n$ & -- & unit normal of a candidate plane (local $z$ axis; shear components $xz$, $yz$)\\
+$\Delta\sigma_n$, $\Delta\varepsilon_n$ & MPa, -- & normal stress and normal strain ranges on the plane ($\Delta\sigma_{zz}$, $\Delta\varepsilon_{zz}$)\\
+$\Delta\tau$, $\Delta(\gamma/2)$ & MPa, -- & shear stress range and tensorial shear strain range on the plane\\
+$\Delta\sigma_{xz}$, $\Delta\sigma_{yz}$; $\Delta\varepsilon_{xz}$, $\Delta\varepsilon_{yz}$ & MPa; -- & ranges of the shear stress and tensorial shear strain components on the plane\\
+$\Delta W_n$, $\Delta W_s$, $\Delta W$ & MPa & tensile (mode~I) part, shear (mode~II) part, total virtual strain energy\\
+$\Delta\sigma$, $\Delta\varepsilon$ & MPa, -- & uniaxial stress and strain ranges (Eq.~11)\\
+mode & -- & 1 (Eq.~8, default) or 2 (Eq.~9); Summary column \texttt{vse\_mode}\\
+$E$, $\nu$ & MPa, -- & Young's modulus and Poisson's ratio (elastic strains, Section~\ref{sec:notation})\\
+$f$, $t$ & MPa & fully reversed axial and torsional stress amplitudes (closed forms)\\
+$\mathrm{DP}$ & MPa & damage parameter (MJ/m$^3$)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Liu (Eq.~7) defines on each plane
+\begin{equation}
+\Delta W = \Delta W_n + \Delta W_s = \Delta\sigma_n\,\Delta\varepsilon_n + \Delta\tau\,\Delta\frac{\gamma}{2} .
+\label{eq:vse-main}
+\end{equation}
+Mode~I (Eq.~8): $\Delta W$ on the plane where $\Delta W_n$ is largest. Mode~II (Eq.~9): $\Delta W$ on
+the plane where $\Delta W_s$ is largest. Under uniaxial loading $\Delta W=\Delta\sigma\,\Delta\varepsilon$
+(Eq.~11); in torsion the two modes coincide (p.~73). The repository evaluates, on every plane,
+\begin{equation}
+\Delta W_n = \lvert\Delta\sigma_{zz}\,\Delta\varepsilon_{zz}\rvert,\qquad
+\Delta W_s = \lvert\Delta\sigma_{xz}\,\Delta\varepsilon_{xz}+\Delta\sigma_{yz}\,\Delta\varepsilon_{yz}\rvert,\qquad
+\mathrm{DP} = \Delta W_n + \Delta W_s ,
+\label{eq:vse-plane}
+\end{equation}
+the shear term being the dot product of the shear stress range vector and the tensorial shear
+strain range vector. \emph{Critical plane}: the plane maximising $\Delta W_n$ (mode~I) or
+$\Delta W_s$ (mode~II); ties go to the larger DP (Section~\ref{sec:planes}). \texttt{VSE\_ext} is
+the largest total $\Delta W$ over all planes, Eq.~\eqref{eq:vse-main} read literally, which in
+general differs from Eq.~(8). \emph{Shear amplitude}: default \texttt{np\_shear\_rule =
+"longest\_chord"}, the endpoints of the longest chord of the shear path; the MCE amplitude can be
+selected globally (\texttt{docs/shear-amplitude.md}, ``Selection for every method'').
+
+\block{Constants and calibration} No criterion constant; the mode is chosen by the user. The paper
+fits the life curve, Eq.~(6), to the uniaxial data; the repository fits the master curve on the
+uniaxial $R=-1$ design tests. With elastic strains, tension gives $\Delta W=4f^2/E$ in mode~I and
+$2f^2/E$ in mode~II, and torsion $4(1+\nu)t^2/E$ in both modes, so equal damage at the two limits
+implies $t/f=1/\sqrt{1+\nu}\approx0.88$ (mode~I) and $1/\sqrt{2(1+\nu)}\approx0.62$ (mode~II) for
+$\nu=0.3$.
+
+\block{Life} The paper uses an energy--life curve with elastic and plastic power-law terms
+(Eq.~6). The repository uses the master curve on DP, Eq.~\eqref{eq:mastercurve}.
+
+\block{Repository choices}
+\begin{itemize}
+\item All ranges are differences between the two endpoints of the repository cycle; for
+  out-of-phase loading these are the endpoints of the longest chord of the shear path. Liu's
+  out-of-phase rules (pp.~80--81) are stated only in words; this rule is a documented adaptation.
+\item One registered model, mode~I by default; mode~II with the Summary column
+  \texttt{vse\_mode = 2}. Both write to the same CSV name, so runs of the two modes must be kept in
+  separate results folders.
+\item Elastic workbook strains: the plastic term of Eq.~(6) is absent.
+\item Only ranges enter: a mean stress does not change $\Delta W$.
+\item Life from the shared master curve instead of Eq.~(6).
+\end{itemize}
+
+\block{Worked example} Synthetic material, $E=200\,000\MPa$, $\nu=0.3$. Tension $300\MPa$:
+mode~I $1.800\MPa$ ($=4\sigma_a^2/E$; \texttt{VSE\_ext} 1.800), mode~II $0.900\MPa$. Torsion
+$200\MPa$: $1.040\MPa$ in both modes. Limit ratio of equal DP: 0.877 (mode~I), 0.620 (mode~II).
+Tension $300\MPa$ with a $150\MPa$ mean, mode~I: $1.800\MPa$, unchanged.
+
+\block{Verification} \texttt{tests/methods/test\_liu\_vse.py}: Eq.~(11) in tension for both modes
+(mode~II is half of mode~I with elastic strains); equal modes in torsion; \texttt{VSE\_ext} bounds
+the mode~I value. The paper reports its results as figures only; its one printed curve (Fig.~9)
+has coefficients 34\,435 and 1\,126 that do not match its plot, whereas 344.35 and 11.26 do. Not
+reproduced: the experimental lives of the paper.

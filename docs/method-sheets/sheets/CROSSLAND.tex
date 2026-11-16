@@ -1,0 +1,88 @@
+% registry: CROSSLAND
+\methodhead{CROSSLAND}{Crossland (1956): deviatoric amplitude and maximum hydrostatic stress}\label{sheet:CROSSLAND}
+
+\block{Source} B.~Crossland, \emph{Proc.\ Int.\ Conf.\ on Fatigue of Metals}, IMechE, London (1956)
+\cite{crossland1956}. Implemented in the form restated by I.~V.~Papadopoulos, P.~Davoli, C.~Gorla,
+M.~Filippini, A.~Bernasconi, \emph{Int.\ J.\ Fatigue} 19 (1997) 219--235 \cite{papadopoulos1997},
+Eqs.~(38)--(39), (44)--(45), (65)--(66), (85); Table~1.
+
+\block{Idea and scope} Stress-invariant fatigue-limit criterion. The amplitude of $\sqrt{J_2}$, a
+measure of the cyclic shear, drives fatigue; the \emph{maximum} hydrostatic stress of the cycle
+opens or closes micro-cracks and shifts the limit linearly. Proposed for the high-cycle fatigue
+limit of ductile metals under multiaxial loading, in and out of phase, with mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\fm$, $\tm$ & MPa & fully reversed tension (bending) and torsion fatigue limits\\
+$\mathbf s$ & MPa & deviatoric stress, $\mathbf s=\dev\Tsig$\\
+$\sqrt{J_{2,a}}$ & MPa & amplitude of $\sqrt{J_2}$: radius of the smallest hypersphere enclosing the deviatoric path, Eq.~\eqref{eq:cross-j2}\\
+$\sigma_{H,a}$, $\sigma_{H,m}$ & MPa & amplitude and mean of the hydrostatic stress $\sigma_H=\tr\Tsig/3$\\
+$\sigma_{H,\max}$ & MPa & largest hydrostatic stress of the cycle, $\sigma_{H,a}+\sigma_{H,m}$ (Eq.~45)\\
+$\sigma_a$, $\tau_a$, $\delta$ & MPa, MPa, rad & bending and torsion amplitudes and their phase shift (Eq.~44)\\
+$\kappa$, $\lambda$ & --, MPa & constants of the criterion, Eq.~\eqref{eq:cross-const} (this $\kappa$ is not the ratio of Section~\ref{sec:notation})\\
+$\mathrm{DP}$ & -- & fatigue index, Eq.~\eqref{eq:cross-index}\\
+$I$ & \% & error index of Papadopoulos et al.\ (Eq.~85)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} In the form of Papadopoulos et al.\ (Eqs.~65--66),
+\begin{gather}
+\sqrt{J_{2,a}} + \kappa\,\sigma_{H,\max} \le \lambda , \label{eq:cross-main}\\
+\kappa = \frac{3\,\tm}{\fm} - \sqrt3 , \qquad \lambda = \tm . \label{eq:cross-const}
+\end{gather}
+For a non-proportional history, $\sqrt{J_{2,a}}$ is the radius of the smallest hypersphere that
+encloses the deviatoric path in the norm $\lVert\mathbf s\rVert=\sqrt{\mathbf s:\mathbf s/2}$
+(Eqs.~38--39). For bending $\sigma_a$ and torsion $\tau_a$ out of phase by $\delta$ (Eq.~44),
+\begin{equation}
+\sqrt{J_{2,a}} = \frac{1}{\sqrt2}\left[\frac{\sigma_a^2}{3} + \tau_a^2 +
+\sqrt{\Bigl(\frac{\sigma_a^2}{3} + \tau_a^2\Bigr)^2 - \frac43\,\sigma_a^2\tau_a^2\sin^2\delta}\;\right]^{1/2} .
+\label{eq:cross-j2}
+\end{equation}
+The constants put both limits on the threshold: in torsion $\sqrt{J_{2,a}}=\tm$, $\sigma_H=0$; in
+tension $\sqrt{J_{2,a}}=\fm/\sqrt3$, $\sigma_{H,\max}=\fm/3$. The error index is
+$I=100\,(\mathrm{DP}-1)$ (Eq.~85) with
+\begin{equation}
+\mathrm{DP} = \frac{\sqrt{J_{2,a}} + \kappa\,(\sigma_{H,a}+\sigma_{H,m})}{\tm} .
+\label{eq:cross-index}
+\end{equation}
+$\kappa>0$ (a tensile hydrostatic stress is detrimental) requires $\tm/\fm>1/\sqrt3$. For a
+non-proportional path this enclosing radius is not the $\sqrt{J_{2,a}}$ of
+Eq.~\eqref{eq:invariants}.
+
+\block{Constants and calibration} Paper and repository: $\kappa$ and $\lambda$ in closed form from
+$\fm$ and $\tm$, Eq.~\eqref{eq:cross-const}. The repository uses the $R=-1$ limits of the workbook
+Summary (averaged per loading mode when several sources report one). Nothing is fitted except the
+master-curve constants $A$, $b$ on the uniaxial $R=-1$ design tests. A material whose limits are
+missing or flagged by the importer is skipped.
+
+\block{Life} No native life law: Crossland is a fatigue-limit criterion. Finite lives use the index
+\eqref{eq:cross-index} on the shared master curve (Section~\ref{sec:mastercurve}), with $\fm$, $\tm$
+kept at their fatigue-limit values; a repository extension.
+
+\block{Repository choices}
+\begin{itemize}
+\item For one harmonic the deviatoric path is an ellipse centred on $\dev\Sm$; $\sqrt{J_{2,a}}$ is its
+  semi-major axis, the square root of the largest eigenvalue of the $2\times2$ Gram matrix of
+  $\dev\Ss$ and $\dev\Sc$ in the norm above. This exact radius replaces a numerical minimum-ball search.
+\item $\sigma_{H,a}=\sqrt{(\tr\Ss)^2+(\tr\Sc)^2}/3$ and $\sigma_{H,m}=\tr\Sm/3$.
+\item The fatigue-limit index is the damage parameter of the master curve, for finite-life comparisons
+  (not part of Crossland's criterion).
+\item Case-level model: no plane search and no \texttt{\_ext} variant.
+\end{itemize}
+
+\block{Worked example} Synthetic material $\fm=300$, $\tm=200\MPa$: $\kappa=3\cdot200/300-\sqrt3=0.2679$.
+Both limits give an index of~1. Bending $\sigma_a=200\MPa$ with torsion $\tau_a=120\MPa$: index
+$0.9220$ in phase and $0.8107$ at $\delta=60^\circ$, the latter equal to Eq.~\eqref{eq:cross-j2}
+inserted in Eq.~\eqref{eq:cross-index}.
+
+\block{Verification} Papadopoulos et al.\ (1997) Table~1 is reproduced to print precision for
+$\delta=0^\circ$, $90^\circ$ and $180^\circ$. The rows at $30^\circ$, $45^\circ$, $60^\circ$ and
+$120^\circ$ were computed in the paper with $\sin\delta$ instead of the $\sin^2\delta$ of Eq.~(44);
+every such row matches the $\sin\delta$ variant exactly, while Eq.~(44) itself is the enclosing
+radius. These rows are strict xfails (paper calculation error). The $I^a$ column of Vu, Halm and
+Nadot (2010) \cite{vu2010} checks the same index on 116 of 117 tests (Table~1 row~10 prints the
+$I^c$ value under $I^a$).

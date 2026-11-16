@@ -1,0 +1,96 @@
+% registry: PAPADOPOULOS
+\methodhead{PAPADOPOULOS}{Papadopoulos (2001): long life fatigue under multiaxial loading}\label{sheet:PAPADOPOULOS}
+
+\block{Source} I.~V.~Papadopoulos, \emph{Int.\ J.\ Fatigue} 23 (2001) 839--849
+\cite{papadopoulos2001}, Eqs.~(1), (10), (14)--(25), (39)--(42), (54)--(58).
+
+\block{Idea and scope} Mesoscopic criterion on the generalised shear amplitude, of
+critical-plane/integral type. Plastic slip in a grain depends on the resolved shear stress along
+all slip directions of a plane; the root mean square over the directions of a plane (the
+generalised shear amplitude $T_a$), maximised over planes, plus the hydrostatic stress governs
+fatigue. A multiaxial S--N form extends the limit to finite life. Proposed for long-life
+(high-cycle) fatigue of metals under in-phase and out-of-phase loading, with mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\n$ & -- & plane normal\\
+$\chi$ & rad & direction of a line in the plane\\
+$\tau_a(\n,\chi)$ & MPa & amplitude of the shear stress resolved along direction $\chi$\\
+$T_a(\n)$ & MPa & generalised shear amplitude, Eq.~\eqref{eq:pap-ta}\\
+$\mathbf t_s$, $\mathbf t_c$ & MPa & shear tractions on the plane of $\Ss$ and $\Sc$ (Eq.~\eqref{eq:harmonic})\\
+$\sigma_{H,a}$, $\sigma_{H,m}$, $\sigma_{H,\max}$ & MPa & amplitude, mean and maximum of the hydrostatic stress\\
+$f_{-1}=\fm$, $t_{-1}=\tm$ & MPa & fully reversed axial (bending) and torsion limits\\
+$\gamma=t_{-1}$, $\alpha$ & MPa, -- & constants of the criterion, Eq.~\eqref{eq:pap-const}\\
+$\gamma_N$ & MPa & equivalent fully reversed torsion amplitude at life $N$ (Eq.~42)\\
+$N$ & cycles & life\\
+$\sigma_a$, $\sigma_m$ & MPa & uniaxial amplitude and mean of the worked example\\
+$\mathrm{DP}$ & -- & index $\gamma_N/t_{-1}$, Eq.~\eqref{eq:pap-dp}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The generalised shear amplitude (Eq.~10), the fatigue limit (Eqs.~1, 25) and the
+multiaxial S--N curve (Eqs.~40--41) read
+\begin{gather}
+T_a(\n)^2=\frac1\pi\int_0^{2\pi}\tau_a(\n,\chi)^2\,d\chi ,
+\label{eq:pap-ta}\\
+\max_{\n}T_a+\alpha\,\sigma_{H,\max}\le\gamma ,\qquad
+\frac{\max_{\n}T_a+\alpha\,\sigma_{H,a}}{1-(\alpha/\gamma)\,\sigma_{H,m}}=\gamma_N ,
+\label{eq:pap-main}\\
+\gamma=t_{-1},\qquad \alpha=3\left(\frac{t_{-1}}{f_{-1}}-\frac12\right).
+\label{eq:pap-const}
+\end{gather}
+With $\sigma_{H,m}=0$ the S--N form reduces to the limit form. For a single harmonic the shear
+traction on a plane is $\mathbf t_s\sin\omega t+\mathbf t_c\cos\omega t$, and Eq.~\eqref{eq:pap-ta}
+integrates exactly to $T_a^2=|\mathbf t_s|^2+|\mathbf t_c|^2$, the root-sum-square shear amplitude.
+The repository returns
+\begin{equation}
+\mathrm{DP}=\frac{\gamma_N}{t_{-1}}=
+\frac{\max_{\n}T_a+\alpha\,\sigma_{H,a}}{t_{-1}\bigl(1-(\alpha/t_{-1})\,\sigma_{H,m}\bigr)} ,
+\label{eq:pap-dp}
+\end{equation}
+which is 1 at both fully reversed limits and $+\infty$ once $\sigma_{H,m}\ge t_{-1}/\alpha$. In
+reversed tension $\max T_a=\sigma_a/2$ and $\sigma_{H,a}=\sigma_a/3$; in reversed torsion
+$\max T_a=\tau_a$.
+
+\block{Constants and calibration} $\alpha$ and $\gamma$ from the fully reversed tension (bending) and
+torsion limits; $\gamma_N$ from a torsion S--N curve. The repository uses the workbook
+\texttt{Sigm1}, \texttt{Taum1}; nothing is fitted except the master-curve constants on the uniaxial
+$R=-1$ design tests. $\alpha>0$ requires $t_{-1}/f_{-1}>1/2$.
+
+\block{Life} The paper gives the life through $\gamma_N(N)$, the torsional S--N curve, in
+Eq.~\eqref{eq:pap-main}. The repository does not fit $\gamma_N(N)$ separately: the index of
+Eq.~\eqref{eq:pap-dp} is the DP of the master curve (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item The index of Eq.~(41) is divided by $t_{-1}$, so the fatigue-limit value is 1.
+\item Eq.~(40) writes $T_a$ without the max of Eqs.~(39) and (41), a notational slip; the max is used.
+\item $\max_{\n}T_a$ over a 24$\times$48 sphere grid with pattern-search refinement.
+\item The 1999 volumetric form $\sqrt{J_2(\mathbf A)+J_2(\mathbf B)}+\alpha\sigma_{H,\max}\le t_{-1}$
+  (Papadopoulos, CISM Courses 392, 1999), with $\mathbf A$, $\mathbf B$ the sine and cosine amplitude
+  tensors and $\alpha=3t_{-1}/f_{-1}-\sqrt3$, is a tested function, not a registered model.
+\item Life from the master curve.
+\end{itemize}
+
+\block{Worked example} Synthetic material: $f_{-1}=300$, $t_{-1}=200\MPa$, so $\alpha=0.500$. The index
+is 1 in reversed torsion at $t_{-1}$ and in reversed tension at $f_{-1}$. Tension $\sigma_a=200$ with
+$\sigma_m=100\MPa$:
+$\mathrm{DP}=(\sigma_a/2+\alpha\sigma_a/3)/(1-\alpha\sigma_m/(3t_{-1}))/t_{-1}=0.7273$. The index is
+infinite for a mean hydrostatic stress $\ge400\MPa$.
+
+\block{Verification} The 2001 paper prints no per-test values (Figs.~3, 8, 10 only). Checked: the
+closed forms of Section~2.2 (torsion and bending plane amplitudes, Eqs.~14, 20; maxima and
+calibration, Eqs.~15, 21); Eq.~\eqref{eq:pap-ta} against its closed form; the plane maximum against a
+dense sweep; the coefficients of Eqs.~(54) and (58) ($t_{-1}=311$, $f_{-1}=442\MPa$: $\alpha=0.61$,
+$\alpha/t_{-1}=0.002$; $t_{-1}=137$, $f_{-1}=230\MPa$: $\alpha=0.29$, $\alpha/t_{-1}=0.0021$); the
+reversed-bending S--N curve of Eq.~(55), $s=442/(1-62.3N^{-0.53})$, at $N=10^4$, $10^5$, $10^6$; the
+mean-stress term and the cut-off of Eq.~(41). The 1999 volumetric form reproduces the CISM Tables~1--4
+and 36 of 43 rows of the ``Papadopoulos'' column of Papadopoulos et al.\ (1997), Table~1, to print
+precision; rows 12, 15--19 and 22 are 0.13--0.37 points off and kept as strict \texttt{xfail}s (the
+source carries numerical scatter: on in-phase row 18 it prints different values for Crossland and
+Papadopoulos, which coincide exactly in phase). Misprints: Eq.~(46) prints $(1/2+(\alpha/3)\sigma_{H,m})$ where reversed tension needs
+$(1/2+\alpha/3)$; Eq.~(5.19) of the 1999 chapter prints $1/(4\pi)$ where $1/(8\pi)$ follows.

@@ -1,0 +1,122 @@
+% registry: LIU2025
+\methodhead{LIU2025}{Liu, Xie and Hao (2025): equivalent stress on the maximum shear amplitude plane}\label{sheet:LIU2025}
+
+\block{Source} X.-Y.~Liu, J.~Xie, W.~Hao, \emph{J.\ Mater.\ Eng.\ Perform.} 34 (2025) 24315--24322
+\cite{liu2025}, Eqs.~(5)--(13), (21)--(27); Fig.~3; Table~2.
+
+\block{Idea and scope} On the plane of maximum shear stress amplitude, the shear and normal stress
+amplitudes are combined as a von Mises-like equivalent stress, $\sqrt{\sigma_n^2+3\tau^2}$, and compared
+with the uniaxial Basquin curve. Mean stresses enter through two corrections: Gerber for the mean shear
+stress, Serensen (bilinear) for the mean normal stress. The normal stress amplitude on the critical
+plane grows with the phase shift, which is how non-proportionality enters. Proposed for high-cycle
+tension--torsion fatigue with phase shift, mean normal and mean shear stresses (30CrMnSiA steel,
+7075-T651 aluminium alloy, TiAl alloy).
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\Delta\tau_{\max}/2$, $\tau_{\max,m}$ & MPa & shear stress amplitude and mean on the critical plane\\
+$\Delta\sigma_n/2$, $\sigma_{n,m}$ & MPa & normal stress amplitude and mean on the critical plane\\
+$\Delta\tau'_{\max}/2=\tau'_a$ & MPa & mean-corrected shear amplitude, Eq.~\eqref{eq:l25-gerber}\\
+$\Delta\sigma'_n/2=\sigma'_{n,a}$ & MPa & mean-corrected normal amplitude, Eq.~\eqref{eq:l25-serensen}\\
+$R_n$ & -- & stress ratio of the normal stress on the plane, Eq.~\eqref{eq:l25-rn}\\
+$\sigma_b=S_u$ & MPa & tensile ultimate strength (workbook \texttt{Su})\\
+$\tau_b$ & MPa & torsional ultimate strength (workbook \texttt{Tu}, optional)\\
+$S_{-1}$, $S_0$ & MPa & fully reversed and repeated limits of the Serensen diagram (Eqs.~23--24)\\
+$\sigma_f'$, $b$ & MPa, -- & uniaxial Basquin coefficient and exponent\\
+$N_f$ & cycles & fatigue life\\
+$\lambda$ & -- & applied amplitude ratio $\sigma_a/\tau_a$ (Fig.~3)\\
+$\mathrm{DP}$ & MPa & repository damage parameter, Eq.~\eqref{eq:l25-dp}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The life model (Eq.~27) is
+\begin{equation}
+\sqrt{\Bigl(\frac{\Delta\sigma'_n}{2}\Bigr)^2 + 3\Bigl(\frac{\Delta\tau'_{\max}}{2}\Bigr)^2} = \sigma_f'(2N_f)^b ,
+\label{eq:l25}
+\end{equation}
+with the Gerber correction of the mean shear stress (Eq.~25)
+\begin{equation}
+\frac{\Delta\tau'_{\max}}{2} = \frac{\Delta\tau_{\max}/2}{1-(\tau_{\max,m}/\tau_b)^2}
+\label{eq:l25-gerber}
+\end{equation}
+and the Serensen correction of the mean normal stress (Eqs.~23, 24, 26)
+\begin{gather}
+R_n = \frac{\sigma_{n,m}-\Delta\sigma_n/2}{\sigma_{n,m}+\Delta\sigma_n/2} , \label{eq:l25-rn}\\
+\frac{\Delta\sigma'_n}{2} =
+\begin{cases}
+\dfrac{\Delta\sigma_n}{2} + 0.414\,\sigma_{n,m}, & -1\le R_n\le0,\\[2mm]
+\dfrac{\sqrt2\,\sigma_b\,\Delta\sigma_n/2}{\sigma_b+\Delta\sigma_n/2-\sigma_{n,m}}, & R_n>0 .
+\end{cases}
+\label{eq:l25-serensen}
+\end{gather}
+\emph{Critical plane}: the plane of maximum shear stress amplitude (Eq.~9); of its two orientations,
+the one with the larger normal stress peak. The repository evaluates on every plane
+\begin{equation}
+\mathrm{DP} = \sqrt{(\sigma'_{n,a})^2 + 3(\tau'_a)^2}\quad(\mathrm{MPa}),
+\label{eq:l25-dp}
+\end{equation}
+\texttt{LIU2025} on the plane of largest shear amplitude, \texttt{LIU2025\_ext} as the largest DP over
+all planes. \emph{Ties} go to the larger DP, which on the source's planes is the larger normal stress
+peak. \emph{Shear amplitude}: the shear amplitude and mean come from the longest chord of the shear
+path (\texttt{longest\_chord}, MCC) by default; the global selection of \texttt{docs/shear-amplitude.md}
+can switch the amplitude to \texttt{rss} (MCE). Without mean stresses, reversed tension gives
+$\mathrm{DP}=\sigma_a$ and torsion $\mathrm{DP}=\sqrt3\,\tau_a$: the criterion implies
+$\tm/\fm=1/\sqrt3$.
+
+\block{Constants and calibration} No fitted criterion constant. Paper: the life uses the uniaxial
+Basquin constants $\sigma_f'$, $b$; $\sigma_b$, $\tau_b$ from static tests (Table~1). Repository:
+$\sigma_b$ from \texttt{Su}, $\tau_b$ from \texttt{Tu}, else $S_u/\sqrt3$ with a warning; the life
+comes from the master curve fitted on the uniaxial $R=-1$ design tests.
+
+\block{Life} Paper: Eq.~\eqref{eq:l25} with the uniaxial Basquin curve. Repository: the master curve
+$\mathrm{DP}=AN_f^b$ (Section~\ref{sec:mastercurve}) replaces $\sigma_f'$ and $b$.
+
+\block{Repository choices}
+\begin{itemize}
+\item Shear amplitude and mean from the longest chord, the paper's half range of the scalar plane shear
+  (Eqs.~10--11) generalised to a shear vector.
+\item $0.414$ is taken as $\sqrt2-1$, implied by Eqs.~(23)--(24) with $S_0=\sqrt2S_{-1}$ (the paper
+  prints it rounded); the two branches of Eq.~(26) then join at $R_n=0$.
+\item Compressive mean normal stress: Eq.~(26) does not cover $-\Delta\sigma_n/2<\sigma_{n,m}<0$, and
+  its hyperbolic branch would make a fully compressive cycle damaging. The linear branch is used for
+  every $\sigma_{n,m}<0$ (continuous at $\sigma_{n,m}=0$) and the corrected amplitude is clipped at 0.
+\item $\tau_b$ from \texttt{Tu}; otherwise $S_u/\sqrt3$ with a warning. The estimate is coarse: the
+  paper's Table~1 has $\tau_b/\sigma_b=0.78$, 0.68 and 0.94.
+\item A plane with $|\tau_{\max,m}|\ge\tau_b$ (Eq.~25 undefined), or whose minimum normal stress reaches
+  $\sigma_b$ (the denominator of Eq.~26 vanishes), raises \texttt{LoadingScopeError}; the model is
+  skipped for that material. With the $S_u/\sqrt3$ estimate this happens on 42CrMo4\_Santus and
+  Ti6Al4V\_Berto.
+\item \texttt{LIU2025\_ext} is a repository variant; life from the shared master curve.
+\end{itemize}
+
+\block{Worked example} 30CrMnSiA, Table~1: $\sigma_b=1334$, $\tau_b=1043\MPa$; the
+$\sigma_a=\tau_a=350\MPa$ tension--torsion tests of Fig.~5, with
+$\sigma=\sigma_m+\sigma_a\sin\omega t$, $\tau=\tau_m+\tau_a\sin(\omega t-\varphi)$:
+\begin{center}\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+Load & DP (MPa)\\\midrule
+in phase & 700.0\\
+$90^\circ$ out of phase & 700.0\\
+in phase, $\tau_m=100\MPa$ & 709.7\\
+in phase, $\sigma_m=100\MPa$ & 711.1\\
+\bottomrule
+\end{tabular}
+\end{center}
+In phase a larger shear amplitude acts with a smaller normal one; out of phase the reverse; the two
+effects compensate exactly at $\sigma_a=\tau_a$. Both mean stresses raise DP. Reversed tension 300 and
+torsion $200\MPa$ give $\mathrm{DP}=300$ and $200\sqrt3\MPa$.
+
+\block{Verification} Fig.~3, the shear and normal amplitudes on the critical plane against the phase
+angle, with each phase scaled to a largest von Mises stress of $160\MPa$ (Fig.~2): for $\lambda=0.866$
+both amplitudes at all five phase angles within $2\MPa$; for $\lambda=\sqrt3$ the shear amplitude at
+every phase and the normal amplitude at $0^\circ$ and $90^\circ$. At $30^\circ$ and $60^\circ$
+Eqs.~(5)--(9) give 69.0 and $102.7\MPa$ against about 75 and $108\MPa$ read from the figure, also on
+planes normal to the surface only: strict xfails, unresolved. Also checked: the branches of Eq.~(26)
+join at $R_n=0$, Eq.~(24), the compressive-mean extension, the Gerber correction, the von Mises-like
+reversed values, the missing-\texttt{Tu} warning and the scope errors. Not reproduced: the life
+comparisons of Figs.~5--7 and the scatter-band fractions of Table~2 (data in the cited sources).
