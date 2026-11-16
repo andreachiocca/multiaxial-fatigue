@@ -11,6 +11,23 @@
 - Records committed for Al7075_T6 (medium), 42CrMo4_Santus (low: failures below the limit),
   42CrMo4_Reis (medium), Ti6Al4V_Meneghetti (low: narrow stress range, L on its bound) and
   Ti6Al4V_Berto (medium); none for AISI316L until #102.
+- 16 November, after the pre-push check (9791d41, records regenerated in 87b74d1): a failure below
+  f_-1 is major only when it failed before the reference life of f_-1 (Summary "Number of
+  Cycles"), minor after it (`late_failures_below_limit`); a calibration point whose integration
+  reached max_blocks_TVEIT is minor (`point_at_block_limit`; none of the 15 points: 401 to 38 837
+  blocks); the record names its inputs file relative to the repository (the earlier records held
+  a local path; a test now scans the committed records). Regenerated records: identical
+  constants, design rows and points; levels unchanged (Santus gains a minor finding).
+  Full suite 3449 passed, 67 skipped, 128 xfailed; lint 6/6. Regression snapshot of 87b74d1
+  against main `904e1f1`: exit codes identical (869 runs, 447 nonzero in both); every changed
+  file passes the automated check; the five committed records are reused; 13 011 s, with the
+  suite running alongside.
+- Main `4d46d39` (LaTeX method sheets, #113) merged in (63e94dc): documentation and one test only,
+  nothing under `src/`, `tools/` or the data, so the snapshot above still holds; conflict in
+  CHANGELOG only. The new TVEIT2025 sheet said the calibration is not implemented; its "Constants
+  and calibration" block now describes it (not compiled here: no LaTeX on this machine; the sheet
+  test passes). Full suite after the merge: 3495 passed (46 new sheet tests), 67 skipped,
+  128 xfailed; lint 6/6.
 - Evidence (16 November, main `904e1f1` merged in; conflicts only in CHANGELOG and this file):
   full suite 3443 passed, 67 skipped, 128 xfailed; black, ruff, both generators (--check),
   check_docs and check_scientific_reviews pass. Regression snapshot against main `904e1f1` (main
@@ -21,22 +38,26 @@
   committed records are reused. On 13 November at 91831cd against `d5f3a5f`: the same result,
   suite 3228 passed. The fix of the source display (cced61c) moves no number.
 - New workbook 18_Al7075_T651_Wang (#112): no record; calibrated at run time in 21 s: A 0.396
-  (Goodman), C 1, K 1.40e-5, L 6.66, confidence low (one axial R = -1 failure at 215 MPa below
-  Sigm1 = 221.99 MPa). FKM_MEAN_STRESS has steel only.
+  (Goodman), C 1, K 1.40e-5, L 6.66, confidence medium (one axial R = -1 failure at 215 MPa
+  below Sigm1 = 221.99 MPa, the S-N curve at 1e6 cycles, but after 1.19e6 cycles: minor; low
+  before the reference-life rule). FKM_MEAN_STRESS has steel only.
 - Cost: TVEIT2025 now runs in `--models all`; its evaluation took 4866 s on Al7075_T6 (101 tests:
   87 failures, 14 run-outs; C = 1e-4), 811 s on Ti6Al4V_Berto, 440 s on 42CrMo4_Santus. Each test
   is integrated cycle by cycle (1001 points, plain Python); with C = 1e-4, 13 of 15 sampled
   Al7075_T6 tests need 14 000 to 60 000 blocks (6 reach max_blocks). Snapshot: 7410 s alone on
   13 November; 11 857 s on 16 November while the main snapshot ran at the same time (8 jobs each).
 - Modified: `cli/pipeline.py`, `eval/tveit2025_calibration.py`, `eval/calibration_confidence.py`,
-  `models/invariant_methods/tveit2025.py`, `Calibrations/` (inputs, records, README), method guide,
-  audit, protocol and workflow docs, CHANGELOG, tests (`tests/methods/test_tveit2025_calibration.py`,
-  `tests/test_tveit2025_calibration_pipeline.py`, `tests/test_calibration_confidence.py`).
+  `models/invariant_methods/tveit2025.py`, `Calibrations/` (inputs, records, README), method guide
+  and sheet, audit, protocol and workflow docs, CHANGELOG, tests
+  (`tests/methods/test_tveit2025_calibration.py`, `tests/test_tveit2025_calibration_pipeline.py`,
+  `tests/test_calibration_confidence.py`).
 - Open questions for the maintainer (in the PR): design set of a native-life model (Flag 0 for the
   three calibration tests only?); confidence for other models; TVEIT2025 run time in `--models all`
   and in the next regeneration of the homepage ranking and batch comparison (not regenerated here).
 - Next action: push `tveit2025-calibration` to the fork and open the PR; later modes `all_eligible`
-  and `subset` (#14); a faster integration (compiled loop or parallel tests) in its own PR.
+  and `subset` (#14); a faster integration (compiled loop or parallel tests) in its own PR, with
+  a resolution check (the three points again at twice npts_TVEIT; minor finding when the life
+  moves by more than 0.05 decade).
 
 ## Issue #13, new methods from the supplied papers (16 November 2026)
 
