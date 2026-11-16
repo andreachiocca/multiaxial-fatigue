@@ -16,9 +16,9 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 11 | 1 | 7 | 0 | 19 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 6 | 0 | 4 | 0 | 10 |
+| Integral and hybrid | 6 | 0 | 3 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 44 | 2 | 68 | 5 | 119 |
+| **TOTAL** | 45 | 2 | 67 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
@@ -67,6 +67,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [N11](#n11) | Ninić Damage Function (quadratic damage-plane criterion) | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N12](#n12) | Revised multiaxial fatigue damage function | Not implemented | not_tested | Medium | Yes |
 | [N16](#n16) | Liu–Mahadevan critical-plane criterion and life model | Fully implemented | basic_numerical_tests | High | Yes |
+| [N17](#n17) | Mean-shear-sensitive weighted-plane criterion, CA branch | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N25](#n25) | A90(T) deviatoric tensile critical-plane model | Not implemented | not_tested | Medium | Yes |
 | [R01](#r01) | Original Carpinteri–Spagnoli | Not implemented | not_tested | High | related_publication |
 | [R02](#r02) | Dang Van elastic-shakedown CA formulation | Not implemented | not_tested | High | related_publication |
@@ -211,6 +212,18 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | possible_or_related_source; [EXT11](docs/EXTERNAL_IMPLEMENTATIONS.md#ext11); not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#n16) |
+
+### N17
+
+**Mean-shear-sensitive weighted-plane criterion, CA branch** — Xiao-Wei Wang, De-Guang Shang, Yu-Juan Sun, Hong Chen (2018)
+
+| Field | Evidence / task |
+| --- | --- |
+| Reference / DOI | Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Theoretical and Applied Fracture Mechanics; https://doi.org/10.1016/j.tafmec.2017.10.007 |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External sources | no_accessible_source_identified; not integrated or independently validated |
+| Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#n17) |
 
 ### N25
 
@@ -789,7 +802,6 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [I_CAIM](#i_caim) | Critical–integral approach (CAIM) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [N03](#n03) | Papadopoulos, specified 2001 formulation | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N15](#n15) | Original Liu–Zenner integral criterion | Not implemented | not_tested | Medium | Yes |
-| [N17](#n17) | Mean-shear-sensitive weighted-plane criterion, CA branch | Not implemented | not_tested | High | Yes |
 | [N50](#n50) | Grubisic–Simbürger formulation | Not implemented | not_tested | Low | Yes |
 | [N53](#n53) | Substitute-amplitude/NP-damage method, CA branch | Not implemented | not_tested | Medium | Yes |
 | [G02](#g02) | Papuga–Růžička integral criterion (PI; later PIN) | Fully implemented | reference_examples_reproduced | High | Yes |
@@ -847,18 +859,6 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n15) |
-
-### N17
-
-**Mean-shear-sensitive weighted-plane criterion, CA branch** — Xiao-Wei Wang, De-Guang Shang, Yu-Juan Sun, Hong Chen (2018)
-
-| Field | Evidence / task |
-| --- | --- |
-| Reference / DOI | Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Theoretical and Applied Fracture Mechanics; https://doi.org/10.1016/j.tafmec.2017.10.007 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
-| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
-| External sources | no_accessible_source_identified; not integrated or independently validated |
-| Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n17) |
 
 ### N50
 

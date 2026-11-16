@@ -1,8 +1,8 @@
 {
  "csv": "load_error_ranking.csv",
- "csv_sha256": "1563e71c12fbc9b49b387285d104bee9e6d0f29d0827f59b477205830c32901d",
- "created_utc": "2026-11-15T18:43:24+00:00",
- "git_commit": "2224c76dcb0b10cb44cddb4007f10834a6d762cb",
+ "csv_sha256": "f62bcfdf08f66cf5d5dac26cad0a65e75bc97e9071a9668b9ed5282be7a230d5",
+ "created_utc": "2026-11-16T06:04:44+00:00",
+ "git_commit": "a8b89223b80b0931c4b6b6205de7f69c7016c64a",
  "implementation_revision": "2026-11-12",
  "registered_models": [
   "BP",
@@ -54,6 +54,7 @@
   "TVEIT2025",
   "VHN",
   "VSE",
+  "WANG2018",
   "WANG2022",
   "ZHANGYAO"
  ],
@@ -134,6 +135,7 @@
   "SWTD",
   "VHN",
   "VSE",
+  "WANG2018",
   "WANG2022",
   "ZHANGYAO"
  ]
