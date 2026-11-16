@@ -76,7 +76,7 @@ def test_eq_5b_constant_principal_directions_give_octahedral_shear():
 def test_section_3_phase_independence_holds_for_the_quadratic_amplitude():
     """Section 3: for tau_xy,a = sigma_x,a / 2 the integral of Eq. (5) does not depend on the
     phase. This holds exactly with the quadratic (rss) amplitude; the longest chord (the
-    maintainer's default while the source definition is unknown) lowers it at 90 deg."""
+    maintainer's confirmed default) lowers it at 90 deg."""
     out = {}
     for rule in ("rss", "longest_chord"):
         for d in (0, 45, 90):

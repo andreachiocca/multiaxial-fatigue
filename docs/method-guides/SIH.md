@@ -74,8 +74,8 @@ is 7.5. The model returns the index $\sigma_{eq,a}/\sigma_W$, which equals 1 on 
   (`np_shear_rule = "longest_chord"`). The quadratic amplitude $\sqrt{s^2 + c^2}$ (`"rss"`) is
   selectable. **Evidence:** Section 3 states that the integral of Eq. (5) does not depend on the
   phase between $\sigma_x$ and $\tau_{xy}$ (Fig. 2). That holds exactly with `"rss"`. With the
-  longest chord, Eq. (5) drops by 7 % at 90° for $\tau_{xy,a} = \sigma_{x,a}/2$. The default may
-  change once the original definition is available.
+  longest chord, Eq. (5) drops by 7 % at 90° for $\tau_{xy,a} = \sigma_{x,a}/2$. The maintainer confirmed the
+  longest chord after reviewing this evidence (16 November 2026).
 - *Mean shear.* $\tau_{\gamma\varphi,m}$ is the magnitude of the mean shear vector.
 - *Mean stresses.* They need $\sigma_{Sch}$ (workbook `Sig0`); without it, a case with a mean
   stress raises `LoadingScopeError`. $\tau_{Sch}$ is `Tau0`, otherwise Eq. (7).

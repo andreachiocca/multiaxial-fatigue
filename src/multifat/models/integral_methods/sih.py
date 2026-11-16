@@ -25,7 +25,7 @@ Repository choices:
     (``np_shear_rule = "longest_chord"``); ``"rss"`` (the quadratic amplitude) is available. With
     "rss", Eq. (6) without mean stresses is exactly independent of the phase between sigma_x and
     tau_xy, as Section 3 states for Eq. (5); with the longest chord it is not (-7 % at 90 deg for
-    tau_a = sigma_a/2). tau_m is the magnitude of the mean shear vector;
+    tau_a = sigma_a/2); the maintainer confirmed the longest chord with this evidence. tau_m is the magnitude of the mean shear vector;
   - mean stresses need sigma_Sch (workbook Sig0): without it a case with a mean stress raises
     LoadingScopeError. tau_Sch is the workbook Tau0, else Eq. (7);
   - tau_W/sigma_W outside [0.577, 0.866] raises MaterialScopeError;

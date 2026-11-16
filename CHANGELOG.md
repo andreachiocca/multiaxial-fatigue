@@ -16,7 +16,7 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
     available source does not define it for rotating shear vectors; `rss` is selectable;
   - mean stresses need `Sig0`.
 - Material scope: 0.577 <= tau_W/sigma_W <= 0.866.
-- Evidence recorded for a future decision: the Section 3 statement that Eq. (5) does not depend on
+- Evidence reviewed by the maintainer, who confirmed the longest chord: the Section 3 statement that Eq. (5) does not depend on
   the phase holds exactly with `rss`, not with the longest chord (-7 % at 90 deg).
 - Checked: the Table 1 factors (12/7, 4/21, 15/14) as sphere integrals; the four limits; Eqs.
   (5) and (5b).
