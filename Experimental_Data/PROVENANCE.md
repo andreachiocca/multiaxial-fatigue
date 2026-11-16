@@ -153,6 +153,43 @@ transverse hole) and fretting curves. Their axial R = -1 strengths at 1e6 cycles
 - Whether the shear stress of the hollow specimens refers to the outer surface or to the mean wall
   radius ("related to net section") is not stated. Values are used as given.
 
+## 18_Al7075_T651_Wang.xlsx (Wang, Shang, Sun & Chen 2018, added 2026-11-16)
+
+**Source.** Wang X-W, Shang D-G, Sun Y-J, Chen H. Multiaxial high-cycle fatigue life prediction
+model considering mean shear stress effect under constant and variable amplitude loading. Theor
+Appl Fract Mech (2018), doi:10.1016/j.tafmec.2017.10.007 (accepted manuscript). Tables 3-5 (pp.
+34-36) are transcribed in `tests/data/papers/wang2018_tables3_5.csv`, also used by the WANG2018
+paper-reproduction tests.
+
+**Conversion.** `tools/build_wang_al7075_t651.py` builds the workbook from the transcription and
+Tables 1-2. `tests/test_wang_al7075_dataset.py` checks that:
+- the committed workbook equals the build;
+- the table sizes are 13, 16 and 23 tests;
+- the transcribed Table 4 amplitudes and means add up to its printed tau_max.
+
+**Content (maintainer decision, 16 November 2026).** 7075-T651 aluminium alloy, thin-walled tubes
+(outer diameter 12.5 mm, inner 10.5 mm), load controlled, sine 10 Hz, constant amplitude.
+52 failures:
+- uniaxial: R = -1 (5 tests) and sigma_m about 1.13 sigma_a (8);
+- pure torsion: R = -1 (8) and R = 0.06 (8);
+- tension-torsion with both means, at 0, 30, 45, 90 and 180 deg (23).
+
+The shear lags the axial stress by delta (Eq. 8).
+
+| Summary value | Source |
+| --- | --- |
+| E = 71 700 MPa, Sy = 501, Su = 561 MPa | Table 1 |
+| nu = 0.3036 | Table 1: E/(2G) - 1 with G = 27.5 GPa |
+| Sigm1 = 221.99 MPa (push-pull) | Table 2 axial curve 888.90 N^-0.10042 at N = 1e6 |
+| Taum1 = 127.10 MPa | Table 2 torsional curve 688.85 N^-0.12233 at N = 1e6 |
+
+**Open points.**
+- The fatigue limits are S-N curve values at 1e6 cycles, the first of the paper's three choices
+  (1e6, 2e6, 1e7). Aluminium has no true fatigue limit.
+- No R = 0 limits are given. Criteria needing Sig0/Tau0 use their own estimates or are skipped.
+- Whether the shear stresses refer to the outer surface or to the mean wall radius is not stated.
+  The values are used as given.
+
 ## 17_Ti6Al4V_Delahay.xlsx (Delahay & Palin-Luc 2006, added 2026-11-11)
 
 **Source.** Delahay T, Palin-Luc T. Estimation of the fatigue strength distribution in high-cycle
