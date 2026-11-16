@@ -1,0 +1,81 @@
+% registry: DANGVAN
+\methodhead{DANGVAN}{Dang Van (1973): mesoscopic shear and hydrostatic stress}\label{sheet:DANGVAN}
+
+\block{Source} K.~Dang Van, \emph{Sciences et Technique de l'Armement} 47 (1973) 647--722
+\cite{dangvan1973}. Implemented as the documented variant of Eq.~(3) of B\"ohme, Papuga and Lange,
+\emph{Fatigue Fract.\ Eng.\ Mater.\ Struct.}\ (2026) \cite{bohme2026}, the modified form of Papuga and
+Halama; Eqs.~(3)--(4), (16); Table~4.
+
+\block{Idea and scope} Mesoscopic fatigue-limit criterion. Cracks nucleate in the least favourably
+oriented grains; after elastic shakedown, the mesoscopic shear stress in those grains, combined with
+the hydrostatic stress, must stay below a limit line. Proposed for the high-cycle fatigue limit of
+metallic components, widely used in industrial design.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$s_{-1}=\fm$, $\tm$ & MPa & fully reversed tension (bending) and torsion fatigue limits\\
+$\kappa$ & -- & limit ratio $\fm/\tm$ (Eq.~4)\\
+$\tau(t)$ & MPa & mesoscopic shear stress (Tresca measure of the deviatoric stress minus its shakedown centre)\\
+$\sigma_H(t)$ & MPa & hydrostatic stress, $\tr\Tsig/3$\\
+$a$, $b$ & --, MPa & constants of the classical form, Eq.~\eqref{eq:dv-classic}\\
+$\n$ & -- & unit normal of a material plane\\
+$\tau_{sa}(\n)$ & MPa & radius of the smallest circle enclosing the shear-stress path on the plane $\n$\\
+$\sigma_{H,a}$, $\sigma_{H,m}$, $\sigma_{H,\max}$ & MPa & amplitude, mean and maximum $\sigma_{H,m}+\sigma_{H,a}$ of $\sigma_H$\\
+$\sigma_{eq,DV}$ & MPa & equivalent stress, Eq.~\eqref{eq:dv-main}\\
+$\sigma_a$ & MPa & amplitude of the worked example's loads\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Dang Van's criterion (in the form popularised in later papers) states that, at every
+instant of the stabilised cycle,
+\begin{equation}
+\max_t\bigl[\tau(t) + a\,\sigma_H(t)\bigr] \le b , \qquad
+a = 3\Bigl(\frac{\tm}{\fm} - \frac12\Bigr) , \qquad b = \tm .
+\label{eq:dv-classic}
+\end{equation}
+The original papers define $\tau$ through the elastic-shakedown state and give no closed form for
+general loading. The repository implements Eq.~(3) of B\"ohme et al.\ (2026),
+\begin{equation}
+\sigma_{eq,DV} = \kappa\,\max_{\n}\tau_{sa}(\n) + \Bigl(3 - \tfrac32\kappa\Bigr)\sigma_{H,\max} ,
+\qquad \kappa = \frac{\fm}{\tm} , \qquad \mathrm{DP} = \frac{\sigma_{eq,DV}}{\fm} .
+\label{eq:dv-main}
+\end{equation}
+Dividing by $\kappa$ gives $\tau_{sa}+3(\tm/\fm-1/2)\,\sigma_{H,\max}\le\tm$, the classical constants of
+Eq.~\eqref{eq:dv-classic}. For equibiaxial loading of amplitude $\sigma_a$, Eq.~(16) gives
+$\sigma_{eq,DV}=2\sigma_a(1-\kappa/4)$.
+
+\block{Constants and calibration} Paper and repository: $a$ and $b$ (or $\kappa$) from the fully reversed
+tension and torsion limits, so the index is~1 at both limits. The repository uses the workbook
+\texttt{Sigm1}, \texttt{Taum1}; nothing is fitted except the master-curve constants on the uniaxial
+$R=-1$ design tests.
+
+\block{Life} No native life law: Dang Van is a fatigue-limit criterion. The index is the damage parameter
+of the shared master curve (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item Amplitude plus maximum, not the maximum of the sum: the variant adds the largest shear amplitude
+  and the largest hydrostatic stress instead of maximising $\tau(t)+a\,\sigma_H(t)$ over time. The two
+  coincide for proportional loading. For a single harmonic the shakedown centre is the mean deviatoric
+  stress, so $|\tau(t)|\le\tau_{sa}$ and, with $a>0$ ($\tm/\fm>1/2$), the variant is conservative.
+\item Shear amplitude: minimum circumscribed circle on each plane (exact for a single harmonic, as in
+  BP and CAIM), maximised over a sphere grid with pattern-search refinement.
+\item $\sigma_{H,\max}=\sigma_{H,m}+\sigma_{H,a}$ from the harmonic.
+\item Case-level model (it uses the whole history): no \texttt{\_ext} variant.
+\item The index is the damage parameter of the master curve.
+\end{itemize}
+
+\block{Worked example} Synthetic material $\fm=300$, $\tm=200\MPa$ ($\kappa=1.5$). Both limits give
+index~1. Equibiaxial amplitude $150\MPa$: index $0.6250$, equal to $2\sigma_a(1-\kappa/4)/\fm$. Tension
+$\sigma_a=200\MPa$ with mean $100\MPa$ ($\tau_{sa}=\sigma_a/2$, $\sigma_{H,\max}=(100+200)/3\MPa$):
+index $0.7500$.
+
+\block{Verification} Eq.~(16) closed forms for equibiaxial and equitriaxial loading over several
+$\kappa$; the Table~4 DV statistics of B\"ohme et al.\ (2026) on its 18 tests (maximum 20.0,
+minimum $-18.6$, mean 3.6, standard deviation 11.9 points; 44.4\,\% within $\pm10$); invariance to
+rotation and to a time shift. The DV column ($I^b$) of Vu, Halm and Nadot \cite{vu2010} is reproduced on
+115 of 117 tests. Not implemented: the original shakedown-based formulation for arbitrary paths.

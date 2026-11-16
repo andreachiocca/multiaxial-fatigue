@@ -47,7 +47,7 @@ The two branches meet at $\kappa=\sqrt{4/3}$. In the paper $f_0$ comes from Morr
 Eq.~(A.17) prints $\sin2\varphi_t$ as the common factor of Eq.~(A.16), which factors as $\sin2\psi_t$
 (misprint). The repository returns $\mathrm{DP}=\mathrm{LHS}/\fm$; the paper's fatigue index error
 (Eq.~5) is $100\,(\mathrm{DP}-1)$. \emph{Critical plane}: the maximum of Eq.~\eqref{eq:pcr} over a
-sphere grid of normals, refined by pattern search; the maximum value is unique, so no tie rule is
+$24\times48$ sphere grid of normals, refined by pattern search; the maximum value is unique, so no tie rule is
 needed. \emph{Shear amplitude}: the minimum circumscribed circle of the source (MCC, the major
 semi-axis for one harmonic). The model is case-level and its amplitude is fixed by its definition:
 the global selection of \texttt{docs/shear-amplitude.md} leaves it unchanged.
@@ -67,7 +67,7 @@ $\mathrm{DP}-1$ (Eq.~5).
 \item A negative radicand (compressive mean normal stress) is clipped to 0.
 \item $f_0$: workbook \texttt{Sig0}, else the B\"ohme et al.\ (2026) Eq.~(1) estimate from $S_u$, not
   Morrow's formula.
-\item The maximum over planes is numerical: a sphere grid refined by pattern search.
+\item The maximum over planes is numerical: a $24\times48$ sphere grid refined by pattern search.
 \item Life: the index is the DP of the shared master curve. No \texttt{\_ext} variant.
 \end{itemize}
 
