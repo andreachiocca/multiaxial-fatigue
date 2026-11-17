@@ -1,0 +1,191 @@
+{
+  "E": {
+    "fatpy_key": "elastic_modulus",
+    "fatpy_unit": "GPa",
+    "factor_to_fatpy": 0.001,
+    "note": "multifat: MPa"
+  },
+  "nu": {
+    "fatpy_key": "poissons_ratio",
+    "fatpy_unit": "-",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "nu_p": {
+    "fatpy_key": "poissons_ratio_pl",
+    "fatpy_unit": "-",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "Sy": {
+    "fatpy_key": "yield_strength",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "Su": {
+    "fatpy_key": "ult_tensile_strength",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "Tu": {
+    "fatpy_key": null,
+    "fatpy_unit": "-",
+    "factor_to_fatpy": null,
+    "note": "no FatPy key yet (torsional ultimate strength)"
+  },
+  "sigma_T": {
+    "fatpy_key": null,
+    "fatpy_unit": "-",
+    "factor_to_fatpy": null,
+    "note": "no FatPy key yet (true fracture strength)"
+  },
+  "Sigm1": {
+    "fatpy_key": "fat_lim_ten_m1",
+    "fatpy_alternatives": ["fat_lim_ben_m1"],
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": 1.0,
+    "note": "push-pull or bending, per the Summary column `Axial fatigue limit loading` (see `docs/workbook-format.md`); unrecorded sources stay unresolved"
+  },
+  "Taum1": {
+    "fatpy_key": "fat_lim_tor_m1",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "Sig0": {
+    "fatpy_key": null,
+    "ambiguous_candidate": "fat_lim_ten_0",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": null,
+    "note": "multifat stores the maximum stress of the R = 0 cycle; FatPy v01 does not state amplitude or maximum"
+  },
+  "Tau0": {
+    "fatpy_key": null,
+    "ambiguous_candidate": "fat_lim_tor_0",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": null,
+    "note": "as `Sig0`"
+  },
+  "sigma_f": {
+    "fatpy_key": "fat_strength_coef",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "b_fat": {
+    "fatpy_key": "fat_strength_exp",
+    "fatpy_unit": "-",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "epsilon_f": {
+    "fatpy_key": "fat_ductility_coef",
+    "fatpy_unit": "-",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "c_fat": {
+    "fatpy_key": "fat_ductility_exp",
+    "fatpy_unit": "-",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "tau_f": {
+    "fatpy_key": "fat_strength_coef_tor",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "b0": {
+    "fatpy_key": "fat_strength_exp_tor",
+    "fatpy_unit": "-",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "gamma_f": {
+    "fatpy_key": "fat_ductility_coef_tor",
+    "fatpy_unit": "-",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "c0": {
+    "fatpy_key": "fat_ductility_exp_tor",
+    "fatpy_unit": "-",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "K_prime": {
+    "fatpy_key": "cyc_hard_coeff",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": 1.0,
+    "note": "FatPy key spellings as in v01"
+  },
+  "n_prime": {
+    "fatpy_key": "cyc_hard_ext",
+    "fatpy_unit": "-",
+    "factor_to_fatpy": 1.0,
+    "note": "FatPy key spellings as in v01"
+  },
+  "Nf": {
+    "fatpy_key": "tot_fat_life",
+    "fatpy_unit": "cycles",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "sigma_a": {
+    "fatpy_key": "stress_amp",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": 1.0,
+    "note": "load-level amplitude and mean (multifat also uses them on a plane)"
+  },
+  "sigma_m": {
+    "fatpy_key": "mean_stress",
+    "fatpy_unit": "MPa",
+    "factor_to_fatpy": 1.0,
+    "note": "load-level amplitude and mean (multifat also uses them on a plane)"
+  },
+  "phase_shift": {
+    "fatpy_key": "phase_shift",
+    "fatpy_unit": "degrees",
+    "factor_to_fatpy": 1.0,
+    "note": ""
+  },
+  "k_FS": {
+    "fatpy_key": null,
+    "fatpy_unit": "-",
+    "factor_to_fatpy": null,
+    "note": "method constants: no FatPy key yet"
+  },
+  "k_FI": {
+    "fatpy_key": null,
+    "fatpy_unit": "-",
+    "factor_to_fatpy": null,
+    "note": "method constants: no FatPy key yet"
+  },
+  "L_LI": {
+    "fatpy_key": null,
+    "fatpy_unit": "-",
+    "factor_to_fatpy": null,
+    "note": "method constants: no FatPy key yet"
+  },
+  "k_MGSE": {
+    "fatpy_key": null,
+    "fatpy_unit": "-",
+    "factor_to_fatpy": null,
+    "note": "method constants: no FatPy key yet"
+  },
+  "a_MSWT": {
+    "fatpy_key": null,
+    "fatpy_unit": "-",
+    "factor_to_fatpy": null,
+    "note": "method constants: no FatPy key yet"
+  },
+  "k_PDS": {
+    "fatpy_key": null,
+    "fatpy_unit": "-",
+    "factor_to_fatpy": null,
+    "note": "method constants: no FatPy key yet"
+  }
+}

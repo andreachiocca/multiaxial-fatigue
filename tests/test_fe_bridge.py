@@ -10,9 +10,8 @@ from multifat.fe.model import HistoryBlock, HistoryMeta
 from multifat.fe.ranges import ExplicitPair, LongestChord
 from multifat.imp.experimental_data import extract_tensor
 from multifat.models.registry import (
-    _available_cp_methods,
-    _available_direct_models,
     get_models,
+    model_names,
     stress_only_models,
 )
 from multifat.planes.sampling import build_R_list
@@ -115,7 +114,7 @@ def test_stub_requires_nonlocal_refused_with_reason():
 
 
 def test_all_registered_methods_pass_eligibility():
-    names = list(_available_cp_methods()) + list(_available_direct_models())
+    names = model_names()
     checked = 0
     for name in names:
         try:

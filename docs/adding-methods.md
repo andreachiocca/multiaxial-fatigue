@@ -10,13 +10,13 @@ The method name that users see is the `name` attribute of the class registered i
 1. Place a new class inside `src/multifat/models/cp_methods/`, using an existing one such as `FatemiSocie` (`fs.py`) and the `CriticalPlaneMethod` protocol defined in `src/multifat/models/base.py` as templates.
 2. Implement `name`, `required_params()` and `evaluate_on_plane(*, S0r, E0r, S1r, E1r, params) -> CPPlaneResult`. Both `damage` and `metric` must be returned as finite values, since the plane search picks whichever plane attains the highest metric. The local plane normal coincides with the `z` axis, while `xz` and `yz` are the in-plane shear components.
 3. Class attributes are optional: `np_shear_rule` (defaults to `"rss"`, or takes `"longest_chord"` where the source prescribes it), `ext_variant = False` where an `_ext` variant would make no sense, and `optional_params` (see below).
-4. Import the class and register it in `_available_cp_methods()`. The standard and `_ext` values are exposed by `CPModelAdapter`, which also runs the refined plane search (`best_cp_for_case` in `eval/evaluator.py`; the refinement itself lives in `eval/plane_search.py`). Any test that evaluates a single prescribed plane has to pass `refine=False`.
+4. Import the class and register it in `available_cp_methods()`. The standard and `_ext` values are exposed by `CPModelAdapter`, which also runs the refined plane search (`best_cp_for_case` in `eval/evaluator.py`; the refinement itself lives in `eval/plane_search.py`). Any test that evaluates a single prescribed plane has to pass `refine=False`.
 
 ## Direct method
 
 1. Put the class in `src/multifat/models/invariant_methods/`, `energy_based_methods/` or `integral_methods/`, following an existing model plus the `FatigueModel` protocol in `src/multifat/models/base.py`.
 2. Supply `name`, `required_params()` and `evaluate_case(*, S0, E0, S1, E1, params, R_list=None, harmonics=None) -> CaseResult`, returning `values={"": damage}`. Wherever the calculation requires phase information, rely on `harmonics` (`S_mean`, `S_sin`, `S_cos`).
-3. Register the imported class in `_available_direct_models()`.
+3. Register the imported class in `available_direct_models()`.
 
 ## Parameters
 

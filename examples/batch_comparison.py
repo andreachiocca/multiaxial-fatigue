@@ -91,9 +91,9 @@ def families() -> dict:
 
 
 def registered_models() -> list[str]:
-    from multifat.cli.pipeline import _every_model
+    from multifat.models.registry import model_names
 
-    return sorted(_every_model())
+    return sorted(model_names())
 
 
 def dataset_fingerprints(batches) -> dict:

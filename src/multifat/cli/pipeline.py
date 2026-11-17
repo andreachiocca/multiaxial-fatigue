@@ -26,6 +26,7 @@ import warnings
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from multifat.cli import run as runmod
 import multifat.imp.experimental_data as exp
@@ -75,13 +76,57 @@ SUPPLIED_OPTIONAL = {
 }
 
 
-def _every_model() -> list[str]:
-    from multifat.models.registry import _available_cp_methods, _available_direct_models
+@dataclass(frozen=True)
+class Job:
+    """Inputs for evaluating one base model in the pipeline worker."""
 
-    return list(_available_cp_methods()) + list(_available_direct_models())
+    workbook: str
+    base_name: str
+    results_dir: str
+    overrides: dict
+    design_ids: dict
+    why: dict
+    make_plots: bool
+    calibration: dict
+    suffixes: tuple[str, ...]
+    survival_probability: float | None
+    design_workbook: str | None = None
+
+    def __getitem__(self, index: int | slice) -> Any:
+        return self._as_tuple()[index]
+
+    def __len__(self) -> int:
+        return 11
+
+    def __iter__(self):
+        return iter(self._as_tuple())
+
+    def _as_tuple(self) -> tuple[Any, ...]:
+        return (
+            self.workbook,
+            self.base_name,
+            self.results_dir,
+            self.overrides,
+            self.design_ids,
+            self.why,
+            self.make_plots,
+            self.calibration,
+            self.suffixes,
+            self.survival_probability,
+            self.design_workbook,
+        )
 
 
-def _evaluate_base(job: tuple) -> list[Outcome]:
+def every_model() -> list[str]:
+    from multifat.models.registry import model_names
+
+    return model_names()
+
+
+_every_model = every_model
+
+
+def _evaluate_base(job: Job | tuple) -> list[Outcome]:
     """Run one base model once, writing its std and `_ext` CSVs; warnings become notes."""
     with warnings.catch_warnings(record=True) as captured:
         warnings.simplefilter("always")
@@ -145,20 +190,20 @@ def _annotate_calibration(outcome: Outcome, model, calibration: dict) -> Outcome
     return outcome
 
 
-def _evaluate_base_core(job: tuple) -> list[Outcome]:
-    (
-        workbook,
-        base_name,
-        dest,
-        overrides,
-        design_ids,
-        why,
-        make_plots,
-        calibration,
-        suffixes,
-        survival_probability,
-        design_workbook,
-    ) = job
+def _evaluate_base_core(job: Job | tuple) -> list[Outcome]:
+    if isinstance(job, tuple):
+        job = Job(*job)
+    workbook = job.workbook
+    base_name = job.base_name
+    dest = job.results_dir
+    overrides = job.overrides
+    design_ids = job.design_ids
+    why = job.why
+    make_plots = job.make_plots
+    calibration = job.calibration
+    suffixes = job.suffixes
+    survival_probability = job.survival_probability
+    design_workbook = job.design_workbook
     start = time.perf_counter()
     adopted: list[str] = []
     try:
@@ -720,18 +765,18 @@ def run_workbook(
     for request in requested:
         suffixes_by_base.setdefault(request.base_name, []).append(request.suffix)
     queue = [
-        (
-            str(target_workbook),
-            base_name,
-            str(results_dir),
-            overrides,
-            design_ids,
-            why,
-            plots,
-            calibration,
-            tuple(suffixes),
-            survival_probability,
-            None if design_workbook is None else str(design_workbook),
+        Job(
+            workbook=str(target_workbook),
+            base_name=base_name,
+            results_dir=str(results_dir),
+            overrides=overrides,
+            design_ids=design_ids,
+            why=why,
+            make_plots=plots,
+            calibration=calibration,
+            suffixes=tuple(suffixes),
+            survival_probability=survival_probability,
+            design_workbook=None if design_workbook is None else str(design_workbook),
         )
         for base_name, suffixes in suffixes_by_base.items()
     ]

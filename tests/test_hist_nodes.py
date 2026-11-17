@@ -29,7 +29,7 @@ from multifat.history.nodes import (
     read_load_functions,
 )
 from multifat.history.signal import TimeHistory
-from multifat.models.registry import _PROBE_PARAMS, declared_param_names, get_models
+from multifat.models.registry import PROBE_PARAMS, declared_param_names, get_models
 from multifat.planes.sampling import build_R_list
 
 pytest.importorskip("h5py")
@@ -40,7 +40,7 @@ R_LIST = build_R_list(n1=3, n2=6)
 N_RADII, N_THETA = 2, 3
 (MODEL,) = get_models(["FS"])
 PARAMS = {
-    k: _PROBE_PARAMS.get(k, 1.0) for k in set(declared_param_names()) | set(MODEL.required_params())
+    k: PROBE_PARAMS.get(k, 1.0) for k in set(declared_param_names()) | set(MODEL.required_params())
 }
 PARAMS.update(E=E_MOD, nu=NU)
 CURVE = SNCurve(A=2000.0, b=-0.12, method="FS", variant="")

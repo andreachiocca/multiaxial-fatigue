@@ -1,5 +1,29 @@
 # Development continuation checkpoint
 
+## Issue #81: Extension points, registry accessors and FatPy mapping (17 November 2026)
+
+- Branch `refactor/issue-81-extension-points` from `main` (commit `4d46d39`).
+- Replaced private cross-package imports with public registry APIs: `available_cp_methods()`,
+  `available_direct_models()`, `base_models()`, `model_names()`, and `PROBE_PARAMS`.
+- Replaced model-name branches in `src/multifat/cli/run.py`:
+  - `ComparisonCapabilities.load_error: bool = True` added; TVEIT2025 overridden to `False` in
+    `models/comparison.py` without touching `tveit2025.py`.
+  - Added `effective_strengths()` method to `BohmePapuga` (inherited by `CAIM`) replacing
+    `_strengths` imports and name branching.
+- Replaced 11-field job tuple in `src/multifat/cli/pipeline.py` with frozen `Job` dataclass.
+- Added frozen `RowGroup` dataclass in `src/multifat/report/export_csv.py` with backward compatibility.
+- Added FatPy correspondence table `src/multifat/data/fatpy_keys.json` and `src/multifat/data/fatpy.py`
+  (`to_fatpy`, `from_fatpy`, `load_fatpy_mapping`), with unit conversion for Young's modulus $E$
+  (GPa <-> MPa).
+- Excluded ambiguous `Sig0`/`Tau0` per maintainer guidance.
+- Guard tests in `tests/test_fatpy.py`: round-trip conversions, markdown table drift check against
+  `docs/notation.md`, no private cross-package imports in `cli/`, `tools/`, or `examples/`, and no
+  model-name branching in `cli/run.py`.
+- Checks: `ruff`, `black`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`,
+  `tools/check_docs.py`, `tools/check_scientific_reviews.py`, `pytest tests/methods -q` (1563 passed),
+  `pytest tests/test_fatpy.py tests/test_notation.py -q` (684 passed).
+- Next action: commit and PR closing #81.
+
 ## Issue #13, new methods from the supplied papers (16 November 2026)
 
 - Merged: KHALIJ, KAKUNO, MATSUBARA, PDS_SWT/PDS_FS (#103-#106). Open: #107 (homepage
