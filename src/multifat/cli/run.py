@@ -24,7 +24,7 @@ from multifat.imp.schema import (
 from multifat.planes.sampling import build_R_list
 from multifat.eval.calibration import collect_uniaxial_series_and_fit
 from multifat.eval.fitting import stdnum_for_survival
-from multifat.report.export_csv import save_fatigue_csv
+from multifat.report.export_csv import RowGroup, save_fatigue_csv
 from multifat.report.subsets import observation_index
 from multifat.models.errors import DesignSetError, MissingParamsError, NativeLifeError
 from multifat.eval.findley_calibration import (
@@ -718,32 +718,38 @@ def write_native_variant(
     return save_fatigue_csv(
         out_dir=str(results_dir),
         survival_probability=ev.survival_probability,
-        Error_load=load_error,
-        Error_load_design=load_error_d,
         method_name=method_name,
         material_name=ev.material,
-        N_exp=ev.Nexp,
-        CP=cases_index,
-        N_pred=native_cases,
-        N_design=design_cycles,
-        F_design=design_index,
-        N_pred_design=native_design,
-        loading_type=ev.loading_type,
-        loading_type_design=["Tensile"] * len(series["N"]) + list(ev.extra["lt"]),
         metric_mode="Nf_direct",
-        DP_fit=dp_fit_cases,
-        DP_fit_design=dp_fit_design,
-        N_native=native_cases,
-        N_native_design=native_design,
-        N_runout=ev.runout["Nexp"],
-        CP_runout=runout_index,
-        N_pred_runout=native_runouts,
-        DP_fit_runout=dp_fit_runouts,
-        loading_type_runout=ev.runout["lt"],
-        N_native_runout=native_runouts,
-        observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
-        observation_ids_design=ids_design,
-        observation_ids_runout=([obs[("runout", i)] for i in ev.runout["ids"]] if obs else None),
+        cases=RowGroup(
+            cycles=ev.Nexp,
+            values=cases_index,
+            pred=native_cases,
+            loading_type=ev.loading_type,
+            dp_fit=dp_fit_cases,
+            native=native_cases,
+            observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
+            error_load=load_error,
+        ),
+        design=RowGroup(
+            cycles=design_cycles,
+            values=design_index,
+            pred=native_design,
+            loading_type=["Tensile"] * len(series["N"]) + list(ev.extra["lt"]),
+            dp_fit=dp_fit_design,
+            native=native_design,
+            observation_ids=ids_design,
+            error_load=load_error_d,
+        ),
+        runouts=RowGroup(
+            cycles=ev.runout["Nexp"],
+            values=runout_index,
+            pred=native_runouts,
+            loading_type=ev.runout["lt"],
+            dp_fit=dp_fit_runouts,
+            native=native_runouts,
+            observation_ids=([obs[("runout", i)] for i in ev.runout["ids"]] if obs else None),
+        ),
     )
 
 
@@ -753,11 +759,6 @@ def _case_tensors(ev: Evaluation, case_id: int) -> dict:
         ev.data, ev.material, int(case_id), node=1, include_harmonics=True
     )
     return {"S0": S0, "E0": E0, "S1": S1, "E1": E1, "H": H, "meta": {}}
-
-
-# Native life laws whose load error is not computed: TVEIT2025 integrates the damage over many
-# cycles per evaluation, so the iteration on the load would be very slow.
-LOAD_ERROR_SKIP = {"TVEIT2025"}
 
 
 class _CachedModel:
@@ -811,7 +812,7 @@ def load_errors(ev: Evaluation, variant_key: str, case_ids, lives, *, native: bo
     from multifat.eval.endurance import damage
     from multifat.eval.load_error import master_curve_load_error, native_life_load_error
 
-    if ev.data is None or case_ids is None or ev.base_name in LOAD_ERROR_SKIP:
+    if ev.data is None or case_ids is None or not capabilities_for_model(ev.model).load_error:
         return [float("nan")] * len(lives)
     model = _load_error_model(ev)
     errors = []
@@ -1053,38 +1054,44 @@ def write_variant(
     csv_path = save_fatigue_csv(
         out_dir=str(results_dir),
         survival_probability=ev.survival_probability,
-        Error_load=load_error,
-        Error_load_design=load_error_d,
         method_name=model_name,  # keep filename compatibility
         result_label=label,
         material_name=ev.material,
-        N_exp=Nexp,
-        CP=values,
-        N_pred=Npred,
-        N_design=N_d,
-        F_design=F_d,
-        N_pred_design=Npred_d,
-        loading_type=ev.loading_type,
-        loading_type_design=loading_type_design,
         metric_mode=error_mode,
-        DP_fit=DP_fit,
-        Error_ln_dp=Error_ln_dp,
-        DP_fit_design=DP_fit_d,
-        Error_ln_dp_design=Error_ln_dp_d,
+        cases=RowGroup(
+            cycles=Nexp,
+            values=values,
+            pred=Npred,
+            loading_type=ev.loading_type,
+            dp_fit=DP_fit,
+            error_ln_dp=Error_ln_dp,
+            native=N_native,
+            observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
+            error_load=load_error,
+        ),
+        design=RowGroup(
+            cycles=N_d,
+            values=F_d,
+            pred=Npred_d,
+            loading_type=loading_type_design,
+            dp_fit=DP_fit_d,
+            error_ln_dp=Error_ln_dp_d,
+            native=N_native_d,
+            observation_ids=ids_design,
+            error_load=load_error_d,
+        ),
+        runouts=RowGroup(
+            cycles=ev.runout["Nexp"],
+            values=CP_r,
+            pred=Npred_r,
+            dp_fit=DP_fit_r,
+            loading_type=ev.runout["lt"],
+            native=N_native_r,
+            observation_ids=([obs[("runout", i)] for i in ev.runout["ids"]] if obs else None),
+        ),
         basquin_meta=basquin_meta,
         material_meta=material_meta,
         extra_meta=extra_meta,
-        N_native=N_native,
-        N_native_design=N_native_d,
-        N_runout=ev.runout["Nexp"],
-        CP_runout=CP_r,
-        N_pred_runout=Npred_r,
-        DP_fit_runout=DP_fit_r,
-        loading_type_runout=ev.runout["lt"],
-        N_native_runout=N_native_r,
-        observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
-        observation_ids_design=ids_design,
-        observation_ids_runout=([obs[("runout", i)] for i in ev.runout["ids"]] if obs else None),
     )
     if amplitude:
         write_assessment_metadata(
@@ -1107,10 +1114,11 @@ def main():
     # calibrate the base model (which hands back both variants).
     base_name, variant_key = _split_model_variant(MODEL_NAME)
 
-    if base_name in {"BP", "CAIM"} and (params["Sig0"] is None or params["Tau0"] is None):
-        from multifat.models.integral_methods.bohme_papuga import _strengths
-
-        _, _, estimated_s0, estimated_t0 = _strengths(params, base_name)
+    mdl_probe = get_models([base_name])[0]
+    if hasattr(mdl_probe, "effective_strengths") and (
+        params["Sig0"] is None or params["Tau0"] is None
+    ):
+        _, _, estimated_s0, estimated_t0 = mdl_probe.effective_strengths(params)
         print(
             f"{base_name} R=0 strengths (MPa): Sig0={estimated_s0:.3f} "
             f"({'estimated' if params['Sig0'] is None else 'workbook'}), "

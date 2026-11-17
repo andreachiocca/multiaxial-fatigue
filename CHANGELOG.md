@@ -21,6 +21,23 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 - MWHS guide and sheet state the shared identifiability rule; WANG2022 guide states the 1 %
   tolerance its test asserts; the MDC test docstring states the 4 % McDiarmid tolerance.
 
+### Extension points: public registry accessors, Job and RowGroup dataclasses, FatPy mapping (#81)
+
+- Replaced private cross-package imports (`_available_cp_methods`, `_available_direct_models`,
+  `_PROBE_PARAMS`) with public registry functions `available_cp_methods()`,
+  `available_direct_models()`, `base_models()`, `model_names()`, and `PROBE_PARAMS`.
+- Replaced hard-coded model-name checks in `multifat-run` with capability queries (`load_error`
+  capability in `ComparisonCapabilities`, with `TVEIT2025` override) and polymorphism
+  (`effective_strengths` method on `BohmePapuga`/`CAIM`).
+- Replaced 11-field job tuples in `multifat-pipeline` with a frozen `Job` dataclass.
+- Replaced separate table row lists in `export_csv.save_fatigue_csv` with a frozen `RowGroup` dataclass.
+- Added data correspondence mapping `src/multifat/data/fatpy_keys.json` and conversion utilities
+  `to_fatpy`, `from_fatpy`, and `load_fatpy_mapping` in `src/multifat/data/fatpy.py`.
+- Added tests in `tests/test_fatpy.py` enforcing bidirectional conversion, unit scaling (Young's
+  modulus $E$ GPa/MPa), notation consistency with `docs/notation.md`, absence of private
+  cross-package imports in `cli/`, `tools/`, and `examples/`, and absence of model-name branching
+  in `cli/run.py`.
+
 ### MATAKE and MCD: circumscribed-circle shear amplitude by default (maintainer decision, 17 November 2026)
 
 - MATAKE and MCD now use half the longest chord of the shear path out of phase

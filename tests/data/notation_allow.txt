@@ -46,7 +46,7 @@ n_points min_blocks max_blocks tol_alpha tol_damage
 algorithm cosine sine shear_amplitude_algorithm cos sin x
 
 # Generic bookkeeping of the registry, the parameter reader, and the reference table.
-default warn context names
+default warn context names include_variants
 
 # Method output variant is an interface selector for fatigue-index evaluation.
 variant

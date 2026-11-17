@@ -12,7 +12,7 @@ from multifat.history.accumulate import Endurance, SNCurve
 from multifat.history.assess import HistoryAssessment, assess_history
 from multifat.history.eligibility import IneligibleHistoryError
 from multifat.history.signal import TimeHistory
-from multifat.models.registry import _PROBE_PARAMS, declared_param_names, get_models
+from multifat.models.registry import PROBE_PARAMS, declared_param_names, get_models
 from multifat.planes.sampling import build_R_list
 
 E_MOD, NU = 210000.0, 0.3
@@ -21,7 +21,7 @@ R_LIST = build_R_list(n1=3, n2=6)
 
 def _params(model):
     names = set(declared_param_names()) | set(model.required_params())
-    out = {k: _PROBE_PARAMS.get(k, 1.0) for k in names}
+    out = {k: PROBE_PARAMS.get(k, 1.0) for k in names}
     out.update(E=E_MOD, nu=NU)
     return out
 

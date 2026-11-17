@@ -16,11 +16,10 @@ import numpy as np
 from multifat.models.errors import LoadingScopeError
 from multifat.models.references import DISABLED_METHODS
 from multifat.models.registry import (
-    _PROBE_PARAMS,
-    _available_cp_methods,
-    _available_direct_models,
+    PROBE_PARAMS,
     declared_param_names,
     get_models,
+    model_names,
     stress_only_models,
 )
 from multifat.planes.sampling import build_R_list
@@ -105,7 +104,7 @@ def check_history_kind(
 
 
 def _enabled_names() -> list[str]:
-    names = list(_available_cp_methods()) + list(_available_direct_models())
+    names = model_names()
     return [n for n in names if n.removesuffix("_ext") not in DISABLED_METHODS]
 
 
@@ -141,7 +140,7 @@ def scope_restricted_methods() -> frozenset[str]:
     out = set()
     for name in _enabled_names():
         (model,) = get_models([name])
-        params = {k: _PROBE_PARAMS.get(k, 1.0) for k in declared_param_names()}
+        params = {k: PROBE_PARAMS.get(k, 1.0) for k in declared_param_names()}
         params.update(E=modulus, nu=nu)
         try:
             with warnings.catch_warnings(), np.errstate(all="ignore"):

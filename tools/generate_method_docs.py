@@ -75,6 +75,8 @@ def validate(data):
     tree = ast.parse((ROOT / "src/multifat/models/registry.py").read_text(encoding="utf-8"))
     for fn in tree.body:
         if isinstance(fn, ast.FunctionDef) and fn.name in {
+            "available_cp_methods",
+            "available_direct_models",
             "_available_cp_methods",
             "_available_direct_models",
         }:
