@@ -6,6 +6,15 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### EK: Eq. (18) mean-stress range enforced as the loading scope (maintainer decision, 17 November 2026)
+
+- A case with sigma_m/sigma_bar outside -1.06 to 4.4 (Ellyin & Kujawski 1993, Eq. 18, p. 61) now
+  raises `LoadingScopeError` and EK is skipped for that material. The guide stated the range, but
+  the code evaluated such cases.
+- No supplied workbook has a case outside the range. EK outputs on every workbook are identical
+  before and after, so the revision and the ranking are unchanged.
+- New audit row for EK, which had none; guide and LaTeX sheet updated; test of the bounds.
+
 ### Extension points: public registry accessors, Job and RowGroup dataclasses, FatPy mapping (#81)
 
 - Replaced private cross-package imports (`_available_cp_methods`, `_available_direct_models`,
