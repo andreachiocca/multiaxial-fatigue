@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from multifat.models.registry import get_models, _available_cp_methods
+from multifat.models.registry import get_models, available_cp_methods
 from multifat.models.references import DISABLED_METHODS, REFERENCES
 from multifat.eval.evaluator import best_cp_for_case
 from multifat.models.base import CPPlaneResult
@@ -75,10 +75,10 @@ class MethodAuditTests(unittest.TestCase):
                 (ta / 145) ** 2 + (240 / 145) ** 2 * (1 - (120 / 145) ** 2) * (sn / 240) ** 2
             ),
         )
-        self.assertEqual(set(expected), set(_available_cp_methods()))
+        self.assertEqual(set(expected), set(available_cp_methods()))
         for name, value in expected.items():
             with self.subTest(name=name):
-                model = _available_cp_methods()[name]
+                model = available_cp_methods()[name]
                 r = model.evaluate_on_plane(S0r=s, S1r=-s, E0r=e, E1r=-e, params=p)
                 self.assertAlmostEqual(r.damage, value, places=11)
 
@@ -191,7 +191,7 @@ class MethodAuditTests(unittest.TestCase):
             for variant in (name, name + "_ext"):
                 with self.assertRaisesRegex(NotImplementedError, "disabled by numerical audit"):
                     get_models([variant])
-        for model in get_models(list(_available_cp_methods()) + ["BP", "CAIM"]):
+        for model in get_models(list(available_cp_methods()) + ["BP", "CAIM"]):
             self.assertIn(model.name, REFERENCES)
             self.assertTrue(model.reference["citation"])
 

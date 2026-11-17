@@ -32,7 +32,7 @@ from multifat.fe.tensors import elastic_strain
 from multifat.history.accumulate import SNCurve
 from multifat.history.assess import assess_history
 from multifat.history.nodes import MaterialSetup, node_histories
-from multifat.models.registry import _PROBE_PARAMS, declared_param_names, get_models
+from multifat.models.registry import PROBE_PARAMS, declared_param_names, get_models
 from multifat.planes.sampling import build_R_list
 
 
@@ -89,7 +89,7 @@ def plot_fe_benchmark_maps(out_path: Path | None = None) -> Path:
     for m_name, _, _ in models_to_eval:
         (model,) = get_models([m_name])
         params = {
-            k: _PROBE_PARAMS.get(k, 1.0)
+            k: PROBE_PARAMS.get(k, 1.0)
             for k in set(declared_param_names()) | set(model.required_params())
         }
         params.update(

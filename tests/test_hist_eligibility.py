@@ -17,9 +17,8 @@ from multifat.history.eligibility import (
 from multifat.history.proportionality import Proportionality, proportionality
 from multifat.models.references import DISABLED_METHODS
 from multifat.models.registry import (
-    _available_cp_methods,
-    _available_direct_models,
     get_models,
+    model_names,
     stress_only_models,
 )
 
@@ -29,11 +28,7 @@ def _curve(name, variant=""):
 
 
 def _enabled():
-    return [
-        n
-        for n in list(_available_cp_methods()) + list(_available_direct_models())
-        if n not in DISABLED_METHODS
-    ]
+    return [n for n in model_names() if n not in DISABLED_METHODS]
 
 
 def test_matrix_has_a_row_for_every_enabled_registered_method():
