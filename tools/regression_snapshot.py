@@ -104,9 +104,9 @@ def stable_bytes(out: Path, path: Path) -> bytes | None:
 
 
 def _models() -> list[str]:
-    from multifat.models.registry import _available_cp_methods, _available_direct_models
+    from multifat.models.registry import model_names
 
-    bases = list(_available_cp_methods()) + list(_available_direct_models())
+    bases = model_names()
     return bases + [b + "_ext" for b in bases]
 
 

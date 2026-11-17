@@ -16,7 +16,7 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import numpy as np
 import pandas as pd
-from multifat.models.registry import _available_cp_methods, _available_direct_models
+from multifat.models.registry import model_names
 from multifat.eval.metrics import log10_dp_ratio
 from multifat.cli import run as runner
 from multifat.imp.experimental_data import load_material_workbook
@@ -40,7 +40,7 @@ def main():
     runout_counts = {
         m: len(load_material_workbook(runner.resolve_workbook(m))[m]["runouts"]) for m in counts
     }
-    names = list(_available_cp_methods()) + list(_available_direct_models()) + ["FS_ext"]
+    names = model_names() + ["FS_ext"]
     rows = runs_ok = 0
     for name in names:
         for material, count in counts.items():

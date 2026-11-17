@@ -11,7 +11,7 @@ from multifat.eval.shear_amplitude_option import (
     plane_rule,
     resolved_algorithm,
 )
-from multifat.models.registry import _available_cp_methods, get_models
+from multifat.models.registry import available_cp_methods, get_models
 
 
 def test_selections_map_to_two_plane_rules():
@@ -21,7 +21,7 @@ def test_selections_map_to_two_plane_rules():
         plane_rule("mcc")
 
 
-@pytest.mark.parametrize("name", sorted(_available_cp_methods()))
+@pytest.mark.parametrize("name", sorted(available_cp_methods()))
 def test_every_critical_plane_method_is_selectable(name):
     for selection, expected in (
         ("longest_chord", "mcc_harmonic"),
