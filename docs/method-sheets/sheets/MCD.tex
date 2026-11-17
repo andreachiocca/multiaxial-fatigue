@@ -43,9 +43,9 @@ Multiplying by $t_A$, the repository evaluates on every candidate plane
 equal to $\tm$ on McDiarmid's limit. In reversed tension the criterion implies
 $\fm = t_A/\bigl(\tfrac12 + t_A/(4\sigma_u)\bigr)$. \emph{Critical plane}: \texttt{MCD} takes the
 plane of largest $\tau_a$ (selection metric $\Delta\tau$); \texttt{MCD\_ext} takes the largest DP over
-all planes. \emph{Ties} go to the larger DP. \emph{Shear amplitude}: default \texttt{rss},
-$\tau_a=\sqrt{a^2+b^2}$ (MCE); the global selection of \texttt{docs/shear-amplitude.md} can switch it
-to the longest chord (MCC, $\tau_a=a$).
+all planes. \emph{Ties} go to the larger DP. \emph{Shear amplitude}: default half the
+longest chord, $\tau_a=a$ (MCC, the circumscribed circle of Papadopoulos et al.); the global selection
+of \texttt{docs/shear-amplitude.md} can switch it to \texttt{rss}, $\tau_a=\sqrt{a^2+b^2}$ (MCE).
 
 \block{Constants and calibration} Paper: $t_A$ (or $t_B$) from torsion tests, $\sigma_u$ from a
 tensile test. Repository: workbook \texttt{Taum1} and \texttt{Su}; nothing else is fitted except the
@@ -61,8 +61,9 @@ input; it can be compared with the implied $\fm$ above.
 \item Validity range not enforced: $\sigma_{n,\max}>\sigma_u$ is evaluated; $\sigma_{n,\max}<0$ is
   clipped to 0.
 \item Out-of-phase plane association: McDiarmid's rule (plane of maximum principal-stress range) is
-  not implemented; the \texttt{rss} amplitude is used, whereas Papadopoulos et al.\ restate McDiarmid
-  with the circumscribed-circle amplitude.
+  not implemented; the shear amplitude is the circumscribed-circle amplitude with which Papadopoulos
+  et al.\ restate McDiarmid (\texttt{longest\_chord}, maintainer decision, 17 November 2026;
+  \texttt{rss} before).
 \item \texttt{MCD\_ext} is a repository variant; life from the shared master curve on DP.
 \end{itemize}
 
