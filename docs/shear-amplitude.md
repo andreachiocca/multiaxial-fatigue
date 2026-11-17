@@ -135,7 +135,12 @@ that uses one; each method's default is the amplitude of its source, otherwise t
 | `longest_chord`, `mcc_harmonic` | `longest_chord` | MCC radius = major semiaxis $a$ = half the longest chord |
 | `mce_harmonic`, `rss` | `rss` | MCE amplitude $\sqrt{a^2 + b^2}$ |
 
-For one harmonic the longest chord and the MCC coincide, so a method has at most two results. The
+For one harmonic the longest chord and the MCC coincide, so a method has at most two results.
+Defaults: the longest chord where the source prescribes it (FS, MKBM, LI, LIU2021, MWCM, MMCCM,
+VSE, MWHS, LIU2025, ZHANGYAO) and for MATAKE and MCD, whose restatement by Papadopoulos et al.
+(1997) uses the circumscribed circle (maintainer decision, 17 November 2026). FIN, MDC, MGSE_YU,
+MGSE_ZHU, MSWT, GSE and the other critical-plane methods keep RSS, a documented exception to the
+longest-chord rule (maintainer decision, 17 November 2026). The
 selection reaches every critical-plane method (through the plane preparation) and every case-level
 model declaring `np_shear_rule` (SIH). Models whose amplitude is fixed by their definition (for
 example BP and RFB use the MCC, PAPADOPOULOS the quadratic mean of its resolved shear, LIUMAHADEVAN

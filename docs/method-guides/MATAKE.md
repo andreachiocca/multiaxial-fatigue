@@ -42,14 +42,17 @@ in MPa; $\mathrm{DP} = t_{-1}$ at both fatigue limits.
 - `MATAKE`: DP on the plane of largest $\tau_a$ (Matake's rule); ties (e.g. the cone of 45° planes
   in tension) resolved towards the larger DP.
 - `MATAKE_ext`: largest DP over all planes (repository variant).
-- Out-of-phase shear amplitude: root-sum-square of the shear-ellipse semi-axes (`rss`).
+- Out-of-phase shear amplitude: half the longest chord of the shear path, the circumscribed-circle
+  radius for one harmonic (`longest_chord`) (maintainer decision, 17 November 2026; RSS before).
 
 **Repository choices**
 
 - *Compression clipped.* $\sigma_{n,\max} < 0$ is set to 0; Matake's linear relation is not claimed
   for compressive normal stresses.
-- *Out-of-phase amplitude.* RSS rule; Papadopoulos et al. (1997) restate Matake with the
-  circumscribed-circle amplitude (`longest_chord`), with which their Table 1 column is reproduced.
+- *Out-of-phase amplitude.* The circumscribed-circle amplitude (`longest_chord`) with which
+  Papadopoulos et al. (1997) restate Matake and their Table 1 column is reproduced; Matake's paper
+  does not define one for rotating shear. The RSS rule, used until 17 November 2026, misses the
+  out-of-phase rows. Selectable with `--shear-amplitude-algorithm`.
 - *Life.* Shared master curve on the DP
   ([README](README.md#from-damage-parameter-to-life-the-master-curve)).
 
@@ -139,8 +142,7 @@ uv run multifat-pipeline --material Al7075_T6 --models MATAKE --all-variants --r
   the coefficient derivation (with the Appendix misprints documented).
 - [`tests/methods/test_papadopoulos1997_matake_mcd.py`](../../tests/methods/test_papadopoulos1997_matake_mcd.py):
   Papadopoulos et al. (1997) Table 1 with the circumscribed-circle amplitude (39/42 rows).
-- Limitations: tension-only normal stress; production uses the RSS amplitude for out-of-phase
-  loading; fatigue-limit criterion extended to finite life by the master curve.
+- Limitations: tension-only normal stress; fatigue-limit criterion extended to finite life by the master curve.
 
 ## References
 

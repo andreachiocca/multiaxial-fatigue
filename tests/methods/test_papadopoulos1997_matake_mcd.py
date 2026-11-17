@@ -3,9 +3,9 @@
 and (53)-(54) p.7-8, Table 1 p.13 (crop _audit-trail/phase2/crops/BW24SJ5K/p13.png).
 
 Papadopoulos takes the shear amplitude C_a as the radius of the minimum circumscribed circle of the
-shear path. For a single-harmonic path that is half the longest chord, so the repository models with
-``np_shear_rule = "longest_chord"`` reproduce the table; their default RSS rule (an adaptation,
-finding F3) does so only where the shear path on the critical plane is a line. Ties between planes of
+shear path. For a single-harmonic path that is half the longest chord, the default of both models
+(``np_shear_rule = "longest_chord"``, maintainer decision 17 Nov 2026); the RSS rule used before
+reproduces the table only where the shear path on the critical plane is a line. Ties between planes of
 equal C_a are resolved to the larger normal stress, as in the table (finding F10).
 
 Rows not reproduced: row 9 Matake (closed form 162.20 + 0.2501 * 149.55 gives +1.7 %, the table prints
@@ -26,14 +26,6 @@ from multifat.planes.sampling import build_R_list
 TABLE = load_table("papadopoulos1997_table1")
 Z = np.zeros((3, 3))
 R_LIST = build_R_list()
-
-
-class MatakeMCC(Matake):
-    np_shear_rule = "longest_chord"
-
-
-class McDiarmidMCC(McDiarmid):
-    np_shear_rule = "longest_chord"
 
 
 def _index(method, params, r):
@@ -75,13 +67,13 @@ UNRESOLVED = "mean torsion with phase shift, unresolved"
     "r", _rows("I_matake", {9: "table calculation error", 17: UNRESOLVED, 28: UNRESOLVED})
 )
 def test_table1_matake(r):
-    I = _index(MatakeMCC(), {"Sigm1": r.f_m1, "Taum1": r.t_m1}, r)
+    I = _index(Matake(), {"Sigm1": r.f_m1, "Taum1": r.t_m1}, r)
     assert I == pytest.approx(r.I_matake, abs=0.25)
 
 
 @pytest.mark.parametrize("r", _rows("I_mcdiarmid", {17: UNRESOLVED, 28: UNRESOLVED}))
 def test_table1_mcdiarmid(r):
-    I = _index(McDiarmidMCC(), {"Su": r.sigma_f, "Taum1": r.t_m1}, r)
+    I = _index(McDiarmid(), {"Su": r.sigma_f, "Taum1": r.t_m1}, r)
     assert I == pytest.approx(r.I_mcdiarmid, abs=0.25)
 
 
@@ -90,14 +82,19 @@ def test_row9_matake_closed_form():
     r = TABLE[TABLE.row == 9].iloc[0]
     K = 2 * r.t_m1 / r.f_m1 - 1
     I = 100 * ((np.hypot(r.sigma_a / 2, r.tau_a) + K * r.sigma_a / 2) / r.t_m1 - 1)
-    assert I == pytest.approx(_index(MatakeMCC(), {"Sigm1": r.f_m1, "Taum1": r.t_m1}, r), abs=1e-6)
+    assert I == pytest.approx(_index(Matake(), {"Sigm1": r.f_m1, "Taum1": r.t_m1}, r), abs=1e-6)
     assert I == pytest.approx(1.73, abs=0.01)
 
 
+class MatakeRSS(Matake):
+    np_shear_rule = "rss"
+
+
 @pytest.mark.parametrize("row", [7, 21])
-def test_default_rss_rule_differs_out_of_phase(row):
-    """The repository default (RSS of the shear semi-axes) is an adaptation: out of phase it
-    exceeds the circumscribed-circle amplitude of the source restatement."""
+def test_rss_rule_differs_out_of_phase(row):
+    """The RSS rule (the default before 17 Nov 2026) exceeds the circumscribed-circle amplitude
+    of the source restatement out of phase, so it misses these rows; the default now matches."""
     r = TABLE[TABLE.row == row].iloc[0]
     p = {"Sigm1": r.f_m1, "Taum1": r.t_m1}
-    assert _index(Matake(), p, r) != pytest.approx(_index(MatakeMCC(), p, r), abs=0.25)
+    assert _index(MatakeRSS(), p, r) != pytest.approx(_index(Matake(), p, r), abs=0.25)
+    assert _index(Matake(), p, r) == pytest.approx(r.I_matake, abs=0.25)
