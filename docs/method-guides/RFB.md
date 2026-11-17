@@ -95,5 +95,5 @@ multifat-run --model RFB
 
 ## References
 
-- Robert, J. L., Fogue, M., & Bahuaud, J. (1994). Fatigue life prediction under three-dimensional loading conditions based on an integral approach. In *Automation in Fatigue and Fracture*, ASTM STP 1231 (pp. 369–387). [doi:10.1520/STP13959S](https://doi.org/10.1520/STP13959S)
+- Robert, J. L., Fogue, M., & Bahuaud, J. (1994). Fatigue life prediction under periodical or random multiaxial stress states. In *Automation in Fatigue and Fracture: Testing and Analysis*, ASTM STP 1231 (pp. 369–387). [doi:10.1520/STP13959S](https://doi.org/10.1520/STP13959S)
 - Shared conventions and symbol definitions: [`docs/method-guides/README.md`](README.md), [`docs/notation.md`](../notation.md), [`docs/method-audit.md`](../method-audit.md).

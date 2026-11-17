@@ -21,7 +21,7 @@ up to 0.06, and the case-6 peak of Fig. 14 gives 415 MPa against the 434 MPa of 
 Repository choices:
   - maintainer decision: only the published surface; the eight coefficients are required
     constants (a_SSF..i_SSF, no e term), so without them the model is skipped. The values of the
-    paper are shipped in examples/constants/42CrMo4_Reis_SSF.json for the 42CrMo4_Reis workbook,
+    paper are shipped in Calibrations/42CrMo4_Reis/SSF_published.json for the 42CrMo4_Reis workbook,
     whose tests are the ones the surface was fitted on (in-sample);
   - maintainer decision: Eq. (31) as printed (no refit);
   - loading scope: fully reversed (no mean stress) tension-torsion, one normal and one shear

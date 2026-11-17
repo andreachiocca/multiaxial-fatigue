@@ -57,8 +57,21 @@
   the circumscribed circle (others stay RSS, documented exception); EK range enforced; docs-only
   cleanup PR.
 - Branch `fix/matake-mcd-longest-chord`: done (pipeline before/after on all workbooks, ranking and
-  batch comparison regenerated, revision 2026-11-17).
-- Next action: EK range PR; then the docs-only cleanup PR.
+  batch comparison regenerated, revision 2026-11-17; merged in #115).
+- Branch `docs/cleanup-stale-documentation`: resolved documentation and docstring discrepancies
+  identified in #113:
+  - Fixed PCR docstring in `papuga_ruzicka.py` (maximum over 24x48 sphere grid, matching code/guide/sheet).
+  - Fixed SSF docstring path in `ssf.py` (`Calibrations/42CrMo4_Reis/SSF_published.json`).
+  - Fixed DANGVAN docstring citation in `dangvan.py` (Dang Van 1973).
+  - Clarified TVEIT2025 docstring in `tveit2025.py` (native life prediction, `dp_comparison=False`).
+  - Aligned MMCCM and MDC calibration sections in method guides with pipeline Basquin fits and UML fallback.
+  - Corrected MMCCM volume and page numbers (IJF 83, 135–149) in guide and `references.bib`.
+  - Synchronized article titles and author listings in method guides (RFB, OTT, COIN, MMMH, MDC, LIU2021)
+    and `references.bib` with Crossref and `references.py`.
+- Checks: `black`, `ruff`, `tools/check_docs.py`, `tools/check_scientific_reviews.py`,
+  `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`, and
+  `pytest tests/test_method_guides.py tests/test_method_sheets.py tests/test_notation.py -q` (945 passed).
+- Next action: commit and PR for docs cleanup; then EK range PR.
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 

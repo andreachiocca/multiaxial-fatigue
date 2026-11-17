@@ -47,9 +47,10 @@ Repository choices:
     (Table 1 NiCrMo steel, bending at sigma_a = 680 MPa).
   - G uses the deviatoric projection s s - (2/3) J2 I of dJ3/ds. Eq. (10) prints a different
     isotropic part, which has no effect because G is only contracted with deviatoric tensors.
-  - The damage parameter passed to the universal curve is the fatigue index, the maximum over the
+  - The damage parameter returned by evaluate_case is the fatigue index, the maximum over the
     cycle of (sigma_e + A I1) / f_m1 with alpha = 0 (beta + 1 of Eq. (1) for the virgin material).
-    The model's own prediction is the native life.
+    The model's own prediction is the native life, and dp_comparison is False (no universal-curve
+    comparison).
   - A, C, K and L are read from a constants file as A_TVEIT, C_TVEIT, K_TVEIT and L_TVEIT.
     The calibration of C, K and L (Eq. (25), after Ottosen et al. 2008) is not implemented here.
   - The constants hold only together with the f_m1 and t_m1 they were calibrated with, so the

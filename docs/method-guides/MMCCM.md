@@ -52,7 +52,7 @@ At $\rho = 1$ (reversed uniaxial loading) and $\rho = 0$ (reversed torsion), Eqs
 
 ## Calibration
 
-No parameters are fitted by the calibration pipeline (`CALIBRATED_OPTIONAL` has no `MMCCM` entries). All eight strain–life constants must be provided in the workbook.
+Direct runs with `multifat-run` require all eight strain–life constants to be supplied in the workbook (`CALIBRATED_OPTIONAL` exposes no `MMCCM` plane parameters). However, `multifat-pipeline` (and `multifat-calibrate --basquin`) fills missing constants: the four Basquin parameters ($\sigma'_f, b, \tau'_f, b_0$) from fits on the workbook's $R=-1$ tension and torsion tests (only when identifiable; the torsion tests become design rows), and the four plastic terms ($\varepsilon'_f, c, \gamma'_f, c_0$) via Uniform Material Law estimates (steel form), because elastic high-cycle data cannot identify them.
 
 ## Worked example
 
@@ -102,5 +102,5 @@ multifat-run --model MMCCM
 
 ## References
 
-- Wang, Y., & Susmel, L. (2016). The Modified Manson–Coffin Curve Method to estimate fatigue lifetime under complex constant and variable amplitude multiaxial fatigue loading. *International Journal of Fatigue*, 86, 2–12. [doi:10.1016/j.ijfatigue.2015.10.005](https://doi.org/10.1016/j.ijfatigue.2015.10.005)
+- Wang, Y., & Susmel, L. (2016). The Modified Manson–Coffin Curve Method to estimate fatigue lifetime under complex constant and variable amplitude multiaxial fatigue loading. *International Journal of Fatigue*, 83, 135–149. [doi:10.1016/j.ijfatigue.2015.10.005](https://doi.org/10.1016/j.ijfatigue.2015.10.005)
 - Shared conventions and symbol definitions: [`docs/method-guides/README.md`](README.md), [`docs/notation.md`](../notation.md), [`docs/method-audit.md`](../method-audit.md).

@@ -3,7 +3,7 @@
     sigma_eq,DV = max over planes (a tau_sa) + b sigma_H,max,   a = kappa,  b = 3 - 3 kappa / 2,
     kappa = s_-1 / t_-1 (Eq. 4)
 
-following the modified form of Papuga & Halama. This is a documented variant: Dang Van (1993, 1999)
+following the modified form of Papuga & Halama. This is a documented variant: Dang Van (1973)
 defines the criterion via the mesoscopic shakedown stress and does not give closed-form expressions
 for a and b. The calibration reproduces s_-1 in fully reversed tension and t_-1 in torsion, together
 with the closed forms of Eq. (16) for equibiaxial and equitriaxial loading. tau_sa is the radius of
