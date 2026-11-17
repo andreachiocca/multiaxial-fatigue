@@ -265,8 +265,9 @@ Single-frequency harmonic cycles, elastic strains, damage-parameter assessment, 
 per method and native life laws where the source gives one (MDC, MMCCM, MOREL). General periodic
 paths, variable amplitude, plasticity, notches and gradients, and probabilistic methods are future
 work, and the corresponding catalogue entries stay listed. Out-of-phase shear ranges follow each
-source where it prescribes one (longest chord for FS, MKBM, LI, LIU2021). The other critical-plane
-methods keep the RSS convention.
+source where it prescribes one (longest chord for FS, MKBM, LI, LIU2021), and the circumscribed
+circle for MATAKE and MCD, as restated by Papadopoulos et al. (1997). The other critical-plane
+methods keep the RSS convention; `--shear-amplitude-algorithm` selects another amplitude.
 
 The CSVs in `Results/archive/pre-audit/` predate the numerical audit and are kept as history only
 (see [Results/README.md](Results/README.md)). The experimental collection is the revised

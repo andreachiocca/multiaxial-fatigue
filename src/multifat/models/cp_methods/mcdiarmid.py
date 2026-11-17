@@ -12,7 +12,9 @@ Repository choices:
   - case A only, with t_A = t_-1 (Taum1);
   - sigma_max is clipped at zero and the upper validity bound is not enforced;
   - the out-of-phase plane association of the source (plane of maximum principal-stress range)
-    is not implemented; the default ``rss`` shear amplitude is used;
+    is not implemented; the out-of-phase shear amplitude is half the longest chord of the shear
+    path (``longest_chord``, the circumscribed circle of Papadopoulos et al. 1997, whose Table 1
+    it reproduces; maintainer decision, 17 Nov 2026; rss before);
   - life from the shared master curve DP = A N^b.
 
 User guide: docs/method-guides/MCD.md.
@@ -94,6 +96,7 @@ class McDiarmid:
     """
 
     name = "MCD"
+    np_shear_rule = "longest_chord"
 
     def required_params(self) -> set[str]:
         return {"Su", "Taum1"}
