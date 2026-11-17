@@ -149,6 +149,10 @@ TVEIT2025: calibration confidence low (2 major, 4 minor: constant_at_bound, narr
   A_estimated, C_not_identified, low_point_near_limit, single_specimen_level)
 ```
 
+**Calibration guide.** A step-by-step guide in LaTeX, with worked examples from the calibrations of
+this repository and their confidence, is in
+[`docs/calibration-guides/TVEIT2025/`](../calibration-guides/TVEIT2025/README.md).
+
 ## Worked example
 
 Evaluate $90^\circ$ out-of-phase bending–torsion ($\sigma_a = 660\,\text{MPa}$, $\tau_a = 340\,\text{MPa}$) using the Stage 1 constants for 42CrMo4 Q&T:

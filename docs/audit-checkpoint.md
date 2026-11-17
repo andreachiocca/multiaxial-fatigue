@@ -1,6 +1,6 @@
 # Development continuation checkpoint
 
-## TVEIT2025 stage 2 (calibration) by the authors' procedure (13 and 16 November 2026)
+## TVEIT2025 stage 2 (calibration) by the authors' procedure (13, 16 and 17 November 2026)
 
 - Branch `tveit2025-calibration` (from main `d5f3a5f`): without supplied constants the pipeline
   calibrates A, C, K, L of TVEIT2025 (Tveit et al. 2025, Sect. 4; Ottosen et al. 2008, Sect. 5)
@@ -28,6 +28,14 @@
   and calibration" block now describes it (not compiled here: no LaTeX on this machine; the sheet
   test passes). Full suite after the merge: 3495 passed (46 new sheet tests), 67 skipped,
   128 xfailed; lint 6/6.
+- PR #114 opened on 17 November (head 0e7887f, CI green). Then the calibration guide
+  `docs/calibration-guides/TVEIT2025/` (LaTeX source, PDF compiled on Overleaf, figures and
+  `make_figures.py`): the six steps with this PR's rules, the confidence findings, and worked
+  examples whose numbers come from the committed records (Al7075_T6, both Ti6Al4V, both 42CrMo4)
+  and from Al7075_T651_Wang calibrated at run time. `make_figures.py` calls the pipeline's
+  calibration and reuses the records (34 s). The PDF text matches the source (16 pages, no
+  unresolved reference). No AISI316L example: its calibration points are unpublished PSI tests.
+  Documentation only, so the snapshot above still holds; lint 6/6.
 - Evidence (16 November, main `904e1f1` merged in; conflicts only in CHANGELOG and this file):
   full suite 3443 passed, 67 skipped, 128 xfailed; black, ruff, both generators (--check),
   check_docs and check_scientific_reviews pass. Regression snapshot against main `904e1f1` (main
@@ -48,14 +56,14 @@
   13 November; 11 857 s on 16 November while the main snapshot ran at the same time (8 jobs each).
 - Modified: `cli/pipeline.py`, `eval/tveit2025_calibration.py`, `eval/calibration_confidence.py`,
   `models/invariant_methods/tveit2025.py`, `Calibrations/` (inputs, records, README), method guide
-  and sheet, audit, protocol and workflow docs, CHANGELOG, tests
+  and sheet, calibration guide, audit, protocol and workflow docs, CHANGELOG, tests
   (`tests/methods/test_tveit2025_calibration.py`, `tests/test_tveit2025_calibration_pipeline.py`,
   `tests/test_calibration_confidence.py`).
 - Open questions for the maintainer (in the PR): design set of a native-life model (Flag 0 for the
   three calibration tests only?); confidence for other models; TVEIT2025 run time in `--models all`
   and in the next regeneration of the homepage ranking and batch comparison (not regenerated here).
-- Next action: push `tveit2025-calibration` to the fork and open the PR; later modes `all_eligible`
-  and `subset` (#14); a faster integration (compiled loop or parallel tests) in its own PR, with
+- Next action: answer the maintainer's review of #114; later modes `all_eligible` and `subset`
+  (#14); a faster integration (compiled loop or parallel tests) in its own PR, with
   a resolution check (the three points again at twice npts_TVEIT; minor finding when the life
   moves by more than 0.05 decade).
 

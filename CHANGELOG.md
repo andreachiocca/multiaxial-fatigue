@@ -33,6 +33,9 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
   42CrMo4_Santus, 42CrMo4_Reis, Ti6Al4V_Meneghetti and Ti6Al4V_Berto, and their first records.
 - The TVEIT2025 method sheet (`docs/method-sheets/sheets/TVEIT2025.tex`) describes this
   calibration.
+- Calibration guide `docs/calibration-guides/TVEIT2025/` (LaTeX and PDF, with its figure
+  script): the six steps, the confidence findings, and worked examples from the committed
+  records (Al7075_T6, both Ti6Al4V and both 42CrMo4 batches) and from Al7075_T651_Wang.
 - Changed numerically: TVEIT2025 now runs, with calibrated constants, in pipeline runs without
   `--constants` (it was skipped for missing constants); no other model changes.
 
