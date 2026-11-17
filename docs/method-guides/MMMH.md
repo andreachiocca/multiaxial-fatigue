@@ -82,5 +82,5 @@ multifat-run --model MMMH
 
 ## References
 
-- Mertens, H., & Liebich, R. (2017). Modified Mohr–Mises hypothesis for multiaxial fatigue under variable-amplitude proportional and non-proportional loading. *International Journal of Fatigue*, 102, 169–185. [doi:10.1016/j.ijfatigue.2017.06.003](https://doi.org/10.1016/j.ijfatigue.2017.06.003)
+- Mertens, H., & Liebich, R. (2017). A time dependent equivalent stress function for proportional and non-proportional transient loaded and notched metallic components. *International Journal of Fatigue*, 103, 294–308. [doi:10.1016/j.ijfatigue.2017.06.003](https://doi.org/10.1016/j.ijfatigue.2017.06.003)
 - Shared conventions and symbol definitions: [`docs/method-guides/README.md`](README.md), [`docs/notation.md`](../notation.md), [`docs/method-audit.md`](../method-audit.md).

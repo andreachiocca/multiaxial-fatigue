@@ -51,8 +51,9 @@ can switch it to the longest chord (MCC, $\tau_{a,\mathrm{cr}}=a$).
 
 \block{Constants and calibration} Paper: the four Basquin constants from the axial and torsional S--N
 curves (Table~2). Repository: \texttt{sigma\_f}, \texttt{b\_fat}, \texttt{tau\_f}, \texttt{b0} from
-the workbook (or estimated by the pipeline when absent and requested by the CLI options); all four are
-required, otherwise the run stops with an explicit error. Nothing else is fitted. The Uniform Material
+the workbook or \texttt{--constants}; \texttt{multifat-pipeline} fills missing ones by Basquin fits on
+the workbook's $R=-1$ tension and torsion tests (only identifiable curves; their tests become design
+rows). All four are required, otherwise the model is skipped with the reason. Nothing else is fitted. The Uniform Material
 Law fallback would set $b_0=b$ and make $k$ constant, so it is not used.
 
 \block{Life} Native: $N_f=\tfrac12(\tau_r/\tau_f')^{1/b_0}$ from Eq.~\eqref{eq:mdc}, without a fitted

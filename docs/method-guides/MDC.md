@@ -44,7 +44,7 @@ All four stress-life Basquin parameters are required (`required_params`). Strain
 
 ## Calibration
 
-No additional optional parameters are exposed or calibrated (`optional_params = {}`). Material Basquin parameters are read directly from the workbook (or estimated via the pipeline when absent and requested by the CLI options).
+No additional optional parameters are exposed or calibrated (`optional_params = {}`). `multifat-run` reads the four Basquin constants from the workbook (or from `--constants`). `multifat-pipeline` fills missing ones by Basquin fits on the workbook's fully reversed tension and torsion tests (`eval/material_fits.py`), each kept only if identifiable (at least 5 tests, at least one decade of life, slope beyond two standard errors); the tests behind a fitted constant become design points (Flag = 0). No Uniform Material Law estimate is used: it would set $b_0 = b$ and make $k$ constant. If a constant is still missing, the model is skipped with the reason.
 
 ## Worked example
 
@@ -91,5 +91,5 @@ multifat-run --model MDC
 
 ## References
 
-- Margetin, M., Ďurka, R., & Chmelko, V. (2016). Multiaxial fatigue criterion based on the Basquin parameters. *Frattura ed Integrità Strutturale*, 37, 146–152. [doi:10.3221/IGF-ESIS.37.20](https://doi.org/10.3221/IGF-ESIS.37.20)
+- Margetin, M., Ďurka, R., & Chmelko, V. (2016). Multiaxial fatigue criterion based on parameters from torsion and axial S-N curve. *Frattura ed Integrità Strutturale*, 37, 146–152. [doi:10.3221/IGF-ESIS.37.20](https://doi.org/10.3221/IGF-ESIS.37.20)
 - Shared conventions and symbol definitions: [`docs/method-guides/README.md`](README.md), [`docs/notation.md`](../notation.md), [`docs/method-audit.md`](../method-audit.md).

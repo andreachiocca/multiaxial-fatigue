@@ -37,7 +37,7 @@ At $\rho = 1$ (reversed uniaxial loading) and $\rho = 0$ (reversed torsion), Eqs
 **Critical plane and tie breaking.** `MMCCM` overrides the out-of-phase shear rule to `longest_chord`, which matches the maximum-variance half-range on single-harmonic paths. Ties on $\gamma_a$ are broken by selecting the largest per-plane damage $1 / N_f$; because larger $\rho$ lowers the fatigue curve at fixed $\gamma_a$, this automatically chooses the plane with the largest $\rho$.
 
 **Repository choices and departures.**
-- *Strains and elastic modulus:* The repository evaluates workbook (elastic) strain tensors with $\nu_e = \nu$ and requires all eight uniaxial and torsional strain–life constants (no Universal Material Law estimation fallback).
+- *Strains and elastic modulus:* The repository evaluates workbook (elastic) strain tensors with $\nu_e = \nu$. The model requires all eight uniaxial and torsional strain–life constants and has no Uniform Material Law fallback of its own; `multifat-pipeline` may supply missing ones (see *Calibration*).
 - *Plastic Poisson's ratio:* $\nu_p$ is not specified in Wang & Susmel (2016); the repository defaults to $\nu_p = 0.5$ unless overridden by optional `nu_p`.
 - *Life inversion and singularities:* Eq. (2) is inverted by bisection in $\log(2 N_f)$ over $[1,\,2\times 10^{12}]$, returning damage $0$ beyond $10^{12}$ cycles. No cut-off on $\rho$ is applied; if high mean stress triggers a pole in Eqs. (7)–(8) (non-positive coefficient or non-negative exponent), damage is set to $+\infty$. Because high-$\rho$ poles already maximize damage, no `_ext` variant is exposed (`ext_variant = False`).
 
@@ -52,7 +52,12 @@ At $\rho = 1$ (reversed uniaxial loading) and $\rho = 0$ (reversed torsion), Eqs
 
 ## Calibration
 
-No parameters are fitted by the calibration pipeline (`CALIBRATED_OPTIONAL` has no `MMCCM` entries). All eight strain–life constants must be provided in the workbook.
+No MMCCM-specific constant is calibrated (`CALIBRATED_OPTIONAL` has no `MMCCM` entries), and `multifat-run` uses the constants of the workbook (or of `--constants`) only. `multifat-pipeline` fills the required constants the workbook lacks, writing them to `<MATERIAL>_calibration.json` (`eval/material_fits.py`, called by `cli/calibrate.py`):
+
+- $\sigma'_f$, $b$ and $\tau'_f$, $b_0$ from Basquin fits on the workbook's fully reversed tension and torsion tests, each kept only if identifiable (at least 5 tests, at least one decade of life, slope beyond two standard errors); the tests behind a fitted constant become design points (Flag = 0);
+- $\varepsilon'_f$, $c$, $\gamma'_f = \sqrt{3}\,\varepsilon'_f$, $c_0 = c$ as Uniform Material Law estimates (steel form, from the tensile strength and $E$), always recorded as estimates because elastic high-cycle data cannot identify them.
+
+If a constant is still missing, the model is skipped with the reason.
 
 ## Worked example
 
@@ -102,5 +107,5 @@ multifat-run --model MMCCM
 
 ## References
 
-- Wang, Y., & Susmel, L. (2016). The Modified Manson–Coffin Curve Method to estimate fatigue lifetime under complex constant and variable amplitude multiaxial fatigue loading. *International Journal of Fatigue*, 86, 2–12. [doi:10.1016/j.ijfatigue.2015.10.005](https://doi.org/10.1016/j.ijfatigue.2015.10.005)
+- Wang, Y., & Susmel, L. (2016). The Modified Manson–Coffin Curve Method to estimate fatigue lifetime under complex constant and variable amplitude multiaxial fatigue loading. *International Journal of Fatigue*, 83, 135–149. [doi:10.1016/j.ijfatigue.2015.10.005](https://doi.org/10.1016/j.ijfatigue.2015.10.005)
 - Shared conventions and symbol definitions: [`docs/method-guides/README.md`](README.md), [`docs/notation.md`](../notation.md), [`docs/method-audit.md`](../method-audit.md).
