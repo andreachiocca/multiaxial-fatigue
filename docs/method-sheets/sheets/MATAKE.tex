@@ -43,9 +43,9 @@ plane
 with $\mathrm{DP}=\tm$ at both fully reversed limits. \emph{Critical plane}: \texttt{MATAKE} takes
 the plane of largest $\tau_a$ (selection metric $\Delta\tau$), Matake's rule; \texttt{MATAKE\_ext}
 takes the largest DP over all planes. \emph{Ties} (e.g.\ the cone of $45^\circ$ planes in tension) go
-to the larger DP. \emph{Shear amplitude}: default \texttt{rss}, $\tau_a=\sqrt{a^2+b^2}$ (MCE); the
-global selection of \texttt{docs/shear-amplitude.md} can switch it to the longest chord (MCC,
-$\tau_a=a$).
+to the larger DP. \emph{Shear amplitude}: default half the longest chord, $\tau_a=a$ (MCC, the circumscribed circle
+of Papadopoulos et al.); the global selection of \texttt{docs/shear-amplitude.md} can switch it to
+\texttt{rss}, $\tau_a=\sqrt{a^2+b^2}$ (MCE).
 
 \block{Constants and calibration} Paper and repository: $\mu$ in closed form from the two limits
 (workbook \texttt{Sigm1}, \texttt{Taum1}). Nothing is fitted except the master-curve constants on the
@@ -59,8 +59,9 @@ $\mathrm{DP}/\tm-1$ is Matake's error index.
 \begin{itemize}
 \item Compression clipped: $\sigma_{n,\max}<0$ is set to 0; Matake's linear relation is not claimed for
   compressive normal stresses.
-\item Out-of-phase shear amplitude: \texttt{rss}. Papadopoulos et al.\ restate Matake with the
-  circumscribed-circle amplitude (\texttt{longest\_chord}), with which their Table~1 column is
+\item Out-of-phase shear amplitude: the circumscribed-circle amplitude (\texttt{longest\_chord},
+  maintainer decision, 17 November 2026; \texttt{rss} before). Papadopoulos et al.\ restate Matake
+  with it, and their Table~1 column is
   reproduced.
 \item \texttt{MATAKE\_ext} (largest DP over all planes) is a repository variant.
 \item Life from the shared master curve on DP.
@@ -78,4 +79,4 @@ passes through both calibration points; the combined-stress limits lie within $\
 (validation, not verification). Papadopoulos et al.\ (1997) Table~1, with the circumscribed-circle
 amplitude: 39 of 42 rows within 0.25 points. Strict xfails: row~9 (the closed form gives $+1.7\%$,
 the table prints $-1.4\%$: table calculation error) and rows~17 and~28 (mean torsion with phase
-shift, unresolved). Out of phase the default \texttt{rss} rule differs from the table (rows 7, 21).
+shift, unresolved). Out of phase the \texttt{rss} rule differs from the table (rows 7, 21); the default matches.

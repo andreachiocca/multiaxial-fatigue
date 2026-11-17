@@ -10,8 +10,10 @@ fully reversed limits; the selection metric is d_tau and MATAKE_ext takes the la
 
 Repository choices:
   - sigma_max is clipped at zero (tension-only normal stress);
-  - out-of-phase shear amplitude: the default ``rss`` rule; Papadopoulos et al. (1997) restate
-    Matake with the circumscribed-circle amplitude instead;
+  - out-of-phase shear amplitude: half the longest chord of the shear path (``longest_chord``),
+    i.e. the minimum circumscribed circle radius for one harmonic, as Papadopoulos et al. (1997)
+    restate Matake; their Table 1 is reproduced only with it (maintainer decision, 17 Nov 2026;
+    the rss rule was used before);
   - life from the shared master curve DP = A N^b.
 
 User guide: docs/method-guides/MATAKE.md.
@@ -89,6 +91,7 @@ class Matake:
     """
 
     name = "MATAKE"
+    np_shear_rule = "longest_chord"
 
     def required_params(self) -> set[str]:
         return {"Sigm1", "Taum1"}
