@@ -93,3 +93,24 @@ def test_plastic_uniaxial_energy_and_constraint():
         (1 - NU) * (eps_a + eps_t) + (NU - 0.5) * (ee - NU * ee)
     )
     assert effective_poisson(ee, ep, NU) == pytest.approx(eq13)
+
+
+def test_eq_18_mean_stress_range_is_the_loading_scope():
+    """Eq. (18) holds for -1.06 <= sigma_m/sigma_a <= 4.4 (p.61); outside, the case is out of
+    scope (maintainer decision, 17 Nov 2026), the bounds themselves are inside."""
+    import numpy as np
+    import pytest
+
+    from multifat.models.energy_based_methods.ellyin_kujawski import ek_damage
+    from multifat.models.errors import LoadingScopeError
+
+    E, nu, s_a = 200000.0, 0.3, 100.0
+    S_sin = np.diag([0.0, s_a, 0.0])
+    E_sin = np.diag([-nu, 1.0, -nu]) * s_a / E
+    Z = np.zeros((3, 3))
+    for ratio in (-1.06, 0.0, 4.4):
+        S_mean = np.diag([0.0, ratio * s_a, 0.0])
+        assert ek_damage(S_mean, S_sin, Z, E_sin, Z, E, nu) > 0.0
+    for ratio in (-1.07, 4.41):
+        with pytest.raises(LoadingScopeError):
+            ek_damage(np.diag([0.0, ratio * s_a, 0.0]), S_sin, Z, E_sin, Z, E, nu)
