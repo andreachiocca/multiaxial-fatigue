@@ -29,7 +29,12 @@
 - #112 merged. Branch `docs/method-sheets-backfill`: 46 sheets written (four parallel groups),
   bibliography merged, PENDING emptied. Inconsistencies found between guides, docstrings, audit
   and code are listed in the PR for the maintainer.
-- Next action: sheets PR; then the doc-consistency fixes the maintainer approves.
+- #113 merged (all 53 models have a sheet). Maintainer decisions (17 Nov): MATAKE and MCD to
+  the circumscribed circle (others stay RSS, documented exception); EK range enforced; docs-only
+  cleanup PR.
+- Branch `fix/matake-mcd-longest-chord`: done (pipeline before/after on all workbooks, ranking and
+  batch comparison regenerated, revision 2026-11-17).
+- Next action: EK range PR; then the docs-only cleanup PR.
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 

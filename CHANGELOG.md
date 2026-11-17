@@ -6,6 +6,21 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### MATAKE and MCD: circumscribed-circle shear amplitude by default (maintainer decision, 17 November 2026)
+
+- MATAKE and MCD now use half the longest chord of the shear path out of phase
+  (`np_shear_rule = "longest_chord"`), i.e. the minimum circumscribed circle for one harmonic. This
+  is the amplitude with which Papadopoulos et al. (1997) restate both criteria and with which their
+  Table 1 columns are reproduced (39/42 and 41/43 rows); RSS before. The other RSS methods (FIN,
+  MDC, MGSE_YU, MGSE_ZHU, MSWT, GSE) keep RSS as a documented exception.
+- Numerical change, out of phase only. Results on proportional datasets are unchanged (Santus,
+  Berto, Meneghetti). Out-of-phase rows change on FABEST (23), Reis (7), AISI316L (12),
+  Al7075_T6 (13), Al7075_T651_Wang (6) and the out-of-phase limit states of the fatigue-limit
+  datasets. Measured with the pipeline on every workbook, before and after; no other model is
+  touched.
+- `IMPLEMENTATION_REVISION` 2026-11-17. Ranking, batch comparison and figures regenerated. Guides,
+  LaTeX sheets, audit, `docs/shear-amplitude.md` and README updated.
+
 ### LaTeX method sheets for every registered model
 
 - 46 new sheets in `docs/method-sheets/sheets/`; every registered model now has one (52 files,
