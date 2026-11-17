@@ -151,3 +151,35 @@ def test_no_model_name_branches_in_run_cli():
     assert "LOAD_ERROR_SKIP" not in text
     assert 'in {"BP", "CAIM"}' not in text
     assert 'in ("BP", "CAIM")' not in text
+
+
+def test_job_and_row_group_dataclass_contract():
+    """Verify Job and RowGroup dataclass fields and backward-compatible indexing."""
+    from multifat.cli.pipeline import Job
+    from multifat.report.export_csv import RowGroup
+
+    job = Job(
+        workbook="wb.xlsx",
+        base_name="FIN",
+        results_dir="res",
+        overrides={"k": 0.3},
+        design_ids={},
+        why={},
+        make_plots=False,
+        calibration={},
+        suffixes=("_ext",),
+        survival_probability=0.5,
+        design_workbook="des.xlsx",
+    )
+    assert job.base_name == "FIN"
+    assert job.overrides == {"k": 0.3}
+    assert job[1] == "FIN"
+    assert job[3] == {"k": 0.3}
+    assert len(job) == 11
+    wb, base, rd, ov, di, wh, mp, cl, sx, sp, dw = job
+    assert base == "FIN"
+    assert dw == "des.xlsx"
+
+    rg = RowGroup(cycles=[1, 2], values=[10, 20])
+    assert rg.cycles == [1, 2]
+    assert rg.values == [10, 20]

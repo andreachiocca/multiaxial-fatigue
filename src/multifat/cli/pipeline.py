@@ -26,6 +26,7 @@ import warnings
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from multifat.cli import run as runmod
 import multifat.imp.experimental_data as exp
@@ -90,6 +91,30 @@ class Job:
     suffixes: tuple[str, ...]
     survival_probability: float | None
     design_workbook: str | None = None
+
+    def __getitem__(self, index: int | slice) -> Any:
+        return self._as_tuple()[index]
+
+    def __len__(self) -> int:
+        return 11
+
+    def __iter__(self):
+        return iter(self._as_tuple())
+
+    def _as_tuple(self) -> tuple[Any, ...]:
+        return (
+            self.workbook,
+            self.base_name,
+            self.results_dir,
+            self.overrides,
+            self.design_ids,
+            self.why,
+            self.make_plots,
+            self.calibration,
+            self.suffixes,
+            self.survival_probability,
+            self.design_workbook,
+        )
 
 
 def every_model() -> list[str]:
