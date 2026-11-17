@@ -100,6 +100,6 @@ multifat-run --model OTT
 
 ## References
 
-- Tveit, Ø., Reyes, A., & Erduran, E. (2024). A reduced continuum-based fatigue criterion for proportional and non-proportional multiaxial loading. *Results in Engineering*, 22, 102171. [doi:10.1016/j.rineng.2024.102171](https://doi.org/10.1016/j.rineng.2024.102171)
+- Tveit, S., Reyes, A., & Erduran, E. (2024). A continuum approach to multiaxial high-cycle fatigue modeling for ductile metallic materials. *Results in Engineering*, 22, 102171. [doi:10.1016/j.rineng.2024.102171](https://doi.org/10.1016/j.rineng.2024.102171)
 - Ottosen, N. S., Stenström, R., & Ristinmaa, M. (2008). Continuum approach to high cycle fatigue modeling. *International Journal of Fatigue*, 30(6), 996–1006.
 - Shared conventions and symbol definitions: [`docs/method-guides/README.md`](README.md), [`docs/notation.md`](../notation.md), [`docs/method-audit.md`](../method-audit.md).

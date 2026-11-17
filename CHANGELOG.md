@@ -6,6 +6,21 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### Documentation consistency cleanup (no numerical change)
+
+- MMCCM, MDC (guides, audit rows, sheets, MMCCM docstring): `multifat-pipeline` fills missing
+  Basquin constants by identifiable fits on the R = -1 tests and, for MMCCM, the plastic terms by
+  uniform-material-law estimates; otherwise the model is skipped (the text said nothing is fitted,
+  or that runs stop with an error).
+- References corrected to the Crossref records of `docs/research/doi-records.json`: MMCCM (IJF 83,
+  135-149), MMMH (title; IJF 103, 294-308), MDC, RFB, OTT and COIN titles and authors, LIU2021
+  authors; `references.bib` entries `wang2016`, `mertens2017`, `tveit2024`, `schmidt2023`.
+- PCR docstring: PCr is maximised on the default 24 x 48 grid (PI keeps 48 x 192). SSF docstring:
+  the published constants are in `Calibrations/42CrMo4_Reis/SSF_published.json` (also in the
+  catalogue). DANGVAN docstrings cite the registered Dang Van (1973).
+- MWHS guide and sheet state the shared identifiability rule; WANG2022 guide states the 1 %
+  tolerance its test asserts; the MDC test docstring states the 4 % McDiarmid tolerance.
+
 ### LaTeX method sheets for every registered model
 
 - 46 new sheets in `docs/method-sheets/sheets/`; every registered model now has one (52 files,

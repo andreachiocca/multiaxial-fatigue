@@ -89,5 +89,5 @@ multifat-run --model COIN
 
 ## References
 
-- Schmidt, M., & Kraft, M. (2023). Complex invariants of the Modified Mohr–Mises hypothesis for fatigue life estimation under multiaxial synchronous sinusoidal loading. *International Journal of Fatigue*, 168, 107474. [doi:10.1016/j.ijfatigue.2022.107474](https://doi.org/10.1016/j.ijfatigue.2022.107474)
+- Schmidt, A. T., & Kraft, J. (2023). A new equivalent stress approach based on complex invariants: The COIN LiWI method. *International Journal of Fatigue*, 168, 107474. [doi:10.1016/j.ijfatigue.2022.107474](https://doi.org/10.1016/j.ijfatigue.2022.107474)
 - Shared conventions and symbol definitions: [`docs/method-guides/README.md`](README.md), [`docs/notation.md`](../notation.md), [`docs/method-audit.md`](../method-audit.md).

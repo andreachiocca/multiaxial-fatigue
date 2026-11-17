@@ -1,6 +1,6 @@
 """Modified Manson-Coffin Curve Method of Wang and Susmel (2016).
 
-Published in *International Journal of Fatigue* 86 (2016), pp. 2-12,
+Published in *International Journal of Fatigue* 83 (2016), pp. 135-149,
 doi:10.1016/j.ijfatigue.2015.10.005 (roadmap G22), constant-amplitude Eqs. (1)-(8)::
 
     rho = sigma_n,max / tau_a
@@ -21,7 +21,10 @@ damage (``1 / N_f``), which matches the paper's largest-``rho`` tie rule because
 ``log(2 N_f)`` over ``[1, 2e12]``, returning damage ``0`` beyond ``1e12`` cycles and
 ``dp_reference="model_law"``. Elastic workbook strains are used and all eight strain-life
 constants (``sigma_f``, ``epsilon_f``, ``b_fat``, ``c_fat``, ``tau_f``, ``gamma_f``,
-``b0``, ``c0``) are required with no UML estimation fallback. ``nu_e = nu`` and ``nu_p``
+``b0``, ``c0``) are required, with no UML estimation fallback inside the model
+(``multifat-pipeline`` may fill missing ones: Basquin fits for ``sigma_f``, ``b_fat``,
+``tau_f``, ``b0`` and uniform-material-law estimates for the plastic terms, see
+``eval/material_fits.py``). ``nu_e = nu`` and ``nu_p``
 defaults to ``0.5`` when omitted (unspecified in the paper). No ``rho`` cut-off is
 applied; non-positive curve coefficients or non-negative exponents past a harmonic-mean
 pole return infinite damage, so ``ext_variant = False``.
