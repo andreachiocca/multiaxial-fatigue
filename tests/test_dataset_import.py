@@ -240,7 +240,7 @@ def test_batch_workbook_counts():
     assert (
         ss["material"]["Tensile_fatigue_limit_MPa"],
         ss["material"]["Torsional_fatigue_limit_MPa"],
-    ) == (278.5, 144)
+    ) == (271.6, 144)
     assert (
         data["Ti6Al4V_Meneghetti"]["material"]["Tensile_fatigue_limit_MPa"],
         data["Ti6Al4V_Meneghetti"]["material"]["Torsional_fatigue_limit_MPa"],

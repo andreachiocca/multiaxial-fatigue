@@ -534,3 +534,13 @@ rows also declare `failure`. `MANIFEST.json` holds the new hashes.
 | `7_982FA.xlsx` | `f786dc8e99f598dd…` | `cb91fc0b0c2a2f7ca88c44b7686cf68a389cc6b2a9d5c382fb754af731f8ac34` |
 | `8_AISI316L.xlsx` | `26a97aec4603aa19…` | `f822e4c39deb6bacb26c2019bda4744ebaf4c7a327c808ccfc19c9b7358821ee` |
 | `Al7075_T6.xlsx` | `2c250c383cfe6476…` | `2a378823426639986ba534f6fda4adefce621d1757def2531f157818306f94fc` |
+
+## AISI316L tensile fatigue limit adjustment, decision d114 (18 November 2026)
+
+Following Issue #102, the tensile fatigue limit $\sigma_{-1}$ in `8_AISI316L.xlsx` (Janssens row) was adjusted from the published $241 \times 1.1558 = 278.5\text{ MPa}$ to $271.6\text{ MPa}$ (the staircase load level $235\text{ MPa} \times 1.1558$, as used in the PSI calibration of Tveit) via a `set_summary` overlay operation in `8_AISI316L.overlay.json`.
+
+The published value ($278.5\text{ MPa}$) exceeded 5 axial $R = -1$ failures (at $271.6$ and $277.4\text{ MPa}$). Adjusting to $271.6\text{ MPa}$ places 3 failures above the threshold and 2 directly on it.
+
+The base workbook SHA-256 (`f822e4c39deb6bacb26c2019bda4744ebaf4c7a327c808ccfc19c9b7358821ee`) is unchanged. The updated post-overlay dataset fingerprint is:
+- `5e2e99b9e3456f7d96a5dde8e66e4213e241cf88592a068d679506490824445d`
+
