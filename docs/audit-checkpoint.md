@@ -62,6 +62,14 @@
   which 117 FABEST, checked by counts only); the six committed records are reused, also by the
   transfer; Al7075_T651_Wang is calibrated at run time. 5829 s on main, 14 796 s on the branch
   (the full suite ran alongside for its first 20 minutes).
+- Main `b3c2da3` (#121 censored S-N fits, #122 complexity ranking) merged in (dc42366; conflicts in
+  CHANGELOG and this file only). Neither bumps the implementation revision; in TVEIT2025 #122 only
+  adds the attributes `fitted_constants` and `input_classes`. After the merge the TVEIT2025
+  calibration of the seven life workbooks is identical to that of the snapshot (constants, the 11
+  TVEIT keys of the sidecar, design rows, confidence; six records reused, Wang recalibrated), so
+  the snapshot was not repeated. Full suite 3549 passed, 67 skipped, 128 xfailed; the 8 failures
+  were the S-N tests without scipy, which pass (9/9) once scipy 1.15.3 (the locked version) is
+  installed; scipy is imported only by `eval/sn_curves.py`, outside the snapshot's default path.
 - Evidence (16 November, main `904e1f1` merged in; conflicts only in CHANGELOG and this file):
   full suite 3443 passed, 67 skipped, 128 xfailed; black, ruff, both generators (--check),
   check_docs and check_scientific_reviews pass. Regression snapshot against main `904e1f1` (main
