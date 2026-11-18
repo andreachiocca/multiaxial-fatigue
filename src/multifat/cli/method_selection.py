@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from multifat.models.references import ensure_enabled
-from multifat.models.registry import _available_cp_methods, _available_direct_models
+from multifat.models.registry import available_cp_methods, available_direct_models, model_names
 
 
 @dataclass(frozen=True)
@@ -35,8 +35,8 @@ def resolve_method_tag(tag: str) -> MethodSelection:
     suffix = "_ext" if tag.endswith("_ext") else ""
     base_name = tag[: -len(suffix)] if suffix else tag
 
-    critical_plane = _available_cp_methods()
-    direct = _available_direct_models()
+    critical_plane = available_cp_methods()
+    direct = available_direct_models()
     if base_name in critical_plane:
         if suffix and not getattr(critical_plane[base_name], "ext_variant", True):
             raise ValueError(f"{base_name} has no _ext variant")
@@ -61,7 +61,7 @@ def select_method_variants(
     """
 
     if names is None:
-        requested = list(_available_cp_methods()) + list(_available_direct_models())
+        requested = model_names()
     else:
         requested = list(names)
         if not requested:
@@ -69,7 +69,7 @@ def select_method_variants(
 
     selected: list[MethodSelection] = []
     seen: set[str] = set()
-    critical_plane = _available_cp_methods()
+    critical_plane = available_cp_methods()
     for name in requested:
         entry = resolve_method_tag(name)
         candidates = [entry]

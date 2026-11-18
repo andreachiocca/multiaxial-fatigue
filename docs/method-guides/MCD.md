@@ -41,7 +41,8 @@ which equals $t_{-1}$ on McDiarmid's limit.
 
 - `MCD`: DP on the plane of largest $\tau_a$; ties resolved towards the larger DP.
 - `MCD_ext`: largest DP over all planes (repository variant).
-- Out-of-phase shear amplitude: root-sum-square of the shear-ellipse semi-axes (`rss`).
+- Out-of-phase shear amplitude: half the longest chord of the shear path, the circumscribed-circle
+  radius for one harmonic (`longest_chord`) (maintainer decision, 17 November 2026; RSS before).
 
 **Repository choices**
 
@@ -50,8 +51,9 @@ which equals $t_{-1}$ on McDiarmid's limit.
 - *Validity range not enforced:* $\sigma_{n,\max} > \sigma_u$ is evaluated; $\sigma_{n,\max} < 0$ is
   clipped to 0.
 - *Out-of-phase plane association:* McDiarmid's rule (plane of maximum principal-stress range) is
-  not implemented; the RSS amplitude is used, whereas Papadopoulos et al. (1997) restate McDiarmid
-  with the circumscribed-circle amplitude.
+  not implemented; the shear amplitude is the circumscribed-circle amplitude with which Papadopoulos
+  et al. (1997) restate McDiarmid and their Table 1 column is reproduced (RSS until 17 November
+  2026).
 - *Life:* shared master curve on the DP
   ([README](README.md#from-damage-parameter-to-life-the-master-curve)).
 

@@ -174,7 +174,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Formulation evidence | Checked against Anes et al. (2014) Eqs. (29)-(31), Tables 4-10 and Figs. 12-14 on the PDF (2026-11-06) |
 | Principle | tau_eqv = max_t(\|tau\| + ssf(sigma, lambda)\|sigma\|), lambda = arctan(tau/sigma); ssf a material polynomial surface (Eq. 31) regressed on proportional tension-torsion S-N lines; life on the pure-shear S-N curve. |
 | Loading scope | Fully reversed tension-torsion, proportional and non-proportional, CA; the published surface covers the 42CrMo4 of the paper only. |
-| Inputs / material parameters | The eight Eq. (31) coefficients a_SSF..i_SSF (published values for 42CrMo4_Reis in examples/constants/42CrMo4_Reis_SSF.json). |
+| Inputs / material parameters | The eight Eq. (31) coefficients a_SSF..i_SSF (published values for 42CrMo4_Reis in Calibrations/42CrMo4_Reis/SSF_published.json). |
 | Output | Equivalent shear stress (MPa); life via a master curve fitted on pure torsion failures |
 | Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
 | Validation / evidence | reference_examples_reproduced; tests/methods/test_ssf.py: Tables 5-8 from the Table 4 trend lines (two misprinted cells as strict xfails); Eq. (31) vs Table 9 within 0.06; Fig. 13 ssf range; case 6 peak 415 vs printed 434 MPa (strict xfail). |

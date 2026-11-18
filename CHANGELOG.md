@@ -39,6 +39,62 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 - Changed numerically: TVEIT2025 now runs, with calibrated constants, in pipeline runs without
   `--constants` (it was skipped for missing constants); no other model changes.
 
+### Documentation consistency cleanup (no numerical change)
+
+- MMCCM, MDC (guides, audit rows, sheets, MMCCM docstring): `multifat-pipeline` fills missing
+  Basquin constants by identifiable fits on the R = -1 tests and, for MMCCM, the plastic terms by
+  uniform-material-law estimates; otherwise the model is skipped (the text said nothing is fitted,
+  or that runs stop with an error).
+- References corrected to the Crossref records of `docs/research/doi-records.json`: MMCCM (IJF 83,
+  135-149), MMMH (title; IJF 103, 294-308), MDC, RFB, OTT and COIN titles and authors, LIU2021
+  authors; `references.bib` entries `wang2016`, `mertens2017`, `tveit2024`, `schmidt2023`.
+- PCR docstring: PCr is maximised on the default 24 x 48 grid (PI keeps 48 x 192). SSF docstring:
+  the published constants are in `Calibrations/42CrMo4_Reis/SSF_published.json` (also in the
+  catalogue). DANGVAN docstrings cite the registered Dang Van (1973).
+- MWHS guide and sheet state the shared identifiability rule; WANG2022 guide states the 1 %
+  tolerance its test asserts; the MDC test docstring states the 4 % McDiarmid tolerance.
+
+### EK: Eq. (18) mean-stress range enforced as the loading scope (maintainer decision, 17 November 2026)
+
+- A case with sigma_m/sigma_bar outside -1.06 to 4.4 (Ellyin & Kujawski 1993, Eq. 18, p. 61) now
+  raises `LoadingScopeError` and EK is skipped for that material. The guide stated the range, but
+  the code evaluated such cases.
+- No supplied workbook has a case outside the range. EK outputs on every workbook are identical
+  before and after, so the revision and the ranking are unchanged.
+- New audit row for EK, which had none; guide and LaTeX sheet updated; test of the bounds.
+
+### Extension points: public registry accessors, Job and RowGroup dataclasses, FatPy mapping (#81)
+
+- Replaced private cross-package imports (`_available_cp_methods`, `_available_direct_models`,
+  `_PROBE_PARAMS`) with public registry functions `available_cp_methods()`,
+  `available_direct_models()`, `base_models()`, `model_names()`, and `PROBE_PARAMS`.
+- Replaced hard-coded model-name checks in `multifat-run` with capability queries (`load_error`
+  capability in `ComparisonCapabilities`, with `TVEIT2025` override) and polymorphism
+  (`effective_strengths` method on `BohmePapuga`/`CAIM`).
+- Replaced 11-field job tuples in `multifat-pipeline` with a frozen `Job` dataclass.
+- Replaced separate table row lists in `export_csv.save_fatigue_csv` with a frozen `RowGroup` dataclass.
+- Added data correspondence mapping `src/multifat/data/fatpy_keys.json` and conversion utilities
+  `to_fatpy`, `from_fatpy`, and `load_fatpy_mapping` in `src/multifat/data/fatpy.py`.
+- Added tests in `tests/test_fatpy.py` enforcing bidirectional conversion, unit scaling (Young's
+  modulus $E$ GPa/MPa), notation consistency with `docs/notation.md`, absence of private
+  cross-package imports in `cli/`, `tools/`, and `examples/`, and absence of model-name branching
+  in `cli/run.py`.
+
+### MATAKE and MCD: circumscribed-circle shear amplitude by default (maintainer decision, 17 November 2026)
+
+- MATAKE and MCD now use half the longest chord of the shear path out of phase
+  (`np_shear_rule = "longest_chord"`), i.e. the minimum circumscribed circle for one harmonic. This
+  is the amplitude with which Papadopoulos et al. (1997) restate both criteria and with which their
+  Table 1 columns are reproduced (39/42 and 41/43 rows); RSS before. The other RSS methods (FIN,
+  MDC, MGSE_YU, MGSE_ZHU, MSWT, GSE) keep RSS as a documented exception.
+- Numerical change, out of phase only. Results on proportional datasets are unchanged (Santus,
+  Berto, Meneghetti). Out-of-phase rows change on FABEST (23), Reis (7), AISI316L (12),
+  Al7075_T6 (13), Al7075_T651_Wang (6) and the out-of-phase limit states of the fatigue-limit
+  datasets. Measured with the pipeline on every workbook, before and after; no other model is
+  touched.
+- `IMPLEMENTATION_REVISION` 2026-11-17. Ranking, batch comparison and figures regenerated. Guides,
+  LaTeX sheets, audit, `docs/shear-amplitude.md` and README updated.
+
 ### LaTeX method sheets for every registered model
 
 - 46 new sheets in `docs/method-sheets/sheets/`; every registered model now has one (52 files,

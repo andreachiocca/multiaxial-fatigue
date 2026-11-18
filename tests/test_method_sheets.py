@@ -28,9 +28,9 @@ BLOCKS = (
 
 
 def _registered() -> set[str]:
-    from multifat.models.registry import _available_cp_methods, _available_direct_models
+    from multifat.models.registry import model_names
 
-    return set({**_available_cp_methods(), **_available_direct_models()})
+    return set(model_names())
 
 
 def _sheets() -> dict[Path, str]:

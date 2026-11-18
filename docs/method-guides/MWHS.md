@@ -89,8 +89,10 @@ from torsion tests alone.
    parameter (Fig. 13).
 2. **Repository.** The master curve $A$, $b$ is fitted on the fully reversed pure torsion failures
    of the workbook, which are reported as design rows (`Flag = 0`). The uniaxial tension tests are
-   predictions (`Flag = 1`), as in the paper. A workbook without at least two such torsion
-   failures with distinct lives skips MWHS, with the reason in the run report.
+   predictions (`Flag = 1`), as in the paper. MWHS is skipped, with the reason in the run report,
+   when the workbook has no such torsion failures or when their master curve is not identifiable
+   under the shared rule of `eval/fitting.py` (at least 5 tests, at least one decade of life, and
+   a negative slope beyond two standard errors).
 
 MWHS therefore uses a design set different from the other methods. Comparisons restricted to
 common observations (`--common-methods`) report this, and should be run with `--flag_filter other`.

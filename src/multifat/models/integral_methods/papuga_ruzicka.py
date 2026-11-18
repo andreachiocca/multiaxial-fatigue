@@ -16,8 +16,8 @@ Both criteria return LHS / f_-1 (equal to 1 on the fatigue limit; the fatigue in
 Eq. (5) follows as 100 (index - 1)).
 
 Repository choices: the PI sphere integral is evaluated with BP quadrature over a 48 x 192 grid
-(weights summing to 1 = 1/(4 pi) int int sin psi); PCr is maximised on the same grid, refined by
-pattern search; a negative radicand (compressive mean normal stress) is clipped to 0; when Sig0 is
+(weights summing to 1 = 1/(4 pi) int int sin psi); PCr is maximised on the default 24 x 48 grid of
+``_sphere_grid``, refined by pattern search; a negative radicand (compressive mean normal stress) is clipped to 0; when Sig0 is
 not provided, f_0 is estimated from Su through the Boehme et al. (2026) Eq. (1) relation, as done
 for BP/CAIM.
 """

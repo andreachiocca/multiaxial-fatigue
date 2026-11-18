@@ -2554,7 +2554,7 @@
             "principle": "tau_eqv = max_t(|tau| + ssf(sigma, lambda)|sigma|), lambda = arctan(tau/sigma); ssf a material polynomial surface (Eq. 31) regressed on proportional tension-torsion S-N lines; life on the pure-shear S-N curve.",
             "loading_scope": "Fully reversed tension-torsion, proportional and non-proportional, CA; the published surface covers the 42CrMo4 of the paper only.",
             "prediction_capability": "Equivalent shear stress (MPa); life via a master curve fitted on pure torsion failures",
-            "required_inputs": "The eight Eq. (31) coefficients a_SSF..i_SSF (published values for 42CrMo4_Reis in examples/constants/42CrMo4_Reis_SSF.json).",
+            "required_inputs": "The eight Eq. (31) coefficients a_SSF..i_SSF (published values for 42CrMo4_Reis in Calibrations/42CrMo4_Reis/SSF_published.json).",
             "implementation_status": "fully_implemented",
             "completeness_evidence": "complete_for_declared_repository_scope",
             "enabled": true,

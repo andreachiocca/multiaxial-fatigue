@@ -30,8 +30,12 @@ Repository choices:
   ``nu_p = 0.5``, and strain-weighted ``nu_bar`` (reducing to Eq. 13 under uniaxial loading).
 - Free-surface evaluation takes ``x-y`` as the surface plane with plane-stress normal strain
   ``e_zz = -nu / (1 - nu) * (e_xx + e_yy)``.
-- Default parameters follow Eq. (18) (``alpha_EK = 0.5``, ``n_EK = 1.0``), and non-positive
-  mean-stress factors (outside ``-1.06 <= sigma_m / sigma_a <= 4.4``) clamp to zero.
+- Default parameters follow Eq. (18) (``alpha_EK = 0.5``, ``n_EK = 1.0``).
+- Scope: Eq. (18) holds for ``-1.06 <= sigma_m / sigma_a <= 4.4``, read here with the same ratio
+  as the mean-stress factor, sigma_m / sigma_bar (sum of the principal mean stresses over the
+  effective stress amplitude). A case outside raises LoadingScopeError and the model is skipped
+  (maintainer decision, 17 November 2026; such cases were evaluated before). A non-positive
+  mean-stress factor, possible only with a user ``alpha_EK``, still clamps psi to zero.
 - For non-proportional single harmonics (omitted in the paper), ``sigma_bar`` is ``sqrt(3)``
   times the longest deviatoric half-chord, while ``eps_max`` and ``gamma_max`` are maxima
   over the period.
@@ -44,9 +48,12 @@ from typing import Mapping
 import numpy as np
 
 from ..base import CaseResult
+from ..errors import LoadingScopeError
 from ..invariant_methods.stress_invariants import harmonic_parts, sqrt_j2_amplitude
 
 _PHASE_GRID = np.linspace(0.0, 2.0 * np.pi, 360, endpoint=False)
+MEAN_RATIO_RANGE = (-1.06, 4.4)  # sigma_m / sigma_a of Eq. (18), p.61
+RANGE_RTOL = 1e-9  # round-off allowance at the bounds
 
 
 def constraint_factor(E_sin, E_cos, nu: float) -> float:
@@ -110,7 +117,13 @@ def ek_damage(
         scale = 1.5 * eps_p / sigma_bar
         e_sin_eff = e_sin_eff + scale * _deviator(S_sin)
         e_cos_eff = e_cos_eff + scale * _deviator(S_cos)
-    mean_factor = 1.0 + alpha * float(np.trace(np.asarray(S_mean, dtype=float))) / sigma_bar
+    mean_ratio = float(np.trace(np.asarray(S_mean, dtype=float))) / sigma_bar
+    lo, hi = MEAN_RATIO_RANGE
+    if not lo * (1 + RANGE_RTOL) <= mean_ratio <= hi * (1 + RANGE_RTOL):
+        raise LoadingScopeError(
+            f"EK: Eq. (18) holds for -1.06 <= sigma_m/sigma_a <= 4.4; the case has {mean_ratio:.3g}"
+        )
+    mean_factor = 1.0 + alpha * mean_ratio
     if mean_factor <= 0.0:
         return 0.0
     return dW_d * mean_factor / constraint_factor(e_sin_eff, e_cos_eff, nu_bar) ** n

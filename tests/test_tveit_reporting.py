@@ -219,14 +219,10 @@ def test_invalid_native_method_has_no_comparison_in_legacy_results():
 
 
 def test_all_registered_methods_have_explicitly_verified_comparison_semantics():
-    from multifat.models.registry import (
-        _available_cp_methods,
-        _available_direct_models,
-        get_models,
-    )
+    from multifat.models.registry import get_models, model_names
     from multifat.models.comparison import capabilities_for_model
 
-    names = sorted({**_available_cp_methods(), **_available_direct_models()})
+    names = sorted(model_names())
     assert len(names) == 53
     native_methods = {"TVEIT2025", "MOREL", "MDC", "MMCCM", "LIUMAHADEVAN"}
     for name in names:

@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from multifat.eval.evaluator import best_cp_for_case, evaluate_planes, prepare_planes
-from multifat.models.registry import _available_cp_methods
+from multifat.models.registry import available_cp_methods
 from multifat.models.utils.batch import pypow2
 from multifat.planes.sampling import build_R_list
 
@@ -63,10 +63,10 @@ def _case(rng, harmonic):
     )
 
 
-@pytest.mark.parametrize("name", sorted(_available_cp_methods()))
+@pytest.mark.parametrize("name", sorted(available_cp_methods()))
 @pytest.mark.parametrize("harmonic", [False, True])
 def test_batch_equals_scalar_bitwise(name, harmonic):
-    method = _available_cp_methods()[name]
+    method = available_cp_methods()[name]
     R_list = build_R_list()
     rng = np.random.default_rng(7)
     for _ in range(4):

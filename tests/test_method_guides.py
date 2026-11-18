@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from multifat.models.registry import _available_cp_methods, _available_direct_models
+from multifat.models.registry import available_cp_methods, model_names
 
 GUIDES = Path(__file__).resolve().parents[1] / "docs" / "method-guides"
 NOT_GUIDES = {"README.md", "TEMPLATE.md"}
@@ -29,8 +29,8 @@ SECTIONS = [
     "Verification and limitations",
     "References",
 ]
-REGISTERED = set(_available_cp_methods()) | set(_available_direct_models())
-CP_METHODS = set(_available_cp_methods())
+REGISTERED = set(model_names())
+CP_METHODS = set(available_cp_methods())
 
 
 def _guides() -> list[Path]:
