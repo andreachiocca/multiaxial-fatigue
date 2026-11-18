@@ -66,6 +66,8 @@ def _findley_plane_value(
 
 class Findley:
     name = "FIN"
+    fitted_constants = ("k_FI",)
+    input_classes = ()
 
     def required_params(self) -> set[str]:
         return {"k_FI"}

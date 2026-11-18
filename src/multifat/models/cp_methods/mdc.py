@@ -79,6 +79,8 @@ class MDC:
     comparison_capabilities = ComparisonCapabilities(
         life_prediction="native", dp_reference="model_law"
     )
+    fitted_constants = ("tau_f", "b0")
+    input_classes = ("S-N curves",)
 
     def required_params(self) -> set[str]:
         return set(_PARAM_KEYS)

@@ -34,6 +34,8 @@ from ..utils.param_utils import get_param
 
 class MGSE_Zhu:
     name = "MGSE_ZHU"
+    fitted_constants = ("k_MGSE",)
+    input_classes = ("elastic constants",)
     optional_params = {"k_MGSE": "1.0"}
 
     def required_params(self) -> set[str]:

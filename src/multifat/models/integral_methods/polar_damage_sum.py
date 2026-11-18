@@ -128,6 +128,8 @@ class _PolarDamageSum:
 class PolarDamageSumSWT(_PolarDamageSum):
     name = "PDS_SWT"
     kind = "SWT"
+    fitted_constants = ()
+    input_classes = ("elastic constants",)
 
     def required_params(self) -> set[str]:
         return set()
@@ -139,6 +141,8 @@ class PolarDamageSumSWT(_PolarDamageSum):
 class PolarDamageSumFS(_PolarDamageSum):
     name = "PDS_FS"
     kind = "FS"
+    fitted_constants = ("k_PDS",)
+    input_classes = ("elastic constants", "static strength")
 
     def required_params(self) -> set[str]:
         return {"Sy", "k_PDS"}
