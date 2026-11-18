@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from multifat.models.invariant_methods.tveit2025 import N_POINTS, tveit2025_life
+from multifat.models.invariant_methods.tveit2025 import N_POINTS, Tveit2025, tveit2025_life
 
 ROOT = Path(__file__).resolve().parents[1]
 HISTORIES = pd.read_csv(ROOT / "tests" / "data" / "tveit2025_long_histories.csv", comment="#")
@@ -73,12 +73,25 @@ def test_unresolved_decay_ends_at_the_block_limit_with_a_finite_life():
     """A damage decay not resolved within max_blocks is extrapolated, conservatively, with a warning.
 
     Ti6Al4V at 495 MPa shakes down at block 7219 (long history); stopped at 3000 blocks, it is still
-    decaying, and the life is extrapolated from the mean damage of the last 200 blocks.
+    decaying, and the life is extrapolated from the mean damage of the last 200 blocks. The model
+    (the case-level evaluation the pipeline calls) warns about it.
     """
-    cycle = _cycle("axial", -1.0, 495.0)
-    life = tveit2025_life(*cycle, *_constants("Ti6Al4V_Meneghetti"), max_blocks=3000)
+    S_mean, S_sin, S_cos = _cycle("axial", -1.0, 495.0)
+    life = tveit2025_life(S_mean, S_sin, S_cos, *_constants("Ti6Al4V_Meneghetti"), max_blocks=3000)
     assert life.termination == "max_block_extrapolation" and life.blocks == 3000
     assert 3000 < life.Nf < math.inf
+    keys = ("Sigm1_TVEIT", "Taum1_TVEIT", "A_TVEIT", "C_TVEIT", "K_TVEIT", "L_TVEIT")
+    params = dict(zip(keys, _constants("Ti6Al4V_Meneghetti")), max_blocks_TVEIT=3000)
+    with pytest.warns(UserWarning, match="extrapolated after max_blocks_TVEIT blocks"):
+        result = Tveit2025().evaluate_case(
+            S0=S_mean + S_sin,
+            E0=None,
+            S1=S_mean - S_sin,
+            E1=None,
+            params=params,
+            harmonics={"S_mean": S_mean, "S_sin": S_sin, "S_cos": S_cos},
+        )
+    assert result.aux["Nf"] == life.Nf
 
 
 def test_failure_inside_the_first_increment_counts_less_than_one_increment():
