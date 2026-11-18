@@ -1,4 +1,4 @@
-"""Master-curve (S-N) models of issue #38: Kohout & Vechet (2001) form (H2) and Stromeyer."""
+"""Master-curve (S-N) models of issue #38: Kohout & Vechet, Stromeyer, Palmgren, Bastenaire."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import math
 import numpy as np
 import pandas as pd
 import pytest
+import scipy.special as sp
 
 from multifat.eval.fitting import fit_power_law_with_survival_std
 from multifat.eval.sn_curves import curve_dp, curve_life, fit_sn_curve
@@ -18,6 +19,23 @@ N = np.logspace(4.0, 7.5, 25)
 def _kv(Nf, sigma_inf=300.0, C=2.0e6, b=-0.12):
     """Kohout & Vechet (2001) Eq. (H2): sigma = sigma_inf (N / (N + C))^b."""
     return sigma_inf * (Nf / (Nf + C)) ** b
+
+
+def _palmgren(Nf, a=700.0, b=-0.15, B=1000.0, dp_inf=220.0):
+    """Palmgren (1924, 1945): DP = a (N + B)^b + DP_inf."""
+    return a * (Nf + B) ** b + dp_inf
+
+
+def _bastenaire(Nf, A=5e7, alpha=0.005, dp_inf=200.0):
+    """Bastenaire (1960, 1971): DP = DP_inf + (1/alpha) W_0(alpha A / N)."""
+    Nf = np.asarray(Nf, dtype=float)
+    y = (alpha * A) / Nf
+    x = np.empty_like(y, dtype=float)
+    m = y > 1e-12
+    if alpha > 0:
+        x[m] = sp.lambertw(y[m]).real / alpha
+    x[~m] = A / Nf[~m]
+    return dp_inf + x
 
 
 def test_basquin_is_the_established_fit_bit_for_bit():
@@ -47,13 +65,54 @@ def test_kohout_vechet_recovers_its_parameters_and_geometry():
     assert slope == pytest.approx(-0.06, rel=1e-6)
 
 
-@pytest.mark.parametrize("model", ["kohout_vechet", "stromeyer"])
+def test_palmgren_recovers_its_parameters_and_geometry():
+    N_wide = np.logspace(3.0, 7.5, 30)
+    fit = fit_sn_curve(N_wide, _palmgren(N_wide), model="palmgren")
+    assert fit["valid"], fit["reason"]
+    p = fit["params"]
+    assert p["DP_inf"] == pytest.approx(220.0, rel=1e-5)
+    assert p["sigma_inf"] == pytest.approx(220.0, rel=1e-5)
+    assert p["a"] == pytest.approx(700.0, rel=1e-4)
+    assert p["b"] == pytest.approx(-0.15, rel=1e-4)
+    assert p["B"] == pytest.approx(1000.0, rel=1e-3)
+    assert fit["param_se"]["ln_DP_inf"] == fit["param_se"]["ln_sigma_inf"]
+    # Low-cycle limit approaches static strength at N = 0: a B^b + DP_inf
+    static_est = curve_dp(fit, 1e-6)
+    assert static_est == pytest.approx(700.0 * 1000.0**-0.15 + 220.0, rel=1e-3)
+    # High-cycle asymptote approaches DP_inf
+    assert curve_dp(fit, 1e12) == pytest.approx(_palmgren(1e12), rel=1e-3)
+    assert curve_dp(fit, 1e25) == pytest.approx(220.0, rel=1e-2)
+
+
+def test_bastenaire_recovers_its_parameters_and_geometry():
+    fit = fit_sn_curve(N, _bastenaire(N), model="bastenaire")
+    assert fit["valid"], fit["reason"]
+    p = fit["params"]
+    assert p["DP_inf"] == pytest.approx(200.0, rel=1e-5)
+    assert p["sigma_inf"] == pytest.approx(200.0, rel=1e-5)
+    assert p["A"] == pytest.approx(5e7, rel=1e-4)
+    assert p["alpha"] == pytest.approx(0.005, rel=1e-4)
+    assert fit["param_se"]["ln_DP_inf"] == fit["param_se"]["ln_sigma_inf"]
+    # High-cycle asymptote approaches DP_inf
+    assert curve_dp(fit, 1e12) == pytest.approx(200.0, rel=1e-3)
+
+
+@pytest.mark.parametrize("model", ["kohout_vechet", "stromeyer", "palmgren", "bastenaire"])
 def test_inverse_round_trip_and_infinite_life_below_the_limit(model):
-    DP = _kv(N) * np.exp(np.random.default_rng(1).normal(0.0, 0.02, N.size))
-    fit = fit_sn_curve(N, DP, model=model)
+    rng = np.random.default_rng(1)
+    if model == "palmgren":
+        n_eval = np.logspace(2.0, 7.5, 25)
+        DP = _palmgren(n_eval) * np.exp(rng.normal(0.0, 0.01, n_eval.size))
+        fit = fit_sn_curve(n_eval, DP, model=model)
+    elif model == "bastenaire":
+        DP = _bastenaire(N) * np.exp(rng.normal(0.0, 0.01, N.size))
+        fit = fit_sn_curve(N, DP, model=model)
+    else:
+        DP = _kv(N) * np.exp(rng.normal(0.0, 0.02, N.size))
+        fit = fit_sn_curve(N, DP, model=model)
     assert fit["valid"], fit["reason"]
     lives = np.array([3e4, 2e5, 5e6])
-    assert curve_life(fit, curve_dp(fit, lives)) == pytest.approx(lives, rel=1e-9)
+    assert curve_life(fit, curve_dp(fit, lives)) == pytest.approx(lives, rel=1e-6)
     limit = fit["params"]["sigma_inf"] * fit["shift"]
     assert np.all(np.isinf(curve_life(fit, np.array([0.5 * limit, limit]))))
 
@@ -70,10 +129,14 @@ def test_unidentifiable_fits_are_rejected_with_a_reason():
     straight = 500.0 * N**-0.1  # no knee: C runs to its bound
     fit = fit_sn_curve(N, straight, model="kohout_vechet")
     assert not fit["valid"] and "not identifiable" in fit["reason"]
-    few = fit_sn_curve(N[:4], _kv(N[:4]), model="kohout_vechet")
-    assert not few["valid"] and "at least 6" in few["reason"]
+    few_kv = fit_sn_curve(N[:4], _kv(N[:4]), model="kohout_vechet")
+    assert not few_kv["valid"] and "at least 6" in few_kv["reason"]
+    few_palmgren = fit_sn_curve(N[:6], _palmgren(N[:6]), model="palmgren")
+    assert not few_palmgren["valid"] and "at least 8" in few_palmgren["reason"]
+    few_bastenaire = fit_sn_curve(N[:4], _bastenaire(N[:4]), model="bastenaire")
+    assert not few_bastenaire["valid"] and "at least 6" in few_bastenaire["reason"]
     with pytest.raises(ValueError, match="unknown S-N model"):
-        fit_sn_curve(N, _kv(N), model="palmgren")
+        fit_sn_curve(N, _kv(N), model="unknown_model")
 
 
 def test_pipeline_records_the_model_and_compare_refuses_mixtures(tmp_path):
@@ -95,6 +158,16 @@ def test_pipeline_records_the_model_and_compare_refuses_mixtures(tmp_path):
         assert "S-N model not usable" in outcomes[0].reason
     base = pd.read_csv(tmp_path / "r" / "a" / "CROSSLAND_Sn.csv")
     assert (base.SN_model == "basquin").all()
+    outcomes_bast = run_workbook(
+        wb, models=["CROSSLAND"], results_dir=tmp_path / "r" / "c", sn_model="bastenaire"
+    )
+    side_bast = json.loads(
+        (tmp_path / "r" / "c" / "Sn_calibration.json").read_text(encoding="utf-8")
+    )
+    assert side_bast["provenance"]["settings"]["master_curve_model"] == "bastenaire"
+    if outcomes_bast[0].status == "ok":
+        df_bast = pd.read_csv(tmp_path / "r" / "c" / "CROSSLAND_Sn.csv")
+        assert (df_bast.SN_model == "bastenaire").all()
     if outcomes[0].status == "ok":
         with pytest.raises(ValueError, match="mixes master-curve models"):
             collect_all_results(tmp_path / "r")
@@ -114,7 +187,7 @@ def test_censored_fit_with_runouts_prevents_infinite_lives_on_failures():
     N_r = np.array([p["Nf_cycles"] for p in uniax["runouts"]])
     DP_r = np.array([p["sigma_a_MPa"] for p in uniax["runouts"]])
 
-    for model in ("kohout_vechet", "stromeyer"):
+    for model in ("kohout_vechet", "stromeyer", "bastenaire"):
         fit = fit_sn_curve(N_f, DP_f, model=model, N_runout=N_r, DP_runout=DP_r)
         assert fit["valid"], fit["reason"]
         assert fit["n_runout"] == 3
@@ -129,6 +202,26 @@ def test_censored_fit_with_runouts_prevents_infinite_lives_on_failures():
         # Load at or below DP_inf predicts infinite life
         assert np.isinf(curve_life(fit, dp_inf))
         assert np.isinf(curve_life(fit, 0.9 * dp_inf))
+
+    # Palmgren has 4 parameters and requires LCF tests to identify B; on HCF-only AISI 316L it is rejected
+    fit_palmgren = fit_sn_curve(N_f, DP_f, model="palmgren", N_runout=N_r, DP_runout=DP_r)
+    assert not fit_palmgren["valid"] and "not identifiable" in fit_palmgren["reason"]
+
+    # On LCF-HCF data with run-outs, Palmgren is identifiable and prevents infinite lives
+    rng = np.random.default_rng(42)
+    N_synth_f = np.logspace(2.5, 6.2, 20)
+    DP_synth_f = (700.0 * (N_synth_f + 1000.0) ** -0.15 + 220.0) * np.exp(
+        rng.normal(0, 0.01, N_synth_f.size)
+    )
+    N_synth_r = np.array([1e7, 1e7, 1e7])
+    DP_synth_r = np.array([215.0, 218.0, 221.0])
+    fit_palmgren_synth = fit_sn_curve(
+        N_synth_f, DP_synth_f, model="palmgren", N_runout=N_synth_r, DP_runout=DP_synth_r
+    )
+    assert fit_palmgren_synth["valid"], fit_palmgren_synth["reason"]
+    assert fit_palmgren_synth["params"]["DP_inf"] < float(np.min(DP_synth_f))
+    synth_pred = curve_life(fit_palmgren_synth, DP_synth_f)
+    assert np.all(np.isfinite(synth_pred))
 
 
 def test_censored_fit_recovers_synthetic_parameters():

@@ -3,9 +3,11 @@
 Every master-curve method converts its DP to a life through a curve fitted on the design tests
 (uniaxial tension, R = -1). The models, all fitted by least squares on ln DP::
 
-    basquin            DP = A N^b                                  Basquin (1910)
-    kohout_vechet      DP = DP_inf (N / (N + C))^b                 Kohout & Vechet (2001), Eq. (H2)
-    stromeyer          DP = a N^b + DP_inf                         Stromeyer (1914)
+    basquin            DP = A N^b                                      Basquin (1910)
+    kohout_vechet      DP = DP_inf (N / (N + C))^b                     Kohout & Vechet (2001), Eq. (H2)
+    stromeyer          DP = a N^b + DP_inf                             Stromeyer (1914)
+    palmgren           DP = a (N + B)^b + DP_inf                       Palmgren (1924, 1945)
+    bastenaire         N = A / (DP - DP_inf) exp[-alpha (DP - DP_inf)] Bastenaire (1960, 1971)
 
 Kohout & Vechet (2001), Int J Fatigue 23:175-183, doi:10.1016/S0142-1123(00)00082-7: (H2) is the
 finite-life and high-cycle form (Hx) of their function, written with the fatigue limit
@@ -13,6 +15,15 @@ DP_inf = a C^b (Eq. 10). It has the Basquin line DP = a N^b (a = DP_inf C^-b) as
 asymptote for N << C, the horizontal asymptote DP_inf for N >> C, and slope b/2 in log-log
 coordinates at N = C. Its inverse is N = u C / (1 - u), u = (DP / DP_inf)^(1/b), and the life is
 infinite for DP <= DP_inf.
+
+Palmgren (1924, 1945) adds a cycle offset B to the finite-life power law, rounding the low-cycle
+region towards static strength at N = 0 (UTS ≈ a B^b + DP_inf) and approaching the endurance limit
+DP_inf as N -> inf. Its inverse is N = max(0, ((DP - DP_inf) / a)^(1/b) - B).
+
+Bastenaire (1960, 1971) models the S-N curve with hyperbolic behavior near the fatigue limit
+DP_inf and exponential acceleration at high stress. Its exact inverse DP(N) is evaluated via the
+Lambert W function: DP(N) = DP_inf + (1 / alpha) W_0(alpha A / N) (reducing to DP_inf + A / N
+when alpha -> 0).
 
 Repository choices:
   - basquin keeps the established linear fit of ln DP on ln N (``fit_power_law_with_survival_std``),
@@ -43,11 +54,18 @@ import numpy as np
 from multifat.eval import fat_cycles as fatc
 from multifat.eval.fitting import fit_power_law_with_survival_std
 
-SN_MODELS = ("basquin", "kohout_vechet", "stromeyer")
-N_PARAMS = {"basquin": 2, "kohout_vechet": 3, "stromeyer": 3}
+SN_MODELS = ("basquin", "kohout_vechet", "stromeyer", "palmgren", "bastenaire")
+N_PARAMS = {
+    "basquin": 2,
+    "kohout_vechet": 3,
+    "stromeyer": 3,
+    "palmgren": 4,
+    "bastenaire": 3,
+}
 # Search intervals of the nonlinear fits: an optimum on one of these is reported as unidentified
 B_BOUNDS = (-3.0, -1e-6)
 LN_C_BOUNDS = (math.log(1e2), math.log(1e12))
+LN_B_BOUNDS = (math.log(1e-2), math.log(1e8))
 
 
 def fit_sn_curve(
@@ -123,7 +141,7 @@ def fit_sn_curve(
         }
         names = ("ln_DP_inf", "ln_C", "b")
         A = dp_inf * params["C"] ** (-params["b"])  # Basquin asymptote a
-    else:
+    elif model == "stromeyer":
         ln_a, b, ln_dp_inf = theta
         dp_inf = math.exp(ln_dp_inf)
         params = {
@@ -134,12 +152,35 @@ def fit_sn_curve(
         }
         names = ("ln_a", "b", "ln_DP_inf")
         A = params["a"]
+    elif model == "palmgren":
+        ln_a, b, ln_B, ln_dp_inf = theta
+        dp_inf = math.exp(ln_dp_inf)
+        params = {
+            "a": math.exp(ln_a),
+            "b": float(b),
+            "B": math.exp(ln_B),
+            "DP_inf": dp_inf,
+            "sigma_inf": dp_inf,
+        }
+        names = ("ln_a", "b", "ln_B", "ln_DP_inf")
+        A = params["a"]
+    else:  # bastenaire
+        ln_A, alpha, ln_dp_inf = theta
+        dp_inf = math.exp(ln_dp_inf)
+        params = {
+            "A": math.exp(ln_A),
+            "alpha": float(alpha),
+            "DP_inf": dp_inf,
+            "sigma_inf": dp_inf,
+        }
+        names = ("ln_A", "alpha", "ln_DP_inf")
+        A = params["A"]
     param_se = dict(zip(names, (float(x) for x in se)))
     if "ln_DP_inf" in param_se:
         param_se["ln_sigma_inf"] = param_se["ln_DP_inf"]
     out.update(
         A=float(A),
-        b=float(params["b"]),
+        b=float(params["b"]) if "b" in params else float(base["b"]),
         A_surv=float(A * shift),
         STD_ln_DP=s,
         R2_log=1 - float(residual @ residual) / ss_total if ss_total > 1e-24 else np.nan,
@@ -155,8 +196,25 @@ def _model_ln(model: str, theta, Nf):
     if model == "kohout_vechet":
         ln_dp_inf, ln_C, b = theta
         return ln_dp_inf + b * (np.log(Nf) - np.logaddexp(np.log(Nf), ln_C))
-    ln_a, b, ln_dp_inf = theta
-    return np.logaddexp(ln_a + b * np.log(Nf), ln_dp_inf)
+    if model == "stromeyer":
+        ln_a, b, ln_dp_inf = theta
+        return np.logaddexp(ln_a + b * np.log(Nf), ln_dp_inf)
+    if model == "palmgren":
+        ln_a, b, ln_B, ln_dp_inf = theta
+        return np.logaddexp(ln_a + b * np.log(Nf + np.exp(ln_B)), ln_dp_inf)
+    from scipy.special import lambertw
+
+    ln_A, alpha, ln_dp_inf = theta
+    A = np.exp(ln_A)
+    dp_inf = np.exp(ln_dp_inf)
+    Nf = np.asarray(Nf, dtype=float)
+    y = (alpha * A) / Nf
+    x = np.empty_like(y, dtype=float)
+    m = y > 1e-12
+    if alpha > 0:
+        x[m] = lambertw(y[m]).real / alpha
+    x[~m] = A / Nf[~m]
+    return np.log(dp_inf + x)
 
 
 def _fit_nonlinear(model: str, Nf, DP, base, N_r=None, DP_r=None):
@@ -175,9 +233,29 @@ def _fit_nonlinear(model: str, Nf, DP, base, N_r=None, DP_r=None):
             (min(ln_A0 + b0 * ln_C, ln_floor - 0.1), ln_C, b0)
             for ln_C in np.linspace(LN_C_BOUNDS[0] + 1.0, LN_C_BOUNDS[1] - 1.0, 9)
         ]
-    else:
+    elif model == "stromeyer":
         bounds = ([-np.inf, B_BOUNDS[0], -np.inf], [np.inf, B_BOUNDS[1], ln_floor])
         starts = [(ln_A0, b0, ln_floor + shift) for shift in np.linspace(-4.0, -0.05, 8)]
+    elif model == "palmgren":
+        bounds = (
+            [-np.inf, B_BOUNDS[0], LN_B_BOUNDS[0], -np.inf],
+            [np.inf, B_BOUNDS[1], LN_B_BOUNDS[1], ln_floor],
+        )
+        starts = []
+        for shift in np.linspace(-4.0, -0.05, 6):
+            ln_dp = ln_floor + shift
+            for ln_B in np.linspace(LN_B_BOUNDS[0] + 1.0, LN_B_BOUNDS[1] - 1.0, 5):
+                starts.append((ln_A0, b0, ln_B, ln_dp))
+    else:  # bastenaire
+        bounds = ([-np.inf, 0.0, -np.inf], [np.inf, np.inf, ln_floor])
+        starts = []
+        for shift in [0.05, 0.2, 0.8, 2.0, 4.0]:
+            ln_dp = ln_floor - shift
+            dp_inf_0 = math.exp(ln_dp)
+            delta_0 = max(1e-12, float(np.median(DP)) - dp_inf_0)
+            ln_A_0 = math.log(float(np.median(Nf)) * delta_0)
+            for a_mult in [0.0, 0.05, 0.2, 1.0, 5.0]:
+                starts.append((ln_A_0, a_mult / delta_0, ln_dp))
 
     best = None
     for start in starts:
@@ -206,11 +284,21 @@ def _fit_nonlinear(model: str, Nf, DP, base, N_r=None, DP_r=None):
             or np.isclose(c_val, LN_C_BOUNDS[0], atol=1e-6)
             or np.isclose(c_val, LN_C_BOUNDS[1], atol=1e-6)
         )
-    else:
+    elif model == "stromeyer":
         b_val = best.x[1]
         at_bound = np.isclose(b_val, B_BOUNDS[0], atol=1e-6) or np.isclose(
             b_val, B_BOUNDS[1], atol=1e-6
         )
+    elif model == "palmgren":
+        b_val, b_cycle = best.x[1], best.x[2]
+        at_bound = (
+            np.isclose(b_val, B_BOUNDS[0], atol=1e-6)
+            or np.isclose(b_val, B_BOUNDS[1], atol=1e-6)
+            or np.isclose(b_cycle, LN_B_BOUNDS[0], atol=1e-6)
+            or np.isclose(b_cycle, LN_B_BOUNDS[1], atol=1e-6)
+        )
+    else:  # bastenaire
+        at_bound = False
     if at_bound:
         return (
             f"{model}: a parameter stopped on its search bound (not identifiable from these tests)"
@@ -239,17 +327,32 @@ def _fit_nonlinear(model: str, Nf, DP, base, N_r=None, DP_r=None):
             (B_BOUNDS[0], B_BOUNDS[1]),
             (math.log(1e-4), math.log(10.0)),
         ]
-    else:
+    elif model == "stromeyer":
         opt_bounds = [
             (-np.inf, np.inf),
             (B_BOUNDS[0], B_BOUNDS[1]),
             (-np.inf, ln_floor),
             (math.log(1e-4), math.log(10.0)),
         ]
+    elif model == "palmgren":
+        opt_bounds = [
+            (-np.inf, np.inf),
+            (B_BOUNDS[0], B_BOUNDS[1]),
+            (LN_B_BOUNDS[0], LN_B_BOUNDS[1]),
+            (-np.inf, ln_floor),
+            (math.log(1e-4), math.log(10.0)),
+        ]
+    else:  # bastenaire
+        opt_bounds = [
+            (-np.inf, np.inf),
+            (0.0, np.inf),
+            (-np.inf, ln_floor),
+            (math.log(1e-4), math.log(10.0)),
+        ]
 
     def nll(params_all):
-        theta = params_all[:3]
-        s = math.exp(params_all[3])
+        theta = params_all[:p]
+        s = math.exp(params_all[p])
         pred_f = _model_ln(model, theta, Nf)
         res_f = (log_DP - pred_f) / s
         ll_f = -0.5 * math.log(2 * math.pi) - math.log(s) - 0.5 * res_f**2
@@ -262,22 +365,21 @@ def _fit_nonlinear(model: str, Nf, DP, base, N_r=None, DP_r=None):
     if not res_opt.success:
         return f"{model}: censored likelihood optimization did not converge"
 
-    theta_opt = res_opt.x[:3]
-    s_opt = float(math.exp(res_opt.x[3]))
+    theta_opt = res_opt.x[:p]
+    s_opt = float(math.exp(res_opt.x[p]))
     residual = _model_ln(model, theta_opt, Nf) - log_DP
 
     # Numerical Hessian for parameter standard errors
     eps = 1e-4
-    n_p = 3
-    hess = np.zeros((n_p, n_p))
+    hess = np.zeros((p, p))
     f0 = nll(res_opt.x)
-    for i in range(n_p):
+    for i in range(p):
         xp = res_opt.x.copy()
         xp[i] += eps
         xm = res_opt.x.copy()
         xm[i] -= eps
         hess[i, i] = (nll(xp) - 2 * f0 + nll(xm)) / (eps**2)
-        for j in range(i + 1, n_p):
+        for j in range(i + 1, p):
             xpp = res_opt.x.copy()
             xpp[i] += eps
             xpp[j] += eps
@@ -295,9 +397,10 @@ def _fit_nonlinear(model: str, Nf, DP, base, N_r=None, DP_r=None):
 
     try:
         cov = np.linalg.inv(hess)
-        se = np.sqrt(np.diag(cov))
+        diag = np.diag(cov)
+        se = np.where(diag > 0, np.sqrt(np.maximum(0.0, diag)), np.nan)
     except Exception:
-        se = np.full(n_p, np.nan)
+        se = np.full(p, np.nan)
 
     return theta_opt, residual, se, s_opt
 
@@ -319,8 +422,21 @@ def curve_dp(fit: dict, Nf):
     dp_inf = p.get("DP_inf", p.get("sigma_inf"))
     if model == "kohout_vechet":
         out[ok] = shift * dp_inf * (Nf[ok] / (Nf[ok] + p["C"])) ** p["b"]
-    else:
+    elif model == "stromeyer":
         out[ok] = shift * (p["a"] * Nf[ok] ** p["b"] + dp_inf)
+    elif model == "palmgren":
+        out[ok] = shift * (p["a"] * (Nf[ok] + p["B"]) ** p["b"] + dp_inf)
+    elif model == "bastenaire":
+        from scipy.special import lambertw
+
+        N_ok = Nf[ok]
+        y = (p["alpha"] * p["A"]) / N_ok
+        x = np.empty_like(y, dtype=float)
+        m = y > 1e-12
+        if p["alpha"] > 0:
+            x[m] = lambertw(y[m]).real / p["alpha"]
+        x[~m] = p["A"] / N_ok[~m]
+        out[ok] = shift * (dp_inf + x)
     return out
 
 
@@ -343,6 +459,12 @@ def curve_life(fit: dict, DP):
     if model == "kohout_vechet":
         u = (DP[above] / limit) ** (1.0 / p["b"])
         out[above] = u * p["C"] / (1.0 - u)
-    else:
+    elif model == "stromeyer":
         out[above] = ((DP[above] / shift - dp_inf) / p["a"]) ** (1.0 / p["b"])
+    elif model == "palmgren":
+        u = ((DP[above] / shift - dp_inf) / p["a"]) ** (1.0 / p["b"])
+        out[above] = np.maximum(0.0, u - p["B"])
+    elif model == "bastenaire":
+        delta = DP[above] / shift - dp_inf
+        out[above] = (p["A"] / delta) * np.exp(-p["alpha"] * delta)
     return out
