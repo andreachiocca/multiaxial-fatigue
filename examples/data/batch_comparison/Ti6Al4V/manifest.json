@@ -63,7 +63,7 @@
   "WANG2022",
   "ZHANGYAO"
  ],
- "implementation_revision": "2026-11-17",
+ "implementation_revision": "2026-11-18",
  "dataset_fingerprints": {
   "Ti6Al4V_Meneghetti": "c3b9a43f4f521b2f5d42196a14b61b824949dbed4b537e6b08d4fd247425871c",
   "Ti6Al4V_Berto": "75758708c36215a60aad7e144b9a18dc8ff4304726226aa3295e557026a38f02"

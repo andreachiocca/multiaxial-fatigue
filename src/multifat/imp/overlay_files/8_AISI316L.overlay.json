@@ -2,8 +2,18 @@
   "schema_version": 1,
   "workbook": "8_AISI316L.xlsx",
   "base_sha256": "f822e4c39deb6bacb26c2019bda4744ebaf4c7a327c808ccfc19c9b7358821ee",
-  "expected_fingerprint": "e245074653e53c978ee11a94812ba9d9fd6e48c0721b98a6f80c5f7a6ee2d9f5",
+  "expected_fingerprint": "5e2e99b9e3456f7d96a5dde8e66e4213e241cf88592a068d679506490824445d",
   "operations": [
+    {
+      "op": "set_summary",
+      "row": 2,
+      "column": "I",
+      "field": "Tensile fatigue limit (MPa)",
+      "from": 278.5,
+      "to": 271.6,
+      "decision": "d114",
+      "source": "A. A. Akay (Arda) / K. Janssens (PSI), issue #102: staircase load level 235 MPa x 1.1558 (PSI load-cell correction) = 271.6 MPa, consistent with PSI Tveit calibration; the published 241 x 1.1558 = 278.5 MPa lies above 5 axial failures"
+    },
     {
       "op": "set_summary",
       "row": 2,

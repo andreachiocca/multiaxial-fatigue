@@ -46,6 +46,21 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 - Changed numerically: TVEIT2025 now runs, with calibrated constants, in pipeline runs without
   `--constants` (it was skipped for missing constants); no other model changes.
 
+### AISI316L tensile fatigue limit adjusted to staircase level (issue #102, decision d114)
+
+- Adjusted the Janssens row tensile fatigue limit $\sigma_{-1}$ in `8_AISI316L.xlsx` via `set_summary`
+  in `8_AISI316L.overlay.json` from $278.5\text{ MPa}$ ($241 \times 1.1558$) to $271.6\text{ MPa}$
+  ($235 \times 1.1558$, the staircase load level of Janssens 2018 with PSI load-cell correction, as
+  used in the PSI calibration of Tveit).
+- 5 axial $R = -1$ failures previously sat below $\sigma_{-1}$ ($271.6$ and $277.4\text{ MPa}$); with
+  $\sigma_{-1} = 271.6\text{ MPa}$, 3 failures sit above the threshold and 2 on it (one with
+  $2.47 \times 10^6$ cycles outlasting the $2 \times 10^6$ reference life).
+- `IMPLEMENTATION_REVISION` bumped to `2026-11-18`.
+- 21 models with $\sigma_{-1}$ dependence improve their RMS load error on AISI316L; models without
+  $\sigma_{-1}$ dependence and all other materials remain identical.
+- Post-overlay dataset fingerprint updated to `5e2e99b9e3456f7d96a5dde8e66e4213e241cf88592a068d679506490824445d`.
+- Regenerated AISI316L rows in `load_error_ranking.csv` and refreshed provenance manifests.
+
 ### Documentation consistency cleanup (no numerical change)
 
 - MMCCM, MDC (guides, audit rows, sheets, MMCCM docstring): `multifat-pipeline` fills missing
@@ -617,6 +632,16 @@ of names and records one distinction FatPy makes; no multifat name was renamed.
     method constants);
   - ambiguities and unit inconsistencies;
   - spelling issues.
+
+### Master-curve models (issue #38)
+
+- `--sn-model {basquin,kohout_vechet,stromeyer}` on `multifat-run` and `multifat-pipeline`
+  (`multifat.eval.sn_curves`): Basquin (default, unchanged), Kohout & Vechet (2001) Eq. (H2) and
+  Stromeyer, fitted on ln DP with `scipy.optimize.least_squares` (SciPy is now a dependency,
+  imported only for the nonlinear models). Unidentifiable fits are rejected with their reason;
+  infinite lives below the fatigue limit are kept, counted in the run report and in the new
+  `n_nonfinite` statistics column. CSVs end with `SN_model`. Plane-constant calibration and native
+  life laws are unchanged. Known problems are documented in `docs/method-audit.md`.
 
 ### Methods
 

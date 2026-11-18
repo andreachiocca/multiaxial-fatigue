@@ -1,6 +1,6 @@
 """Bibliography and audit decisions. See docs/method-audit.md for scope."""
 
-IMPLEMENTATION_REVISION = "2026-11-17"
+IMPLEMENTATION_REVISION = "2026-11-18"
 REFERENCES = {
     "FS": (
         "Fatemi & Socie (1988), A critical plane approach to multiaxial fatigue damage including out-of-phase loading",

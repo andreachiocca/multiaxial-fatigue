@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any, Mapping
 import numpy as np
 
-from multifat.eval.fitting import fit_power_law_with_survival_std
+from multifat.eval.sn_curves import fit_sn_curve
 from multifat.models.base import FatigueModel
 from multifat.models.comparison import capabilities_for_model
 
@@ -19,6 +19,7 @@ def collect_uniaxial_series_and_fit(
     models: list[FatigueModel],
     params: Mapping[str, float],
     stdnum: float = 2.0,
+    sn_model: str = "basquin",
 ) -> dict[str, Any]:
     """
     Shared calibration routine that works for CP and non-CP models alike.
@@ -123,12 +124,12 @@ def collect_uniaxial_series_and_fit(
         fit_dp_curve = caps.dp_comparison and caps.dp_reference == "master_curve"
         # Perform the fits
         std_fit = (
-            fit_power_law_with_survival_std(n_std_arr, cp_std_arr, stdnum=stdnum)
+            fit_sn_curve(n_std_arr, cp_std_arr, stdnum=stdnum, model=sn_model)
             if len(n_std_arr) > 0 and fit_dp_curve
             else None
         )
         ext_fit = (
-            fit_power_law_with_survival_std(n_ext_arr, cp_ext_arr, stdnum=stdnum)
+            fit_sn_curve(n_ext_arr, cp_ext_arr, stdnum=stdnum, model=sn_model)
             if len(n_ext_arr) > 0 and fit_dp_curve
             else None
         )

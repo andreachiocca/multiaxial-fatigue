@@ -30,12 +30,12 @@ def test_rfb_inside_its_validity_runs():
 
 
 def test_pipeline_skips_rfb_on_aisi316l(tmp_path):
-    """AISI316L: t_-1/s_-1 = 0.517, below the RFB range; RFB was reported as failed."""
+    """AISI316L: t_-1/s_-1 = 0.530, below the RFB range; RFB was reported as failed."""
     (outcome,) = run_workbook(
         DATA / "8_AISI316L.xlsx", models=["RFB"], results_dir=tmp_path, calibrate=False
     )
     assert outcome.status == "skipped"
     assert outcome.mode == "out_of_scope"
-    assert "received 0.517" in outcome.reason
+    assert "received 0.530" in outcome.reason
     assert _eligibility_status(outcome, calibrate=False) == "out_of_scope"
     assert not (tmp_path / "RFB_AISI316L.csv").exists()

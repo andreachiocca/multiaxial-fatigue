@@ -29,6 +29,8 @@ from pathlib import Path
 from typing import Any
 
 from multifat.cli import run as runmod
+import numpy as np
+
 import multifat.imp.experimental_data as exp
 from multifat.eval.fitting import stdnum_for_survival
 from multifat.eval.shear_amplitude_option import resolved_algorithm
@@ -91,6 +93,9 @@ class Job:
     suffixes: tuple[str, ...]
     survival_probability: float | None
     design_workbook: str | None = None
+    # Master-curve model (--sn-model); an attribute only, so the legacy 11-item tuple form of a
+    # Job is unchanged
+    sn_model: str = "basquin"
 
     def __getitem__(self, index: int | slice) -> Any:
         return self._as_tuple()[index]
@@ -211,6 +216,7 @@ def _evaluate_base_core(job: Job | tuple) -> list[Outcome]:
     suffixes = job.suffixes
     survival_probability = job.survival_probability
     design_workbook = job.design_workbook
+    sn_model = job.sn_model
     start = time.perf_counter()
     adopted: list[str] = []
     try:
@@ -255,6 +261,7 @@ def _evaluate_base_core(job: Job | tuple) -> list[Outcome]:
             params,
             extra_design_ids=design_points,
             survival_probability=survival_probability,
+            sn_model=sn_model,
             design_data=design_data,
         )
     except MissingParamsError as exc:
@@ -365,7 +372,16 @@ def _life_notes(model, evaluation, suffix: str, adopted, calibration: dict) -> s
 
     notes = []
     if capabilities_for_model(model).life_prediction != "native":
-        mode, slope_k = runmod.metric_mode(evaluation.fit(suffix)["b"])
+        mode, slope_k = runmod.life_mode(evaluation.fit(suffix))
+        curve = evaluation.fit(suffix)
+        if mode == "Nf" and curve.get("sn_model", "basquin") != "basquin":
+            dp = np.array([v.get(suffix, np.nan) for v in evaluation.values], dtype=float)
+            n_inf = int(np.sum(np.isinf(runmod.curve_life_at(curve, dp))))
+            if n_inf:
+                notes.append(
+                    f"{n_inf} of {dp.size} assessed failures predicted infinite: DP below the "
+                    f"{curve['sn_model']} fatigue limit; their life errors are undefined"
+                )
         if mode == "DP_DIFF":
             shape = (
                 f"k = -1/b = {slope_k:.3g} > {runmod.K_SLOPE_MAX:g}"
@@ -546,7 +562,12 @@ def supplied_design_ids(path: Path, data_block: dict, supplied: dict) -> tuple[d
     return wanted, ""
 
 
-def provenance(workbook: Path, data: dict | None = None, survival_probability: float = 0.5) -> dict:
+def provenance(
+    workbook: Path,
+    data: dict | None = None,
+    survival_probability: float = 0.5,
+    sn_model: str = "basquin",
+) -> dict:
     """What produced a run: the input file, the observations, the code and the numerical settings."""
     import numpy as np
 
@@ -580,6 +601,7 @@ def provenance(workbook: Path, data: dict | None = None, survival_probability: f
             "refined_plane_search": True,
             "master_curve_stdnum": stdnum_for_survival(survival_probability),
             "master_curve_survival_probability": survival_probability,
+            "master_curve_model": sn_model,
             "flat_curve_k_max": runmod.K_SLOPE_MAX,
         },
     }
@@ -717,6 +739,7 @@ def run_workbook(
     plots: bool = False,
     constants: Path | None = None,
     survival_probability: float = 0.5,
+    sn_model: str = "basquin",
     calibration_archive: Path | None = None,
     design_workbook: Path | None = None,
 ) -> list[Outcome]:
@@ -771,7 +794,7 @@ def run_workbook(
         raise WorkbookError(workbook.name, "", "", "a transfer needs fatigue-life datasets")
     if classification["workflow"] == "fatigue_limit":
         results, sidecar = _evaluate_fatigue_limit(workbook, material, requested, results_dir, jobs)
-        sidecar["provenance"] = provenance(workbook, data, survival_probability)
+        sidecar["provenance"] = provenance(workbook, data, survival_probability, sn_model)
         sidecar["status"] = "not_applicable"
         sidecar["reason"] = "fatigue-limit dataset: constants from the R = -1 limits"
         if constants:
@@ -852,13 +875,13 @@ def run_workbook(
             source = {**source, "design_rows": note}
         sidecar["constants_source"] = source
     if design_workbook is None:
-        sidecar["provenance"] = provenance(workbook, data, survival_probability)
+        sidecar["provenance"] = provenance(workbook, data, survival_probability, sn_model)
     else:  # the constants describe the design batch; the assessed tests are the target's
-        sidecar["provenance"] = provenance(workbook, None, survival_probability)
+        sidecar["provenance"] = provenance(workbook, None, survival_probability, sn_model)
         sidecar["transfer"] = {
             "design_material": material_id(design_workbook.stem),
             "target_material": material_id(target_workbook.stem),
-            "target_provenance": provenance(target_workbook, None, survival_probability),
+            "target_provenance": provenance(target_workbook, None, survival_probability, sn_model),
         }
     from multifat.cli.records import CALIBRATION_PROCEDURE, archive_record
 
@@ -891,6 +914,7 @@ def run_workbook(
             suffixes=tuple(suffixes),
             survival_probability=survival_probability,
             design_workbook=None if design_workbook is None else str(design_workbook),
+            sn_model=sn_model,
         )
         for base_name, suffixes in suffixes_by_base.items()
     ]
@@ -1277,6 +1301,13 @@ def main(cli_args=None) -> None:
     parser.add_argument("--no-compare", action="store_true")
     parser.add_argument("--plots", action="store_true")
     parser.add_argument(
+        "--sn-model",
+        default="basquin",
+        choices=runmod.SN_MODELS,
+        help="master curve converting the damage parameter to life; native life laws and the "
+        "calibration of plane constants are not affected",
+    )
+    parser.add_argument(
         "--calibration-archive",
         type=Path,
         default=None,
@@ -1388,6 +1419,7 @@ def main(cli_args=None) -> None:
                 plots=args.plots,
                 constants=args.constants,
                 survival_probability=args.survival_probability,
+                sn_model=args.sn_model,
                 calibration_archive=args.calibration_archive,
                 design_workbook=design_workbook,
             )

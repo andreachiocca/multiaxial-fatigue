@@ -77,6 +77,22 @@
   a resolution check (the three points again at twice npts_TVEIT; minor finding when the life
   moves by more than 0.05 decade).
 
+## Issue #102: AISI316L tensile fatigue limit adjustment (18 November 2026)
+
+- Branch `data/aisi316l-fatigue-limit` from `main` (`e6fa3f7`, includes PR #101).
+- Implemented Decision d114:
+  - Adjusted Janssens row tensile fatigue limit $\sigma_{-1}$ in `8_AISI316L.xlsx` via `set_summary` in `8_AISI316L.overlay.json` (from $278.5$ to $271.6\text{ MPa}$, staircase load level $235 \times 1.1558$, consistent with PSI Tveit calibration).
+  - Updated `expected_fingerprint` in `8_AISI316L.overlay.json` and `dataset_fingerprint` in `Experimental_Data/MANIFEST.json` to `5e2e99b9e3456f7d96a5dde8e66e4213e241cf88592a068d679506490824445d`.
+  - Bumped `IMPLEMENTATION_REVISION` to `2026-11-18` in `src/multifat/models/references.py`.
+  - Updated tests in `tests/test_dataset_import.py` (asserting $271.6\text{ MPa}$) and `tests/test_material_scope.py` (RFB reason expecting ratio $0.530$).
+  - Regenerated AISI316L rows in `examples/data/load_error_ranking.csv` and refreshed `load_error_ranking.manifest.json` and batch comparison manifests (`2026-11-18`). 21 models that depend on $\sigma_{-1}$ moved (improved RMS load error on AISI316L); 23 models without $\sigma_{-1}$ dependence and all other materials remain identical.
+- Checks: `ruff`, `black`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`, `tools/check_docs.py` (2026 links OK), `tools/check_scientific_reviews.py`, `examples/build_load_error_ranking.py --check`, `examples/batch_comparison.py check`, `pytest tests/methods -q` (1564 passed), `pytest tests/test_notation.py tests/test_dataset_classification.py -q` (683 passed).
+- Next action: PR closing #102.
+
+## PR #101: Unresolved decay warning at block limit (18 November 2026)
+
+- Merged in PR #101 into `main`: asserted `pytest.warns` on case-level evaluation when `max_blocks_TVEIT` is reached in `tests/test_tveit2025_end_rule.py`.
+
 ## Issue #81: Extension points, registry accessors and FatPy mapping (17 November 2026)
 
 - Branch `refactor/issue-81-extension-points` from `main` (commit `4d46d39`).
@@ -99,7 +115,7 @@
 - Checks: `ruff`, `black`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`,
   `tools/check_docs.py`, `tools/check_scientific_reviews.py`, `pytest tests/methods -q` (1563 passed),
   `pytest tests/test_fatpy.py tests/test_notation.py -q` (684 passed).
-- Next action: commit and PR closing #81.
+- Merged in #117 (closing #81).
 
 ## Issue #13, new methods from the supplied papers (16 November 2026)
 
@@ -134,8 +150,11 @@
   the circumscribed circle (others stay RSS, documented exception); EK range enforced; docs-only
   cleanup PR.
 - Branch `fix/matake-mcd-longest-chord`: done (pipeline before/after on all workbooks, ranking and
-  batch comparison regenerated, revision 2026-11-17).
-- Next action: EK range PR; then the docs-only cleanup PR.
+  batch comparison regenerated, revision 2026-11-17; merged in #115).
+- Branch `fix/ek-mean-stress-scope`: done (enforced -1.06 to 4.4 mean-stress ratio as LoadingScopeError;
+  0 outputs differ across workbooks; merged in #116).
+- Branch `docs/consistency-cleanup`: done (guides, docstrings, and bibliography references aligned;
+  merged in #118).
 
 ## Issue #18, Observation type (decision d113, 12 November 2026)
 
