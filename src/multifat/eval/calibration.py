@@ -54,6 +54,7 @@ def collect_uniaxial_series_and_fit(
         )
 
     load_cases = uniax_cases[material_name]["points"]
+    runout_cases = uniax_cases[material_name].get("runouts", [])
 
     for model in models:
         # accumulators for the nominal and extreme series
@@ -64,6 +65,11 @@ def collect_uniaxial_series_and_fit(
         cp_ext_vals: list[float] = []
         std_case_ids: list[int] = []
         ext_case_ids: list[int] = []
+
+        n_std_run_vals: list[float] = []
+        cp_std_run_vals: list[float] = []
+        n_ext_run_vals: list[float] = []
+        cp_ext_run_vals: list[float] = []
 
         # verify up front that every needed material parameter is supplied
         absent_params = [k for k in model.required_params() if params.get(k, None) is None]
@@ -111,12 +117,49 @@ def collect_uniaxial_series_and_fit(
                     cp_ext_vals.append(value_ext)
                     ext_case_ids.append(cid)
 
+        for p in runout_cases:
+            rid = int(p["case_id"])
+            Nf = float(p["Nf_cycles"])
+
+            if not (np.isfinite(Nf) and Nf > 0):
+                continue
+
+            s_mean, e_mean, s_amp, e_amp, harmonics = exp.extract_tensor(
+                data, material_name, rid, node=1, include_harmonics=True, source_key="runouts"
+            )
+
+            evaluation = model.evaluate_case(
+                S0=s_mean,
+                E0=e_mean,
+                S1=s_amp,
+                E1=e_amp,
+                params=params,
+                R_list=R_list,
+                harmonics=harmonics,
+            )
+
+            if "" in evaluation.values:
+                value_std = float(evaluation.values[""])
+                if np.isfinite(value_std) and value_std > 0:
+                    n_std_run_vals.append(Nf)
+                    cp_std_run_vals.append(value_std)
+
+            if "_ext" in evaluation.values:
+                value_ext = float(evaluation.values["_ext"])
+                if np.isfinite(value_ext) and value_ext > 0:
+                    n_ext_run_vals.append(Nf)
+                    cp_ext_run_vals.append(value_ext)
+
         # Turn the accumulators into arrays
         n_std_arr = np.asarray(n_std_vals, dtype=float)
         cp_std_arr = np.asarray(cp_std_vals, dtype=float)
+        n_std_run_arr = np.asarray(n_std_run_vals, dtype=float)
+        cp_std_run_arr = np.asarray(cp_std_run_vals, dtype=float)
 
         n_ext_arr = np.asarray(n_ext_vals, dtype=float)
         cp_ext_arr = np.asarray(cp_ext_vals, dtype=float)
+        n_ext_run_arr = np.asarray(n_ext_run_vals, dtype=float)
+        cp_ext_run_arr = np.asarray(cp_ext_run_vals, dtype=float)
 
         # Native life comes from the constitutive law; never fit its diagnostic index.
         caps = capabilities_for_model(model)
@@ -124,12 +167,26 @@ def collect_uniaxial_series_and_fit(
         fit_dp_curve = caps.dp_comparison and caps.dp_reference == "master_curve"
         # Perform the fits
         std_fit = (
-            fit_sn_curve(n_std_arr, cp_std_arr, stdnum=stdnum, model=sn_model)
+            fit_sn_curve(
+                n_std_arr,
+                cp_std_arr,
+                stdnum=stdnum,
+                model=sn_model,
+                N_runout=n_std_run_arr,
+                DP_runout=cp_std_run_arr,
+            )
             if len(n_std_arr) > 0 and fit_dp_curve
             else None
         )
         ext_fit = (
-            fit_sn_curve(n_ext_arr, cp_ext_arr, stdnum=stdnum, model=sn_model)
+            fit_sn_curve(
+                n_ext_arr,
+                cp_ext_arr,
+                stdnum=stdnum,
+                model=sn_model,
+                N_runout=n_ext_run_arr,
+                DP_runout=cp_ext_run_arr,
+            )
             if len(n_ext_arr) > 0 and fit_dp_curve
             else None
         )

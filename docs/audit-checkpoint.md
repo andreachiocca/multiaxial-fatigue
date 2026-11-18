@@ -1,5 +1,20 @@
 # Development continuation checkpoint
 
+## Issue #38 follow-up: DP_inf refactor and censored S–N fitting with run-outs (18 November 2026)
+
+- Branch `feat/sn-censored-runouts` from `main` (`35401a8`, includes PR #120).
+- Implemented Decision d115:
+  - Refactored master-curve fatigue limit parameter from `sigma_inf` to `DP_inf` (with `sigma_inf` kept as a backward-compatible alias in `params` and `param_se`). Recorded in `docs/notation.md` and `docs/method-audit.md`.
+  - Added extraction of design run-outs from `data[material]["runouts"]` in `extract_uniaxial_tension()` and `extract_pure_torsion()`, stored in `out[material]["runouts"]`.
+  - Added `source_key` parameter (defaulting to `"cases"`) in `extract_tensor()`.
+  - In `collect_uniaxial_series_and_fit()`, evaluate both failure cases and design run-out cases, passing `N_runout` and `DP_runout` to `fit_sn_curve()`.
+  - Implemented Tobit-type censored log-likelihood optimization via `scipy.optimize.minimize` (L-BFGS-B with `log_ndtr`) in `_fit_nonlinear()` when design run-outs are present.
+  - Enforced the physical upper bound `DP_inf < min(DP_failures)` in `sn_curves.py`.
+  - Verified on AISI316L: all 11 design failures receive finite life predictions, `DP_inf = 271.57 MPa < 271.60 MPa`, eliminating the selection bias artifact where lower-stress failures were predicted as infinite lives.
+  - Added unit tests in `tests/test_sn_curves.py` (all 9 tests passing).
+- Checks: `ruff`, `black`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`, `tools/check_docs.py`, `tools/check_scientific_reviews.py`, `pytest tests/methods -q` (1564 passed), `pytest tests/test_notation.py tests/test_sn_curves.py -q`.
+- Next action: PR addressing Issue #38 remaining deliverables.
+
 ## Issue #102: AISI316L tensile fatigue limit adjustment (18 November 2026)
 
 - Branch `data/aisi316l-fatigue-limit` from `main` (`e6fa3f7`, includes PR #101).

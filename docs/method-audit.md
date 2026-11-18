@@ -101,15 +101,21 @@ to life (`multifat.eval.sn_curves`), fitted on ln DP of the uniaxial R = -1 desi
 | `--sn-model` | Curve | Parameters | Source |
 |---|---|---|---|
 | `basquin` (default) | DP = A N^b | A, b | Basquin; the established fit, bit for bit |
-| `kohout_vechet` | DP = sigma_inf (N/(N+C))^b | sigma_inf, C, b | Kohout & Vechet (2001), Eq. (H2), doi:10.1016/S0142-1123(00)00082-7 |
-| `stromeyer` | DP = a N^b + sigma_inf | a, b, sigma_inf | Stromeyer |
+| `kohout_vechet` | DP = DP_inf (N/(N+C))^b | DP_inf, C, b | Kohout & Vechet (2001), Eq. (H2), doi:10.1016/S0142-1123(00)00082-7 |
+| `stromeyer` | DP = a N^b + DP_inf | a, b, DP_inf | Stromeyer |
 
-Nonlinear fits use `scipy.optimize.least_squares` (trust-region, bounded) from several starts
-derived from the Basquin fit. A fit is rejected with its reason (the model is then skipped, never
-silently replaced by Basquin) with fewer than 2p design tests, without convergence, with a
-parameter on a search bound (b in [-3, 0), C in [1e2, 1e12]) or with a singular covariance. Below
-sigma_inf the predicted life is infinite: it is written as `inf`, counted in the run report and in
-the `n_nonfinite` column of the statistics, and has no life error but a load error. The Kohout &
+Nonlinear fits use `scipy.optimize.least_squares` (trust-region, bounded) and, when design run-outs
+are present, bounded maximum likelihood with a Tobit-type censored log-likelihood
+(`scipy.optimize.minimize`, L-BFGS-B). Starting points are derived from the Basquin fit. Kohout &
+Vechet and Stromeyer originally formulated their models for uniaxial stress sigma; in multifat the
+master curve maps an arbitrary Damage Parameter DP to life, so the fatigue-limit asymptote is
+DP_inf having the units of the evaluated DP (`sigma_inf` is kept as a backward-compatible alias).
+A physical upper bound DP_inf < min(DP_failures) prevents low-stress failures from being predicted
+as infinite lives. A fit is rejected with its reason (the model is then skipped, never silently
+replaced by Basquin) with fewer than 2p design tests, without convergence, with a parameter on a
+search bound (b in [-3, 0), C in [1e2, 1e12]) or with a singular covariance. Below DP_inf the
+predicted life is infinite: it is written as `inf`, counted in the run report and in the
+`n_nonfinite` column of the statistics, and has no life error but a load error. The Kohout &
 Vechet whole-range form (W) is not offered: it needs low-cycle data or the strength sigma_1, which
 has no counterpart for an arbitrary DP. Plane constants (k_FI, k_FS, ...) are still calibrated on
 the Basquin scatter objective, and native life laws (MDC, MMCCM, MOREL, TVEIT2025) and the
