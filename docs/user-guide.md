@@ -134,6 +134,9 @@ uv run multifat-run --model SINES --material 42CrMo4_Santus --no-plots
 uv run multifat-run --model FIN --material 42CrMo4_Santus --shear-amplitude-algorithm mce_harmonic
 uv run multifat-run --model FS --material 42CrMo4_Santus --shear-amplitude-algorithm longest_chord
 
+# Master curve with a fatigue limit (Kohout & Věchet 2001) instead of Basquin (also on multifat-pipeline)
+uv run multifat-run --model SINES --material 42CrMo4_QT --sn-model kohout_vechet
+
 # Design curve with a 90 % survival probability instead of the median (also on multifat-pipeline)
 uv run multifat-run --model SINES --material 42CrMo4_Santus --survival-probability 0.9
 ```

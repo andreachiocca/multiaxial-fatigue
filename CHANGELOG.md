@@ -578,6 +578,16 @@ of names and records one distinction FatPy makes; no multifat name was renamed.
   - ambiguities and unit inconsistencies;
   - spelling issues.
 
+### Master-curve models (issue #38)
+
+- `--sn-model {basquin,kohout_vechet,stromeyer}` on `multifat-run` and `multifat-pipeline`
+  (`multifat.eval.sn_curves`): Basquin (default, unchanged), Kohout & Vechet (2001) Eq. (H2) and
+  Stromeyer, fitted on ln DP with `scipy.optimize.least_squares` (SciPy is now a dependency,
+  imported only for the nonlinear models). Unidentifiable fits are rejected with their reason;
+  infinite lives below the fatigue limit are kept, counted in the run report and in the new
+  `n_nonfinite` statistics column. CSVs end with `SN_model`. Plane-constant calibration and native
+  life laws are unchanged. Known problems are documented in `docs/method-audit.md`.
+
 ### Methods
 
 - New criterion `ZHANGYAO`, Zhang & Yao (2011), catalogue N06 (issue #13).

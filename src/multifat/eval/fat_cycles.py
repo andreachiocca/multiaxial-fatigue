@@ -109,6 +109,8 @@ def fatigue_plots(
     F_runout=None,
     N_runout=None,
     N_pred_runout=None,
+    # Master curve DP(N) to draw instead of A N^B (non-Basquin S-N models, issue #38)
+    curve=None,
 ):
     """
     Build two fatigue diagrams:
@@ -196,7 +198,7 @@ def fatigue_plots(
     else:
         N_grid = np.linspace(c_lo, c_hi, n_curve)
 
-    F_curve = A * (N_grid**B)
+    F_curve = curve(N_grid) if curve is not None else A * (N_grid**B)
 
     # =========================
     # 1) Wöhler plane
