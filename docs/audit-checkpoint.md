@@ -54,6 +54,14 @@
   sets and confidence; only the revision differs. New record for AISI316L (no inputs file, Goodman
   A = 271.6/585 = 0.464; points 277.4, 335.2, 381.4 MPa of Janssens; C 3.16, K 3.28e-4, L 5.32;
   37 equivalent sets; confidence medium, six minor findings).
+- Evidence (18 November, d2394a7 against main `35401a8`): full suite 3528 passed, 67 skipped,
+  128 xfailed; the 6 failures are `tests/test_sn_curves.py` only, because the local environment
+  lacks scipy, which #40 made a dependency (the same 6 fail on main here; CI installs it from the
+  lock). Lint 6/6. Regression snapshot: exit codes identical (869 runs, 447 nonzero in both);
+  51 outputs and 19 logs differ, every changed file passes the automated check (967 files, of
+  which 117 FABEST, checked by counts only); the six committed records are reused, also by the
+  transfer; Al7075_T651_Wang is calibrated at run time. 5829 s on main, 14 796 s on the branch
+  (the full suite ran alongside for its first 20 minutes).
 - Evidence (16 November, main `904e1f1` merged in; conflicts only in CHANGELOG and this file):
   full suite 3443 passed, 67 skipped, 128 xfailed; black, ruff, both generators (--check),
   check_docs and check_scientific_reviews pass. Regression snapshot against main `904e1f1` (main
@@ -80,6 +88,9 @@
 - Open questions for the maintainer (in the PR): design set of a native-life model (Flag 0 for the
   three calibration tests only?); confidence for other models; TVEIT2025 run time in `--models all`
   and in the next regeneration of the homepage ranking and batch comparison (not regenerated here).
+- Open question added on 18 November: should the reuse identity of TVEIT2025 records hold a
+  TVEIT-specific version instead of the repository-wide implementation revision, which every
+  numerical change to any model bumps?
 - Next action: answer the maintainer's review of #114; later modes `all_eligible` and `subset`
   (#14); a faster integration (compiled loop or parallel tests) in its own PR, with
   a resolution check (the three points again at twice npts_TVEIT; minor finding when the life
