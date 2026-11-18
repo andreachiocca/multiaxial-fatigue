@@ -36,6 +36,16 @@
   calibration and reuses the records (34 s). The PDF text matches the source (16 pages, no
   unresolved reference). No AISI316L example: its calibration points are unpublished PSI tests.
   Documentation only, so the snapshot above still holds; lint 6/6.
+- 18 November: main `7dcb9a7` (#115 to #118) merged in (daffed6; conflicts in CHANGELOG and this
+  file only; `cli/pipeline.py` merged cleanly with the #117 refactor). The two findings of the
+  automated review of #114 fixed in `cli/pipeline.py`: (P1) a model's own calibration runs only
+  when none of its declared parameters is entered by hand (`--constants` or a Summary column);
+  with only some entered the model is skipped with the reason (status `partly_supplied`), instead
+  of fitting C, K, L with other inputs than those of its evaluation; (P2) a cross-batch transfer
+  also searches `<target>_from_<design>`, where it archives its record, so a repeat reuses it.
+  Five new tests, all failing on the previous code. The method guide no longer names
+  `LOAD_ERROR_SKIP` (replaced by the `load_error` capability in #117). Full suite 3520 passed,
+  67 skipped, 128 xfailed; lint 6/6. Regression snapshot against main `7dcb9a7`: running.
 - Evidence (16 November, main `904e1f1` merged in; conflicts only in CHANGELOG and this file):
   full suite 3443 passed, 67 skipped, 128 xfailed; black, ruff, both generators (--check),
   check_docs and check_scientific_reviews pass. Regression snapshot against main `904e1f1` (main

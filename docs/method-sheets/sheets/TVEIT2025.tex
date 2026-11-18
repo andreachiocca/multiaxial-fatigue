@@ -65,7 +65,9 @@ point of lowest error is kept whose closed form has a unique root and whose time
 with it within 0.1 decade. Each calibration reports a confidence (high, medium, low) from named
 findings. A \texttt{--constants} file takes precedence; it may also set \texttt{Sigm1\_TVEIT} and
 \texttt{Taum1\_TVEIT}, which replace the workbook \texttt{Sigm1}, \texttt{Taum1} for this model only,
-since the constants hold only with the $\fm$, $\tm$ they were calibrated with.
+since the constants hold only with the $\fm$, $\tm$ they were calibrated with. The calibration runs only
+when none of the model's parameters is entered by hand (constants file or Summary); with only some of
+them entered, the model is skipped with the reason.
 
 \block{Life} Native life law: the integration of Eqs.~\eqref{eq:tveit-beta}--\eqref{eq:tveit-dbeta} to
 $D=1$ (\texttt{life\_prediction = "native"}); $N_f=\infty$ when the path is enclosed by the moved

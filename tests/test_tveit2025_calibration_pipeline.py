@@ -103,6 +103,67 @@ def test_supplied_constants_are_not_calibrated(tmp_path, synthetic):
     assert outcome.status == "ok" and "calibration confidence" not in outcome.notes
 
 
+def _no_fit(monkeypatch):
+    def fail(*args, **kwargs):
+        raise AssertionError("calibrated")
+
+    monkeypatch.setattr(tc, "fit_ckl", fail)
+
+
+@pytest.mark.parametrize(
+    "by_hand",
+    [{"Sigm1_TVEIT": 400.0}, {"npts_TVEIT": 801}, {"A_TVEIT": TRUE["A"]}],
+    ids=["limit", "setting", "A"],
+)
+def test_partly_supplied_constants_are_not_calibrated(tmp_path, synthetic, monkeypatch, by_hand):
+    # The calibration would fit C, K and L with other inputs than those of the evaluation
+    _no_fit(monkeypatch)
+    constants = tmp_path / "c.json"
+    record = {"hand_entered_constants": by_hand, "material_id": "Syn", "provenance": {"by": "t"}}
+    constants.write_text(json.dumps(record), encoding="utf-8")
+    (outcome,), sidecar = _run(synthetic, tmp_path / "res", constants=constants)
+    entry = sidecar["model_calibrations"]["TVEIT2025"]
+    (key,) = by_hand
+    assert entry["status"] == "partly_supplied" and key in entry["reason"]
+    assert outcome.status == "skipped" and "entered by hand" in outcome.reason
+
+
+def test_a_summary_constant_is_entered_by_hand(tmp_path, monkeypatch):
+    # A Summary column named like a declared parameter is passed to the model, so it counts too
+    monkeypatch.setattr(tc, "CALIBRATIONS_DIR", tmp_path / "Calibrations")
+    _no_fit(monkeypatch)
+    rows = [_row(_N(0, s), 0, s) for s in (450.0, 480.0, 520.0, 600.0)]
+    workbook = write_workbook(tmp_path / "Syn.xlsx", rows=rows, extra_summary={"A_TVEIT": 0.3})
+    (outcome,), sidecar = _run(workbook, tmp_path / "res")
+    assert sidecar["model_calibrations"]["TVEIT2025"]["status"] == "partly_supplied"
+    assert outcome.status == "skipped" and "A_TVEIT" in outcome.reason
+
+
+def test_a_repeated_transfer_reuses_its_calibration(tmp_path, synthetic, monkeypatch):
+    # A transfer archives its record under <target>_from_<design>; the next one must find it
+    target = write_workbook(tmp_path / "Tgt.xlsx", rows=[_row(_N(0, 500.0), 0, 500.0)] * 2)
+    archive = tmp_path / "archive"
+
+    def transfer(results):
+        run_workbook(
+            target,
+            models=["TVEIT2025"],
+            results_dir=results,
+            design_workbook=synthetic,
+            calibration_archive=archive,
+        )
+        path = results / "Tgt_from_Syn_calibration.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    first = transfer(tmp_path / "a")
+    assert first["model_calibrations"]["TVEIT2025"]["status"] == "calibrated"
+    _no_fit(monkeypatch)
+    second = transfer(tmp_path / "b")
+    entry = second["model_calibrations"]["TVEIT2025"]
+    assert entry["reused_from"]["calibration_id"] == first["calibration_id"]
+    assert second["params"] == first["params"]
+
+
 def test_not_calibrated_with_no_calibrate(tmp_path, synthetic):
     (outcome,), sidecar = _run(synthetic, tmp_path / "res", calibrate=False)
     assert "model_calibrations" not in sidecar

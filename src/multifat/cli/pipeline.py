@@ -591,7 +591,7 @@ def _calibrate_by_models(
     material: str,
     names: list[str],
     supplied: set[str],
-    archive: Path,
+    archives: list[Path],
     data: dict | None,
 ) -> None:
     """Calibrate the constants of the selected models that have a procedure of their own.
@@ -602,10 +602,16 @@ def _calibrate_by_models(
     JSON-ready dict with "status" ("calibrated" or the reason it is not), "reason", "params",
     "source", "design_case_ids" and optionally "confidence" (multifat.eval.calibration_confidence).
     The result is kept under ``model_calibrations``; its constants join ``params``, and the tests
-    behind them become design points (Flag 0) of the models that adopt them. Supplied constants
-    take precedence: a model is not calibrated when one of its constants is supplied. A
-    calibration that cannot be made leaves the constants absent, with its reason under
-    ``unidentified``, so the model is skipped with that reason.
+    behind them become design points (Flag 0) of the models that adopt them. ``archives`` are the
+    record folders searched for an identical earlier calibration.
+
+    Constants entered by hand (``supplied``, from ``--constants``, or a workbook Summary column
+    named like a declared parameter) take precedence, and the procedure uses none of them. So a
+    model is not calibrated when all its ``calibrated_params`` are entered by hand, and neither
+    when only some of its declared parameters are (status "partly_supplied"): constants fitted
+    with other inputs than those of the evaluation would not hold. A calibration that is not made
+    leaves the constants absent, with its reason under ``unidentified``, so the model is skipped
+    with that reason.
     """
     from multifat.eval.calibration_confidence import headline
     from multifat.models.registry import get_models
@@ -613,10 +619,30 @@ def _calibrate_by_models(
     for model in get_models(names):
         procedure = getattr(model, "calibrate_constants", None)
         own = set(getattr(model, "calibrated_params", ()))
-        if procedure is None or not own or own & supplied:
+        if procedure is None or not own:
             continue
         if data is None:
             data, _ = runmod.load_material(workbook)
+        declared = set(model.required_params()) | set(getattr(model, "optional_params", {}))
+        summary = runmod.build_params(runmod.exp.get_material_properties(data, material))
+        by_hand = (set(supplied) | {k for k, v in summary.items() if v is not None}) & declared
+        if own <= by_hand:
+            continue
+        if by_hand:
+            why = (
+                f"{model.name} not calibrated: {', '.join(sorted(by_hand))} entered by hand "
+                "(--constants or the workbook Summary), and its calibration would not use "
+                f"{'it' if len(by_hand) == 1 else 'them'}; enter all of "
+                f"{', '.join(sorted(own))}, or none of its constants"
+            )
+            print("   " + why)
+            sidecar.setdefault("model_calibrations", {})[model.name] = {
+                "status": "partly_supplied",
+                "reason": why,
+                "params": {},
+            }
+            sidecar.setdefault("unidentified", {}).update({k: why for k in own - by_hand})
+            continue
         print(f"   {model.name}: calibrating {', '.join(sorted(own))} by its own procedure")
         try:
             result = procedure(
@@ -624,7 +650,7 @@ def _calibrate_by_models(
                 data,
                 material,
                 progress=lambda text: print("   " + text),
-                archives=[archive],
+                archives=list(archives),
             )
         except Exception as exc:  # carry on with the other models
             result = {"status": "failed", "reason": f"{type(exc).__name__}: {exc}", "params": {}}
@@ -807,13 +833,15 @@ def run_workbook(
         sidecar["status"] = "not_applicable"
         sidecar["reason"] = "calibration not requested (--no-calibrate)"
     if calibrate:
+        # A transfer archives its record under <target>_from_<design>, a run under its material
+        archive_root = Path(calibration_archive or results_dir / "calibrations")
         _calibrate_by_models(
             sidecar,
             workbook,
             constants_material,
             selected,
             set(supplied),
-            Path(calibration_archive or results_dir / "calibrations") / constants_material,
+            list(dict.fromkeys([archive_root / constants_material, archive_root / material])),
             data if design_workbook is None else None,
         )
     if supplied:

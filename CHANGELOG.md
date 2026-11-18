@@ -15,6 +15,13 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
   type, Goodman); `C`, `K`, `L` by Eq. (25) on three axial R = -1 failures of the source of the
   Summary limits, with Eq. (25) profiled over `C` because uniaxial data do not identify it.
   `--constants` takes precedence; `--no-calibrate` turns it off.
+- Values entered by hand (`--constants`, or a Summary column named like a declared parameter)
+  are not used by a model's own calibration, so it runs only when none is entered. With only some
+  entered (e.g. `Sigm1_TVEIT`, `npts_TVEIT` or `A_TVEIT` alone), the model is not calibrated and
+  is skipped with the reason (status `partly_supplied`), instead of being fitted with other
+  inputs than those of its evaluation (review of #114).
+- A repeated cross-batch transfer reuses its calibration: the record archived under
+  `<target>_from_<design>` is searched too (review of #114).
 - New extension point for models that calibrate their constants by their own procedure
   (`calibrated_params`, `calibrate_constants`): the result is kept under
   `model_calibrations.<MODEL>` in the sidecar and the archived record, and its tests become

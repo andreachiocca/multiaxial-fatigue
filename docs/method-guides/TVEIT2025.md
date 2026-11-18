@@ -61,9 +61,15 @@ Starting from $\boldsymbol{\alpha} = \mathbf{0}$ and $D = 0$, failure occurs at 
 supplied, `multifat-pipeline` calibrates `A_TVEIT`, `C_TVEIT`, `K_TVEIT` and `L_TVEIT` by the
 procedure of the authors (Tveit et al. 2025, Sect. 4; [`eval/tveit2025_calibration.py`](../../src/multifat/eval/tveit2025_calibration.py)),
 on any fatigue-life workbook. The model provides it through the pipeline's model-calibration
-extension point (`calibrated_params`, `calibrate_constants`); `--no-calibrate` turns it off, and a
-`--constants` file takes precedence. `multifat-run` skips models without constants, and it does
-not compute the load error of `TVEIT2025` (`LOAD_ERROR_SKIP = {"TVEIT2025"}`).
+extension point (`calibrated_params`, `calibrate_constants`); `--no-calibrate` turns it off.
+Values entered by hand take precedence: a `--constants` file, or a Summary column named like a
+declared parameter (`A_TVEIT`, `Sigm1_TVEIT`, `npts_TVEIT`, ...). The calibration uses none of
+them, so it runs only when none is entered. With all four of `A_TVEIT`, `C_TVEIT`, `K_TVEIT` and
+`L_TVEIT` entered, those are used; with only some of the parameters entered, the pipeline does
+not calibrate and skips the model with the reason (status `partly_supplied`), because constants
+fitted with other inputs than those of the evaluation would not hold. `multifat-run` skips models
+without constants, and it does not compute the load error of `TVEIT2025` (its comparison
+capabilities set `load_error = False`, `models/comparison.py`).
 
 1. **Fatigue limits.** $f_{-1}$ and $t_{-1}$ are the workbook's own Summary values (R = −1 rows).
 2. **Mean-stress constant $A$**, in the order of the authors:
