@@ -2049,6 +2049,23 @@ def main(argv=None) -> None:
         action="store_true",
         help="Add method entries to the plot legends.",
     )
+    parser.add_argument(
+        "--rank",
+        action="store_true",
+        help="Compute and report cross-material relative RMS load error ranking and family selection (issue #57).",
+    )
+    parser.add_argument(
+        "--rank-min-tests",
+        type=int,
+        default=3,
+        help="Minimum assessment failures per cell for the ranking (default: 3).",
+    )
+    parser.add_argument(
+        "--rank-min-coverage",
+        type=int,
+        default=4,
+        help="Minimum material coverage K for family selection (default: 4).",
+    )
 
     cli_args, _unrecognized = parser.parse_known_args(argv)
 
@@ -2236,6 +2253,23 @@ def main(argv=None) -> None:
         out_csv=output_root / "summary_error_stats_with_styles.csv",
         out_tex=output_root / "summary_error_stats_table.tex",
     )
+
+    if cli_args.rank and "Error_load" in frame.columns:
+        from multifat.cli.rank import format_ranking_summary
+        from multifat.report.ranking import evaluate_ranking
+
+        rank_res = evaluate_ranking(
+            frame,
+            min_tests=cli_args.rank_min_tests,
+            min_coverage=cli_args.rank_min_coverage,
+        )
+        if not rank_res.method_ranking.empty:
+            rank_res.method_ranking.to_csv(output_root / "summary_ranking.csv", index=False)
+            rank_res.family_selection.to_csv(output_root / "family_selection.csv", index=False)
+            rank_res.cell_stats.drop(columns=["_errors"]).to_csv(
+                output_root / "ranking_cell_stats.csv", index=False
+            )
+            print("\n" + format_ranking_summary(rank_res))
 
     materials = sorted(frame["Material"].dropna().unique().tolist())
     if not materials:

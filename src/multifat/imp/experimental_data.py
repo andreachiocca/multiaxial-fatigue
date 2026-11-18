@@ -698,6 +698,7 @@ def extract_tensor(
     case_id: int,
     node: int = 1,
     include_harmonics: bool = False,
+    source_key: str = "cases",
 ) -> (
     Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
     | Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]
@@ -720,7 +721,7 @@ def extract_tensor(
     When phase columns are not present in the Excel sheet, the importer stores
     a default in-phase cycle (S_cos=0, E_cos=0).
     """
-    case = data[material]["cases"][case_id]
+    case = data[material][source_key][case_id]
 
     S0 = np.asarray(case[node][1]["stress"], dtype=float)
     E0 = np.asarray(case[node][1]["strain"], dtype=float)
@@ -877,8 +878,10 @@ def extract_uniaxial_tension(
     for material_name, mat_block in data.items():
         mat_props = mat_block.get("material", {})
         cases = mat_block.get("cases", {})
+        runouts = mat_block.get("runouts", {})
 
         points: List[Dict[str, float]] = []
+        runout_points: List[Dict[str, float]] = []
 
         for case_id, case in cases.items():
             # Extract tensors directly from the existing structure
@@ -910,13 +913,45 @@ def extract_uniaxial_tension(
                     "sigma_min_MPa": smin,
                     "sigma_a_MPa": float(sigma_a),
                     "eps_a": float(eps_a),
+                    "is_runout": False,
                 }
             )
 
-        if points:
+        for runout_id, case in runouts.items():
+            Smax = np.asarray(case[node][1]["stress"], dtype=float)
+            Emin = np.asarray(case[node][2]["strain"], dtype=float)
+            Smin = np.asarray(case[node][2]["stress"], dtype=float)
+            Emax = np.asarray(case[node][1]["strain"], dtype=float)
+
+            if not is_design_test(
+                case, "tension", node=node, rtol_R=rtol_R, atol_R=atol_R,
+                rtol_other=rtol_uniax, atol=atol_uniax,
+            ):  # fmt: skip
+                continue
+            smax = max(float(Smax[1, 1]), float(Smin[1, 1]))
+            smin = min(float(Smax[1, 1]), float(Smin[1, 1]))
+            sigma_a = 0.5 * (smax - smin)
+            eps_a = 0.5 * abs(float(Emax[1, 1]) - float(Emin[1, 1]))
+
+            Nf = float(case["meta"]["Nf_cycles"])
+
+            runout_points.append(
+                {
+                    "case_id": int(runout_id),
+                    "Nf_cycles": Nf,
+                    "sigma_max_MPa": smax,
+                    "sigma_min_MPa": smin,
+                    "sigma_a_MPa": float(sigma_a),
+                    "eps_a": float(eps_a),
+                    "is_runout": True,
+                }
+            )
+
+        if points or runout_points:
             out[material_name] = {
                 "material": mat_props,  # keep all material properties for convenience
                 "points": points,
+                "runouts": runout_points,
             }
 
     return out
@@ -940,6 +975,7 @@ def extract_pure_torsion(
     out: Dict[str, Any] = {}
     for material_name, mat_block in data.items():
         points: List[Dict[str, float]] = []
+        runout_points: List[Dict[str, float]] = []
         for case_id, case in mat_block.get("cases", {}).items():
             if not is_design_test(
                 case, "torsion", node=node, rtol_R=rtol_R, atol_R=atol_R,
@@ -954,10 +990,32 @@ def extract_pure_torsion(
                     "case_id": int(case_id),
                     "Nf_cycles": float(case["meta"]["Nf_cycles"]),
                     "tau_a_MPa": 0.5 * abs(tmax - tmin),
+                    "is_runout": False,
                 }
             )
-        if points:
-            out[material_name] = {"material": mat_block.get("material", {}), "points": points}
+        for runout_id, case in mat_block.get("runouts", {}).items():
+            if not is_design_test(
+                case, "torsion", node=node, rtol_R=rtol_R, atol_R=atol_R,
+                rtol_other=rtol_pure, atol=atol_pure,
+            ):  # fmt: skip
+                continue
+            Smax = np.asarray(case[node][1]["stress"], dtype=float)
+            Smin = np.asarray(case[node][2]["stress"], dtype=float)
+            tmax, tmin = float(Smax[0, 1]), float(Smin[0, 1])
+            runout_points.append(
+                {
+                    "case_id": int(runout_id),
+                    "Nf_cycles": float(case["meta"]["Nf_cycles"]),
+                    "tau_a_MPa": 0.5 * abs(tmax - tmin),
+                    "is_runout": True,
+                }
+            )
+        if points or runout_points:
+            out[material_name] = {
+                "material": mat_block.get("material", {}),
+                "points": points,
+                "runouts": runout_points,
+            }
     return out
 
 

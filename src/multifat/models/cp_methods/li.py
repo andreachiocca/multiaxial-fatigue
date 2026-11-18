@@ -31,6 +31,8 @@ from ..utils.param_utils import get_param
 
 class LI:
     name = "LI"
+    fitted_constants = ("L_LI",)
+    input_classes = ("elastic constants",)
     optional_params = {"L_LI": "1.0"}
     # Source defines the plane shear range over the cycle (longest chord), see SHEAR_RULES.
     np_shear_rule = "longest_chord"

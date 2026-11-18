@@ -596,4 +596,30 @@ ledgers.
 * **Rationale:** The published limit $278.5\text{ MPa}$ lies strictly above 5 axial $R = -1$ failures (two at $271.6\text{ MPa}$ and three at $277.4\text{ MPa}$). Any criterion with a sharp threshold (and TVEIT2025) predicts infinite life or zero damage for observed failures below the limit. Failures and run-outs overlap near the staircase limit ($271.6$ and $277.4\text{ MPa}$). Setting $\sigma_{-1} = 271.6\text{ MPa}$ (the staircase level $235\text{ MPa} \times 1.1558$, agreed with PSI who supplied the data and matching the PSI calibration of Tveit) places the 3 failures at $277.4\text{ MPa}$ above the limit and the 2 at $271.6\text{ MPa}$ directly on it (one with $2.47 \times 10^6$ cycles, outlasting the $2 \times 10^6$ reference).
 * **Effect:** Only AISI316L results move (models that depend on $\sigma_{-1}$). Models without $\sigma_{-1}$ dependence and other materials remain unchanged. `IMPLEMENTATION_REVISION` bumped to 2026-11-18.
 
+### d115
+* **Date:** 2026-11-18
+* **Topic:** Master-curve fatigue limit asymptote $\mathrm{DP}_\infty$ and censored S–N fitting with run-outs (Issue #38 follow-up)
+* **Status:** Active
+* **Decision:**
+  1. Refactor the master-curve horizontal asymptote parameter from `sigma_inf` to `DP_inf` (with `sigma_inf` preserved as a backward-compatible alias in `params` and `param_se`). The symbol names the fatigue-limit threshold in the units of the evaluated Damage Parameter $\mathrm{DP}$ (stress, strain, or energy).
+  2. Implement censored S–N fitting with run-outs using a Tobit-type log-likelihood when design run-outs are present in the dataset.
+  3. Enforce the physical boundary constraint $\mathrm{DP}_\infty < \min(\mathrm{DP}_{\text{failures}})$, ensuring that specimens that experienced fatigue failure are never predicted to have infinite life.
+* **Rationale:** The symbol $\sigma_\infty$ assumes stress dimensions, which is a misnomer for strain- and energy-based criteria. Furthermore, unconstrained fitting of Kohout–Věchet and Stromeyer on failures alone produced $\sigma_\infty = 274.19\text{ MPa}$ on AISI316L, higher than the lowest failure stress ($271.6\text{ MPa}$), turning real failures into infinite-life predictions and inducing severe selection bias in finite-life statistics. Bounding $\mathrm{DP}_\infty$ below the minimum failure load and using design run-outs to anchor the likelihood resolves the selection bias while keeping default Basquin regression unchanged.
+* **Effect:** Default Basquin regression is bit-for-bit unchanged. On materials with design run-outs evaluated with `--sn-model kohout_vechet` or `--sn-model stromeyer`, all design failures receive finite life predictions and $\mathrm{DP}_\infty$ reflects both failure and run-out evidence.
+
+### d116
+* **Date:** 2026-11-18
+* **Topic:** Accuracy KPI, complexity axis and family-wise selection rule for criteria comparison (issue #57)
+* **Status:** Active
+* **Decision:**
+  1. Establish the relative RMS load error against the material median as the central cross-material accuracy KPI $Z_m = \frac{1}{K_m}\sum_k \ln(R_{mk} / \operatorname{med}_{m'} R_{m'k})$, with bootstrap standard error $\mathrm{SE}(Z_m)$ estimated from test-level resampling within each material.
+  2. Keep complexity as an explicit two-count axis $(p_{\mathrm{in}}, p_{\mathrm{fit}})$ reported beside $Z_m$ and never folded into an arbitrary composite loss:
+     - $p_{\mathrm{fit}}$ counts quantities fitted on fatigue data (2 for master-curve models + calibrated plane constants; or native-law terms);
+     - $p_{\mathrm{in}}$ counts distinct experimental characterisation classes required beyond the calibration paths.
+  3. Adopt the family-wise 1-SE selection rule: filter methods by material coverage ($K_m \ge K_{\min}$), identify statistically indistinguishable candidates ($Z_m \le Z_{\mathrm{best}} + \mathrm{SE}_{\mathrm{best}}$) within each family, and select the simplest model (lowest $p_{\mathrm{in}}$, then lowest $p_{\mathrm{fit}}$, then lowest $Z$).
+  4. Provide the ranking tool via `multifat-rank` and `multifat-compare --rank`, exporting `summary_ranking.csv`, `family_selection.csv`, and `ranking_cell_stats.csv`.
+* **Rationale:** RMS load error combines bias and scatter in physical ln-load units. Scoring relative to the material median prevents dataset difficulty or sample size from dominating the ranking. Complexity counting by experimental characterisation classes approximates the testing cost of introducing a new material. The 1-SE selection rule provides a principled, reproducible, Occam's-razor criterion for identifying top-performing methods.
+* **Effect:** No numerical changes to existing simulation pipelines or calibrated constants. Registered models expose `fitted_constants` and `input_classes`. Users and review article analyses can generate cross-material rankings and family selections reproducible across pipelines.
+
+
 

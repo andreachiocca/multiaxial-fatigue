@@ -84,6 +84,8 @@ def _fatemi_socie_plane_value(
 
 class FatemiSocie:
     name = "FS"
+    fitted_constants = ("k_FS",)
+    input_classes = ("elastic constants", "static strength")
     # Source defines the plane shear range over the cycle (longest chord), see SHEAR_RULES.
     np_shear_rule = "longest_chord"
 

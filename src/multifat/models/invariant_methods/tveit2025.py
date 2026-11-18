@@ -328,6 +328,8 @@ class Tveit2025:
     comparison_capabilities = ComparisonCapabilities(
         life_prediction="native", dp_comparison=False, dp_reference="none"
     )
+    fitted_constants = ("A_TVEIT", "C_TVEIT", "K_TVEIT", "L_TVEIT")
+    input_classes = ()
     optional_params = {
         "Sigm1_TVEIT": "Sigm1 of the workbook",
         "Taum1_TVEIT": "Taum1 of the workbook",

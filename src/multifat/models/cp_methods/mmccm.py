@@ -130,6 +130,8 @@ class MMCCM:
     comparison_capabilities = ComparisonCapabilities(
         life_prediction="native", dp_reference="model_law"
     )
+    fitted_constants = ("sigma_f", "b_fat", "epsilon_f", "c_fat")
+    input_classes = ("S-N curves", "elastic constants", "strain-life / cyclic curve")
     optional_params = {"nu_p": "0.5 (plastic Poisson's ratio)"}
     np_shear_rule = "longest_chord"
     ext_variant = False

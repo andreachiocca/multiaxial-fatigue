@@ -38,6 +38,7 @@ multifat-calibrate = "multifat.cli.calibrate:main"
 multifat-run = "multifat.cli.run:cli"
 multifat-compare = "multifat.cli.compare:main"
 multifat-pipeline = "multifat.cli.pipeline:main"
+multifat-rank = "multifat.cli.rank:main"
 
 [project.urls]
 Repository = "https://github.com/andreachiocca/multiaxial-fatigue"

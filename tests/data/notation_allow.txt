@@ -10,7 +10,7 @@
 # not physics.
 BestCP all_damage all_metric atol check_orthonormal critical_only evaluate grid grid_damage
 grid_metric grid_normals method name n_seeds objective pool prepare refine return_normals
-seed_normals shear_rule values
+seed_normals shear_rule stress_only values
 # kind: PDS selector between the SWT and FS damage parameters of Eqs. (8)-(9).
 kind
 # k_tau, k_sigma, phi: WANG2018 mean-shear and mean-normal sensitivities and plane angle, Eqs. (2), (15).
@@ -23,7 +23,7 @@ exact
 exp material_name models uniax_cases block cases df factor key mean model radial refs shear
 
 # Fit inputs and coefficients, their brackets, and the validation figures.
-A B N N_design N_exp N_pred N_pred_runout N_runout Nmax Nmin F_design F_par F_runout
+A B N N_design N_exp N_pred N_pred_runout N_runout DP_runout Nmax Nmin F_design F_par F_runout
 N_hi N_lo b b0 sf tf bounds stdnum expected observed
 ax color curve curve_range error_factors label loglog n_curve return_figax return_warnings show y
 

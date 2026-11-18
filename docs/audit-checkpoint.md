@@ -96,6 +96,41 @@
   a resolution check (the three points again at twice npts_TVEIT; minor finding when the life
   moves by more than 0.05 decade).
 
+## Issue #57: Relative RMS load error ranking, complexity axis and family-wise selection rule (18 November 2026)
+
+- Branch `feat/ranking-kpi-complexity` from `main` (`003b94d`, includes PR #121).
+- Implemented Decision d116:
+  - Added `multifat.models.complexity`: standard characterization classes (`CHARACTERIZATION_CLASSES`), `ModelComplexity(p_in, p_fit, input_classes, fitted_constants)`, `get_model_complexity()`.
+  - Added formal `fitted_constants` and `input_classes` declarations to registered models (`FS`, `FIN`, `LI`, `MGSE_ZHU`, `MSWT`, `PDS_FS`, `MOREL`, `TVEIT2025`, `MDC`, `MMCCM`, `LIUMAHADEVAN`) and forwarded through `CPModelAdapter`.
+  - Added `r.complexity_table()` and `r.model_complexity()` to `multifat.models.registry`.
+  - Implemented the ranking calculation engine in `multifat.report.ranking`:
+    - Per-cell metrics $R_{mk}, z_{mk}, \bar e_L, s_{e_L}, w10, w20, \mathrm{noncons}, R^{\mathrm{design}}_{mk}$;
+    - Aggregated accuracy KPI $Z_m$, coverage $K_m / K_{\mathrm{total}}$, generalisation gap $\Delta_m$;
+    - Test-level bootstrap standard error $\mathrm{SE}(Z_m)$ (deterministic with seed);
+    - Equivalence class detection across shared materials (e.g. GSE ≡ MGSE_YU);
+    - Family-wise 1-SE selection rule (candidates within $Z_{\mathrm{best}} + \mathrm{SE}_{\mathrm{best}}$, simplest model picked by lowest $(p_{\mathrm{in}}, p_{\mathrm{fit}}, Z_m)$);
+    - Leave-one-material-out pick stability evaluation.
+  - Added CLI tool `multifat-rank` in `src/multifat/cli/rank.py` (registered in `pyproject.toml`) and `--rank` flag in `multifat.cli.compare`.
+  - Added documentation in `docs/comparison-capabilities.md`.
+  - Added comprehensive test suite in `tests/test_ranking.py` (all 6 tests passing).
+- Checks: `ruff`, `black`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`, `tools/check_docs.py` (2027 links OK), `pytest tests/test_ranking.py tests/test_notation.py -q` (702 passed).
+- Next action: PR addressing Issue #57.
+
+## Issue #38 follow-up: DP_inf refactor and censored S–N fitting with run-outs (18 November 2026)
+
+- Branch `feat/sn-censored-runouts` from `main` (`35401a8`, includes PR #120).
+- Implemented Decision d115:
+  - Refactored master-curve fatigue limit parameter from `sigma_inf` to `DP_inf` (with `sigma_inf` kept as a backward-compatible alias in `params` and `param_se`). Recorded in `docs/notation.md` and `docs/method-audit.md`.
+  - Added extraction of design run-outs from `data[material]["runouts"]` in `extract_uniaxial_tension()` and `extract_pure_torsion()`, stored in `out[material]["runouts"]`.
+  - Added `source_key` parameter (defaulting to `"cases"`) in `extract_tensor()`.
+  - In `collect_uniaxial_series_and_fit()`, evaluate both failure cases and design run-out cases, passing `N_runout` and `DP_runout` to `fit_sn_curve()`.
+  - Implemented Tobit-type censored log-likelihood optimization via `scipy.optimize.minimize` (L-BFGS-B with `log_ndtr`) in `_fit_nonlinear()` when design run-outs are present.
+  - Enforced the physical upper bound `DP_inf < min(DP_failures)` in `sn_curves.py`.
+  - Verified on AISI316L: all 11 design failures receive finite life predictions, `DP_inf = 271.57 MPa < 271.60 MPa`, eliminating the selection bias artifact where lower-stress failures were predicted as infinite lives.
+  - Added unit tests in `tests/test_sn_curves.py` (all 9 tests passing).
+- Checks: `ruff`, `black`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`, `tools/check_docs.py`, `tools/check_scientific_reviews.py`, `pytest tests/methods -q` (1564 passed), `pytest tests/test_notation.py tests/test_sn_curves.py -q`.
+- Next action: PR addressing Issue #38 remaining deliverables.
+
 ## Issue #102: AISI316L tensile fatigue limit adjustment (18 November 2026)
 
 - Branch `data/aisi316l-fatigue-limit` from `main` (`e6fa3f7`, includes PR #101).

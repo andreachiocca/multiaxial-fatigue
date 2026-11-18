@@ -48,6 +48,43 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 - Changed numerically: TVEIT2025 now runs, with calibrated constants, in pipeline runs without
   `--constants` (it was skipped for missing constants); no other model changes.
 
+### Relative RMS load error ranking, complexity axis and family selection (issue #57, decision d116)
+
+- Established the relative RMS load error against the material median as the cross-material accuracy KPI
+  $Z_m = \frac{1}{K_m}\sum_k \ln(R_{mk} / \operatorname{med}_{m'} R_{m'k})$ with bootstrap standard error
+  $\mathrm{SE}(Z_m)$ from test-level resampling within each material.
+- Introduced explicit two-axis complexity $(p_{\mathrm{in}}, p_{\mathrm{fit}})$ in `multifat.models.complexity`:
+  $p_{\mathrm{fit}}$ counts quantities fitted on fatigue data (master curve, calibrated plane constants, native
+  laws), while $p_{\mathrm{in}}$ counts experimental characterisation classes beyond calibration S-N paths.
+- Added model-level declarations for `fitted_constants` and `input_classes`, exposed through `CPModelAdapter`
+  and central registry accessors (`r.model_complexity()`, `r.complexity_table()`).
+- Added the ranking engine in `multifat.report.ranking`: per-cell metrics, cross-material aggregation,
+  bootstrap standard error estimation, equivalence class detection, and leave-one-material-out pick stability.
+- Adopted the family-wise 1-SE selection rule: filter methods by material coverage ($K_m \ge K_{\min}$), identify
+  candidates within $Z_{\mathrm{best}} + \mathrm{SE}_{\mathrm{best}}$ for each family, and select the simplest
+  model by lowest $(p_{\mathrm{in}}, p_{\mathrm{fit}}, Z_m)$.
+- Added CLI tool `multifat-rank` in `src/multifat/cli/rank.py` and the `--rank` flag to `multifat-compare`,
+  exporting `summary_ranking.csv`, `family_selection.csv`, and `ranking_cell_stats.csv`.
+- Added unit tests in `tests/test_ranking.py` covering complexity counts, cell statistics, 1-SE selection,
+  equivalence classes, and CLI workflows.
+
+
+### Master-curve DP_inf refactor and censored S–N fitting with run-outs (issue #38, decision d115)
+
+- Refactored master-curve horizontal asymptote parameter from `sigma_inf` to `DP_inf` (with `sigma_inf`
+  kept as a backward-compatible alias in `params` and `param_se`). The symbol names the fatigue-limit
+  threshold in the units of the evaluated Damage Parameter $\mathrm{DP}$ (stress, strain, or energy).
+- `extract_uniaxial_tension()` and `extract_pure_torsion()` now extract design run-outs alongside failures,
+  stored under `out[material]["runouts"]`.
+- `collect_uniaxial_series_and_fit()` passes both failure and design run-out series to `fit_sn_curve()`.
+- Implemented Tobit-type censored log-likelihood optimization via `scipy.optimize.minimize` (L-BFGS-B
+  with `scipy.special.log_ndtr`) in `sn_curves.py` when design run-outs are present in the dataset.
+- Enforced physical boundary constraint $\mathrm{DP}_\infty < \min(\mathrm{DP}_{\text{failures}})$,
+  ensuring observed failures are never predicted as infinite lives and eliminating the selection bias
+  on flat curves such as AISI 316L.
+- Verified on AISI 316L: all 11 design failures receive finite life predictions, with `DP_inf = 271.57 MPa`.
+- Added unit tests in `tests/test_sn_curves.py` for censored fitting and parameter recovery.
+
 ### AISI316L tensile fatigue limit adjusted to staircase level (issue #102, decision d114)
 
 - Adjusted the Janssens row tensile fatigue limit $\sigma_{-1}$ in `8_AISI316L.xlsx` via `set_summary`

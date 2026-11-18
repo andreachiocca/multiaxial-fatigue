@@ -126,6 +126,50 @@ load (`Within_10pct`, `Within_20pct`) for every method. The complexity of a meth
 fitted on fatigue data, required inputs) is to be reported alongside, and is best penalised by
 held-out validation (#14).
 
+## Cross-material ranking KPI and complexity axis (issue #57, decision d116)
+
+Comparing fatigue criteria across heterogeneous materials requires handling differences in dataset difficulty, scale and sample size. `multifat-rank` (and `multifat-compare --rank`) implements a two-axis evaluation combining an accuracy KPI with explicit complexity counts and a reproducible selection rule.
+
+### 1. Accuracy KPI: relative RMS load error
+
+For method $m$ on material $k$, over the $n_{mk}$ assessment failures (`Flag = 1`, $n_{mk} \ge n_{\min} = 3$) with load-equivalent error $e_{L,i} = \ln(1/s^*_i)$:
+
+$$R_{mk} = \sqrt{\frac{1}{n_{mk}}\sum_i e_{L,i}^2} = \sqrt{\bar e_L^{\,2} + \tfrac{n-1}{n}\,s_{e_L}^2}$$
+
+Across materials, each method is scored relative to the median method on that material, preventing the hardest or largest dataset from dominating:
+
+$$z_{mk} = \ln\frac{R_{mk}}{\operatorname{med}_{m'} R_{m'k}}, \qquad Z_m = \frac{1}{K_m}\sum_{k} z_{mk}$$
+
+$e^{Z_m}$ reads directly as the typical relative accuracy: $Z = -0.39$ indicates a typical load error 32 % smaller than the median method on the same materials. The standard error $\mathrm{SE}(Z_m)$ is estimated by bootstrap resampling (1000 iterations) of tests within each material.
+
+Additional diagnostics reported alongside $Z_m$:
+- **Median bias:** $\operatorname{med}_k \bar e_L$;
+- **Error bands:** fraction of tests within $\pm10\,\%$ ($|e^{e_L}-1| \le 0.10$) and $\pm20\,\%$;
+- **Non-conservative share:** fraction of predictions where $e_L < -\ln(1.1)$ (unsafe by $> 10\,\%$);
+- **Generalisation gap / Transferability:** $\Delta_m = \operatorname{med}_k \ln(R^{\mathrm{assessment}}_{mk} / R^{\mathrm{design}}_{mk})$.
+
+### 2. Explicit complexity axis: $(p_{\mathrm{in}}, p_{\mathrm{fit}})$
+
+Complexity is reported beside the accuracy KPI and never arbitrarily folded into a composite score:
+- **$p_{\mathrm{fit}}$**: number of quantities fitted on fatigue data. Covers the master curve ($A, b$: 2) plus any calibrated plane constants (`k_FI`, `k_FS`, `L_LI`, `k_MGSE`, `a_MSWT`, `k_PDS`), or native-law parameters (MOREL $p,q,r$: 3; TVEIT2025: 4; MDC: 2; MMCCM: 4; LIUMAHADEVAN: 4).
+- **$p_{\mathrm{in}}$**: number of experimental characterisation classes needed beyond the S–N data of the calibration paths:
+  - axial fatigue limit (`Sigm1`);
+  - torsional fatigue limit (`Taum1`);
+  - mean-stress ($R = 0$) data (`Sig0`, `Tau0`);
+  - static strength (`Su`, `Sy`, `Tu`);
+  - S–N curves (`sigma_f`, `b_fat`, `tau_f`, `b0`);
+  - strain-life/cyclic curve (`epsilon_f`, `c_fat`, `gamma_f`, `c0`, `K_prime`, `n_prime`);
+  - elastic constants (any strain-based method: `E`, `nu`).
+
+### 3. Family-wise 1-SE selection rule
+
+To pick the best criteria within each family (Critical plane, Invariant, Integral, Energy):
+1. Filter methods meeting minimum material coverage $K_m \ge K_{\min}$ (default 4).
+2. Within each family, find the best accuracy $Z_{\mathrm{best}} = \min Z_m$ and its standard error $\mathrm{SE}_{\mathrm{best}}$.
+3. Form the set of statistically indistinguishable candidates: $\{m : Z_m \le Z_{\mathrm{best}} + \mathrm{SE}_{\mathrm{best}}\}$.
+4. Select the candidate with the lowest complexity: sort by $p_{\mathrm{in}}$, then $p_{\mathrm{fit}}$, then $Z_m$.
+5. Test pick stability via leave-one-material-out replication.
+
 ## Error statistics and observation roles
 
 For a valid DP comparison, `Error_log10_dp = log10(DP_fit / CP_value)`.

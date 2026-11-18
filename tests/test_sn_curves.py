@@ -32,10 +32,12 @@ def test_kohout_vechet_recovers_its_parameters_and_geometry():
     fit = fit_sn_curve(N, _kv(N), model="kohout_vechet")
     assert fit["valid"], fit["reason"]
     p = fit["params"]
+    assert p["DP_inf"] == pytest.approx(300.0, rel=1e-6)
     assert p["sigma_inf"] == pytest.approx(300.0, rel=1e-6)
     assert p["C"] == pytest.approx(2.0e6, rel=1e-5)
     assert p["b"] == pytest.approx(-0.12, rel=1e-6)
-    # Eq. (10): sigma_inf = a C^b, so the Basquin asymptote is a N^b for N << C
+    assert fit["param_se"]["ln_DP_inf"] == fit["param_se"]["ln_sigma_inf"]
+    # Eq. (10): DP_inf = a C^b, so the Basquin asymptote is a N^b for N << C
     assert fit["A"] == pytest.approx(300.0 * 2.0e6**0.12, rel=1e-5)
     small = np.array([10.0, 100.0])
     assert curve_dp(fit, small) == pytest.approx(fit["A"] * small**-0.12, rel=1e-4)
@@ -96,3 +98,60 @@ def test_pipeline_records_the_model_and_compare_refuses_mixtures(tmp_path):
     if outcomes[0].status == "ok":
         with pytest.raises(ValueError, match="mixes master-curve models"):
             collect_all_results(tmp_path / "r")
+
+
+def test_censored_fit_with_runouts_prevents_infinite_lives_on_failures():
+    from pathlib import Path
+    from multifat.imp.experimental_data import extract_uniaxial_tension, load_material_workbook
+
+    data = load_material_workbook(Path("Experimental_Data") / "8_AISI316L.xlsx")
+    uniax = extract_uniaxial_tension(data)["AISI316L"]
+    assert len(uniax["points"]) == 11
+    assert len(uniax["runouts"]) == 3
+
+    N_f = np.array([p["Nf_cycles"] for p in uniax["points"]])
+    DP_f = np.array([p["sigma_a_MPa"] for p in uniax["points"]])
+    N_r = np.array([p["Nf_cycles"] for p in uniax["runouts"]])
+    DP_r = np.array([p["sigma_a_MPa"] for p in uniax["runouts"]])
+
+    for model in ("kohout_vechet", "stromeyer"):
+        fit = fit_sn_curve(N_f, DP_f, model=model, N_runout=N_r, DP_runout=DP_r)
+        assert fit["valid"], fit["reason"]
+        assert fit["n_runout"] == 3
+        # DP_inf is strictly below the lowest failure load (271.6 MPa)
+        dp_inf = fit["params"]["DP_inf"]
+        assert dp_inf < float(np.min(DP_f))
+        assert fit["params"]["sigma_inf"] == dp_inf
+        # All failure points produce finite predicted lives
+        pred_lives = curve_life(fit, DP_f)
+        assert np.all(np.isfinite(pred_lives))
+        assert np.all(pred_lives > 0)
+        # Load at or below DP_inf predicts infinite life
+        assert np.isinf(curve_life(fit, dp_inf))
+        assert np.isinf(curve_life(fit, 0.9 * dp_inf))
+
+
+def test_censored_fit_recovers_synthetic_parameters():
+    rng = np.random.default_rng(42)
+    DP_inf_true = 250.0
+    C_true = 1.0e6
+    b_true = -0.15
+
+    N_fail = np.logspace(4.0, 6.2, 18)
+    DP_fail = (
+        DP_inf_true
+        * (N_fail / (N_fail + C_true)) ** b_true
+        * np.exp(rng.normal(0, 0.02, N_fail.size))
+    )
+
+    # Run-outs at 1e7 cycles at load levels near the endurance limit
+    N_run = np.array([1.0e7, 1.0e7, 1.0e7])
+    DP_run = np.array([245.0, 248.0, 252.0])
+
+    fit = fit_sn_curve(N_fail, DP_fail, model="kohout_vechet", N_runout=N_run, DP_runout=DP_run)
+    assert fit["valid"], fit["reason"]
+    assert fit["n_runout"] == 3
+    p = fit["params"]
+    assert p["DP_inf"] == pytest.approx(DP_inf_true, rel=0.08)
+    assert p["b"] == pytest.approx(b_true, rel=0.15)
+    assert np.all(np.isfinite(list(fit["param_se"].values())))

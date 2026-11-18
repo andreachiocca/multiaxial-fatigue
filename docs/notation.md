@@ -63,6 +63,7 @@ normal(s) themselves.
 | Number of cycles to failure | N_f | `Nf` | Nf_cycles | cycles |
 | Survival probability of a fitted master curve | P_s | `P_s` | - | - |
 | Master-curve (S-N) model: basquin, kohout_vechet, stromeyer | - | `sn_model` | - | - |
+| Master-curve fatigue limit / asymptote | DP_inf | `DP_inf` | - | model |
 | Master-curve damage parameter at the observed life | DP_e | `DP_fit` | - | model |
 | Weights of tau_a^2, sigma_a^2, tau_a tau_m, sigma_a sigma_m in BP / CAIM | a_BP..d_BP, a_CAIM..d_CAIM | `a_BP`, `b_BP`, `c_BP`, `d_BP`, `a_CAIM`, `b_CAIM`, `c_CAIM`, `d_CAIM` | - | - |
 | Coefficients of the stress scale factor surface, Anes et al. (2014) Eq. (31) | a..d, f..i | `a_SSF`, `b_SSF`, `c_SSF`, `d_SSF`, `f_SSF`, `g_SSF`, `h_SSF`, `i_SSF` | a_SSF..i_SSF | MPa^-k |
