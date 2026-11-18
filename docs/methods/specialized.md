@@ -16,22 +16,22 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 6 | 1 | 11 | 0 | 18 |
-| Energy based | 6 | 1 | 13 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 5 | 0 | 8 | 0 | 13 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Energy based | 7 | 1 | 12 | 3 | 23 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
 | Specialized | 0 | 0 | 3 | 0 | 3 |
-| Strain based | 3 | 0 | 10 | 2 | 15 |
-| Stress based | 1 | 0 | 12 | 0 | 13 |
+| Strain based | 4 | 0 | 9 | 2 | 15 |
+| Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 29 | 2 | 81 | 5 | 117 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 161 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](../../docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](../../docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -242,7 +242,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Formulation evidence | Checked against the publisher PDF, Eqs. (1)-(12), pp. 2-4, and Eq. (24), p. 5 (2026-10-26) |
 | Principle | Endurance function beta = (sigma_e + A I1 - s_-1)/s_-1 with the Lode-dependent effective stress sigma_e = sqrt(3 J2) - lambda (1 - 27/4 J3^2/J2^3) of s - alpha (Eqs. 1-5, lambda = sqrt(3) t_-1 - s_-1, Eq. 24); back-stress d alpha = C (s - alpha) d beta and damage dD = K exp(L beta) d beta while beta > 0 and d beta > 0 (Eqs. 6-12); failure at D = 1. |
 | Loading scope | Single-frequency harmonic CA, proportional and phase-shifted NP, mean stresses; the cycle is integrated in time (1001 points per cycle, repeated blocks with stabilised extrapolation). |
-| Inputs / material parameters | A_TVEIT, C_TVEIT, K_TVEIT, L_TVEIT from a constants file (--constants; Calibrations/<material>/TVEIT2025_stage1.json). Optional in the same file: Sigm1_TVEIT, Taum1_TVEIT, the fatigue limits the constants were calibrated with (default: workbook Sigm1, Taum1), and the numerical settings npts_TVEIT, min_blocks_TVEIT, max_blocks_TVEIT, tol_alpha_TVEIT, tol_damage_TVEIT (defaults 1001, 8, 10000, 1e-6, 1e-5). |
+| Inputs / material parameters | A_TVEIT, C_TVEIT, K_TVEIT, L_TVEIT from a constants file (--constants; Calibrations/<material>/TVEIT2025_stage1.json). Optional in the same file: Sigm1_TVEIT, Taum1_TVEIT, the fatigue limits the constants were calibrated with (default: workbook Sigm1, Taum1), and the numerical settings npts_TVEIT, min_blocks_TVEIT, max_blocks_TVEIT, tol_alpha_TVEIT, tol_damage_TVEIT (defaults 1001, 400, 60000, 0.01, 0.001). |
 | Output | Native life by integration of the damage evolution, recorded in Nf_native and Nf_expected (Metric_mode=Nf_direct); infinite life when the path shakes down inside the moving endurance surface. The virgin endurance index max (sigma_e + A I1)/s_-1 at alpha = 0 is diagnostic only and has no DP comparison |
 | Implementation / evidence | Partially implemented; known_essential_gaps |
 | Validation / evidence | reference_examples_reproduced; tests/methods/test_tveit2025.py: with the Table 1 parameters the published S-N model curves (Fig. 5 inoculated cast iron torsion; Fig. 6 NiCrMo steel bending and torsion) are reproduced within 1 % in stress; Eq. (24) torsional limit; infinite life inside the endurance surface and after shakedown under mean shear stress. |

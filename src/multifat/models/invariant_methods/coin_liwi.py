@@ -1,21 +1,25 @@
-"""Equivalent stress amplitude of the COIN LiWI criterion, after Schmidt & Kraft (2023),
-Int J Fatigue 168:107474, doi:10.1016/j.ijfatigue.2022.107474 (roadmap entry G08),
-in the single-frequency variant, Eqs. (21)-(32):
+"""Equivalent stress amplitude of the COIN LiWI criterion of Schmidt & Kraft (2023).
 
-    sigma_eq,ka^2 = I1^2 - k_a^2 I2  (Eq. 21, Mertens),  k_a = sigma_w / tau_w (Eq. 22)
-    Hermitian magnitude  H  = |tr Z|^2 - k_a^2 (|tr Z|^2 - tr(Z conj(Z)))/2         (Eqs. 24-27)
-    complex square       C  = (tr Z)^2 - k_a^2 ((tr Z)^2 - tr(Z Z))/2               (Eqs. 28-30)
-    sigma_COIN = sqrt(k_phi H + (1 - k_phi) |C|)                                     (Eqs. 31-32)
+Published in *International Journal of Fatigue* 168 (2023), 107474,
+doi:10.1016/j.ijfatigue.2022.107474 (roadmap G08), single-frequency Eqs. (21)-(32)::
 
-Here Z denotes the complex amplitude tensor of sigma(t) = Re(Z e^{j w t}) (Eq. 23, stated
-for plane stress; the invariants carry over to 3-D without modification). Writing Q(t) for
-the time-domain quadratic form of Eq. (21), one has H = 2 mean(Q) and |C| = 2 (max Q -
-mean Q), so k_phi = 1 gives the RMS of the invariants, k_phi = 0.5 the static maximum, and
-k_phi = 0 discards invariants shifted by 90 deg (p.6). No prescription for k_phi is offered
-in the paper (it is fitted per material, Table 3: 0.85-1.10); this repository takes the
-parameter ``k_phi`` when it is given and falls back to 1 otherwise. No mean-stress term is
-included in the amplitude (the paper accounts for mean stress through the damage parameters
-PRAM/PRAJ). The result is returned as sigma_COIN / s_-1.
+    sigma_eq,ka^2 = I_1^2 - k_a^2 * I_2,   k_a = s_-1 / t_-1
+    H = |tr(Z)|^2 - k_a^2 * (|tr(Z)|^2 - tr(Z conj(Z))) / 2
+    C = tr(Z)^2 - k_a^2 * (tr(Z)^2 - tr(Z Z)) / 2
+    sigma_COIN = sqrt(k_phi * H + (1 - k_phi) * |C|)
+
+where ``Z = S_cos - 1j * S_sin`` is the complex stress amplitude tensor of
+``sigma(t) = Re(Z e^{j w t})`` (Eq. 23), ``H = 2 mean(Q)``, and ``|C| = 2 (max Q - mean Q)``
+for the quadratic invariant form ``Q(t) = I_1^2 - k_a^2 I_2``.
+
+Repository choices:
+- Plane-stress Eqs. (21)-(32) extend directly to 3-D stress tensors through ``tr(Z)`` and
+  ``tr(Z Z)``.
+- Because no universal formula is given for ``k_phi`` (Table 3 fits 0.85-1.10 per material;
+  ``1`` gives invariant RMS, ``0.5`` static maximum, ``0`` cancels 90-deg shifts),
+  optional ``k_phi`` is used when provided and defaults to ``1.0`` otherwise.
+- No mean-stress term is included in ``sigma_COIN`` (mean stress is handled via PRAM/PRAJ
+  in the source); the normalized fatigue index ``sigma_COIN / Sigm1`` is returned.
 """
 
 from __future__ import annotations

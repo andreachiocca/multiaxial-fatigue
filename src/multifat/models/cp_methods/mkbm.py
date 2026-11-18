@@ -1,14 +1,21 @@
-"""MKBM (Modified KBM) critical-plane strain parameter.
+"""MKBM: Li, Zhang, Sun & Li (2011) modified Kandil-Brown-Miller critical-plane strain parameter.
 
-Li et al. (Int. J. Fatigue 2011) propose a modification of the
-Kandil–Brown–Miller parameter to include additional cyclic hardening
-through the maximum normal stress on the maximum shear strain plane:
+J. Li et al., Int. J. Fatigue 33 (2011) 90-101, doi:10.1016/j.ijfatigue.2010.07.003, Eq. (27),
+on the plane of maximum shear strain range (Eq. 19 for general paths)::
 
-    Δε*_eq / 2 = Δγ_max / 2 + (1 + σ_{n,max} / σ_y) * (Δε_n / 2)
+    de*_eq/2 = dgamma_max/2 + (1 + sigma_n,max / sigma_y) de_n/2
 
-The left-hand strain-like parameter is returned. Plane selection follows the
-original MKBM definition: the plane that maximizes Δγ (maximum
-shear strain range plane).
+The left-hand equivalent strain amplitude is returned (dgamma: engineering shear strain range).
+``MKBM`` evaluates it on the plane of largest dgamma; ``MKBM_ext`` is the maximum over all planes.
+
+Repository choices:
+  - sigma_n,max is clipped at zero (compression never lowers the factor below 1);
+  - the workbook (monotonic) yield strength Sy replaces sigma_y;
+  - out-of-phase shear range: longest chord of the shear-strain path (``longest_chord``, Eq. 19);
+  - strains are linear-elastic; life from the shared master curve DP = A N^b instead of the
+    strain-life curve.
+
+User guide: docs/method-guides/MKBM.md.
 """
 
 from __future__ import annotations

@@ -1,0 +1,87 @@
+% registry: MMMH
+\methodhead{MMMH}{Mertens and Liebich (2017): modified Mohr--Mises hypothesis}\label{sheet:MMMH}
+
+\block{Source} H.~Mertens, R.~Liebich, \emph{Int.\ J.\ Fatigue} (2017) \cite{mertens2017},
+Eqs.~(1), (4), (8), (9), (20)--(25), smooth surface; Tab.~1. The endurance-limit Haigh line uses $M$ of
+Dubbel (2004), E1.
+
+\block{Idea and scope} A time-dependent, signed equivalent stress built from the Mohr circle of the
+surface stress state: the centre $M_M$ and the radius $R_M$ are combined with the strength ratio $k_a$,
+and a sign function keeps the history signed so that its range gives the amplitude. An equivalent mean
+stress follows from the principal stresses. Proposed for proportional and non-proportional, transient
+loading of notched and smooth metallic components; the repository covers smooth surfaces at the
+endurance limit.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$s_{-1}=\fm$, $\tm$ & MPa & fully reversed axial (bending) and torsion fatigue limits, $0<s_{-1}/\tm\le2$\\
+$s_0$ & MPa & repeated ($R=0$) axial limit, maximum stress of the cycle\\
+$S_u$ & MPa & ultimate tensile strength (estimate of $s_0$ only)\\
+$k_a$ & -- & strength ratio $s_{-1}/\tm$\\
+$\eta$ & -- & time (phase) variable of the history\\
+$\sigma_1$, $\sigma_2$ & MPa & principal stresses in the surface plane; $\sigma_3$ the stress normal to it\\
+$s_{1a}$, $s_{2a}$ & MPa & principal stress amplitudes of a proportional load (Eq.~8)\\
+$M_M$, $R_M$ & MPa & Mohr circle centre and signed radius, Eq.~\eqref{eq:mmmh-circle}\\
+$V(\eta)$ & -- & sign function, Eq.~\eqref{eq:mmmh-main}\\
+$\sigma_{\mathrm{eq,MMM}}(\eta)$ & MPa & signed equivalent stress history\\
+$\sigma_{\mathrm{eq},a}$, $\sigma_{\mathrm{eq},m}$ & MPa & equivalent amplitude and mean\\
+$\sigma_{o1}$ & MPa & peak over the cycle of the largest principal total stress\\
+$\sigma_{a1}$ & MPa & half-range of the signed alternating largest principal stress\\
+$I_1$, $I_2$ & MPa, MPa$^2$ & stress invariants as in Sheet~\ref{sheet:COIN}\\
+$m_a$, $n_{\mathrm{el}}$, $m_{o1}$, $m_{a1}$ & -- & stress-gradient and notch support factors of the source (1 for a smooth surface)\\
+$M$ & -- & mean-stress sensitivity of the Haigh line\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} For a smooth surface ($m_a=n_{\mathrm{el}}=m_{o1}=m_{a1}=1$), with $k_a=s_{-1}/\tm$,
+\begin{gather}
+M_M = \tfrac12(\sigma_1+\sigma_2) - \sigma_3 , \qquad |R_M| = \tfrac12|\sigma_1-\sigma_2| ,
+\label{eq:mmmh-circle}\\
+\sigma_{\mathrm{eq,MMM}}(\eta) = V(\eta)\sqrt{(4-k_a^2)\,M_M^2 + k_a^2\,R_M^2} , \qquad
+V(\eta) = \operatorname{sgn}\Bigl(\sqrt{4-k_a^2}\,M_M + k_a R_M\Bigr) ,
+\label{eq:mmmh-main}\\
+\sigma_{\mathrm{eq},a} = \tfrac12\Bigl(\max_\eta\sigma_{\mathrm{eq,MMM}} - \min_\eta\sigma_{\mathrm{eq,MMM}}\Bigr) \quad\text{(25)},
+\qquad
+\sigma_{\mathrm{eq},m} = \sigma_{o1} - \sigma_{a1} \quad\text{(24)} .
+\label{eq:mmmh-am}
+\end{gather}
+$\sigma_{o1}$ and $\sigma_{a1}$ follow from Eqs.~(20)--(23). Eq.~\eqref{eq:mmmh-main} requires
+$k_a\le2$. The paper reads the life on load-cycle-dependent Haigh diagrams ($M_N$, its refs.~[16, 23]).
+
+\block{Constants and calibration} Paper: $k_a$ from the two fatigue limits; the Haigh diagrams from its
+references [16, 23], which are not available; the paper allows guideline endurance values. Repository:
+the endurance-limit Haigh line with $M$ read from \texttt{M\_MMMH} or set to $M=2\,s_{-1}/s_0-1$ (Dubbel
+2004, E1), with $s_0$ from \texttt{Sig0} or from Eq.~(1) of B\"ohme, Papuga and Lange \cite{bohme2026}
+built from $S_u$ and $s_{-1}$. Nothing is fitted except the master-curve constants.
+
+\block{Life} No native life law in the repository. The index
+$\mathrm{DP}=(\sigma_{\mathrm{eq},a}+M\,\sigma_{\mathrm{eq},m})/s_{-1}$ is the damage parameter of the
+shared master curve (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item Endurance-limit Haigh line instead of the unavailable cycle-dependent $M_N$: the model returns
+  $(\sigma_{\mathrm{eq},a}+M\,\sigma_{\mathrm{eq},m})/s_{-1}$, linear in the mean stress.
+\item Single harmonic: the mean-free stress flips sign every half period, so $M_M$ and the signed $R_M$
+  reverse together and $\sigma_{\mathrm{eq},a}=\max_t\sqrt{I_1^2-k_a^2I_2}$, identical to COIN with
+  $k_\phi=0.5$; $\sigma_{a1}$ is the peak alternating principal stress over one period.
+\item The time-domain sign selection for $R_M$ drops the constant global quotient of Eq.~(20), which
+  cancels in the single-harmonic half-range.
+\item $0<s_{-1}/\tm\le2$ is required (real $\sqrt{4-k_a^2}$).
+\item For $k_a^2=0$, Eq.~(8) gives $|s_{1a}+s_{2a}|$; the text's $|s_{1a}-s_{2a}|$ is a misprint and is
+  not followed.
+\item Smooth surface only: $m_a$, $n_{\mathrm{el}}$, $m_{o1}$, $m_{a1}$ fixed at~1.
+\end{itemize}
+
+\block{Worked example} Steel with $s_{-1}=313.9$, $\tm=196.2$, $s_0=500\MPa$; axial $\sigma_m=80$,
+$\sigma_a=200\MPa$ with torsion $\tau_a=120\MPa$ at $90^\circ$: index $0.7023$.
+
+\block{Verification} The paper prints no numerical results, so no table is reproduced. Checked: the
+single-harmonic amplitude against a 20\,000-step time-domain evaluation of
+Eq.~\eqref{eq:mmmh-main} and against COIN ($k_\phi=0.5$) to $10^{-6}$; the proportional principal-stress
+limits of Eq.~(8); Eq.~(24) for non-proportional loading against a literal implementation of
+Eqs.~(20)--(23) (sign operator of Tab.~1); the three Haigh calibration points ($s_{-1}$, $\tm$, $s_0$).

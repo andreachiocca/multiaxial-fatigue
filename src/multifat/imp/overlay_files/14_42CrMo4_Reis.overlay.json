@@ -1,0 +1,108 @@
+{
+ "schema_version": 1,
+ "workbook": "14_42CrMo4_Reis.xlsx",
+ "base_sha256": "3fa6c5d8a20e54a39dd8272d17285fcb6f4708c39a85dd917c0d46c530b053e3",
+ "expected_fingerprint": "45f0fd6adcb6f8c86a5cd51c45193ca7ae53eb68993ea7b60de7ebca877c4f7e",
+ "operations": [
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "A",
+   "field": "Article DOI / Reference",
+   "from": null,
+   "to": "10.1016/j.ijfatigue.2013.05.004",
+   "decision": "d100",
+   "source": "Anes, Reis, Li, Fonte, de Freitas, Int. J. Fatigue 62 (2014) 21-33, doi:10.1016/j.ijfatigue.2013.05.004, Table 5 p. 28 (case 1, N = 1e6): AD = 452 MPa (pure axial trend line of Table 4), AC = 372 MPa (pure shear trend line of Table 4)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "B",
+   "field": "Authors",
+   "from": null,
+   "to": "Anes et al.",
+   "decision": "d100",
+   "source": "Anes, Reis, Li, Fonte, de Freitas, Int. J. Fatigue 62 (2014) 21-33, doi:10.1016/j.ijfatigue.2013.05.004, Table 5 p. 28 (case 1, N = 1e6): AD = 452 MPa (pure axial trend line of Table 4), AC = 372 MPa (pure shear trend line of Table 4)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "C",
+   "field": "Article year",
+   "from": null,
+   "to": 2014,
+   "decision": "d100",
+   "source": "Anes, Reis, Li, Fonte, de Freitas, Int. J. Fatigue 62 (2014) 21-33, doi:10.1016/j.ijfatigue.2013.05.004, Table 5 p. 28 (case 1, N = 1e6): AD = 452 MPa (pure axial trend line of Table 4), AC = 372 MPa (pure shear trend line of Table 4)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "D",
+   "field": "Material name",
+   "from": null,
+   "to": "42CrMo4_Reis",
+   "decision": "d100",
+   "source": "Anes, Reis, Li, Fonte, de Freitas, Int. J. Fatigue 62 (2014) 21-33, doi:10.1016/j.ijfatigue.2013.05.004, Table 5 p. 28 (case 1, N = 1e6): AD = 452 MPa (pure axial trend line of Table 4), AC = 372 MPa (pure shear trend line of Table 4)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "I",
+   "field": "Tensile fatigue limit (MPa)",
+   "from": null,
+   "to": 452,
+   "decision": "d100",
+   "source": "Anes, Reis, Li, Fonte, de Freitas, Int. J. Fatigue 62 (2014) 21-33, doi:10.1016/j.ijfatigue.2013.05.004, Table 5 p. 28 (case 1, N = 1e6): AD = 452 MPa (pure axial trend line of Table 4), AC = 372 MPa (pure shear trend line of Table 4)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "J",
+   "field": "Torsional fatigue limit (MPa)",
+   "from": null,
+   "to": 372,
+   "decision": "d100",
+   "source": "Anes, Reis, Li, Fonte, de Freitas, Int. J. Fatigue 62 (2014) 21-33, doi:10.1016/j.ijfatigue.2013.05.004, Table 5 p. 28 (case 1, N = 1e6): AD = 452 MPa (pure axial trend line of Table 4), AC = 372 MPa (pure shear trend line of Table 4)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "K",
+   "field": "Number of Cycles (cycles)",
+   "from": null,
+   "to": 1000000,
+   "decision": "d100",
+   "source": "Anes, Reis, Li, Fonte, de Freitas, Int. J. Fatigue 62 (2014) 21-33, doi:10.1016/j.ijfatigue.2013.05.004, Table 5 p. 28 (case 1, N = 1e6): AD = 452 MPa (pure axial trend line of Table 4), AC = 372 MPa (pure shear trend line of Table 4)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "L",
+   "field": "Stress ratio R",
+   "from": null,
+   "to": -1,
+   "decision": "d100",
+   "source": "Anes, Reis, Li, Fonte, de Freitas, Int. J. Fatigue 62 (2014) 21-33, doi:10.1016/j.ijfatigue.2013.05.004, Table 5 p. 28 (case 1, N = 1e6): AD = 452 MPa (pure axial trend line of Table 4), AC = 372 MPa (pure shear trend line of Table 4)"
+  },
+  {
+   "op": "set_summary",
+   "row": 1,
+   "column": "R",
+   "field": "(header)",
+   "from": null,
+   "to": "Axial fatigue limit loading",
+   "decision": "d100",
+   "source": "column recording the loading of the axial limit (push-pull)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "R",
+   "field": "Axial fatigue limit loading",
+   "from": null,
+   "to": "push-pull",
+   "decision": "d100",
+   "source": "Anes, Reis, Li, Fonte, de Freitas, Int. J. Fatigue 62 (2014) 21-33, doi:10.1016/j.ijfatigue.2013.05.004, Table 5 p. 28 (case 1, N = 1e6): AD = 452 MPa (pure axial trend line of Table 4), AC = 372 MPa (pure shear trend line of Table 4); case 1 is tension-compression"
+  }
+ ]
+}

@@ -1,8 +1,13 @@
-"""Ellyin & Kujawski (1993), ASTM STP 1191, doi:10.1520/STP24795S (roadmap G16):
-distortional strain energy combined with a multiaxial constraint factor and a mean-stress
-contribution, in its high-cycle (elastic) form.
+"""Ellyin & Kujawski (1993) distortional strain-energy fatigue criterion.
 
-Damage parameter (Eqs. 11, 15, 16): psi = dW_d (1 + alpha sigma_m / sigma_bar) / p_bar^n, where
+Published in *ASTM STP 1191* (1993), pp. 55-66, doi:10.1520/STP24795S (roadmap G16),
+Eqs. (5b), (11)-(18)::
+
+    psi = dW_d * (1 + alpha * sigma_m / sigma_bar) / p_bar^n
+    dW_d = dsigma_bar^2 / (2 * E*) + dW_d^p,   E* = 3 * E / (2 * (1 + nu))
+    p_bar = (1 + nu_bar) * eps_max / gamma_max
+
+where:
 - dW_d is the distortional strain-energy range per reversal (Fig. 1). The explicit zeta of the
   paper (Masing, uniaxial) is the plastic contribution and disappears for elastic strains; the
   paper nonetheless applies Eqs. (16)-(18) in the high-cycle regime, "when bulk material response
@@ -17,14 +22,23 @@ Damage parameter (Eqs. 11, 15, 16): psi = dW_d (1 + alpha sigma_m / sigma_bar) /
   (Eq. 14); for elastic strains Eq. (13) gives nu_bar = nu_e. Limiting values: 1 for uniaxial,
   1 + nu for reversed torsion, 1 - nu for equibiaxial;
 - n = 1 and alpha = 1/2, following the paper (p.61, Eq. 18).
-Optional plastic contribution (K_prime, n_prime in the workbook; never fitted):
-eps_p,a = (sigma_bar/K')^(1/n'), dW_d^p = (1 - n')/(2(1 + n')) dsigma_bar deps_p (the zeta term as
-printed), with nu_bar weighted by strain (= Eq. 13 under uniaxial loading) and plastic strains
-aligned with the deviatoric stress (stress control assumed).
-Non-proportional loading is left aside by the authors. Adaptation in this repository for a single
-harmonic: sigma_bar = sqrt(3) times the semi-major axis of the deviatoric ellipse (its longest
-half-chord), while eps_max and gamma_max are maxima taken over the period. A non-positive mean
-factor returns 0 (Eq. 18 holds only for -1.06 <= sigma_m/sigma_a <= 4.4).
+Repository choices:
+- Only the elastic distortional energy is evaluated by default because ``K_prime`` and
+  ``n_prime`` are rarely supplied and never fitted. When both are given, Masing plastic
+  energy ``(1 - n') / (2 * (1 + n')) * dsigma_bar * deps_p`` with
+  ``eps_p,a = (sigma_bar / K')^(1/n')`` is added under assumed stress control, Prandtl-Reuss
+  ``nu_p = 0.5``, and strain-weighted ``nu_bar`` (reducing to Eq. 13 under uniaxial loading).
+- Free-surface evaluation takes ``x-y`` as the surface plane with plane-stress normal strain
+  ``e_zz = -nu / (1 - nu) * (e_xx + e_yy)``.
+- Default parameters follow Eq. (18) (``alpha_EK = 0.5``, ``n_EK = 1.0``).
+- Scope: Eq. (18) holds for ``-1.06 <= sigma_m / sigma_a <= 4.4``, read here with the same ratio
+  as the mean-stress factor, sigma_m / sigma_bar (sum of the principal mean stresses over the
+  effective stress amplitude). A case outside raises LoadingScopeError and the model is skipped
+  (maintainer decision, 17 November 2026; such cases were evaluated before). A non-positive
+  mean-stress factor, possible only with a user ``alpha_EK``, still clamps psi to zero.
+- For non-proportional single harmonics (omitted in the paper), ``sigma_bar`` is ``sqrt(3)``
+  times the longest deviatoric half-chord, while ``eps_max`` and ``gamma_max`` are maxima
+  over the period.
 """
 
 from __future__ import annotations
@@ -34,9 +48,12 @@ from typing import Mapping
 import numpy as np
 
 from ..base import CaseResult
+from ..errors import LoadingScopeError
 from ..invariant_methods.stress_invariants import harmonic_parts, sqrt_j2_amplitude
 
 _PHASE_GRID = np.linspace(0.0, 2.0 * np.pi, 360, endpoint=False)
+MEAN_RATIO_RANGE = (-1.06, 4.4)  # sigma_m / sigma_a of Eq. (18), p.61
+RANGE_RTOL = 1e-9  # round-off allowance at the bounds
 
 
 def constraint_factor(E_sin, E_cos, nu: float) -> float:
@@ -100,7 +117,13 @@ def ek_damage(
         scale = 1.5 * eps_p / sigma_bar
         e_sin_eff = e_sin_eff + scale * _deviator(S_sin)
         e_cos_eff = e_cos_eff + scale * _deviator(S_cos)
-    mean_factor = 1.0 + alpha * float(np.trace(np.asarray(S_mean, dtype=float))) / sigma_bar
+    mean_ratio = float(np.trace(np.asarray(S_mean, dtype=float))) / sigma_bar
+    lo, hi = MEAN_RATIO_RANGE
+    if not lo * (1 + RANGE_RTOL) <= mean_ratio <= hi * (1 + RANGE_RTOL):
+        raise LoadingScopeError(
+            f"EK: Eq. (18) holds for -1.06 <= sigma_m/sigma_a <= 4.4; the case has {mean_ratio:.3g}"
+        )
+    mean_factor = 1.0 + alpha * mean_ratio
     if mean_factor <= 0.0:
         return 0.0
     return dW_d * mean_factor / constraint_factor(e_sin_eff, e_cos_eff, nu_bar) ** n

@@ -1,25 +1,24 @@
-"""Energy-based equivalent damage parameter (EDP) of Zhu et al. (2019),
-Int J Fatigue 121:1-8.
+"""Energy-based equivalent damage parameter (EDP) of Zhu et al. (2019).
 
-Equation (23) (accepted manuscript, p. 14):
+Published in *International Journal of Fatigue* 121 (2019), pp. 1-8 (accepted
+manuscript p. 14), Eqs. (11)-(26)::
 
-    psi = (xi sqrt(12 I_XX / D^2) + sqrt(12 I_YY / D^2)) (1 + alpha_w F_NP) dW_0
+    psi = (xi * sqrt(12 * I_XX / D^2) + sqrt(12 * I_YY / D^2)) * (1 + alpha_w * F_NP) * dW_0
+    F_NP = (sigma_eq / sigma_0 - 1) / (sigma_op / sigma_0 - 1)
+    dW_0 = sigma_a^2 / (2 * E) + 2 * sigma_a * (2 * (sigma_a / H_c)^(1 / h_c)) * (1 - h_c) / (1 + h_c)
 
-- I_XX and I_YY are the second moments of area about the perimeter centroid of the strain
-  path, treated as a uniform wire (Eqs. 19-20). X denotes the axial deviatoric strain
-  coordinate and Y the shear one (Eq. 26: e_1 = eps_x (1 + nu_bar),
-  e_3 = sqrt(3) gamma_xy / 2). D is the diameter of the smallest circle enclosing the path
-  (p. 13).
-- F_NP = (sigma_eq/sigma_0 - 1) / (sigma_OP/sigma_0 - 1) (Eq. 22): measured von Mises stress
-  amplitudes for the actual path, for pure tension and for the circular path at the same
-  strain amplitude.
-- dW_0 is the uniaxial elastoplastic work per cycle at the same equivalent loading level,
-  obtained from the left-hand side of Eq. (12) together with the cyclic curve of Eq. (11)
-  (H_c, h_c).
+where ``I_XX, I_YY`` are centroidal second moments of the scaled strain path
+``(eps_x * (1 + nu_bar), sqrt(3) * gamma_xy / 2)`` inside minimal enclosing circle
+diameter ``D``, ``F_NP`` measures non-proportional cyclic hardening, and ``dW_0`` is
+uniaxial elastoplastic work per cycle.
 
-The case-level model remains disabled: the workbook supplies elastic tensors only, so neither
-the stabilised stress response needed by F_NP nor the cyclic-curve constants needed by dW_0
-is available. The kernel functions below therefore take those quantities as explicit inputs.
+Repository choices:
+- The case-level model ``ZhuEDP`` stays disabled via ``ensure_enabled("ZHU_EDP")``
+  because workbooks supply elastic tensors only and lack stabilized non-proportional
+  stress responses (``F_NP``) and cyclic constants (``H_c``, ``h_c``).
+- Kernel functions (``strain_path``, ``moi_factor``, ``f_np``, ``delta_w0``, ``zhu_edp``)
+  are exposed with explicit inputs, discretizing single-harmonic paths at 720 angles
+  and defaulting ``nu_bar = 0.5`` in ``strain_path``.
 """
 
 from __future__ import annotations

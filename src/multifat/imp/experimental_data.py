@@ -30,6 +30,7 @@ from multifat.imp.schema import (
     material_id,
     workbook_files,
     norm_text,
+    parse_observation_type,
     to_float_or_none,
     to_float_or_zero,
 )
@@ -192,6 +193,40 @@ def _summary_sources(ws, header_row: int, avg_row: int) -> list[dict]:
     return rows
 
 
+# Optional Summary column: how the axial R = -1 fatigue limit of a source row was obtained.
+# FatPy's nomenclature separates push-pull (fat_lim_ten_m1) from bending (fat_lim_ben_m1); a
+# bending limit is usually higher than the push-pull one (stress gradient), so the distinction is
+# recorded with every source. Matched on the normalised header (it must not contain "tensile
+# fatigue limit", the substring that locates the limit values).
+AXIAL_LIMIT_LOADING_HEADERS = ("axial fatigue limit loading",)
+AXIAL_LIMIT_LOADINGS = {
+    "push-pull": "push-pull",
+    "push pull": "push-pull",
+    "tension-compression": "push-pull",
+    "tension": "push-pull",
+    "axial": "push-pull",
+    "rotating bending": "rotating bending",
+    "plane bending": "plane bending",
+    "bending": "bending",
+}
+
+
+def axial_limit_loading_value(raw) -> str | None:
+    """Normalised loading of an axial fatigue limit; None when not recorded or not recognised."""
+    if is_nullish(raw):
+        return None
+    return AXIAL_LIMIT_LOADINGS.get(norm_text(raw))
+
+
+def axial_limit_loading(block: dict) -> str | None:
+    """Loading behind the selected Sigm1: one value, "mixed" for several, None if unrecorded."""
+    sources = (block.get("fatigue_limit_sources") or {}).get("Sigm1") or []
+    found = {s.get("loading") for s in sources}
+    if None in found or not found:
+        return None
+    return found.pop() if len(found) == 1 else "mixed"
+
+
 def _summary_fatigue_limits(
     material: str, ws, header_row: int, avg_row: int
 ) -> tuple[list[str], dict[str, str], dict[str, float], dict[str, list[dict]]]:
@@ -213,6 +248,7 @@ def _summary_fatigue_limits(
             f"file material {material} conflicts with Summary names {declared}; "
             "fatigue limits are read from this workbook, but source identity needs review"
         )
+    loading_column = next((headers[h] for h in AXIAL_LIMIT_LOADING_HEADERS if h in headers), None)
     issues: dict[str, str] = {}
     selected: dict[str, float] = {}
     provenance: dict[str, list[dict]] = {}
@@ -254,6 +290,15 @@ def _summary_fatigue_limits(
                         "authors": row.get("Authors"),
                     }
                 )
+                if key == "Sigm1":
+                    raw_loading = row.get(loading_column) if loading_column else None
+                    loading = axial_limit_loading_value(raw_loading)
+                    if loading is None and not is_nullish(raw_loading):
+                        identity.append(
+                            f"row {row['_row']}: axial fatigue limit loading {raw_loading!r} not "
+                            f"recognised (use one of {sorted(set(AXIAL_LIMIT_LOADINGS.values()))})"
+                        )
+                    compatible[-1]["loading"] = loading
         if compatible:
             selected[key] = math.fsum(item["value_MPa"] for item in compatible) / len(compatible)
             provenance[key] = compatible
@@ -285,7 +330,7 @@ def load_material_workbook(
             raise WorkbookError(fp.name, sheet, "", f"missing sheet '{sheet}'")
     if overlay is None:
         overlay = OVERLAYS_ENABLED
-    overlay_id = apply_overlay_to_workbook(wb, fp) if overlay else None
+    overlay_id = apply_overlay_to_workbook(wb, fp, report=rep) if overlay else None
     dataset_source: Any = fp
     if overlay_id is not None:
         rep.info.append(
@@ -485,6 +530,22 @@ def load_material_workbook(
         if Nf <= 0:
             dropped["Nf <= 0"] += 1
             continue
+        declared = None
+        if cols["observation_type"] is not None:
+            where = f"row {int(idx) + 2}"
+            try:
+                declared = parse_observation_type(row[cols["observation_type"]])
+            except ValueError as exc:
+                raise WorkbookError(fp.name, "Dataset", where, str(exc)) from None
+            if declared is not None and (declared != "failure") != is_runout:
+                raise WorkbookError(
+                    fp.name,
+                    "Dataset",
+                    where,
+                    f"Observation type {declared!r} contradicts Run out "
+                    f"{'Yes' if is_runout else 'No'} (d113: failure <-> No; run-out or "
+                    "fatigue limit <-> Yes)",
+                )
 
         raw_specimen = row[cols["specimen"]] if cols["specimen"] is not None else None
         specimen = "" if is_nullish(raw_specimen) else str(raw_specimen).strip()
@@ -586,6 +647,7 @@ def load_material_workbook(
                 "specimen_id": specimen,
                 "excel_row": int(idx) + 2,
                 "frequency_text": freq_text,
+                "observation_type": declared,
             },
             1: {
                 1: {"stress": sigma_max, "strain": eps_max},
@@ -702,11 +764,63 @@ def get_material_properties(data: Dict[str, Any], material: str) -> Dict[str, An
 
 
 #### Extract sub-dataset for uniaxial tension with R=-1
+DESIGN_RTOL_R = 1e-3  # tolerance on R = -1 of a design test, shared by every selector (#77)
+_COMPONENT = {"tension": (1, 1), "torsion": (0, 1)}  # axial sigma_yy, torsion tau_xy
+
+
+def design_test_ratio(
+    case: Dict[str, Any],
+    loading: str,
+    *,
+    node: int = 1,
+    rtol_other: float = 1e-3,
+    atol: float = 1e-6,
+) -> float:
+    """Stress ratio R of a uniaxial tension or pure torsion case; NaN for any other case.
+
+    The only stress is sigma_yy (``loading="tension"``) or tau_xy (``"torsion"``): every other
+    component of both load steps stays below ``rtol_other`` times the peak value plus ``atol``.
+    R = min / max of that component over the two load steps, whatever their order, and the peak
+    must be positive. The one definition of the "fully reversed uniaxial tests" (#77): the master
+    curve, the Basquin constants and the calibration of the plane constants all select with it.
+    """
+    i, j = _COMPONENT[loading]
+    steps = [np.asarray(case[node][k]["stress"], dtype=float) for k in (1, 2)]
+    v_max = max(float(S[i, j]) for S in steps)
+    v_min = min(float(S[i, j]) for S in steps)
+    if abs(v_max) < atol or v_max <= 0.0:
+        return float("nan")
+    for S in steps:
+        rest = S.copy()
+        rest[i, j] = rest[j, i] = 0.0
+        if float(np.max(np.abs(rest))) > rtol_other * v_max + atol:
+            return float("nan")
+    return v_min / v_max
+
+
+def is_design_test(
+    case: Dict[str, Any],
+    loading: str,
+    *,
+    r_target: Optional[float] = -1.0,
+    rtol_R: float = DESIGN_RTOL_R,
+    atol_R: float = 1e-6,
+    node: int = 1,
+    rtol_other: float = 1e-3,
+    atol: float = 1e-6,
+) -> bool:
+    """True for a uniaxial tension or pure torsion case at R = r_target (any R when None)."""
+    R = design_test_ratio(case, loading, node=node, rtol_other=rtol_other, atol=atol)
+    if not np.isfinite(R):
+        return False
+    return r_target is None or bool(np.isclose(R, r_target, rtol=rtol_R, atol=atol_R))
+
+
 def extract_uniaxial_tension(
     data: Dict[str, Any],
     *,
     node: int = 1,
-    rtol_R: float = 1e-3,
+    rtol_R: float = DESIGN_RTOL_R,
     atol_R: float = 1e-6,
     rtol_uniax: float = 1e-3,
     atol_uniax: float = 1e-6,
@@ -775,37 +889,16 @@ def extract_uniaxial_tension(
             Smin = np.asarray(case[node][2]["stress"], dtype=float)  # loadstep 2: min
             Emax = np.asarray(case[node][1]["strain"], dtype=float)
 
-            # Axial component (AXIAL -> sigma_yy)
-            smax = float(Smax[1, 1])
-            smin = float(Smin[1, 1])
-
-            # Need a nonzero max to define R robustly
-            if abs(smax) < atol_R:
+            if not is_design_test(
+                case, "tension", node=node, rtol_R=rtol_R, atol_R=atol_R,
+                rtol_other=rtol_uniax, atol=atol_uniax,
+            ):  # fmt: skip
                 continue
-
-            # Must be tensile in maximum state
-            if smax <= 0.0:
-                continue
-
-            # Check R ≈ -1
-            R_ax = smin / smax
-            if not np.isclose(R_ax, -1.0, rtol=rtol_R, atol=atol_R):
-                continue
-
-            # Uniaxial check: all other stress components near zero relative to |smax|
-            S_other = Smax.copy()
-            S_other[1, 1] = 0.0  # remove axial component
-            max_other = float(np.max(np.abs(S_other)))
-            if max_other > (rtol_uniax * abs(smax) + atol_uniax):
-                continue
-
-            # Build amplitudes (general definition; for R=-1 this will be ~smax)
+            # Axial component (AXIAL -> sigma_yy), whatever the order of the load steps
+            smax = max(float(Smax[1, 1]), float(Smin[1, 1]))
+            smin = min(float(Smax[1, 1]), float(Smin[1, 1]))
             sigma_a = 0.5 * (smax - smin)
-
-            # Axial strain amplitude from the already computed strain tensors
-            emax = float(Emax[1, 1])
-            emin = float(Emin[1, 1])
-            eps_a = 0.5 * (emax - emin)
+            eps_a = 0.5 * abs(float(Emax[1, 1]) - float(Emin[1, 1]))
 
             Nf = float(case["meta"]["Nf_cycles"])
 
@@ -826,6 +919,45 @@ def extract_uniaxial_tension(
                 "points": points,
             }
 
+    return out
+
+
+def extract_pure_torsion(
+    data: Dict[str, Any],
+    *,
+    node: int = 1,
+    rtol_R: float = DESIGN_RTOL_R,
+    atol_R: float = 1e-6,
+    rtol_pure: float = 1e-3,
+    atol_pure: float = 1e-6,
+) -> Dict[str, Any]:
+    """Experimental points of fully reversed pure torsion (R = -1), the torsional design set.
+
+    Counterpart of ``extract_uniaxial_tension`` for criteria whose source calibrates the life
+    curve on torsion tests (``design_loading = "torsion"``): the shear component tau_xy is the only
+    stress, with tau(min) / tau(max) = -1. The output has the same layout, with ``tau_a_MPa``.
+    """
+    out: Dict[str, Any] = {}
+    for material_name, mat_block in data.items():
+        points: List[Dict[str, float]] = []
+        for case_id, case in mat_block.get("cases", {}).items():
+            if not is_design_test(
+                case, "torsion", node=node, rtol_R=rtol_R, atol_R=atol_R,
+                rtol_other=rtol_pure, atol=atol_pure,
+            ):  # fmt: skip
+                continue
+            Smax = np.asarray(case[node][1]["stress"], dtype=float)
+            Smin = np.asarray(case[node][2]["stress"], dtype=float)
+            tmax, tmin = float(Smax[0, 1]), float(Smin[0, 1])
+            points.append(
+                {
+                    "case_id": int(case_id),
+                    "Nf_cycles": float(case["meta"]["Nf_cycles"]),
+                    "tau_a_MPa": 0.5 * abs(tmax - tmin),
+                }
+            )
+        if points:
+            out[material_name] = {"material": mat_block.get("material", {}), "points": points}
     return out
 
 

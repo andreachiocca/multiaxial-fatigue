@@ -199,9 +199,12 @@ def test_pipeline_marks_the_default_after_an_infeasible_calibration(tmp_path):
     assert by_model["FIN"].status == "skipped" and "k_FI: calibration infeasible at FS" in (
         by_model["FIN"].reason
     )
-    for name, default in (("LI", "1.0"), ("MGSE_ZHU", "1.0"), ("MSWT", "0.5")):
-        assert by_model[name].status == "ok (default constant)"
-        assert f"default {default} used" in by_model[name].notes
+    # The defaults would run, but the 4 tension tests over 0.6 decades of this synthetic workbook
+    # do not identify a master curve, so the models are skipped (issue #74); the annotation of a
+    # default constant is tested on its own below.
+    for name in ("LI", "MGSE_ZHU", "MSWT"):
+        assert by_model[name].status == "skipped"
+        assert "master curve not identifiable" in by_model[name].reason
 
     record = json.loads((out / "Synth_calibration.json").read_text(encoding="utf-8"))
     assert record["status"] == "infeasible"
@@ -218,9 +221,19 @@ def test_pipeline_marks_the_default_after_an_infeasible_calibration(tmp_path):
     )
 
     report = _report(out / "Synth_run_report.tsv")
-    assert report["LI"]["status"] == "ok (default constant)"
-    assert "default 1.0 used" in report["LI"]["notes"]
+    assert "master curve not identifiable" in report["LI"]["reason"]
     assert "calibration infeasible at FS" in report["FS"]["reason"]
+
+
+def test_a_model_running_on_a_lost_constant_default_is_marked():
+    from multifat.cli.pipeline import Outcome, _annotate_calibration
+    from multifat.models.registry import get_models
+
+    state = {"status": "infeasible", "block": "FS", "lost": ["L_LI"], "at_bound": {}}
+    model = get_models(["LI"])[0]
+    outcome = _annotate_calibration(Outcome("LI", "ok"), model, state)
+    assert outcome.status == "ok (default constant)"
+    assert "default 1.0 used" in outcome.notes and "calibration infeasible at FS" in outcome.notes
 
 
 def test_constant_on_an_arbitrary_search_bound_is_not_used():

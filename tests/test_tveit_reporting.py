@@ -219,23 +219,19 @@ def test_invalid_native_method_has_no_comparison_in_legacy_results():
 
 
 def test_all_registered_methods_have_explicitly_verified_comparison_semantics():
-    from multifat.models.registry import (
-        _available_cp_methods,
-        _available_direct_models,
-        get_models,
-    )
+    from multifat.models.registry import get_models, model_names
     from multifat.models.comparison import capabilities_for_model
 
-    names = sorted({**_available_cp_methods(), **_available_direct_models()})
-    assert len(names) == 35
-    native_methods = {"TVEIT2025", "MOREL", "MDC", "MMCCM"}
+    names = sorted(model_names())
+    assert len(names) == 53
+    native_methods = {"TVEIT2025", "MOREL", "MDC", "MMCCM", "LIUMAHADEVAN"}
     for name in names:
         model = get_models([name])[0]
         caps = capabilities_for_model(model)
         assert model.comparison_capabilities == caps
         assert caps.life_prediction == ("native" if name in native_methods else "master_curve")
         assert bool(getattr(model, "native_life", None)) == (name in native_methods)
-        assert caps.dp_comparison == (name != "TVEIT2025")
+        assert caps.dp_comparison == (name not in {"TVEIT2025", "LIUMAHADEVAN"})
         if caps.dp_reference == "model_law":
             assert callable(getattr(model, "expected_dp_at_life", None))
     assert capabilities_for_name("MOREL").dp_reference == "master_curve"

@@ -15,13 +15,11 @@ import math
 
 import numpy as np
 
+from multifat.eval.fitting import MIN_DECADES, MIN_POINTS, MIN_T
 from multifat.models.utils.fatigue_estimation import (
     estimate_axial_fatigue_props_uniform_material_law,
 )
 
-MIN_POINTS = 5
-MIN_DECADES = 1.0
-MIN_T = 2.0
 BASQUIN_KEYS = ("sigma_f", "b_fat", "tau_f", "b0")
 PLASTIC_KEYS = ("epsilon_f", "c_fat", "gamma_f", "c0")
 
@@ -62,25 +60,24 @@ def fit_basquin(amplitude, N) -> dict:
     return {**fit, "identifiable": not issues, "reason": "; ".join(issues)}
 
 
-def reversed_uniaxial_tests(data: dict, material: str, tol: float = 1e-9) -> dict:
-    """Case ids, amplitudes and lives of the fully reversed tension and torsion tests."""
+def reversed_uniaxial_tests(data: dict, material: str) -> dict:
+    """Case ids, amplitudes and lives of the fully reversed tension and torsion tests.
+
+    Membership is ``imp.experimental_data.is_design_test``, the selector of the master curve
+    and of the plane-constant calibration (#77); the level is the harmonic amplitude.
+    """
+    from multifat.imp.experimental_data import is_design_test
+
     collected = {"tension": ([], [], []), "torsion": ([], [], [])}
     for case_id, case in data[material]["cases"].items():
         harmonics = case["harmonics"]
         amp_arr = np.hypot(harmonics["S_sin"], harmonics["S_cos"])
-        if np.abs(harmonics["S_mean"]).max() > tol:
-            continue
-        remaining = amp_arr.copy()
-        remaining[1, 1] = 0.0
-        if amp_arr[1, 1] > tol and np.abs(remaining).max() <= tol:
+        if is_design_test(case, "tension"):
             family, level = "tension", amp_arr[1, 1]
+        elif is_design_test(case, "torsion"):
+            family, level = "torsion", amp_arr[0, 1]
         else:
-            remaining = amp_arr.copy()
-            remaining[0, 1] = remaining[1, 0] = 0.0
-            if amp_arr[0, 1] > tol and np.abs(remaining).max() <= tol:
-                family, level = "torsion", amp_arr[0, 1]
-            else:
-                continue
+            continue
         id_list, amp_list, N_list = collected[family]
         id_list.append(int(case_id))
         amp_list.append(float(level))

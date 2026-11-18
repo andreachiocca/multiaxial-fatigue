@@ -1,8 +1,8 @@
 """Biaxial Fatigue Limit Envelopes Plot.
 
 Failure boundaries for fully reversed, proportional (in-phase) axial + torsional loading in
-normalized stress space (sigma_a / sigma_{-1} vs tau_a / tau_{-1}), calibrated on the 42CrMo4-QT
-fatigue limits of ``Experimental_Data/6_42CrMo4_QT.xlsx`` (Benedetti et al. 2022):
+normalized stress space (sigma_a / sigma_{-1} vs tau_a / tau_{-1}), calibrated on the 42CrMo4_Santus
+fatigue limits of ``Experimental_Data/6_42CrMo4_Santus.xlsx`` (Benedetti et al. 2022):
 
 - Gough-Pollard ellipse
 - Maximum shear stress (Tresca), calibrated on sigma_{-1}
@@ -24,7 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from examples.style import DOCS_IMG_DIR, apply_academic_style
+from examples.style import DOCS_IMG_DIR, INK, SERIES, apply_homepage_style, homepage_title
 
 SIGMA_M1 = 433.0  # MPa, tensile fatigue limit at R = -1 (workbook Summary, Benedetti 2022)
 TAU_M1 = 344.0  # MPa, torsional fatigue limit at R = -1 (same source)
@@ -68,99 +68,58 @@ def findley_envelope(r: float, n_dir: int = 181) -> tuple[np.ndarray, np.ndarray
 def plot_fatigue_limit_envelopes(
     out_path: Path | None = None,
 ) -> Path:
-    """Generate normalized biaxial fatigue limit failure envelopes in stress space."""
-    apply_academic_style()
+    """Normalized biaxial fatigue limit envelopes of four criteria, homepage style."""
+    apply_homepage_style()
     if out_path is None:
         out_path = DOCS_IMG_DIR / "fatigue_limit_envelopes.png"
-    fig, ax = plt.subplots(figsize=(9.2, 6.5), dpi=300)
-    fig.patch.set_facecolor("#FFFFFF")
-
     r = TAU_M1 / SIGMA_M1
-
     x = np.linspace(0.0, 1.0, 400)
-    ax.plot(
-        x,
-        np.sqrt(1.0 - x**2),
-        label="Gough-Pollard ellipse",
-        color="#1B365D",
-        linewidth=2.2,
-    )
-
     x_tr, y_tr = tresca_envelope(r)
-    ax.plot(
-        x_tr,
-        y_tr,
-        label=r"Max. shear stress (Tresca, calibrated on $\sigma_{-1}$)",
-        color="#E67E22",
-        linewidth=1.8,
-        linestyle="-.",
-    )
-
     x_cr, y_cr = crossland_envelope(r)
-    ax.plot(
-        x_cr,
-        y_cr,
-        label="Crossland",
-        color="#C0392B",
-        linewidth=2.0,
-        linestyle="--",
-    )
-
     x_fi, y_fi, k_fi = findley_envelope(r)
-    ax.plot(
-        x_fi,
-        y_fi,
-        label=f"Findley critical plane ($k = {k_fi:.2f}$)",
-        color="#2980B9",
-        linewidth=2.0,
-        linestyle=":",
-    )
+    # (x, y, legend, direct label, colour, dash, anchor x on the curve, label position)
+    curves = [
+        (x, np.sqrt(1.0 - x**2), "Gough-Pollard ellipse", "Gough-Pollard", SERIES[0], "-",
+         0.62, (0.80, 0.98)),
+        (x_cr, y_cr, "Crossland", "Crossland", SERIES[1], "--", 0.80, (0.98, 0.80)),
+        (x_fi, y_fi, f"Findley critical plane ($k = {k_fi:.2f}$)", "Findley", SERIES[3], ":",
+         0.40, (0.16, 0.70)),
+        (x_tr, y_tr, r"Maximum shear stress (Tresca, on $\sigma_{-1}$)", "Tresca", SERIES[2],
+         "-.", 0.45, (0.20, 0.44)),
+    ]  # fmt: skip
 
-    ax.scatter(
-        [1.0, 0.0],
-        [0.0, 1.0],
-        color="#1B365D",
-        marker="o",
-        s=55,
-        edgecolors="black",
-        linewidths=0.8,
-        zorder=5,
-        label=rf"Fatigue limits ($\sigma_{{-1}}$ = {SIGMA_M1:.0f} MPa, $\tau_{{-1}}$ = {TAU_M1:.0f} MPa)",
-    )
-
-    ax.set_xlim(-0.02, 1.25)
-    ax.set_ylim(-0.02, 1.25)
+    fig, ax = plt.subplots(figsize=(8.6, 6.6), dpi=300)
+    fig.subplots_adjust(left=0.10, right=0.98, top=0.87, bottom=0.10)
+    for xs, ys, legend, label, colour, dash, at, where in curves:
+        ax.plot(xs, ys, color=colour, linewidth=2.4, linestyle=dash, label=legend,
+                solid_capstyle="round", dash_capstyle="round")  # fmt: skip
+        k = int(np.argmin(np.abs(xs - at)))
+        ax.annotate(label, (xs[k], ys[k]), xytext=where, textcoords="data", ha="center",
+                    va="center", fontsize=10, fontweight="semibold", color=INK["primary"],
+                    arrowprops=dict(arrowstyle="-", color=colour, lw=1.0,
+                                    shrinkA=4, shrinkB=2))  # fmt: skip
+    ax.scatter([1.0, 0.0], [0.0, 1.0], s=70, color=INK["primary"], edgecolors="white",
+               linewidths=1.6, zorder=5, clip_on=False,
+               label=rf"Fatigue limits, $\sigma_{{-1}}$ = {SIGMA_M1:.0f}, $\tau_{{-1}}$ = {TAU_M1:.0f} MPa")  # fmt: skip
+    ax.annotate(r"$\sigma_{-1}$", (1.0, 0.0), xytext=(8, 8), textcoords="offset points",
+                fontsize=11, color=INK["primary"])  # fmt: skip
+    ax.annotate(r"$\tau_{-1}$", (0.0, 1.0), xytext=(8, 6), textcoords="offset points",
+                fontsize=11, color=INK["primary"])  # fmt: skip
+    ax.set_xlim(0.0, 1.12)
+    ax.set_ylim(0.0, 1.12)
     ax.set_aspect("equal", adjustable="box")
-    ax.set_xlabel(
-        r"Normalized Axial Stress Amplitude, $\sigma_a / \sigma_{-1}$",
-        fontweight="bold",
-        labelpad=8,
+    ax.set_xlabel(r"Axial amplitude  $\sigma_a / \sigma_{-1}$", labelpad=6)
+    ax.set_ylabel(r"Shear amplitude  $\tau_a / \tau_{-1}$", labelpad=6)
+    ax.tick_params(length=0)
+    ax.legend(loc="lower left", fontsize=8.8, handlelength=2.6)
+    homepage_title(
+        fig,
+        "Where the criteria disagree",
+        "Fatigue limit envelopes for in-phase tension-torsion, R = -1, calibrated on the "
+        + rf"42CrMo4_Santus limits ($\tau_{{-1}}/\sigma_{{-1}} = {r:.2f}$)",
     )
-    ax.set_ylabel(
-        r"Normalized Shear Stress Amplitude, $\tau_a / \tau_{-1}$",
-        fontweight="bold",
-        labelpad=8,
-    )
-    ax.set_title(
-        r"$\mathbf{Multiaxial\ Fatigue\ Limit\ Envelopes}$"
-        + "\n42CrMo4-QT, fully reversed proportional loading "
-        + rf"($\tau_{{-1}}/\sigma_{{-1}} = {r:.2f}$)",
-        fontsize=12,
-        pad=12,
-    )
-    ax.grid(True, linestyle=":", alpha=0.55, color="#888888")
-
-    ax.legend(
-        loc="center left",
-        bbox_to_anchor=(1.02, 0.5),
-        frameon=True,
-        edgecolor="#CCCCCC",
-        fontsize=9.0,
-    )
-
-    fig.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=300, bbox_inches="tight")
+    fig.savefig(out_path, dpi=300)
     plt.close(fig)
     return out_path
 

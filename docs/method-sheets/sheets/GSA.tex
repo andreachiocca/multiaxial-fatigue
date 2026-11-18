@@ -1,0 +1,90 @@
+% registry: GSA
+\methodhead{GSA}{Ince and Glinka (2014): generalized strain amplitude}\label{sheet:GSA}
+
+\block{Source} A.~Ince, G.~Glinka, \emph{Int.\ J.\ Fatigue} 62 (2014) 34--41 \cite{ince2014},
+Eqs.~(1), (5).
+
+\block{Idea and scope} Strain-based critical-plane criterion: the strain-amplitude form of the
+generalized strain energy (GSE, Eq.~1). The energy is divided by the fatigue strength coefficients:
+each elastic strain amplitude is weighted by the ratio of the maximum stress to its fatigue
+strength coefficient, while the plastic strain amplitudes enter unweighted. The parameter is thus
+a strain amplitude that can be compared with a strain--life curve. Proposed for proportional and
+non-proportional loading, with mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\Delta\gamma_e$, $\Delta\gamma_p$ & -- & elastic and plastic engineering shear strain ranges on the plane\\
+$\Delta\varepsilon_e$, $\Delta\varepsilon_p$ & -- & elastic and plastic normal strain ranges on the plane\\
+$\gamma_a$, $\varepsilon_{n,a}$ & -- & engineering shear and normal strain amplitudes on the plane (elastic case)\\
+$\tau_{\max}$ & MPa & largest magnitude of the shear stress vector on the plane over the cycle, mean included\\
+$\sigma_{n,\max}$ & MPa & maximum normal stress on the plane over the cycle\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane\\
+$\sigma_f'$, $\tau_f'$ & MPa & axial and shear fatigue strength coefficients\\
+$S_u$ & MPa & ultimate tensile strength (estimate of $\sigma_f'$)\\
+$E$, $\nu$ & MPa, -- & Young's modulus and Poisson's ratio\\
+$\Teps$, $\Teps_e$, $\Teps_p$ & -- & total, elastic and plastic strain tensors\\
+$\theta$, $c=\cos^2\theta$ & rad, -- & plane angle from the load axis in the uniaxial example\\
+$a$ & -- & shorthand $2\sqrt3(1+\nu)-\nu$ of Eq.~\eqref{eq:gsa-uni}\\
+$\sigma_a$, $\tau_a$ & MPa & axial and torsional stress amplitudes\\
+$\Delta\varepsilon^*/2$, $\mathrm{DP}$ & -- & generalized strain amplitude, Eq.~\eqref{eq:gsa-main}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Eq.~(5), maximised over the planes (the plane rule is the parameter itself):
+\begin{equation}
+\frac{\Delta\varepsilon^*}{2}=\left[\frac{\tau_{\max}}{\tau_f'}\frac{\Delta\gamma_e}{2}
++\frac{\Delta\gamma_p}{2}+\frac{\sigma_{n,\max}}{\sigma_f'}\frac{\Delta\varepsilon_e}{2}
++\frac{\Delta\varepsilon_p}{2}\right]_{\max} .
+\label{eq:gsa-main}
+\end{equation}
+The repository evaluates the bracket on every candidate plane with the strain decomposition
+$\Teps_p=\Teps-\Teps_e(\Tsig;E,\nu)$, applied to the harmonic tensors before the ranges are taken.
+With elastic workbook strains the plastic terms vanish and, with the default $\tau_f'$,
+\begin{equation}
+\mathrm{DP}=\frac{1}{\sigma_f'}\left(\sqrt3\,\tau_{\max}\gamma_a+\sigma_{n,\max}\varepsilon_{n,a}\right).
+\label{eq:gsa-elastic}
+\end{equation}
+Fully reversed tension then gives, with $a=2\sqrt3(1+\nu)-\nu$,
+\begin{equation}
+\mathrm{DP}(\theta)=\frac{\sigma_a^2}{E\sigma_f'}\left[a\,c-(a-1)\,c^2\right],\qquad
+\mathrm{DP}_{\max}=\frac{\sigma_a^2}{E\sigma_f'}\,\frac{a^2}{4(a-1)},
+\label{eq:gsa-uni}
+\end{equation}
+and fully reversed torsion $\mathrm{DP}=2\sqrt3(1+\nu)\tau_a^2/(E\sigma_f')$. Equal damage at the
+two limits implies $\tm/\fm\approx0.55$ for $\nu=0.3$.
+
+\block{Constants and calibration} No fitted criterion constant. $\sigma_f'$ and $\tau_f'$ are read
+from the workbook or estimated, never fitted by the pipeline. Only the master-curve constants $A$,
+$b$ are fitted on the uniaxial $R=-1$ design tests.
+
+\block{Life} The paper relates the parameter to a strain--life curve. The repository uses the
+master curve on DP (Section~\ref{sec:mastercurve}). DP is quadratic in the load, so the
+load-equivalent error (Eq.~\eqref{eq:eload}) is the scale-free comparison metric.
+
+\block{Repository choices}
+\begin{itemize}
+\item $\sigma_{n,\max}<0$ is clipped to 0.
+\item Missing $\sigma_f'$: uniform material law $\sigma_f'=1.5\,S_u$ (Zhao et al., 2020), a steel
+  relation, with a warning. Missing $\tau_f'$: $\tau_f'=\sigma_f'/\sqrt3$ (von Mises); the paper
+  gives no value.
+\item With elastic strains and the default $\tau_f'$, $\sigma_f'$ only scales DP, and the fitted
+  master curve absorbs that scale; a separately supplied $\tau_f'$ does change the lives.
+\item The shear ranges are taken by the default rule \texttt{np\_shear\_rule = "rss"};
+  $\tau_{\max}$ is obtained from 720 time samples.
+\item Life from the master curve instead of the strain--life curve. The \texttt{\_ext} value is
+  identical to \texttt{GSA}.
+\end{itemize}
+
+\block{Worked example} Synthetic material (not experimental data): $E=200$\,GPa, $\nu=0.3$,
+$\sigma_f'=1350\MPa$, default $\tau_f'$. Reversed tension $\sigma_a=300\MPa$:
+DP $=4.5963\cdot10^{-4}$, equal to $\mathrm{DP}_{\max}$ of Eq.~\eqref{eq:gsa-uni}. Reversed torsion
+$\tau_a=200\MPa$: DP $=6.6716\cdot10^{-4}$. Equal DP gives $\tm/\fm=0.553$. Doubling $\sigma_f'$
+halves DP.
+
+\block{Verification} Checked: the four terms of Eq.~\eqref{eq:gsa-main} on a plane state with
+elastic and plastic strains, and the default $\tau_f'=\sigma_f'/\sqrt3$. Not reproduced: the
+experimental lives of the paper.

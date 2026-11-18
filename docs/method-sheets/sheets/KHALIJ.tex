@@ -1,0 +1,73 @@
+% registry: KHALIJ
+\methodhead{KHALIJ}{Khalij, Pagnacco and Troian (2017): improved Gough / Nishihara--Kawamoto criterion}\label{sheet:KHALIJ}
+
+\block{Source} L.~Khalij, E.~Pagnacco, R.~Troian, \emph{Int.\ J.\ Fatigue} 99 (2017) 137--150
+\cite{khalij2017}, Eqs.~(12), (22), (23), (26); Tables~1 and~6.
+
+\block{Idea and scope} A fatigue-limit criterion for zero-mean sinusoidal plane stress that
+weights an equivalent shear stress amplitude against the amplitude of the first invariant. The
+weight depends on the limit ratio $r=\tm/\fm$, so one expression moves from a von Mises ellipse
+(mild steels, $r\approx 1/\sqrt3$) to a Rankine-like envelope (cast irons, $r\to1$). Proposed for
+metals with $0.5\lesssim r\le 1$, in-phase and out-of-phase loading.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$s_{xx,a}$, $s_{yy,a}$, $s_{xy,a}$ & MPa & amplitudes of the plane-stress components\\
+$\phi_{yy}$ & rad & phase shift between the two normal stresses $s_{xx}$ and $s_{yy}$\\
+$s_{-1}=\fm$, $\tm$ & MPa & fully reversed axial (or bending) and torsion limits\\
+$r=\tm/\fm$ & -- & limit ratio\\
+$\alpha(r)$ & -- & weight of the shear term, Eq.~\eqref{eq:khalij-alpha}\\
+$J_{2,a}$, $I_{1,a}$ & MPa$^2$, MPa & PHPS shear amplitude squared and first-invariant amplitude\\
+$\mathfrak D$ & -- & damage; $\mathfrak D\le1$ means no failure\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} With the PHPS amplitude (Eq.~12), which depends on the phase of the normal
+stresses only, and the amplitude of the first invariant (Eq.~22),
+\begin{gather}
+J_{2,a} = \tfrac13\left(s_{xx,a}^2 + s_{yy,a}^2 - s_{xx,a}s_{yy,a}\cos\phi_{yy}\right) + s_{xy,a}^2 ,\qquad
+I_{1,a} = \sqrt{s_{xx,a}^2 + s_{yy,a}^2 + 2\,s_{xx,a}s_{yy,a}\cos\phi_{yy}} ,\\
+\mathfrak D = \alpha(r)\left[\Bigl(\frac{s_{xx,a}}{\fm}\Bigr)^2 + \Bigl(\frac{s_{yy,a}}{\fm}\Bigr)^2
+ - \frac{s_{xx,a}}{\fm}\frac{s_{yy,a}}{\fm}\cos\phi_{yy}\right]
+ + \Bigl(\frac{s_{xy,a}}{\tm}\Bigr)^2 + \bigl(1-\alpha(r)\bigr)\frac{I_{1,a}}{\fm} \le 1 ,
+ \label{eq:khalij}\\
+\alpha(r) = \frac{1}{3r^2} . \label{eq:khalij-alpha}
+\end{gather}
+Eq.~\eqref{eq:khalij-alpha} is the authors' setting ``OP'': it makes the criterion independent of
+the frame for pure shear (Eqs.~24--26). With it the first two groups of Eq.~\eqref{eq:khalij} are
+$J_{2,a}/\tm^2$, so
+\begin{equation}
+\mathfrak D = \frac{J_{2,a}}{\tm^2} + \Bigl(1 - \frac{1}{3r^2}\Bigr)\frac{I_{1,a}}{\fm} .
+\label{eq:khalij-invariant}
+\end{equation}
+Both limits give $\mathfrak D=1$ exactly. For $r<1/\sqrt3$ the weight of $I_{1,a}$ is negative.
+
+\block{Constants and calibration} None fitted: $\alpha$ follows from $\fm$ and $\tm$.
+
+\block{Life} The paper gives none; finite lives use the master curve on $\mathfrak D$
+(Section~\ref{sec:mastercurve}), a repository extension. $\mathfrak D$ is not homogeneous in the
+load (linear $I_{1,a}$ term).
+
+\block{Repository choices}
+\begin{itemize}
+\item Eq.~\eqref{eq:khalij-invariant} is evaluated with $J_{2,a}$ and $I_{1,a}$ of
+  Eq.~\eqref{eq:invariants}; in plane stress they equal the paper's expressions.
+\item Zero mean stress only. The paper's mean-stress extension (Eqs.~29--31) is not implemented:
+  its term $\gamma_2(r)\,s_{ms}/s_{-1}^2$ is not dimensionless ($s_{ms}$ is linear in the mean
+  stresses), Eq.~(30) for $\gamma_2$ follows from a purely quadratic base criterion, and no reading
+  reproduces Table~7. A case with a mean stress, or with an out-of-plane component, is out of scope.
+\item $r$ is computed from the material limits; Table~6 uses this unrounded ratio, not the
+  two-digit $r$ printed beside it.
+\end{itemize}
+
+\block{Worked example} Table~6, CrV-V ($\fm=530$, $\tm=309\MPa$, $r=0.583$, $\alpha=0.981$), biaxial
+limit $s_{xx,a}=0.24\fm=127.2$, $s_{yy,a}=-0.84\fm=-445.2\MPa$ (in phase, opposite signs):
+$J_{2,a}=\tfrac13(127.2^2+445.2^2+127.2\cdot445.2)=90\,337\MPa^2$, $I_{1,a}=318.0\MPa$,
+$\mathfrak D = 90\,337/309^2 + (1-0.981)\,318.0/530 = 0.946+0.012 = 0.958$ (printed 0.95).
+
+\block{Verification} Table~6, OP column: 51 of 53 limits to one unit of the last printed digit;
+two 3\%C cast-iron rows (1.035 and 1.063 against 1.06 and 1.01) are unexplained.

@@ -22,6 +22,8 @@ Hooke's law with (E, nu) and plastic strain is the difference:
 
 This implementation returns the left-hand GSE scalar; the case-level
 pipeline calibrates this scalar against uniaxial fatigue data.
+
+User guide: docs/method-guides/GSE.md.
 """
 
 from __future__ import annotations

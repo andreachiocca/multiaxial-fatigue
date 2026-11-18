@@ -1,21 +1,22 @@
-"""GSA (Generalized Strain Amplitude) critical-plane damage parameter.
+"""GSA: Ince & Glinka (2014) generalized strain amplitude critical-plane parameter.
 
-Ince & Glinka (Int. J. Fatigue 62 (2014) 34–41) convert the generalized
-strain energy (GSE) form into a generalized strain amplitude (GSA) form by
-normalizing the *elastic* strain amplitudes with stress correction factors.
+A. Ince, G. Glinka, Int. J. Fatigue 62 (2014) 34-41, doi:10.1016/j.ijfatigue.2013.10.007,
+Eq. (5), the strain-amplitude form of the generalized strain energy (GSE, Eq. 1)::
 
-In a practical form (see Eq.(5) in the paper):
+    de*/2 = [ (tau_max/tau'_f) dgamma_e/2 + dgamma_p/2
+              + (sigma_n,max/sigma'_f) de_e/2 + de_p/2 ]_max
 
-  GSA = [
-          (τ_max/τ'_f) * (Δγ_e/2) + (Δγ_p/2)
-        + (σ_{n,max}/σ'_f) * (Δε_{n,e}/2) + (Δε_{n,p}/2)
-        ]_max
+maximised over the planes (the plane rule is the parameter itself).
 
-where σ'_f and τ'_f are uniaxial fatigue strength coefficients.
+Repository choices:
+  - sigma_n,max is clipped at zero;
+  - plastic strain = total strain - isotropic elastic strain of the stresses (E, nu); workbook
+    strains are elastic, so the plastic terms vanish for imported histories;
+  - missing sigma'_f is estimated as 1.5 Su (uniform material law, Zhao et al. 2020; a steel
+    relation, with a warning); missing tau'_f = sigma'_f / sqrt(3) (the paper gives no value);
+  - life from the shared master curve DP = A N^b instead of the strain-life curve.
 
-Missing fatigue properties are estimated from the *non-hardness* empirical
-relations summarized in Zhao et al. (2020) (Uniform Material Law); shear
-properties follow from the axial ones through common von-Mises relations.
+User guide: docs/method-guides/GSA.md.
 """
 
 from __future__ import annotations

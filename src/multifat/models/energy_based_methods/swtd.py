@@ -1,5 +1,23 @@
-# multifat/models/energy_based_methods/swtd.py
-# SWTD model: deviatoric counterpart of SWT, after Kujawski (2014) http://dx.doi.org/10.1016/j.ijfatigue.2013.12.002
+"""Deviatoric Smith-Watson-Topper (SWTD) energy parameter of Kujawski (2014).
+
+Published in *International Journal of Fatigue* 67 (2014), pp. 95-102,
+doi:10.1016/j.ijfatigue.2013.12.002 (roadmap I_SWTD), Eq. (25)::
+
+    SWTD = max_i max(S_max,i * |e_a,i|, S_min,i * |e_a,i|)
+
+where ``S_max`` and ``S_min`` are the deviatoric stress tensors at the loading
+extrema and ``e_a,i`` are the principal deviatoric strain amplitudes.
+
+Repository choices: Deviatoric stress components ``S_max,i`` and ``S_min,i`` are
+projected onto the principal frame of ``e_a`` (shared eigenframe, matching Eqs. 23-24
+and Table 2) rather than pairing independently sorted eigenvalues; negative products
+clamp to zero. Since the paper specifies no non-proportional cycle definition,
+single-harmonic histories evaluate ``swtd_eq25`` over 360 phase-angle half-chords across
+one period and take the maximum, which reduces identically to the two-step result for
+in-phase cycles. For reversed torsion (Table 3), Eq. (25) yields ``tau_a * gamma_a / 2``
+rather than the paper's plotted ``tau_a * gamma_a / sqrt(3)``; the analytical Eq. (25)
+form is kept without rescaling. No material constants are required.
+"""
 
 from __future__ import annotations
 

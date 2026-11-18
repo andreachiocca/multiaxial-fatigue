@@ -29,6 +29,13 @@ print(method.comparison_capabilities.dp_reference)     # master_curve
   data-dependent curve `DP = A N_f^b` is fitted, and the resulting
   `Nf_expected` is compared with the observed failure life. This is an
   *assessment-layer* life prediction, not necessarily an original-author life law.
+- **Identifiable master curve (issue #74).** A fitted master curve is used only if its design
+  set determines it: at least 5 tests, over at least one decade of life, with a negative slope
+  distinct from zero ($|b| > 2$ standard errors), the thresholds of the Basquin fits. Otherwise
+  the model is skipped on that dataset with the reason. Every fitted curve, used or not, is
+  listed in `<material>_master_curves.csv` (n, decades, A, b and its standard error, R² in
+  log space, scatter, identifiable, reason). The scatter is estimated with n − 2 degrees of
+  freedom.
 - **Life, native**: `Nf_native` is computed from the method's own fatigue-life law.
   The `Nf_expected` CSV column contains exactly the same native prediction for
   plot compatibility, with `Metric_mode=Nf_direct`. No supplementary generic
@@ -140,7 +147,7 @@ failures. Rows without a recognised flag are labelled `unclassified`;
 `--common-methods` option restricts comparison to finite metrics on matched
 failed observations assessed by every selected method. Tests behind a constant
 fitted by the pipeline (Basquin constants and the plane constants `k_FI`, `k_FS`,
-`L_LI`, `k_MGSE`, `a_MSWT`) are `Flag=0` for every model that adopts that constant.
+`L_LI`, `k_MGSE`, `a_MSWT`, `k_PDS`) are `Flag=0` for every model that adopts that constant.
 A `Flag=1` row is still not automatically independent of all fits: the R = -1
 fatigue limits, constants supplied in the workbook or by an upstream record, and
 other experimental batches of the same source are not traced.

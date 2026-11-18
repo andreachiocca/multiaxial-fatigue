@@ -1,0 +1,24 @@
+# TVEIT2025: 50,000-block integrations of Eqs. (6)-(12) WITHOUT any stopping rule (the repository's block
+# integration at 96de6ad, 1001 points per cycle), stage-1 constants of Calibrations/<material>/TVEIT2025_stage1.json.
+# Computed values (model consistency), not experiments. Run on 2026-11-06 (issue on the end rule).
+# Loading: axial = sigma_yy, torsion = tau_xy, mean = amplitude (1 + R)/(1 - R).
+# shakedown_block: first block without any damage increment (life infinite).
+# D_50000, dD_50000: damage after 50,000 blocks and damage of block 50,000 for loads without shakedown;
+# their life is N = 50000 + (1 - D_50000)/dD_50000.
+material,loading,R,amplitude,shakedown_block,D_50000,dD_50000
+42CrMo4_Santus,axial,-1,380.0,2463,,
+42CrMo4_Santus,axial,-1,410.0,2682,,
+42CrMo4_Santus,axial,-1,431.0,2787,,
+42CrMo4_Santus,axial,-1,437.3,,0.02397988471215329,4.225198886459447e-07
+42CrMo4_Santus,torsion,-1,350.0,,0.0534145828478638,1.0682916474213933e-06
+42CrMo4_Santus,torsion,0.1,200.0,1709,,
+42CrMo4_Santus,torsion,0.1,250.0,1778,,
+42CrMo4_Santus,torsion,0.1,270.0,1789,,
+Ti6Al4V_Meneghetti,axial,-1,320.0,1,,
+Ti6Al4V_Meneghetti,axial,-1,340.0,4213,,
+Ti6Al4V_Meneghetti,axial,-1,366.2,5163,,
+Ti6Al4V_Meneghetti,axial,-1,410.5,5958,,
+Ti6Al4V_Meneghetti,axial,-1,460.2,6693,,
+Ti6Al4V_Meneghetti,axial,-1,495.0,7219,,
+Ti6Al4V_Meneghetti,axial,-1,510.0,,0.05217373483238868,8.980214195181135e-07
+Ti6Al4V_Meneghetti,torsion,-1,430.0,,0.06075782311538221,1.2151564623905098e-06

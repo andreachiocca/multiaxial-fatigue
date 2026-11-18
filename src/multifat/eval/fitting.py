@@ -1,7 +1,23 @@
-"""Power-law calibration using a damage-space shift that always stays well defined."""
+"""Power-law calibration using a damage-space shift that always stays well defined.
+
+Repository choices:
+  - the scatter of the master curve is estimated with n - 2 degrees of freedom, as for any
+    two-parameter regression (ASTM E739; ``material_fits.fit_basquin`` does the same), so that
+    STD_ln_DP**2 is unbiased; with n = 2 it is undefined (issue #74);
+  - a master curve is identifiable only with at least ``MIN_POINTS`` tests over ``MIN_DECADES``
+    decades of life and a negative slope distinct from zero (|b| > ``MIN_T`` standard errors),
+    the thresholds of the Basquin fits of ``material_fits``. A model whose curve is not
+    identifiable is skipped (maintainer, issue #74).
+"""
 
 from __future__ import annotations
+
 import numpy as np
+
+# Identifiability thresholds of a fitted S-N or master curve (shared with material_fits)
+MIN_POINTS = 5
+MIN_DECADES = 1.0
+MIN_T = 2.0
 
 
 def fit_power_law_with_survival_std(Nf, DP, stdnum=0.0):
@@ -30,6 +46,10 @@ def fit_power_law_with_survival_std(Nf, DP, stdnum=0.0):
         STD_ln_DP=np.nan,
         n=int(Nf.size),
         R2_log=np.nan,
+        decades=float(np.log10(Nf.max() / Nf.min())) if Nf.size >= 2 else 0.0,
+        b_se=np.nan,
+        identifiable=False,
+        reason=f"{Nf.size} tests with distinct positive lives",
     )
     if Nf.size < 2 or np.ptp(np.log(Nf)) < 1e-12:
         return degenerate
@@ -38,18 +58,36 @@ def fit_power_law_with_survival_std(Nf, DP, stdnum=0.0):
     if abs(slope) < 1e-12:
         slope, intercept = 0.0, float(np.mean(log_DP))
     leftover = log_DP - (intercept + slope * log_N)
-    sigma_dp = float(np.std(leftover, ddof=1))
+    n = int(Nf.size)
+    sse = float(np.sum(leftover**2))
+    # two fitted parameters: n - 2 degrees of freedom (unbiased variance)
+    sigma_dp = float(np.sqrt(sse / (n - 2))) if n > 2 else np.nan
     sigma_life = sigma_dp / abs(slope) if slope < 0 else np.nan
     ss_total = float(np.sum((log_DP - np.mean(log_DP)) ** 2))
-    r2 = 1 - float(np.sum(leftover**2)) / ss_total if ss_total > 1e-24 else np.nan
+    r2 = 1 - sse / ss_total if ss_total > 1e-24 else np.nan
+    sxx = float(np.sum((log_N - log_N.mean()) ** 2))
+    b_se = sigma_dp / np.sqrt(sxx) if n > 2 else np.nan
+    decades = float(np.log10(Nf.max() / Nf.min()))
+    issues = []
+    if n < MIN_POINTS:
+        issues.append(f"{n} < {MIN_POINTS} design tests")
+    if decades < MIN_DECADES:
+        issues.append(f"{decades:.2f} < {MIN_DECADES} decades of life")
+    if not slope < 0.0 or not abs(slope) > MIN_T * b_se:
+        issues.append(f"slope {slope:.4f} not distinct from 0 (SE {b_se:.4f})")
+    shift = stdnum * sigma_dp if stdnum > 0 else 0.0
     return dict(
         A=float(np.exp(intercept)),
         b=float(slope),
         STD=sigma_life,
         STD_ln_DP=sigma_dp,
-        A_surv=float(np.exp(intercept - stdnum * sigma_dp)),
-        n=int(Nf.size),
+        A_surv=float(np.exp(intercept - shift)),
+        n=n,
         R2_log=r2,
+        decades=decades,
+        b_se=float(b_se),
+        identifiable=not issues,
+        reason="; ".join(issues),
     )
 
 

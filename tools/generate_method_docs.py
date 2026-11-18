@@ -75,6 +75,8 @@ def validate(data):
     tree = ast.parse((ROOT / "src/multifat/models/registry.py").read_text(encoding="utf-8"))
     for fn in tree.body:
         if isinstance(fn, ast.FunctionDef) and fn.name in {
+            "available_cp_methods",
+            "available_direct_models",
             "_available_cp_methods",
             "_available_direct_models",
         }:
@@ -760,10 +762,14 @@ def browse(entries):
     return txt
 
 
-def main():
-    args = argparse.ArgumentParser()
+def build_parser() -> argparse.ArgumentParser:
+    args = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     args.add_argument("--check", action="store_true")
-    opt = args.parse_args()
+    return args
+
+
+def main():
+    opt = build_parser().parse_args()
     data = json.loads(DATA.read_text(encoding="utf-8"))
     entries = validate(data)
     global EXTERNAL_SOURCES

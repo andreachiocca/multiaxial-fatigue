@@ -42,7 +42,7 @@ worksheet or other archive member was added or changed.
 | Material | Imported failures | Imported run-outs |
 |---|---:|---:|
 | AISI316L | 31 | 13 |
-| 42CrMo4_QT | 70 | 15 |
+| 42CrMo4_Santus | 70 | 15 |
 | Al7075_T6 | 87 | 14 |
 | Ti6Al4V_andrea_(AXIAL) | 58 | 0 |
 | Total | 246 | 42 |

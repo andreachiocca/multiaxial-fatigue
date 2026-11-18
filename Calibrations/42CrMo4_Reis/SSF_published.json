@@ -1,0 +1,19 @@
+{
+    "published_constants": {
+        "a_SSF": 2.69,
+        "b_SSF": -0.0099,
+        "c_SSF": 1.69e-05,
+        "d_SSF": -9.52e-09,
+        "f_SSF": -5.99,
+        "g_SSF": 11.72,
+        "h_SSF": -8.04,
+        "i_SSF": 1.63
+    },
+    "material_id": "42CrMo4_Reis",
+    "reference": "Anes V, Reis L, Li B, Fonte M, de Freitas M (2014) Int J Fatigue 62:21-33, Eq. (31), p.30, doi:10.1016/j.ijfatigue.2013.05.004",
+    "notes": {
+        "scope": "ssf surface of the 42CrMo4 of the paper (Reis batch, Table 2): sigma in MPa, lambda in rad; no e term in Eq. (31)",
+        "in_sample": "the surface was regressed on the proportional tests of this workbook (cases 1-5); SSF errors on them measure the fit, not prediction",
+        "precision": "printed three-digit coefficients: they miss the paper's Table 9 by up to 0.06 (tests/methods/test_ssf.py)"
+    }
+}

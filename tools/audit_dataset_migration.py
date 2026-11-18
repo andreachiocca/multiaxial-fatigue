@@ -45,12 +45,16 @@ def _key(case):
     return (m.get("specimen_id"), m["Nf_cycles"], m.get("test_status"))
 
 
-def main():
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--old-dir", default="Experimental_Data/archive/pre-dataset-migration")
     parser.add_argument("--new-dir", default="Experimental_Data")
     parser.add_argument("--output", default="Results/current/Comparison/dataset-migration.json")
-    args = parser.parse_args()
+    return parser
+
+
+def main():
+    args = build_parser().parse_args()
     old = import_experimental_data_grouped_by_material(args.old_dir)
     new = import_experimental_data_grouped_by_material(args.new_dir)
     old_paths = {material_id(p.stem): p for p in workbook_files(args.old_dir)}

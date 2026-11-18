@@ -9,7 +9,7 @@ readings (sigma_max = applied sigma_a, or tau_a,cr = applied tau_a) miss by fact
 Phase-1 note that Table 4 is not reproducible is withdrawn.
 
 Side checks on the same table: repository MCD with t_A = 244 MPa, sigma_u = 680 MPa (Eq. 10, Table 3)
-reproduces Nf_mcd within 3 % in life; repository FIN with k = 0.131 gives lives about 18 % shorter
+reproduces Nf_mcd within 4 % in life; repository FIN with k = 0.131 gives lives about 18 % shorter
 than Nf_find (1.5 % in stress, unresolved).
 """
 

@@ -297,7 +297,9 @@ class FindleyHarmonicTests(unittest.TestCase):
 
     def test_other_methods_unchanged_and_do_not_accept_algorithm(self):
         # Upstream 71eaac3 gave FS 0.00014340125522463185 for the non-proportional case; here FS
-        # uses the longest-chord shear range (F3), hence the different value. The rest is identical.
+        # uses the longest-chord shear range (F3), hence the different value. MATAKE and MCD use the
+        # circumscribed circle (longest chord) since 17 Nov 2026 (maintainer decision; upstream and
+        # RSS gave 15.600468957064283 and 14.987968957064284 out of phase).
         snapshots = {
             True: {
                 "FS": 0.00014460999273909115,
@@ -306,8 +308,8 @@ class FindleyHarmonicTests(unittest.TestCase):
             },
             False: {
                 "FS": 0.00012934310959614355,
-                "MATAKE": 15.600468957064283,
-                "MCD": 14.987968957064284,
+                "MATAKE": 13.847915141532363,
+                "MCD": 13.410415141532363,
             },
         }
         for proportional, values in snapshots.items():

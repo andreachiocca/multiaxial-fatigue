@@ -1,16 +1,23 @@
-"""Probabilistic volume model proposed by Flacelière and Morel (2004), Fatigue Fract Engng Mater
-Struct 27:1123-1135, doi:10.1111/j.1460-2695.2004.00823.x (roadmap item G24), supplied here as
-point kernels rather than a registered model: it requires the stressed volume V and the scale
-parameter V0 sigma_u^m, and the paper does not give these for its test geometries.
+"""Probabilistic volume fatigue model of Flacelière and Morel (2004).
 
-Equation (13): P_F = 1 - exp(-(V / (V0 sigma_u^m)) sigma_eq,max^m H_m),
-Equation (12): H_m = (1 / (V sigma_eq,max^m)) int_V sigma_eq^m dV, whose closed forms (Eq. 14)
-are 1 for tension, 1/(m+1) for four-point plane bending of a square section, 2/(m+2) for
-four-point rotating bending of a round section, 1/(m+1)^2 for three-point plane bending and
-2/((m+1)(m+2)) for three-point rotating bending. Under rotating bending every point experiences
-the cycle maximum sigma r/R, which is where the round-section factors originate.
-sigma_eq = M_sigma + p H_max (Eq. 3), with M_sigma the quadratic mean of the resolved shear
-amplitude (t_-1 under torsion, s_-1/sqrt(3) under tension).
+Published in *Fatigue & Fracture of Engineering Materials & Structures* 27 (2004),
+pp. 1123-1135, doi:10.1111/j.1460-2695.2004.00823.x (roadmap item G24), Eqs. (3), (12)-(14)::
+
+    P_F = 1 - exp(-(V / (V0 * sigma_u^m)) * sigma_eq,max^m * H_m)
+    H_m = (1 / (V * sigma_eq,max^m)) * int_V sigma_eq^m dV
+    sigma_eq = M_sigma + p * H_max
+
+where ``M_sigma`` is the RMS resolved shear amplitude (``t_-1`` torsion, ``s_-1/sqrt(3)``
+tension) and ``H_m`` takes closed-form specimen factors (Eq. 14: ``1`` tension,
+``1/(m+1)`` 4-pt plane, ``2/(m+2)`` 4-pt rotating, ``1/(m+1)^2`` 3-pt plane,
+``2/((m+1)(m+2))`` 3-pt rotating).
+
+Repository choices:
+- Supplied as point kernels (``heterogeneity_factor``, ``failure_probability``,
+  ``median_strength``) rather than a registered model because workbooks lack stressed
+  specimen volumes ``V`` and the paper omits ``V`` and ``V0 * sigma_u^m`` for its tests.
+- Uses exact analytical heterogeneity factors from Eq. (14) directly instead of integrating
+  a stress field numerically.
 """
 
 from __future__ import annotations

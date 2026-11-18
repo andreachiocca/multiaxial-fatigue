@@ -1,29 +1,28 @@
-"""Robert, Fogue and Bahuaud (1994), ASTM STP 1231:369-387, doi:10.1520/STP13959S (roadmap G41).
+"""Robert, Fogue and Bahuaud (1994) integral fatigue criterion.
 
-Damage measure on the plane whose normal is h, Eq. (15) with c = 0 (Eq. 25):
+Published in *ASTM STP 1231* (1994), pp. 369-387, doi:10.1520/STP13959S (roadmap G41),
+Eqs. (8), (15)-(25), Appendix::
 
-    E_h = a max_psi tau_h psi,a + b sigma_hh,a + d sigma_hh,m
+    E_h = a * max_psi tau_{h,psi,a} + b * sigma_{hh,a} + d * sigma_{hh,m}
+    E   = (1 / s_-1) * sqrt( (1 / (4 * pi)) * int_S E_h^2 dS ) = 1
+    b^2 = (15 - sqrt(D)) / 2,   D = 225 * (1 - 8 * (k - 3)^2 / 25),   k = s_-1^2 / t_-1^2
+    a^2 = (12 * k - 21 + b^2) / 2
+    d   = (-(3 * b + 2 * a) + sqrt((3 * b + 2 * a)^2 + 3 * (60 * s_-1^2 / s_0^2 - 15))) / 3
 
-together with the failure condition of Eqs. (8) and (16):
+Valid for ``0.577 < t_-1 / s_-1 < 0.866``, where ``max_psi tau_{h,psi,a}`` is the largest
+half-projection of the shear stress path onto a line in plane ``h`` (for a single harmonic,
+the radius of the minimum circumscribed circle) and ``c = 0`` (Eq. 25).
 
-    E = (1/s_-1) sqrt( 1/(4 pi) int_S E_h^2 dS ) = 1.
-
-Here E denotes the validity parameter I of Eq. (27) (E depends linearly on the stresses).
-The coefficients a, b and d are determined from reversed tension, pulsating tension and
-reversed torsion, Eqs. (20), (21), (24); after defining k = s_-1^2 / t_-1^2 (Appendix),
-they read:
-
-    b^2 = (15 - sqrt(D))/2,  D = 225 (1 - 8 (k - 3)^2 / 25),   a^2 = (12 k - 21 + b^2)/2,
-    d = (-(3b + 2a) + sqrt((3b + 2a)^2 + 3 (60 s_-1^2/s_0^2 - 15)))/3
-
-and the result is valid for 0.577 < t_-1/s_-1 < 0.866. Problems in the source: Eq. (16)
-shows 1/pi although Eqs. (8) and (18)-(24) call for 1/(4 pi) (S = 4 pi); the Appendix
-gives a without the factor 1/2 under the root, which Eqs. (20) and (24) require; and
-Eq. (18) displays E where E^2 is intended. The quantity max_psi tau_h psi,a is the largest
-half-projection of the shear path onto a line in the plane and, for a single harmonic,
-equals the radius of the minimum circumscribed circle. The paper uses strengths at a
-given life N; this repository instead uses the fatigue limits (Sigm1, Taum1, Sig0, or
-the Boehme et al. 2026 Eq. (1) estimate of s_0 from Su).
+Repository choices:
+- Source Eq. (16) prints ``1 / pi`` instead of ``1 / (4 pi)`` required by Eqs. (8) and
+  (18)-(24), and the Appendix omits ``1 / 2`` under the root of ``a`` required by Eqs. (20)
+  and (24); the implementation restores both corrected factors (and reads Eq. 18 as ``E^2``).
+- Material constants outside 0.577 < t_-1 / s_-1 < 0.866 raise ``MaterialScopeError``: the
+  model is skipped on that material (eligibility ``out_of_scope``), not failed.
+- Spherical integration uses a 48 x 192 Gauss-Legendre grid (``GRID = (48, 192)``).
+- Endurance limits (``Sigm1``, ``Taum1``, and ``Sig0`` or the Boehme et al. 2026 Eq. 1
+  estimate of ``s_0`` from ``Su``) replace fixed-life strengths ``N``, returning the scalar
+  validity index ``E`` (``I`` in Eq. 27) for master-curve life prediction.
 """
 
 from __future__ import annotations
@@ -33,6 +32,7 @@ from typing import Mapping
 import numpy as np
 
 from ..base import CaseResult
+from ..errors import MaterialScopeError
 from ..invariant_methods.stress_invariants import harmonic_parts
 from .bohme_papuga import _plane_amplitudes, _sphere_grid, _strengths
 
@@ -43,7 +43,7 @@ def rfb_parameters(f_m1: float, t_m1: float, f_0: float) -> tuple[float, float, 
     k = (f_m1 / t_m1) ** 2
     D = 225.0 * (1.0 - 8.0 * (k - 3.0) ** 2 / 25.0)
     if not (4.0 / 3.0 < k < 3.0) or D < 0.0:
-        raise ValueError(
+        raise MaterialScopeError(
             f"RFB requires 0.577 < t_-1/s_-1 < 0.866 (received {t_m1 / f_m1:.3f}); "
             "see the Appendix of Robert et al."
         )

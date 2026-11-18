@@ -1,25 +1,25 @@
-"""Volumetric energy criterion of Banvillet, Palin-Luc & Lasserre (2003), Int J Fatigue 25:755-769,
-doi:10.1016/S0142-1123(03)00048-3 (roadmap G26), provided as point kernels for the closed-form cases
-(not a registered model: since the criterion averages the strain work over the volume V* surrounding
-the critical point, the local stress alone suffices only for homogeneous uniaxial stress).
+"""Volumetric energy fatigue criterion of Banvillet, Palin-Luc & Lasserre (2003).
 
-Eqs. (3)-(5):  g(C) = mean over V* of [W_g - W*] <= g^D,  V* = {M : W_g(M) >= W*}
-Eq. (8):       W* = sigma*^2/E,  sigma* = sqrt(2 s_Ten^2 - s_RB^2)   (reversed tension, rotating bending)
-Eq. (9):       g^D_uniax = (s_RB^2 - s_Ten^2)/E
-Eq. (29):      W_g = (sigma_m^2 + sigma_a^2)/E if sigma_a >= |sigma_m|, else 2 |sigma_m| sigma_a / E
-For homogeneous uniaxial stress g = W_g - W*, hence the limit reads W_g = s_Ten^2/E. For rotating
-bending of a smooth cylinder, V* is the annulus r >= R sigma*/sigma_a and g = (sigma_a^2 -
-sigma*^2)/(2E), which reproduces Eq. (7) at s_RB.
+Published in *International Journal of Fatigue* 25 (2003), pp. 755-769,
+doi:10.1016/S0142-1123(03)00048-3 (roadmap G26), Eqs. (3)-(29)::
 
-Triaxiality (Eqs. 13-18): d_T = W_g^s / W_g, F(d_T, beta) = {1 - ln[1 + (e^beta - 1) d_T] / beta} /
-(1 - d_T), with beta determined from the rotating-bending and torsion limits, Eq. (15); W* and g^D are
-scaled by F(d_T)/F(d_T,uniax), d_T,uniax = (1 - 2 nu)/3. For combined tension and torsion of a solid
-smooth cylinder (Eqs. 20-28, sigma_a >= |sigma_m|, tau_a >= |tau_m|): the shear stress varies as r/R,
-V* is the annulus beyond r* of Eq. (26), and the limit is Eq. (27) for r* > 0 or Eq. (28) for r* = 0;
-the phase shift does not affect the result. Any other multiaxial state requires the W_g field over V*
-(finite elements).
-Source notes: Eq. (10) prints (y*/R)^2 = sigma_PB^2/sigma*^2 in inverted form; Eq. (13) drops the 1/3
-of sigma_kk (Eq. 22 retains it).
+    g(C) = mean over V* of [W_g - W*] <= g^D,   V* = {M : W_g(M) >= W*}
+    W* = sigma*^2 / E,   sigma* = sqrt(2 * s_Ten^2 - s_RB^2),   g^D_uniax = (s_RB^2 - s_Ten^2) / E
+    F(d_T, beta) = (1 - ln(1 + (e^beta - 1) * d_T) / beta) / (1 - d_T),   d_T = W_g^s / W_g
+
+with cyclic strain work ``W_g = (sigma_m^2 + sigma_a^2) / E`` for ``sigma_a >= |sigma_m|``
+and ``2 |sigma_m| sigma_a / E`` otherwise (Eq. 29), rotating-bending annulus integration,
+and smooth-cylinder combined tension-torsion limits (Eqs. 20-28, phase shift invariant).
+
+Repository choices:
+- Provided only as closed-form point/axisymmetric kernels rather than a registered model
+  because general multiaxial stress states require integrating ``W_g`` over ``V*`` on an
+  FE mesh.
+- ``tension_torsion_index`` enforces ``sigma_a >= |sigma_m|`` and ``tau_a >= |tau_m|``, and
+  returns the homogeneous reciprocal scale ``1 / lambda`` so the index varies continuously
+  across the ``r* = 0`` transition (Eqs. 27-28).
+- Retains ``d_T,uniax = (1 - 2 * nu) / 3`` from Eq. (22) (fixing the omitted ``1/3`` in
+  Eq. 13 and inverted ``(y*/R)^2`` print in Eq. 10).
 """
 
 from __future__ import annotations

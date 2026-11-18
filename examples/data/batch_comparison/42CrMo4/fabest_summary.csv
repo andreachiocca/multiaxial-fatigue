@@ -1,0 +1,4 @@
+Load,group,series,labs,S_median,S_min,S_max,sd_ln,range_ln
+Axial,all unnotched series,27,4,568.94,483.72,657.97,0.080571,0.30765
+Axial,drawing v07 (hollow 8.1/7 mm hourglass),7,3,610.21,561.07,654.55,0.062709,0.1541
+Torsion,all unnotched series,3,2,425.9,396.68,432.29,0.045932,0.085946

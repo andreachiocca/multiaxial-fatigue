@@ -16,22 +16,22 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 6 | 1 | 11 | 0 | 18 |
-| Energy based | 6 | 1 | 13 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 5 | 0 | 8 | 0 | 13 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Energy based | 7 | 1 | 12 | 3 | 23 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
 | Specialized | 0 | 0 | 3 | 0 | 3 |
-| Strain based | 3 | 0 | 10 | 2 | 15 |
-| Stress based | 1 | 0 | 12 | 0 | 13 |
+| Strain based | 4 | 0 | 9 | 2 | 15 |
+| Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 29 | 2 | 81 | 5 | 117 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 161 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](../../docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](../../docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -48,11 +48,11 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [I_OTT](../../METHODS.md#i_ott) | Ottosen/Tveit proportional reduction (archived scope) | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N01](../../METHODS.md#n01) | Crossland | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N02](../../METHODS.md#n02) | Sines | Fully implemented | reference_examples_reproduced | High | Yes |
-| [N08](../../METHODS.md#n08) | Hard-metal deviatoric-amplitude/principal-stress criterion | Not implemented | not_tested | High | Yes |
-| [N09](../../METHODS.md#n09) | Unified equivalent shear stress | Not implemented | not_tested | High | Yes |
+| [N08](../../METHODS.md#n08) | Gonçalves–Araújo–Mamiya prismatic-hull criterion for hard metals | Fully implemented | reference_examples_reproduced | High | Yes |
+| [N09](../../METHODS.md#n09) | Unified equivalent shear stress | Fully implemented | basic_numerical_tests | High | Yes |
 | [N10](../../METHODS.md#n10) | Modified Marin-type mean-shear criterion | Not implemented | not_tested | Medium | Yes |
 | [N18](../../METHODS.md#n18) | Piecewise ruled S–N surface | Not implemented | not_tested | Medium | Yes |
-| [N19](../../METHODS.md#n19) | Improved Gough / Nishihara–Kawamoto criterion | Not implemented | not_tested | Medium | Yes |
+| [N19](../../METHODS.md#n19) | Improved Gough / Nishihara–Kawamoto criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N20](../../METHODS.md#n20) | Stress-invariant endurance criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N33](../../METHODS.md#n33) | Published proportional Hershey–Hosford–Sines reduction | Not implemented | not_tested | Low | related_scope |
 | [N47](../../METHODS.md#n47) | Original Marin mean-stress criterion | Not implemented | not_tested | Low | Yes |
@@ -161,36 +161,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N08
 
-**Hard-metal deviatoric-amplitude/principal-stress criterion** — Camilla A. Gonçalves, José A. Araújo, Edgar N. Mamiya (2005)
+**Gonçalves–Araújo–Mamiya prismatic-hull criterion for hard metals** — Camilla A. Gonçalves, José A. Araújo, Edgar N. Mamiya (2005)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Invariant based;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | Multiaxial fatigue: a stress based criterion for hard metals, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/j.ijfatigue.2004.05.006 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Five-dimensional deviatoric range measure plus peak principal stress; iso-frequency CA P/NP, F. |
-| Loading scope | Five-dimensional deviatoric range measure plus peak principal stress; iso-frequency CA P/NP, F. |
-| Inputs / material parameters | S; f−1/t−1. |
-| Output | Five-dimensional deviatoric range measure plus peak principal stress; iso-frequency CA P/NP, F. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Efficient invariant-style benchmark targeting hard materials. |
+| Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Gonçalves, Araújo & Mamiya (2005) Eqs. (11)-(14), (A.1)-(A.18) on the PDF (2026-11-05) |
+| Principle | Prismatic-hull deviatoric amplitude sqrt(sum a_i^2) plus kappa times the peak principal stress over the cycle, against lambda; kappa, lambda from f-1, t-1 (Eq. 13). |
+| Loading scope | Iso-frequency single-harmonic CA, in-phase and out-of-phase, mean stresses; hard metals 1.3 <= f-1/t-1 < sqrt(3) (warning outside). |
+| Inputs / material parameters | Sigm1 (f-1), Taum1 (t-1); f-1 > t-1. |
+| Output | Fatigue index (1 at the limit); fitted life via the shared master curve where valid |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_goncalves_araujo_mamiya.py: Tables 1-4 column I^d, 14 in-phase rows to 0.02 points with Eq. (12); all 41 rows reproduced only with the in-phase peak principal stress, so the 27 out-of-phase rows are strict xfails against Eq. (11). |
+| Python implementation | [src/multifat/models/invariant_methods/goncalves_araujo_mamiya.py](../../src/multifat/models/invariant_methods/goncalves_araujo_mamiya.py); GoncalvesAraujoMamiya |
+| Automated tests | [tests/methods/test_goncalves_araujo_mamiya.py](../../tests/methods/test_goncalves_araujo_mamiya.py) |
+| Limitations | Endurance criterion: finite lives only through the shared master curve. Paper tables use a phase-free peak principal stress, contrary to Eq. (11); the repository follows Eq. (11). Scope restricted by the source to hard metals. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Five-dimensional representation and principal extrema; verify original amplitude's frame treatment. |
+| Missing tasks | No known essential coding gap within the declared repository scope. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Five-dimensional representation and principal extrema; verify original amplitude's frame treatment. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
 | Feasibility / effort / priority | A / Low (preliminary; source-specific amplitude/calibration may increase effort) / High |
-| Provenance / prior status | N08; Already reviewed, not implemented |
+| Provenance / prior status | N08; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N08+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN08%5D+Hard-metal+deviatoric-amplitude%2Fprincipal-stress+criterion) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N08+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN08%5D+Gon%C3%A7alves%E2%80%93Ara%C3%BAjo%E2%80%93Mamiya+prismatic-hull+criterion+for+hard+metals) (no live Issue linked) |
 
 ### N09
 
@@ -199,29 +199,29 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Invariant based;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | Predicting the multiaxial fatigue limit and the multiaxial high-cycle fatigue life based on the unified equivalent shear stress from axial strength characteristics with various waveforms, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/j.ijfatigue.2017.12.001 |
 | Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Deviatoric amplitude corrected using maximum normal stress and true fracture strength; CA P/NP, F/L. |
-| Loading scope | Deviatoric amplitude corrected using maximum normal stress and true fracture strength; CA P/NP, F/L. |
-| Inputs / material parameters | S; true fracture strength; axial S–N curve. |
-| Output | Deviatoric amplitude corrected using maximum normal stress and true fracture strength; CA P/NP, F/L. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Direct comparison against axial fatigue properties; alternative waveform-sensitive invariant approach. |
+| Formulation evidence | Checked against Matsubara, Hayashida & Kano (2018) accepted manuscript, Eqs. (7)-(18), Figs. 1-12, Tables 1-3 (2026-11-15) |
+| Principle | Unified equivalent shear stress amplitude sqrt(J2,amp,eq) = sigma_T sqrt(J2,amp)/(sigma_T - S_max + sqrt3 sqrt(J2,amp)) (Eq. 15), Mamiya amplitude (Eq. 13) and the maximum of the largest-range normal stress S_max; life from the reversed axial S-N curve with ordinate sigma_a/sqrt3. |
+| Loading scope | Single-harmonic CA, in-phase and out-of-phase, mean stresses; the paper also treats triangular and trapezoidal waveforms, not representable in the harmonic input. |
+| Inputs / material parameters | sigma_T, or Su within 400-1000 MPa (sigma_T = 1.84 Su). |
+| Output | Equivalent shear amplitude; life via the shared master curve fitted on the R = -1 uniaxial tests (the paper's unified equivalent S-N curve) |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_matsubara.py: Eq. (15) gives sigma_a/sqrt3 on the R = -1 uniaxial line and sigma_w/sqrt3 on the Eq. (9) limit line; Eq. (13) Mamiya amplitude against a time-domain evaluation; S_max against a brute-force sphere search. The paper prints no per-test value (histograms and scatter plots only). |
+| Python implementation | [src/multifat/models/invariant_methods/matsubara.py](../../src/multifat/models/invariant_methods/matsubara.py); Matsubara |
+| Automated tests | [tests/methods/test_matsubara.py](../../tests/methods/test_matsubara.py) |
+| Limitations | No paper table to reproduce. sigma_T estimated as 1.84 Su only within 400-1000 MPa (otherwise out of scope unless given). The alternative S-N estimate from Su and sigma_w (Eqs. 16-17) is not implemented. Sinusoidal input only. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | True-fracture-strength field, invariant amplitude and native axial-curve conversion. Review's Su-based estimate is range-limited, not universal. |
+| Missing tasks | Eqs. (16)-(17) S-N estimate without fatigue data (optional). |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. True-fracture-strength field, invariant amplitude and native axial-curve conversion. Review's Su-based estimate is range-limited, not universal. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
-| Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / High |
-| Provenance / prior status | N09; Already reviewed, not implemented |
+| Feasibility / effort / priority | A / Medium (preliminary; exact scope and data determine effort) / High |
+| Provenance / prior status | N09; Already implemented, active |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N09+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN09%5D+Unified+equivalent+shear+stress) (no live Issue linked) |
 
@@ -298,29 +298,29 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Invariant based;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | Fatigue criterion improvement of Gough and Nishihara & Kawamoto to predict the fatigue damage of a wide range of metallic materials, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/j.ijfatigue.2017.02.016 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | PHPS amplitude with first-invariant amplitude and material-ratio-dependent weighting; sinusoidal plane-stress CA P/NP, F. |
-| Loading scope | PHPS amplitude with first-invariant amplitude and material-ratio-dependent weighting; sinusoidal plane-stress CA P/NP, F. |
-| Inputs / material parameters | S; normal/torsional fatigue limits. |
-| Output | PHPS amplitude with first-invariant amplitude and material-ratio-dependent weighting; sinusoidal plane-stress CA P/NP, F. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Covers ductile-to-brittle behavior and phase effects beyond simple ellipses. |
+| Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Khalij, Pagnacco & Troian (2017) Eqs. (12), (22)-(26), (29)-(31) and Tables 1, 3-7 on the PDF (2026-11-15) |
+| Principle | PHPS equivalent shear stress amplitude J_2,a/t-1^2 plus (1 - alpha) I_1,a/f-1, with the OP weight alpha = 1/(3 r^2), r = t-1/f-1 (Eqs. 23, 26). |
+| Loading scope | Single-harmonic CA plane stress, in-phase and out-of-phase (phase between the normal stresses; shear phase irrelevant), zero mean stress only. |
+| Inputs / material parameters | Sigm1 (f-1), Taum1 (t-1). |
+| Output | Damage D (1 at the limit); fitted life via the shared master curve where valid |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_khalij.py: Table 6 OP column, 51 of 53 rows to one unit of the last printed digit with r from the Table 1 limits; two 3%C cast-iron rows unexplained (strict xfails). |
+| Python implementation | [src/multifat/models/invariant_methods/khalij.py](../../src/multifat/models/invariant_methods/khalij.py); Khalij |
+| Automated tests | [tests/methods/test_khalij.py](../../tests/methods/test_khalij.py) |
+| Limitations | Zero-mean plane stress only: the mean-stress terms (Eqs. 29-31) are not implemented, because the printed gamma_2 term is not dimensionless and Table 7 is not reproduced. Fatigue-limit criterion: finite lives only through the shared master curve. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Principal-coordinate prismatic hull, optimization and published weight function. |
+| Missing tasks | Mean-stress extension once Eqs. (29)-(31) are corrected (Liu 1997 or the authors). |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Principal-coordinate prismatic hull, optimization and published weight function. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
-| Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Medium |
-| Provenance / prior status | N19; Already reviewed, not implemented |
+| Feasibility / effort / priority | A / Medium (preliminary; exact scope and data determine effort) / Medium |
+| Provenance / prior status | N19; Already implemented, active |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N19+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN19%5D+Improved+Gough+%2F+Nishihara%E2%80%93Kawamoto+criterion) (no live Issue linked) |
 

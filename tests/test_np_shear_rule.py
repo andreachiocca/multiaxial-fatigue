@@ -1,7 +1,8 @@
 """Non-proportional shear range on a plane: per-source rule (finding F3).
 
 FS (1988), MKBM (Li et al. 2011, Eq. 19), LI (Li et al. 2021, Eqs. 17-19) and LIU2021 (Eq. 6)
-define the plane shear range over the cycle, i.e. the longest chord of the shear path; the other
+define the plane shear range over the cycle, i.e. the longest chord of the shear path (also MWHS,
+whose Fig. 14 needs it, and LIU2025, the half range of the plane shear); the other
 critical-plane methods keep the repository's RSS of the ellipse semi-axes.
 """
 
@@ -9,13 +10,15 @@ import numpy as np
 import pytest
 
 from multifat.eval.evaluator import prepare_planes, shear_rule_of
-from multifat.models.registry import _available_cp_methods
+from multifat.models.registry import available_cp_methods
 
-CHORD = {"FS", "MKBM", "LI", "LIU2021", "MWCM", "MMCCM", "VSE"}
+CHORD = {
+    "FS", "MKBM", "LI", "LIU2021", "MWCM", "MMCCM", "VSE", "MWHS", "LIU2025", "ZHANGYAO", "MATAKE", "MCD",
+}  # fmt: skip
 
 
 def test_rule_assignment():
-    rules = {n: shear_rule_of(m) for n, m in _available_cp_methods().items()}
+    rules = {n: shear_rule_of(m) for n, m in available_cp_methods().items()}
     assert {n for n, r in rules.items() if r == "longest_chord"} == CHORD
     assert all(r == "rss" for n, r in rules.items() if n not in CHORD)
 

@@ -121,6 +121,10 @@ class BohmePapuga:
     def required_params(self) -> set[str]:
         return {"Sigm1", "Taum1"}
 
+    def effective_strengths(self, params: Mapping[str, float]) -> tuple[float, float, float, float]:
+        """(Sigm1, Taum1, Sig0, Tau0), estimating Sig0 and Tau0 from Su if absent."""
+        return _strengths(params, self.name)
+
     def evaluate_case(
         self,
         *,

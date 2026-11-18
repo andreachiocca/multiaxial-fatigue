@@ -29,6 +29,10 @@ dependencies = [
     "scipy>=1.11",
 ]
 
+[project.optional-dependencies]
+fe = ["h5py>=3.10"]
+ansys = ["ansys-mapdl-reader>=0.56,<0.57"]
+
 [project.scripts]
 multifat-calibrate = "multifat.cli.calibrate:main"
 multifat-run = "multifat.cli.run:cli"

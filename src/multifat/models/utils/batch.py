@@ -8,12 +8,15 @@ from ``x * x`` by one ulp; ``pypow2`` reproduces it elementwise.
 
 import numpy as np
 
-_pypow2 = np.frompyfunc(lambda x: x**2, 1, 1)
-
 
 def pypow2(x: np.ndarray) -> np.ndarray:
-    """Elementwise ``float(x)**2`` exactly as CPython computes it."""
-    return _pypow2(np.asarray(x, dtype=float)).astype(float)
+    """Elementwise ``float(x)**2`` exactly as CPython computes it.
+
+    Evaluates ``v**2`` in Python rather than via ``np.frompyfunc`` to avoid
+    object-dtype ufunc state while matching CPython's C ``pow`` bit for bit.
+    """
+    arr = np.asarray(x, dtype=float)
+    return np.array([v**2 for v in arr.ravel().tolist()], dtype=float).reshape(arr.shape)
 
 
 def check_planes(*arrays: np.ndarray) -> None:

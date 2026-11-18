@@ -4,7 +4,7 @@
 
 One `.xlsx` file per material in `Experimental_Data/` (subfolders such as `archive/` are not
 read). The material ID is the file name without extension and without an ordering prefix
-such as `6_` (`6_42CrMo4_QT.xlsx` is `42CrMo4_QT`); two files with the same ID are rejected.
+such as `6_` (`6_42CrMo4_Santus.xlsx` is `42CrMo4_Santus`); two files with the same ID are rejected.
 `multifat-pipeline <workbook>` validates it, calibrates missing constants, runs every
 registered model and compares the results. Workbooks are never modified.
 
@@ -18,6 +18,11 @@ models that use it (see the parameter table). A missing value can be left empty 
 run, the others are reported as skipped. A Summary in the revised format (a `Stress ratio R`
 column) is also checked for source rows naming another alloy than the file and for a
 tensile fatigue limit averaged over different stress ratios, which is then not used.
+An optional column `Axial fatigue limit loading` records, for each source row, how the
+axial R = -1 fatigue limit was obtained: `push-pull`, `rotating bending`, `plane bending`
+or `bending`. The value is kept with the source of `Sigm1`, reported in the validation
+summary, and maps the limit onto the FatPy keys `fat_lim_ten_m1` (push-pull) or
+`fat_lim_ben_m1` (bending). It does not change the limit value used by the models.
 
 | Parameter | Header contains | Required at load |
 |---|---|---|
@@ -66,6 +71,14 @@ Empty or `Null` stress cells are read as 0. Stresses in MPa, phases in degrees w
 respect to the axial load.
 Radial = sigma_xx, axial = sigma_yy, shear = tau_xy; strains are linear elastic.
 
+The optional column `Observation type (failure/run-out/fatigue limit)` (decision d113)
+declares what a row is: `failure` (Run out `No`), `run-out` (an interrupted test, a
+censored life) or `fatigue limit` (an established limit state, from a staircase or derived
+from an S-N curve; both with Run out `Yes`). A type that contradicts Run out, or any other
+text, stops the import. A blank cell leaves the row undeclared: a run-out is then a limit
+state only in a workbook without failures. A life workbook with declared fatigue limits is
+mixed: its limit states are also judged by the fatigue index (`FatigueLimit/`).
+
 A `Phase AXIAL load` column marks the revised format (October 2026 collection). There the
 radial and torsional phases are taken relative to the axial phase, an empty stress cell is
 unknown loading (the row is excluded, not read as 0), and a row is also excluded when active
@@ -94,6 +107,7 @@ read as the axial stress. Excluded rows are listed in the validation report.
 | mean_p | mean + pressure | no |
 | amp_p | amplit + pressure | no |
 | specimen | specimen | no |
+| observation_type | observation + type | no |
 
 Every model is calibrated on the uniaxial tension R = -1 tests (design set), so a
 workbook needs at least two of them with distinct lives.
@@ -132,21 +146,39 @@ constants are missing is skipped and reported; the other models still run.
 | LI | - | `L_LI`: 1.0 |
 | GSE | `E`, `nu` | - |
 | GSA | `E`, `nu` | `sigma_f`: uniform material law from Su and E; `tau_f`: sigma_f / sqrt(3); `Su`: only to estimate sigma_f |
+| NINIC | `Sigm1`, `Taum1` | `k_NIN`: Eq. (4) from Sigm1 and Taum1 |
+| MWHS | `E`, `Sy` | - |
+| LIU2025 | `Su` | `Tu`: Su / sqrt(3) (warning) |
+| ZHANGYAO | `Sigm1`, `Taum1` | `Su`: needed only when a plane carries a mean normal stress |
+| KUJAWSKI2021 | - | - |
 | BP | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Tau0`: Boehme et al. 2026 Eq. (2); `Su`: only to estimate Sig0 |
 | CAIM | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Tau0`: Boehme et al. 2026 Eq. (2); `Su`: only to estimate Sig0 |
 | SWTD | - | - |
 | OTT | `Sigm1`, `Taum1` | `m_OTT`: m(kappa = Taum1/Sigm1), not allowed to exceed 2.767; `A_OTT`: 2 Sigm1/Sig0 - 1; `Sig0`: Boehme et al. 2026 Eq. (1), obtained from Su and Sigm1; `Su`: used only for estimating Sig0 |
-| TVEIT2025 | `A_TVEIT`, `C_TVEIT`, `K_TVEIT`, `L_TVEIT` | `Sigm1_TVEIT`: Sigm1 of the workbook; `Taum1_TVEIT`: Taum1 of the workbook; `npts_TVEIT`: 1001; `min_blocks_TVEIT`: 8; `max_blocks_TVEIT`: 10000; `tol_alpha_TVEIT`: 1e-06; `tol_damage_TVEIT`: 1e-05 |
+| TVEIT2025 | `A_TVEIT`, `C_TVEIT`, `K_TVEIT`, `L_TVEIT` | `Sigm1_TVEIT`: Sigm1 of the workbook; `Taum1_TVEIT`: Taum1 of the workbook; `npts_TVEIT`: 1001; `min_blocks_TVEIT`: 400; `max_blocks_TVEIT`: 60000; `tol_alpha_TVEIT`: 0.01; `tol_damage_TVEIT`: 0.001 |
 | DANGVAN | `Sigm1`, `Taum1` | - |
 | CROSSLAND | `Sigm1`, `Taum1` | - |
+| WANG2018 | `Sigm1`, `Taum1` | `Sig0`: Eq. (19): sqrt(2) Sigm1; `Tau0`: Eq. (19): 4 Taum1 / (2 Sigm1 / Sig0 + 1) |
+| WANG2022 | `Sigm1`, `Sy`, `Taum1` | - |
+| GAM | `Sigm1`, `Taum1` | - |
+| GOLOS | `Sigm1`, `Taum1` | - |
+| KHALIJ | `Sigm1`, `Taum1` | - |
+| KAKUNO | `Sigm1`, `Taum1` | `Sig0`: pulsating (R = 0) limit, maximum stress; needed for mean normal stresses |
+| MATSUBARA | - | `sigma_T`: true fracture strength; default 1.84 Su for 400 <= Su <= 1000 MPa (ref. [23]); `Su`: used only to estimate sigma_T |
+| PDS_SWT | - | - |
+| PDS_FS | `Sy`, `k_PDS` | - |
 | SINES | `Sigm1`, `Su`, `Taum1` | - |
 | PAPADOPOULOS | `Sigm1`, `Taum1` | - |
 | PCR | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Su`: only to estimate Sig0 |
 | PI | `Sigm1`, `Taum1` | - |
 | RFB | `Sigm1`, `Taum1` | `Sig0`: estimated from Su and Sigm1 by Eq. (1) of Boehme et al. 2026; `Su`: used only to estimate Sig0 |
+| SIH | `Sigm1`, `Taum1` | `Sig0`: required for mean stresses (Table 1); `Tau0`: Eq. (7): 4 Taum1 / (2 Sigm1 / Sig0 + 1) |
 | VHN | `Sigm1`, `Su`, `Taum1` | - |
 | PBP | `Sigm1`, `Taum1` | - |
 | COIN | `Sigm1`, `Taum1` | `k_phi`: 1.0 (RMS formulation) |
 | MMMH | `Sigm1`, `Taum1` | `M_MMMH`: 2 Sigm1/Sig0 - 1 (Dubbel 2004, E1: mean-stress sensitivity between R = -1 and 0); `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Su`: only to estimate Sig0 |
+| MMP | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Tau0`: 4 Taum1/Tau0 - 2 Sigm1/Sig0 = 1 (Zenner; Papuga & Fojtik 2017 Eq. 23); `Su`: only to estimate Sig0 |
+| SSF | `a_SSF`, `b_SSF`, `c_SSF`, `d_SSF`, `f_SSF`, `g_SSF`, `h_SSF`, `i_SSF` | - |
+| LIUMAHADEVAN | `Sigm1`, `Taum1`, `b0`, `b_fat`, `sigma_f`, `tau_f` | - |
 | MOREL | `Sigm1`, `Taum1` | - |
 | EK | `E`, `nu` | `alpha_EK`: 0.5 (per the paper, Eq. 18); `n_EK`: 1.0 (per the paper, p.61); `K_prime`: none: elastic form (supplying n_prime adds the plastic Masing term); `n_prime`: none: elastic form (supplying K_prime adds the plastic Masing term) |

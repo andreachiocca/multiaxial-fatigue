@@ -25,15 +25,15 @@ from multifat.planes.sampling import build_R_list
 from multifat.eval.calibration import collect_uniaxial_series_and_fit
 from multifat.eval.fitting import stdnum_for_survival
 from multifat.eval.sn_curves import SN_MODELS, curve_dp, curve_life
-from multifat.report.export_csv import save_fatigue_csv
+from multifat.report.export_csv import RowGroup, save_fatigue_csv
 from multifat.report.subsets import observation_index
-from multifat.models.errors import MissingParamsError, NativeLifeError
+from multifat.models.errors import DesignSetError, MissingParamsError, NativeLifeError
 from multifat.eval.findley_calibration import (
     FindleyCalibrationUnavailable,
     amplitude_identity,
-    findley_method,
     require_stress_harmonics,
 )
+from multifat.eval.shear_amplitude_option import SELECTIONS, apply_shear_amplitude, plane_rule
 from multifat.models.references import IMPLEMENTATION_REVISION
 from multifat.models.registry import get_models
 from multifat.models.comparison import capabilities_for_model
@@ -45,7 +45,9 @@ from multifat.models.comparison import capabilities_for_model
 DATA_FOLDER = "Experimental_Data"
 RESULTS_DIR = "Results/current"
 
-MATERIAL_NAME = "AISI316L"  # e.g. "42CrMo4_QT", "AISI316L", "Al7075_T6", "Ti6Al4V_andrea_(AXIAL)"
+MATERIAL_NAME = (
+    "AISI316L"  # e.g. "42CrMo4_Santus", "AISI316L", "Al7075_T6", "Ti6Al4V_andrea_(AXIAL)"
+)
 MODEL_NAME = "FS"  # defaults to the author/maintainer plane-selection rule
 # Findley only (FIN, FIN_ext): method_default is the production MCE path; mcc_harmonic,
 # mce_harmonic and rss run the explicit harmonic assessment, calibrated with the same option.
@@ -98,6 +100,17 @@ def _split_model_variant(model_tag: str) -> tuple[str, str]:
 
     request = resolve_method_tag(model_tag)
     return request.base_name, request.suffix
+
+
+DESIGN_LOADINGS = ("tension", "torsion")
+
+
+def design_loading_of(model) -> str:
+    """Design set of a model's master curve: R = -1 uniaxial tension unless it declares torsion."""
+    loading = getattr(model, "design_loading", "tension")
+    if loading not in DESIGN_LOADINGS:
+        raise ValueError(f"{model.name}: unknown design_loading {loading!r}")
+    return loading
 
 
 def classify_loading_type(
@@ -184,6 +197,45 @@ def load_material(
     return exp.load_material_workbook(wb_path, verbose=verbose), material_id(wb_path.stem)
 
 
+TRANSFER_ID_OFFSET = 1_000_000  # case ids of the predicted batch in a transfer dataset
+
+
+def transfer_material_id(target: str, design: str) -> str:
+    """Name of the transfer dataset: the tests of `target` predicted from `design`."""
+    return f"{target}_from_{design}"
+
+
+def load_transfer(
+    target: str | Path, design: str | Path, *, data_folder: str | Path = DATA_FOLDER
+) -> tuple[dict, str, dict]:
+    """Cross-batch transfer dataset (issue #71): predict the tests of `target` from `design`.
+
+    Returns ``(data, material, design_data)`` for ``evaluate_model(..., design_data=...)``:
+
+    - the material properties (Summary) and the failures that can enter a design set or a
+      constant fit come from `design`; `design_data` holds those failures only;
+    - `data` adds every failure of `target` (ids shifted by ``TRANSFER_ID_OFFSET``), which are
+      the only cases scored; the run-outs are those of `target`;
+    - the load histories of `target`, strains included, are kept as imported (they describe
+      the tests, computed from that batch's own E and nu).
+    """
+    d_data, d_mat = load_material(design, data_folder=data_folder)
+    t_data, t_mat = load_material(target, data_folder=data_folder)
+    d_block, t_block = d_data[d_mat], t_data[t_mat]
+    if d_block["cases"] and max(int(i) for i in d_block["cases"]) >= TRANSFER_ID_OFFSET:
+        raise ValueError(f"{d_mat}: case ids reach the transfer offset {TRANSFER_ID_OFFSET}")
+    material = transfer_material_id(t_mat, d_mat)
+    shift = {int(i) + TRANSFER_ID_OFFSET: c for i, c in t_block["cases"].items()}
+    merged = {
+        **d_block,
+        "cases": {**{int(i): c for i, c in d_block["cases"].items()}, **shift},
+        "runouts": {int(i) + TRANSFER_ID_OFFSET: c for i, c in t_block.get("runouts", {}).items()},
+        "transfer": {"target": t_mat, "design": d_mat},
+    }
+    design_data = {material: {**d_block, "runouts": {}}}
+    return {material: merged}, material, design_data
+
+
 def build_params(mat_prop: dict) -> dict:
     """Model parameters taken from the workbook material block (absent entries remain None)."""
     collected = {}
@@ -206,6 +258,12 @@ def validate_workbook(fp: str | Path) -> ValidationReport:
         return report
     mat_key = material_id(fp.stem)
     entry = workbook[mat_key]
+    if entry.get("fatigue_limit_sources", {}).get("Sigm1"):
+        loading = exp.axial_limit_loading(entry)
+        report.info.append(
+            "axial R = -1 fatigue limit obtained in: "
+            + (loading or "not recorded (Summary column 'Axial fatigue limit loading')")
+        )
     if not entry["cases"]:
         from multifat.eval.endurance import is_fatigue_limit_dataset
 
@@ -264,6 +322,8 @@ class Evaluation:
     data: Any = None
     # Fitted constants of the native life law, set by native_lives
     life_curve: Any = None
+    # Design set of the master curve: "tension" (default) or "torsion" (model.design_loading)
+    design_loading: str = "tension"
     # Aux values of the design points (native-life fit), lined up with cal["series"]["N"]
     design_aux: list[dict] = field(default_factory=list)
     # Cases that fed the material-constant fit: reported as design points (Flag = 0)
@@ -316,16 +376,20 @@ def check_fit(base_name: str, variant_key: str, cal: dict) -> None:
         raise ValueError(
             "Invalid master-curve fit: at least two distinct positive experimental lives are required"
         )
+    if not curve.get("identifiable", True):
+        # issue #74: an S-N curve the design tests do not determine gives no usable prediction
+        raise ValueError(f"master curve not identifiable: {curve.get('reason', '')}")
 
 
 def shear_amplitude_for(base_name: str, selection: str) -> dict | None:
-    """Explicit Findley amplitude of a run, or None for the production path (method_default)."""
+    """Explicit plane shear amplitude of a run, or None for the production path (method_default).
+
+    Any model exposing ``np_shear_rule`` accepts it (see multifat.eval.shear_amplitude_option);
+    `base_name` is kept for the call sites. The returned identity labels the output CSV.
+    """
     if selection == "method_default":
         return None
-    if base_name != "FIN":
-        raise ValueError(
-            f"--shear-amplitude-algorithm applies to FIN and FIN_ext only, not {base_name}"
-        )
+    plane_rule(selection)  # validates the selection
     return {**amplitude_identity(selection), "selected_option": selection}
 
 
@@ -377,11 +441,18 @@ def evaluate_model(
     sn_model: str | None = None,
     extra_design_ids=(),
     shear_amplitude_algorithm: str = "method_default",
+    design_data: dict | None = None,
 ) -> Evaluation:
     """Calibrate on the uniaxial R = -1 design points, then score every remaining case once.
 
     `extra_design_ids` lists cases that fed the material constants (e.g. the torsion tests
     behind a fitted tau_f, b0): they are reported as design points rather than predictions.
+
+    `design_data` (cross-batch transfer, issue #71) holds the tests the design set comes from,
+    under the same material key as `data`, whose cases it must be a subset of. The design set,
+    the master curve and the native life fit are then taken from `design_data` only, and only the
+    cases of `data` absent from `design_data` are scored: the other design-side tests are known
+    information, not predictions. Default None: `data` is both, as before.
     """
     if stdnum is None:
         if survival_probability is None:
@@ -395,7 +466,15 @@ def evaluate_model(
     if R_list is None:
         R_list = build_R_list(n1=DCMESH_N1, n2=DCMESH_N2)
     amplitude = shear_amplitude_for(base_name, shear_amplitude_algorithm)
-    mdl = findley_method(shear_amplitude_algorithm) if amplitude else get_models([base_name])[0]
+    mdl = get_models([base_name])[0]
+    if amplitude and not apply_shear_amplitude(mdl, shear_amplitude_algorithm):
+        warnings.warn(
+            f"{base_name} exposes no selectable plane shear amplitude: "
+            f"--shear-amplitude-algorithm {shear_amplitude_algorithm} is ignored for it",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        amplitude = None
 
     # Fail early, before the possibly costly calibration.
     absent = [k for k in mdl.required_params() if params.get(k, None) is None]
@@ -403,16 +482,31 @@ def evaluate_model(
         raise MissingParamsError(mdl.name, absent)
 
     native_prediction = capabilities_for_model(mdl).life_prediction == "native"
-    uniax_rminus1 = exp.extract_uniaxial_tension(data)
+    design_loading = design_loading_of(mdl)
+    source = data if design_data is None else design_data
+    if design_data is not None and not set(design_data[material]["cases"]) <= set(
+        data[material]["cases"]
+    ):
+        raise ValueError("design_data must hold a subset of the cases of data")
+    if design_loading == "torsion":
+        # The source fits the life curve on torsion tests (e.g. MWHS, Wu et al. 2017 Eq. 19).
+        uniax_rminus1 = exp.extract_pure_torsion(source)
+    else:
+        uniax_rminus1 = exp.extract_uniaxial_tension(source)
     if material not in uniax_rminus1 and native_prediction:
         # A native-life model needs no axial R=-1 subset or DP master curve.
         uniax_rminus1 = {material: {"points": []}}
     if material not in uniax_rminus1:
+        if design_loading == "torsion":
+            raise DesignSetError(
+                f"No design points for '{material}': {base_name} fits its master curve on pure "
+                "torsion R = -1 tests, as its source does, and the workbook has none"
+            )
         raise ValueError(
             f"No design points for '{material}': the calibration needs uniaxial tension R = -1 tests"
         )
     calibrations = collect_uniaxial_series_and_fit(
-        data=data,
+        data=source,
         exp=exp,
         material_name=material,
         uniax_cases=uniax_rminus1,
@@ -439,6 +533,7 @@ def evaluate_model(
         survival_probability=float(NormalDist().cdf(stdnum)),
         sn_model=sn_model,
     )
+    result.design_loading = design_loading
     result.observations = observation_index(data[material])
     result.data = data
     if require_variant is not None and not native_prediction:
@@ -465,8 +560,15 @@ def evaluate_model(
                 result.design_aux.append(dict(case_res.aux))
     extra_set = {int(i) for i in extra_design_ids}
 
-    # Skip the design subset and score what is left
-    data_without_uniax = exp.exclude_subdataset(data, uniax_rminus1)
+    # Skip the design subset and score what is left (in a transfer: the tests absent from the
+    # design side only, plus those behind its constants, which are reported as design rows below)
+    if design_data is None:
+        excluded = uniax_rminus1
+    else:
+        series = {int(p["case_id"]) for p in uniax_rminus1.get(material, {}).get("points", [])}
+        known = set(map(int, design_data[material]["cases"])) - (extra_set - series)
+        excluded = {material: {"points": [{"case_id": i} for i in sorted(known)]}}
+    data_without_uniax = exp.exclude_subdataset(data, excluded)
     for case_id in data_without_uniax[material]["cases"].keys():
         if amplitude and not harmonic_case_or_skip(
             data_without_uniax[material]["cases"][int(case_id)],
@@ -632,32 +734,38 @@ def write_native_variant(
         out_dir=str(results_dir),
         survival_probability=ev.survival_probability,
         sn_model=ev.sn_model,
-        Error_load=load_error,
-        Error_load_design=load_error_d,
         method_name=method_name,
         material_name=ev.material,
-        N_exp=ev.Nexp,
-        CP=cases_index,
-        N_pred=native_cases,
-        N_design=design_cycles,
-        F_design=design_index,
-        N_pred_design=native_design,
-        loading_type=ev.loading_type,
-        loading_type_design=["Tensile"] * len(series["N"]) + list(ev.extra["lt"]),
         metric_mode="Nf_direct",
-        DP_fit=dp_fit_cases,
-        DP_fit_design=dp_fit_design,
-        N_native=native_cases,
-        N_native_design=native_design,
-        N_runout=ev.runout["Nexp"],
-        CP_runout=runout_index,
-        N_pred_runout=native_runouts,
-        DP_fit_runout=dp_fit_runouts,
-        loading_type_runout=ev.runout["lt"],
-        N_native_runout=native_runouts,
-        observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
-        observation_ids_design=ids_design,
-        observation_ids_runout=([obs[("runout", i)] for i in ev.runout["ids"]] if obs else None),
+        cases=RowGroup(
+            cycles=ev.Nexp,
+            values=cases_index,
+            pred=native_cases,
+            loading_type=ev.loading_type,
+            dp_fit=dp_fit_cases,
+            native=native_cases,
+            observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
+            error_load=load_error,
+        ),
+        design=RowGroup(
+            cycles=design_cycles,
+            values=design_index,
+            pred=native_design,
+            loading_type=["Tensile"] * len(series["N"]) + list(ev.extra["lt"]),
+            dp_fit=dp_fit_design,
+            native=native_design,
+            observation_ids=ids_design,
+            error_load=load_error_d,
+        ),
+        runouts=RowGroup(
+            cycles=ev.runout["Nexp"],
+            values=runout_index,
+            pred=native_runouts,
+            loading_type=ev.runout["lt"],
+            dp_fit=dp_fit_runouts,
+            native=native_runouts,
+            observation_ids=([obs[("runout", i)] for i in ev.runout["ids"]] if obs else None),
+        ),
     )
 
 
@@ -669,9 +777,50 @@ def _case_tensors(ev: Evaluation, case_id: int) -> dict:
     return {"S0": S0, "E0": E0, "S1": S1, "E1": E1, "H": H, "meta": {}}
 
 
-# Native life laws whose load error is not computed: TVEIT2025 integrates the damage over many
-# cycles per evaluation, so the iteration on the load would be very slow.
-LOAD_ERROR_SKIP = {"TVEIT2025"}
+class _CachedModel:
+    """The model of an Evaluation, with ``evaluate_case`` memoised on the input tensors (#78).
+
+    A scaled evaluation returns every variant at once, so the load errors of the std and `_ext`
+    variants, and the homogeneity checks of both, share one call per case and load factor. A
+    LoadingScopeError is memoised too and raised again. Other attributes are the model's.
+    """
+
+    def __init__(self, model):
+        self._model = model
+        self._cache: dict = {}
+
+    def __getattr__(self, name):
+        return getattr(self._model, name)
+
+    def evaluate_case(self, *, S0, E0, S1, E1, params, R_list, harmonics=None):
+        key = (
+            tuple(np.ascontiguousarray(a, dtype=float).tobytes() for a in (S0, E0, S1, E1)),
+            tuple(
+                (k, np.ascontiguousarray(v, dtype=float).tobytes())
+                for k, v in sorted((harmonics or {}).items())
+            ),
+        )
+        if key not in self._cache:
+            try:
+                self._cache[key] = self._model.evaluate_case(
+                    S0=S0, E0=E0, S1=S1, E1=E1, params=params, R_list=R_list,
+                    harmonics=harmonics,
+                )  # fmt: skip
+            except Exception as exc:  # noqa: BLE001 - memoised and raised again below
+                self._cache[key] = exc
+        value = self._cache[key]
+        if isinstance(value, Exception):
+            raise value
+        return value
+
+
+def _load_error_model(ev: Evaluation):
+    """The memoised model shared by every variant of `ev` (one cache per Evaluation)."""
+    cached = ev.__dict__.get("_load_error_model")
+    if cached is None or cached._model is not ev.model:
+        cached = _CachedModel(ev.model)
+        ev.__dict__["_load_error_model"] = cached
+    return cached
 
 
 def load_errors(ev: Evaluation, variant_key: str, case_ids, lives, *, native: bool) -> list[float]:
@@ -679,8 +828,9 @@ def load_errors(ev: Evaluation, variant_key: str, case_ids, lives, *, native: bo
     from multifat.eval.endurance import damage
     from multifat.eval.load_error import master_curve_load_error, native_life_load_error
 
-    if ev.data is None or case_ids is None or ev.base_name in LOAD_ERROR_SKIP:
+    if ev.data is None or case_ids is None or not capabilities_for_model(ev.model).load_error:
         return [float("nan")] * len(lives)
+    model = _load_error_model(ev)
     errors = []
     curve = None if native else ev.fit(variant_key)
     for case_id, Nf in zip(case_ids, lives):
@@ -691,16 +841,16 @@ def load_errors(ev: Evaluation, variant_key: str, case_ids, lives, *, native: bo
                 continue
             errors.append(
                 native_life_load_error(
-                    ev.model, ev.params, case, ev.R_list, ev.life_curve, float(Nf),
+                    model, ev.params, case, ev.R_list, ev.life_curve, float(Nf),
                     variant=variant_key,
                 )
             )  # fmt: skip
             continue
         DP_fit = curve_dp_at(curve, float(Nf))
-        DP = damage(ev.model, ev.params, case, ev.R_list, variant=variant_key)
+        DP = damage(model, ev.params, case, ev.R_list, variant=variant_key)
         errors.append(
             master_curve_load_error(
-                ev.model, ev.params, case, ev.R_list, DP, DP_fit, variant=variant_key
+                model, ev.params, case, ev.R_list, DP, DP_fit, variant=variant_key
             )
         )
     return errors
@@ -814,8 +964,9 @@ def write_variant(
     N_d = series["N"]
     F_d = series["CP"] if variant_key == "" else series["CP_ext"]
 
-    # Loading type of the design points (uniaxial tension R=-1 by construction)
-    loading_type_design = ["Tensile"] * int(len(np.atleast_1d(N_d)))
+    # Loading type of the design points (R = -1 tension, or torsion for design_loading = "torsion")
+    design_label = "Torsion" if ev.design_loading == "torsion" else "Tensile"
+    loading_type_design = [design_label] * int(len(np.atleast_1d(N_d)))
     extra_values = [v[variant_key] for v in ev.extra["values"]]
     if extra_values:
         N_d = np.concatenate([np.asarray(N_d, dtype=float), ev.extra["Nexp"]])
@@ -945,38 +1096,44 @@ def write_variant(
         out_dir=str(results_dir),
         survival_probability=ev.survival_probability,
         sn_model=ev.sn_model,
-        Error_load=load_error,
-        Error_load_design=load_error_d,
         method_name=model_name,  # keep filename compatibility
         result_label=label,
         material_name=ev.material,
-        N_exp=Nexp,
-        CP=values,
-        N_pred=Npred,
-        N_design=N_d,
-        F_design=F_d,
-        N_pred_design=Npred_d,
-        loading_type=ev.loading_type,
-        loading_type_design=loading_type_design,
         metric_mode=error_mode,
-        DP_fit=DP_fit,
-        Error_ln_dp=Error_ln_dp,
-        DP_fit_design=DP_fit_d,
-        Error_ln_dp_design=Error_ln_dp_d,
+        cases=RowGroup(
+            cycles=Nexp,
+            values=values,
+            pred=Npred,
+            loading_type=ev.loading_type,
+            dp_fit=DP_fit,
+            error_ln_dp=Error_ln_dp,
+            native=N_native,
+            observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
+            error_load=load_error,
+        ),
+        design=RowGroup(
+            cycles=N_d,
+            values=F_d,
+            pred=Npred_d,
+            loading_type=loading_type_design,
+            dp_fit=DP_fit_d,
+            error_ln_dp=Error_ln_dp_d,
+            native=N_native_d,
+            observation_ids=ids_design,
+            error_load=load_error_d,
+        ),
+        runouts=RowGroup(
+            cycles=ev.runout["Nexp"],
+            values=CP_r,
+            pred=Npred_r,
+            dp_fit=DP_fit_r,
+            loading_type=ev.runout["lt"],
+            native=N_native_r,
+            observation_ids=([obs[("runout", i)] for i in ev.runout["ids"]] if obs else None),
+        ),
         basquin_meta=basquin_meta,
         material_meta=material_meta,
         extra_meta=extra_meta,
-        N_native=N_native,
-        N_native_design=N_native_d,
-        N_runout=ev.runout["Nexp"],
-        CP_runout=CP_r,
-        N_pred_runout=Npred_r,
-        DP_fit_runout=DP_fit_r,
-        loading_type_runout=ev.runout["lt"],
-        N_native_runout=N_native_r,
-        observation_ids=[obs[("case", i)] for i in ev.case_ids] if obs else None,
-        observation_ids_design=ids_design,
-        observation_ids_runout=([obs[("runout", i)] for i in ev.runout["ids"]] if obs else None),
     )
     if amplitude:
         write_assessment_metadata(
@@ -999,10 +1156,11 @@ def main():
     # calibrate the base model (which hands back both variants).
     base_name, variant_key = _split_model_variant(MODEL_NAME)
 
-    if base_name in {"BP", "CAIM"} and (params["Sig0"] is None or params["Tau0"] is None):
-        from multifat.models.integral_methods.bohme_papuga import _strengths
-
-        _, _, estimated_s0, estimated_t0 = _strengths(params, base_name)
+    mdl_probe = get_models([base_name])[0]
+    if hasattr(mdl_probe, "effective_strengths") and (
+        params["Sig0"] is None or params["Tau0"] is None
+    ):
+        _, _, estimated_s0, estimated_t0 = mdl_probe.effective_strengths(params)
         print(
             f"{base_name} R=0 strengths (MPa): Sig0={estimated_s0:.3f} "
             f"({'estimated' if params['Sig0'] is None else 'workbook'}), "
@@ -1056,8 +1214,10 @@ def cli(argv=None) -> None:
     arg_parser.add_argument(
         "--shear-amplitude-algorithm",
         default=SHEAR_AMPLITUDE_ALGORITHM,
-        choices=("method_default", "mcc_harmonic", "mce_harmonic", "rss"),
-        help="Findley (FIN, FIN_ext) only; needs a calibration made with the same option",
+        choices=SELECTIONS,
+        help="plane shear amplitude of every model exposing one (critical-plane methods, SIH): "
+        "longest_chord = mcc_harmonic (MCC), mce_harmonic = rss (MCE); method_default keeps "
+        "each method's own rule. Needs a calibration made with the same option",
     )
     opts = arg_parser.parse_args(argv)
     exp.OVERLAYS_ENABLED = not opts.no_overlay

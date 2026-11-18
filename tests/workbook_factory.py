@@ -158,19 +158,26 @@ def revised_row(overrides: dict | None = None) -> list:
     return [base[h] for h in REVISED_DATASET_HEADERS]
 
 
-def write_revised_workbook(path: Path, rows: list[list], *, summary_rows=None) -> Path:
-    """Revised-format workbook; `summary_rows` are source rows (the Average is their copy)."""
+def write_revised_workbook(
+    path: Path, rows: list[list], *, summary_rows=None, extra_summary_headers=()
+) -> Path:
+    """Revised-format workbook; `summary_rows` are source rows (the Average is their copy).
+
+    `extra_summary_headers` are appended to the Summary header; source rows carry their values
+    after the standard columns.
+    """
     rows_s = summary_rows or [
         ["ref", "A", 2020, material_id(path.stem), 206000, 0.3, 900, 750, 420, 300, 2e6, -1]
     ]
     wb = Workbook()
     wb.remove(wb.active)
     ws = wb.create_sheet("Summary")
-    ws.append(REVISED_SUMMARY_HEADERS)
+    headers = list(REVISED_SUMMARY_HEADERS) + list(extra_summary_headers)
+    ws.append(headers)
     for r in rows_s:
         ws.append(r)
     avg = []
-    for j in range(4, len(REVISED_SUMMARY_HEADERS)):
+    for j in range(4, len(headers)):
         vals = [r[j] for r in rows_s if isinstance(r[j], (int, float))]
         avg.append(sum(vals) / len(vals) if vals else "Null")
     ws.append(["Average", None, None, None] + avg)

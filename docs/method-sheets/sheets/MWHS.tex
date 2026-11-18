@@ -1,0 +1,101 @@
+% registry: MWHS
+\methodhead{MWHS}{Wu, Li, Fang and Song (2017): modified Wu--Hu--Song parameter}\label{sheet:MWHS}
+
+\block{Source} Z.~R.~Wu, X.~Li, L.~Fang, Y.~D.~Song, \emph{Proc.\ IMechE Part C: J.\ Mech.\ Eng.\
+Sci.} (2017) \cite{wu2017}, Eqs.~(13), (18), (19); Fig.~14; Table~3.
+
+\block{Idea and scope} Strain-based critical-plane parameter that combines the Fatemi--Socie and
+Smith--Watson--Topper ideas. On the plane of maximum shear strain, the shear strain amplitude
+(shear cracking) is added to an SWT-like normal term $\sqrt{\sigma_{n,\max}\Delta\varepsilon_n/E}$
+(tensile opening), weighted by $\tfrac12(1+\sigma_{n,\max}/\sigma_y)$. This replaces the
+life-dependent weight $k$ of the earlier WHS parameter, so that only torsional fatigue properties
+are needed. Proposed for low-cycle multiaxial fatigue of the Ni-based superalloy GH4169 under
+proportional and non-proportional tension--torsion; also applied to pure titanium, titanium BT9,
+S45C steel and 1045 steel.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\Delta\gamma_{\max}/2$, $\gamma_a$ & -- & maximum engineering shear strain amplitude (paper); on a candidate plane (repository)\\
+$\Delta\varepsilon_n$ & -- & normal strain range on the plane\\
+$\sigma_{n,\max}$ & MPa & maximum normal stress on the plane over the cycle\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane\\
+$\sigma_y$, $S_y$ & MPa & yield strength (paper); workbook monotonic yield strength (repository)\\
+$E$, $\nu$, $G$ & MPa, --, MPa & Young's modulus, Poisson's ratio, shear modulus\\
+$\tau_f'$, $b_0$, $\gamma_f'$, $c_0$ & MPa, --, --, -- & torsional Coffin--Manson constants\\
+$k$ & -- & weight of the normal term in the earlier WHS parameter, Eq.~(13)\\
+$N_f$ & cycles & life\\
+$\sigma_a$, $\tau_a$ & MPa & axial and torsional stress amplitudes\\
+$\varepsilon_a$ & -- & axial strain amplitude of the Fig.~14 test\\
+$\mathrm{DP}$ & -- & damage parameter, Eq.~\eqref{eq:mwhs-dp}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the maximum shear strain plane (Eq.~19),
+\begin{equation}
+\frac{\Delta\gamma_{\max}}{2}+\frac12\left(1+\frac{\sigma_{n,\max}}{\sigma_y}\right)
+\left(\frac{\sigma_{n,\max}\,\Delta\varepsilon_n}{E}\right)^{0.5}
+=\frac{\tau_f'}{G}(2N_f)^{b_0}+\gamma_f'(2N_f)^{c_0} .
+\label{eq:mwhs-main}
+\end{equation}
+The earlier WHS parameter, Eq.~(13), weighted the normal term by a constant $k$; Eq.~(18) shows that
+$k$ must vary with life (the paper suggests 0.6 for GH4169). The repository evaluates on every
+candidate plane
+\begin{equation}
+\mathrm{DP}=\gamma_a+\frac12\left(1+\frac{\sigma_{n,\max}}{S_y}\right)\sqrt{\frac{\sigma_{n,\max}\,\Delta\varepsilon_n}{E}},
+\qquad \sigma_{n,\max}=\max(\sigma_{n,m}+\sigma_{n,a},0).
+\label{eq:mwhs-dp}
+\end{equation}
+\texttt{MWHS} takes the plane of largest shear strain range (ties to the larger DP);
+\texttt{MWHS\_ext} the largest DP over all planes (Section~\ref{sec:planes}). With elastic strains,
+reversed tension on the $45^\circ$ plane and reversed torsion give
+\begin{equation}
+\mathrm{DP}_\text{ten}=(1+\nu)\frac{\sigma_a}{E}+\frac12\left(1+\frac{\sigma_a}{2S_y}\right)\frac{\sigma_a}{E}\sqrt{\frac{1-\nu}{2}},\qquad
+\mathrm{DP}_\text{tor}=\frac{2(1+\nu)\tau_a}{E} .
+\label{eq:mwhs-limits}
+\end{equation}
+
+\block{Constants and calibration} No fitted criterion constant; this is the stated advantage over
+WHS. In the paper the torsional Coffin--Manson constants $\tau_f'$, $b_0$, $\gamma_f'$, $c_0$, fitted
+on pure torsion tests, give the life; the uniaxial tests validate the parameter (Fig.~13). In the
+repository the master curve $A$, $b$ is fitted on the fully reversed pure torsion failures, which
+are the design rows; the uniaxial tests are predictions, as in the paper. MWHS is skipped when the
+workbook has no such torsion failures or their master curve is not identifiable (at least 5 tests,
+at least one decade of life, a negative slope beyond two standard errors).
+
+\block{Life} The paper uses the right-hand side of Eq.~\eqref{eq:mwhs-main}. The repository uses the
+power-law master curve $\mathrm{DP}=A N_f^{\,b}$ (Section~\ref{sec:mastercurve}) fitted on the $R=-1$
+pure torsion failures (\texttt{design\_loading = "torsion"}). The single power law has no separate
+plastic term.
+
+\block{Repository choices}
+\begin{itemize}
+\item Out-of-phase shear range: longest chord of the shear-strain path
+  (\texttt{np\_shear\_rule = "longest\_chord"}); with it the maximum shear strain of Fig.~14(a) is
+  reproduced at every phase angle, with \texttt{rss} it is not.
+\item $\sigma_{n,\max}<0$ is clipped to 0: the square root needs a non-negative product, and a
+  compressed plane carries no normal term.
+\item Workbook monotonic $S_y$ for $\sigma_y$; elastic workbook strains, whereas the source applies
+  the parameter to measured elastic--plastic strains in the low-cycle regime.
+\item Life: master curve on the torsion failures, so MWHS uses a design set different from the other
+  methods; comparisons on common observations should exclude design rows.
+\item \texttt{MWHS\_ext} is a repository variant.
+\end{itemize}
+
+\block{Worked example} GH4169 $E=198.5$\,GPa and $\sigma_y=1083.1\MPa$ (Table~3) with $\nu=0.3$;
+synthetic loads. Reversed tension $\sigma_a=600\MPa$: DP $=0.005071$ (\texttt{MWHS\_ext}
+$0.005556$, on a plane closer to the load axis), equal to Eq.~\eqref{eq:mwhs-limits}. Reversed torsion
+$\tau_a=400\MPa$: $0.005239$. At $90^\circ$ out of phase, $\sigma_a=400$, $\tau_a=200\MPa$: $0.004571$
+for both variants.
+
+\block{Verification} Fig.~14 for the GH4169 test $\varepsilon_a=0.612\%$, $\gamma_a=0.88\%$,
+$\sigma_a=788.6\MPa$, $\tau_a=404\MPa$, evaluated with the measured strain amplitudes and $\nu=0.48$
+(Table~3): (a), the maximum shear strain amplitude, is reproduced within 2\% at all seven phase
+angles $0^\circ$--$90^\circ$; (b), the normal term of Eq.~\eqref{eq:mwhs-main}, within 5\% from
+$0^\circ$ to $75^\circ$. At $90^\circ$ the evaluation gives 0.0039 against 0.0049 read from the
+figure: unresolved, strict \texttt{xfail}. Also checked: the closed forms
+Eq.~\eqref{eq:mwhs-limits} and the clipping of compression. Not reproduced: the life correlations
+of Figs.~15--19 (figures only, measured strains, Coffin--Manson curve).

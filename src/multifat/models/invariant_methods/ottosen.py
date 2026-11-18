@@ -1,25 +1,23 @@
 """Continuum criterion of Ottosen et al. (2008), cast in the cycle-based reduced form of Tveit et al. (2024).
 
-Source: Tveit, Reyes & Erduran, Results in Engineering 22 (2024) 102171, Eqs. (11)-(17), p.6:
+Source: Tveit, Reyes & Erduran, Results in Engineering 22 (2024) 102171, Eqs. (11)-(17), p. 6::
 
     sigma_e,a + A * I1,m <= S0                                   (11)
     I1,m = (min_P I1 + max_P I1) / 2                             (12)
     sigma_e,a = (sum |s_i,a - s_j,a|^m / 2)^(1/m)  (Hershey-Hosford, proportional cycles)  (13)
     S0 = b_-1,  A = 2 b_-1/b_0 - 1,  kappa = t_-1/b_-1 = (1 + 2^(m-1))^(-1/m)   (14)-(17)
 
-The whole left-hand side of (11) is the fatigue parameter that gets correlated with life. Here b_0 is the
-zero-to-maximum (R = 0) normal fatigue strength: it is read from A_OTT when that is supplied, and otherwise
-from whichever R = 0 strength the BP and CAIM models already rely on (the workbook Sig0, or the estimate of
-Boehme et al. 2026 Eq. 1 built from Su).
-
-For non-proportional cycles the paper calls for the smallest hypersphere that encloses the deviatoric path
-(p.6) but never constructs it. Since the Hershey-Hosford effective stress is a norm on deviatoric space, and a
-single-harmonic path is centrally symmetric about its mean, the minimal enclosing ball in that norm is
-centred on the mean, and its radius is the largest value attained over the cycle by
-sigma_e(S(t) - S_mean). With this choice Tveit's in-phase rows are reproduced exactly, and his incremental
-out-of-phase results agree to within about 0.7 percentage points (Table A.1).
-
-The name under which the registry exposes the method is "OTT".
+Repository choices: The whole left-hand side of Eq. (11) is the damage parameter
+correlated with life via ``"OTT"`` in the registry. Here ``b_0`` is the R = 0 normal
+fatigue strength, obtained from ``A_OTT`` when supplied, otherwise from ``Sig0``, or
+from the Boehme et al. (2026) Eq. (1) estimate built from ``Su``. When ``m_OTT`` is
+omitted, it is inverted from ``kappa = Taum1 / Sigm1`` and clamped to ``[1.0, 2.7670]``
+(``M_CAP``). For non-proportional cycles the paper calls for the smallest hypersphere
+enclosing the deviatoric path (p. 6) without giving a construction; because the
+Hershey-Hosford norm is centrally symmetric, the minimal ball for a single-harmonic
+history is centred at ``S_mean`` and its radius is maximized over 720 phase angles,
+reproducing in-phase Table A.1 rows exactly and incremental out-of-phase rows within
+about 0.8 percentage points.
 """
 
 from __future__ import annotations

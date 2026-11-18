@@ -53,3 +53,38 @@ def test_calibrate_main_takes_data_folder(tmp_path):
 
     with pytest.raises(FileNotFoundError, match=tmp_path.name):
         calibrate.main(["--data-folder", str(tmp_path)])
+
+
+def test_life_workbooks_come_from_the_classification():
+    names = {p.stem for p in snap.life_workbooks(None)}
+    assert {"6_42CrMo4_Santus", "14_42CrMo4_Reis", "16_42CrMo4_FABEST", "Al7075_T6"} <= names
+    # fatigue-limit and notched-only workbooks go through the pipeline stage only
+    assert not {"2_CX18", "4_30NCD16", "17_Ti6Al4V_Delahay", "10_En3B"} & names
+    assert len(snap.workbooks(None)) > len(names)
+
+
+def test_pipeline_hashes_ignore_volatile_fields(tmp_path):
+    out = tmp_path / "snap"
+    sidecar = out / "pipeline" / "6_X" / "X_calibration.json"
+    sidecar.parent.mkdir(parents=True)
+    report = sidecar.with_name("X_run_report.tsv")
+
+    def write(stamp, seconds, k_fs):
+        sidecar.write_text(json.dumps({"params": {"k_FS": k_fs}, "calibration_id": stamp,
+                                       "provenance": {"created_utc": stamp, "git": {"commit": stamp}}}),
+                           encoding="utf-8")  # fmt: skip
+        report.write_text(f"model\tstatus\tseconds\tcalibration_id\nFS\tok\t{seconds}\t{stamp}\n",
+                          encoding="utf-8")  # fmt: skip
+        return snap.stable_bytes(out, sidecar), snap.stable_bytes(out, report)
+
+    first = write("2026-11-12T10:00", 1.5, 1.0)
+    assert write("2026-11-13T11:00", 9.9, 1.0) == first  # another run, same numbers
+    assert write("2026-11-13T11:00", 9.9, 1.1)[0] != first[0]  # a changed k_FS is seen
+    archived = out / "pipeline" / "6_X" / "calibrations" / "X" / "20261112_abc.json"
+    archived.parent.mkdir(parents=True)
+    archived.write_text("{}", encoding="utf-8")
+    assert snap.stable_bytes(out, archived) is None
+    script_csv = out / "runs" / "FS_X.csv"
+    script_csv.parent.mkdir(parents=True)
+    script_csv.write_bytes(b"a,b\n1,2\n")  # bytes: write_text would give \r\n on Windows
+    assert snap.stable_bytes(out, script_csv) == b"a,b\n1,2\n"

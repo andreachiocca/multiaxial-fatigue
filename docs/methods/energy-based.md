@@ -16,22 +16,22 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 6 | 1 | 11 | 0 | 18 |
-| Energy based | 6 | 1 | 13 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 5 | 0 | 8 | 0 | 13 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Energy based | 7 | 1 | 12 | 3 | 23 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
 | Specialized | 0 | 0 | 3 | 0 | 3 |
-| Strain based | 3 | 0 | 10 | 2 | 15 |
-| Stress based | 1 | 0 | 12 | 0 | 13 |
+| Strain based | 4 | 0 | 9 | 2 | 15 |
+| Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 29 | 2 | 81 | 5 | 117 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 161 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](../../docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](../../docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -55,7 +55,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [I_ZHU_EDP](../../METHODS.md#i_zhu_edp) | Zhu equivalent damage parameter | Partially implemented | basic_numerical_tests | High | Yes |
 | [N21](../../METHODS.md#n21) | Equivalent Second Moment of Load Path (ESMLP) | Not implemented | not_tested | Medium | Yes |
 | [N22](../../METHODS.md#n22) | Moment of Load Path (MLP), closed CA stress-path branch | Not implemented | not_tested | Medium | Yes |
-| [N26](../../METHODS.md#n26) | Negative-mean-stress modified SWT | Not implemented | not_tested | Low | Yes |
+| [N26](../../METHODS.md#n26) | Kujawski negative-mean-stress modified SWT (mSWT) | Fully implemented | basic_numerical_tests | Low | Yes |
 | [N30](../../METHODS.md#n30) | Normalized energy critical-plane parameter | Not implemented | not_tested | Medium | Yes |
 | [N41](../../METHODS.md#n41) | Elastic strain-energy equivalent-stress baseline | Not implemented | not_tested | Low | Yes |
 | [N48](../../METHODS.md#n48) | Froustey–Lasserre energetic criterion | Not implemented | not_tested | Low | Yes |
@@ -410,36 +410,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N26
 
-**Negative-mean-stress modified SWT** — Daniel Kujawski (2021)
+**Kujawski negative-mean-stress modified SWT (mSWT)** — Daniel Kujawski (2021)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Energy based;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | An interpretation and modification of the SWT function, Fatigue & Fracture of Engineering Materials & Structures |
 | DOI | https://doi.org/10.1111/ffe.13488 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Published uniaxial mean-stress/energy correction, CA, DP/L correlation. |
-| Loading scope | Published uniaxial mean-stress/energy correction, CA, DP/L correlation. |
-| Inputs / material parameters | Uniaxial stress/strain extrema and mean; reference fatigue curve. |
-| Output | Published uniaxial mean-stress/energy correction, CA, DP/L correlation. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Cheap targeted study of compressive mean stresses. Not the existing MSWT, and not deviatoric SWT. |
+| Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Kujawski (2021) Eqs. (9)-(13b) and Figs. 5-11 on the PDF (2026-11-06) |
+| Principle | W_D = (sigma_max + \|sigma_m\|/3) eps_a for sigma_m < 0, SWT sigma_max eps_a for sigma_m >= 0; repository critical-plane extension as SWT (plane of maximum normal strain range). |
+| Loading scope | Paper: uniaxial CA. Repository (maintainer decision): SWT critical-plane extension, CA P/NP, any mean stress; identical to SWT without a compressive normal mean. |
+| Inputs / material parameters | E, nu (elastic strains); no criterion constant. |
+| Output | Damaging energy density W_D (MPa); life via the shared master curve |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_kujawski2021.py: closed forms of Eqs. (11a)-(13b), SWT identity without compressive mean; the paper prints figures only (no table to reproduce). |
+| Python implementation | [src/multifat/models/cp_methods/kujawski2021.py](../../src/multifat/models/cp_methods/kujawski2021.py); Kujawski2021 |
+| Automated tests | [tests/methods/test_kujawski2021.py](../../tests/methods/test_kujawski2021.py) |
+| Limitations | Uniaxial in the source; the multiaxial plane rule is a repository choice. Applied mean stress used instead of a stabilised one; elastic strains. Bracket clipped at zero. Figures not reproduced. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | New scalar correction with exact branch/sign rules. A general multiaxial plane rule is not established by this review. |
+| Missing tasks | Independent validation on compressive-mean multiaxial data. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. New scalar correction with exact branch/sign rules. A general multiaxial plane rule is not established by this review. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
 | Feasibility / effort / priority | A / Low (preliminary; source-specific amplitude/calibration may increase effort) / Low |
-| Provenance / prior status | N26; Already reviewed, not implemented |
+| Provenance / prior status | N26; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N26+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN26%5D+Negative-mean-stress+modified+SWT) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N26+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN26%5D+Kujawski+negative-mean-stress+modified+SWT+%28mSWT%29) (no live Issue linked) |
 
 ### N30
 

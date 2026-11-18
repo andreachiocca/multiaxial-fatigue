@@ -20,7 +20,6 @@ _audit-trail/
 
 # Local AI assistant configs (local only)
 .claude/
-CLAUDE.md
 .gemini/
 .codex/
 .cursor/

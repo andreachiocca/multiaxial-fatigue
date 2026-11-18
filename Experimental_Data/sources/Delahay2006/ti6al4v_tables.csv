@@ -1,0 +1,18 @@
+# Delahay T, Palin-Luc T. Estimation of the fatigue strength distribution in high-cycle multiaxial fatigue taking into account the stress-strain gradient effect. Int J Fatigue 2006;28(5-6):474-484.
+# doi:10.1016/j.ijfatigue.2005.06.048
+# Rows "property": Table 1, p. 478 (Ti-6Al-4V, annealed). E in MPa (110 GPa).
+# Rows "limit": Table 2, p. 479. Median endurance limits (P_f = 0.5) on smooth specimens at 1e6 or 1e7 cycles, staircase with >= 15 specimens (Section 3, p. 478), R = -1 (sigma_mean = tau_mean = 0); s = standard deviation; phase = phase shift of torsion; italic = used by the authors to identify their model.
+# Transcribed 2026-11-11 for decision d109 (multifat).
+kind,load,sigma_a_MPa,tau_a_MPa,s_MPa,phase_deg,italic,REP_percent,quantity,value
+property,,,,,,,,E_MPa,110000
+property,,,,,,,,nu,0.3
+property,,,,,,,,Sy_MPa,980
+property,,,,,,,,Su_MPa,1090
+property,,,,,,,,A_percent,18
+property,,,,,,,,sigma_star_MPa,563
+limit,tension,583,,17,,yes,,,
+limit,rotating bending,602,,34,,yes,,,
+limit,torsion,,411,27,,yes,,,
+limit,plane bending,652,,20,,no,-1.8,,
+limit,plane bending + torsion,442,255,47,0,no,-14.2,,
+limit,plane bending + torsion,567,328,17,90,no,10.9,,

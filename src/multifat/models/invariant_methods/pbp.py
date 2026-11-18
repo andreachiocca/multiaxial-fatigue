@@ -1,21 +1,25 @@
-"""Projection-by-Projection (PbP) criterion, Cristofori, Susmel & Tovo (2008), Int J Fatigue
-30:1646-1658, doi:10.1016/j.ijfatigue.2007.11.006 (roadmap item N37), limited to the
-constant-amplitude harmonic case.
+"""Projection-by-Projection (PbP) invariant fatigue criterion.
 
-The deviatoric path s(t) (a 5-vector with |s|^2 = J2, Eq. A.3) is resolved along the principal
-directions of its covariance matrix (Eqs. 4-5). Each projected signal is cycle counted, and the
-resulting amplitudes are combined through the quadratic expression of Eqs. (12)-(13),
-Gamma = sqrt(sum_i sqrt(J2a,i)^2). Mean stress influences the result only through
-rho_ref = sqrt(3) sigma_H,ref / Gamma (Eq. 6), and the reference fatigue strength depends linearly
-on rho_ref (Eq. 8): sqrt(J2A,rho) = sqrt(J2A,0) + rho (sqrt(J2A,1) - sqrt(J2A,0)), where
-sqrt(J2A,1) = f_-1/sqrt(3) for reversed axial loading and sqrt(J2A,0) = t_-1 for reversed torsion.
+Published by Cristofori, Susmel & Tovo (2008), *International Journal of Fatigue* 30,
+pp. 1646-1658, doi:10.1016/j.ijfatigue.2007.11.006 (roadmap N37), Eqs. (4)-(13)::
 
-For one harmonic, s(t) = a sin wt + b cos wt, every projection consists of a single cycle whose
-amplitude is sqrt((e_i.a)^2 + (e_i.b)^2); hence the sum over any orthonormal basis returns
-Gamma^2 = J2(A) + J2(B) irrespective of the covariance axes, and sigma_H,ref = sigma_H,max. The
-criterion is returned as the fatigue-limit index Gamma / sqrt(J2A,rho) (life estimation, Eqs. 9-11
-with k_rho, is not implemented); it becomes infinite when sqrt(J2A,rho) <= 0. It is the sqrt(3)
-in Eq. (6) that makes reversed axial loading yield rho = 1 (Eq. B.5 leaves it out).
+    Gamma = sqrt(sum_i sqrt(J_{2a,i})^2)
+    rho_ref = sqrt(3) * sigma_{H,ref} / Gamma
+    sqrt(J_{2A,rho}) = t_-1 + rho_ref * (f_-1 / sqrt(3) - t_-1)
+
+The deviatoric stress 5-vector ``s(t)`` (``|s|^2 = J_2``, Eq. A.3) is projected along the
+principal directions of its covariance matrix, cycle counted per axis, and combined via
+the quadratic sum ``Gamma``.
+
+Repository choices:
+- Evaluation is limited to constant-amplitude single-harmonic histories, for which
+  ``Gamma^2 = J_2(A) + J_2(B)`` holds identically in closed form independently of the
+  covariance eigenbasis and ``sigma_{H,ref} = sigma_{H,a} + sigma_{H,m}``.
+- ``rho_ref`` retains the ``sqrt(3)`` factor of Eq. (6) (omitted in Eq. B.5) so reversed
+  axial loading yields ``rho_ref = 1``.
+- The method returns the endurance-limit index ``Gamma / sqrt(J_{2A,rho})`` (``0.0`` when
+  ``Gamma == 0``; ``inf`` when ``sqrt(J_{2A,rho}) <= 0``) for master-curve life prediction;
+  Eqs. (9)-(11) life estimation with ``k_rho`` is not implemented.
 """
 
 from __future__ import annotations

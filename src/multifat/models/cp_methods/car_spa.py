@@ -1,3 +1,19 @@
+"""Carpinteri & Spagnoli (2001) critical-plane equivalent stress (disabled).
+
+Published in *International Journal of Fatigue* 23 (2001), pp. 135-145,
+doi:10.1016/S0142-1123(00)00075-X (roadmap item I_CARSPA)::
+
+    sigma_eq = f_-1 * sqrt((sigma_n,max / f_-1)^2 + (d_tau / (2 * t_-1))^2)
+
+where ``sigma_n,max`` and ``d_tau`` are the maximum normal stress and shear stress
+range on the paper's averaged principal-stress critical plane.
+
+Repository choices:
+- Disabled at evaluation time via ``ensure_enabled("CARSPA")`` because the published
+  principal-direction averaging rule to orient the critical plane is not implemented;
+  scanning planes by maximum shear range or maximum damage does not match the criterion.
+"""
+
 from __future__ import annotations
 from typing import Mapping
 from ..base import CPPlaneResult

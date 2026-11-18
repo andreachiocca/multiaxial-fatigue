@@ -16,22 +16,22 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 6 | 1 | 11 | 0 | 18 |
-| Energy based | 6 | 1 | 13 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 5 | 0 | 8 | 0 | 13 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Energy based | 7 | 1 | 12 | 3 | 23 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
 | Specialized | 0 | 0 | 3 | 0 | 3 |
-| Strain based | 3 | 0 | 10 | 2 | 15 |
-| Stress based | 1 | 0 | 12 | 0 | 13 |
+| Strain based | 4 | 0 | 9 | 2 | 15 |
+| Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 29 | 2 | 81 | 5 | 117 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 161 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](../../docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](../../docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -50,12 +50,13 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [I_MCD](../../METHODS.md#i_mcd) | McDiarmid (surface-crack repository scope) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_CARSPA](../../METHODS.md#i_carspa) | Carpinteri–Spagnoli | Partially implemented | not_tested | High | Yes |
 | [N04](../../METHODS.md#n04) | Modified Wöhler Curve Method / Susmel–Lazzarin | Fully implemented | reference_examples_reproduced | High | Yes |
-| [N05](../../METHODS.md#n05) | Wang maximum-shear-plane HCF criterion | Not implemented | not_tested | High | Yes |
-| [N06](../../METHODS.md#n06) | Nonlinear critical-plane HCF criterion | Not implemented | not_tested | High | Yes |
+| [N05](../../METHODS.md#n05) | Wang–Sun–Liu–Liu–Shang maximum-shear-plane HCF criterion | Fully implemented | reference_examples_reproduced | High | Yes |
+| [N06](../../METHODS.md#n06) | Zhang–Yao nonlinear critical-plane HCF criterion | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N07](../../METHODS.md#n07) | Sectional critical-plane criterion | Not implemented | not_tested | High | Yes |
-| [N11](../../METHODS.md#n11) | Quadratic damage-plane strength criterion | Not implemented | not_tested | Medium | Yes |
+| [N11](../../METHODS.md#n11) | Ninić Damage Function (quadratic damage-plane criterion) | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N12](../../METHODS.md#n12) | Revised multiaxial fatigue damage function | Not implemented | not_tested | Medium | Yes |
-| [N16](../../METHODS.md#n16) | Liu–Mahadevan characteristic-plane model, isotropic branch | Not implemented | not_tested | High | Yes |
+| [N16](../../METHODS.md#n16) | Liu–Mahadevan critical-plane criterion and life model | Fully implemented | basic_numerical_tests | High | Yes |
+| [N17](../../METHODS.md#n17) | Mean-shear-sensitive weighted-plane criterion, CA branch | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N25](../../METHODS.md#n25) | A90(T) deviatoric tensile critical-plane model | Not implemented | not_tested | Medium | Yes |
 | [R01](../../METHODS.md#r01) | Original Carpinteri–Spagnoli | Not implemented | not_tested | High | related_publication |
 | [R02](../../METHODS.md#r02) | Dang Van elastic-shakedown CA formulation | Not implemented | not_tested | High | related_publication |
@@ -67,6 +68,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [G33](../../METHODS.md#g33) | Zhai–Zou–Hu–Chen–Jin shakedown-constrained Walker model | Not implemented | not_tested | Medium | Yes |
 | [G43](../../METHODS.md#g43) | Xu et al. mean-stress/biaxiality modification | Not implemented | not_tested | Low | Yes |
 | [G50](../../METHODS.md#g50) | Wang–Shang–Wang ductile/brittle HCF criterion | Not implemented | not_tested | Medium | overlap_review |
+| [N58](../../METHODS.md#n58) | Liu–Xie–Hao equivalent stress on the maximum shear stress amplitude plane | Fully implemented | reference_examples_reproduced | Medium | Yes |
 
 ### I_FIN
 
@@ -235,69 +237,69 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N05
 
-**Wang maximum-shear-plane HCF criterion** — Yang Wang, Guo-Qin Sun, Jinfeng Liu, Xiaodong Liu, Deguang Shang (2022)
+**Wang–Sun–Liu–Liu–Shang maximum-shear-plane HCF criterion** — Yang Wang, Guo-Qin Sun, Jinfeng Liu, Xiaodong Liu, Deguang Shang (2022)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Critical plane;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | Multiaxial high-cycle fatigue failure and life prediction based on critical plane method, International Journal of Damage Mechanics |
 | DOI | https://doi.org/10.1177/10567895221091308 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Combined shear and normal mean/amplitude contribution on maximum-shear plane; CA P/NP, F; L calibration. |
-| Loading scope | Combined shear and normal mean/amplitude contribution on maximum-shear plane; CA P/NP, F; L calibration. |
-| Inputs / material parameters | S; f−1/t−1; reference S–N data. |
-| Output | Combined shear and normal mean/amplitude contribution on maximum-shear plane; CA P/NP, F; L calibration. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Compact mean-normal-sensitive alternative to Findley/Matake, not the existing MSWT. |
+| Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Wang et al. (2022) Eqs. (10), (15), (18)-(24) and Tables 1-7 on the scanned PDF (2026-11-06) |
+| Principle | t_eq,a = sqrt(C_a^2 + k (1 - sqrt(N_max N_a)/(2 sigma_y))^2 N_a^2) on the maximum shear amplitude plane, k from both reversed limits; torsional S-N life. |
+| Loading scope | Fully reversed single-harmonic CA, proportional and out-of-phase; a mean normal stress on the critical plane is out of scope (printed Eq. 18 makes a tensile mean beneficial). |
+| Inputs / material parameters | Sigm1, Taum1 (t-1/f-1 > 0.5), Sy. |
+| Output | Equivalent shear stress (MPa); life via a master curve fitted on pure torsion failures |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_wang2022.py: predicted lives of Tables 4-5 (22 tests) within 1 %; 6082-T6 and SM45C rows partly reproduced, unresolved rows strict xfails; mean-stress rows out of scope. |
+| Python implementation | [src/multifat/models/cp_methods/wang2022.py](../../src/multifat/models/cp_methods/wang2022.py); Wang2022 |
+| Automated tests | [tests/methods/test_wang2022.py](../../tests/methods/test_wang2022.py) |
+| Limitations | Fully reversed loading only (maintainer decision: printed Eq. 18 makes a tensile mean beneficial). Needs sigma_y. Power-law master curve on torsion failures instead of the three-parameter law. Fig. 3 not reproducible (no sigma_y in Table 1). |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | New criterion and exact coefficient/sign checks; use the published amplitude convention. |
+| Missing tasks | Resolve the mean-stress formulation with the authors; the SM45C mean-stress lives are not reproduced. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. New criterion and exact coefficient/sign checks; use the published amplitude convention. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
 | Feasibility / effort / priority | A / Low (preliminary; source-specific amplitude/calibration may increase effort) / High |
-| Provenance / prior status | N05; Already reviewed, not implemented |
+| Provenance / prior status | N05; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N05+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN05%5D+Wang+maximum-shear-plane+HCF+criterion) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N05+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN05%5D+Wang%E2%80%93Sun%E2%80%93Liu%E2%80%93Liu%E2%80%93Shang+maximum-shear-plane+HCF+criterion) (no live Issue linked) |
 
 ### N06
 
-**Nonlinear critical-plane HCF criterion** — CHENG-CHENG ZHANG, WEI-XING YAO (2010)
+**Zhang–Yao nonlinear critical-plane HCF criterion** — CHENG-CHENG ZHANG, WEI-XING YAO (2010)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Critical plane;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | An improved multiaxial high-cycle fatigue criterion based on critical plane approach, Fatigue & Fracture of Engineering Materials & Structures |
 | DOI | https://doi.org/10.1111/j.1460-2695.2010.01523.x |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Nonlinear shear–normal interaction with Goodman-type correction; CA P/NP, F. |
-| Loading scope | Nonlinear shear–normal interaction with Goodman-type correction; CA P/NP, F. |
-| Inputs / material parameters | S; f−1/t−1, Su; domain roughly f−1/t−1 between 1.25 and 2 per review. |
-| Output | Nonlinear shear–normal interaction with Goodman-type correction; CA P/NP, F. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Tests nonlinear interaction without constitutive extensions. |
+| Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Zhang & Yao (2011) Eqs. (3), (6)-(10), (A1) and Tables 2-8 on the PDF (2026-11-06) |
+| Principle | sqrt(C_a^2 - C_a N* + (t-1/f-1)^2 (f-1 + 2 C_a) N*) <= t-1 on the maximum shear amplitude plane, N* = N_a/(1 - N_m/sigma_u). |
+| Loading scope | Single-harmonic CA, proportional and out-of-phase, mean stresses; 1.25 < f-1/t-1 < 2 (warning outside). |
+| Inputs / material parameters | Sigm1 (f-1), Taum1 (t-1); Su only with mean normal stresses. |
+| Output | Fatigue index (1 at the limit); fitted life via the shared master curve where valid |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_zhang_yao.py: Tables 3-8, 50/66 fatigue limits within 0.3 points (longest-chord C_a; rss fails); continuum-tie 90 deg rows and unexplained mean-stress rows as strict xfails. |
+| Python implementation | [src/multifat/models/cp_methods/zhang_yao.py](../../src/multifat/models/cp_methods/zhang_yao.py); ZhangYao |
+| Automated tests | [tests/methods/test_zhang_yao.py](../../tests/methods/test_zhang_yao.py) |
+| Limitations | Fatigue-limit criterion (finite life via the master curve). The maximum-C_a plane rule is ill-conditioned: results depend on the tie rule in out-of-phase loading. Some published mean-stress rows not reproduced. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Scalar criterion, material-domain/denominator guards; recover equation from original. |
+| Missing tasks | No known essential coding gap within the declared repository scope. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Scalar criterion, material-domain/denominator guards; recover equation from original. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
 | Feasibility / effort / priority | A / Low (preliminary; source-specific amplitude/calibration may increase effort) / High |
-| Provenance / prior status | N06; Already reviewed, not implemented |
+| Provenance / prior status | N06; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N06+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN06%5D+Nonlinear+critical-plane+HCF+criterion) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N06+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN06%5D+Zhang%E2%80%93Yao+nonlinear+critical-plane+HCF+criterion) (no live Issue linked) |
 
 ### N07
 
@@ -334,36 +336,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N11
 
-**Quadratic damage-plane strength criterion** — D NINIC (2006)
+**Ninić Damage Function (quadratic damage-plane criterion)** — D NINIC (2006)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Critical plane;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | A stress-based multiaxial high-cycle fatigue damage criterion, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/j.ijfatigue.2005.04.014 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Maximum quadratic shear/normal combination; initially published plane-stress CA scope, F. |
-| Loading scope | Maximum quadratic shear/normal combination; initially published plane-stress CA scope, F. |
-| Inputs / material parameters | S; f−1/t−1. |
-| Output | Maximum quadratic shear/normal combination; initially published plane-stress CA scope, F. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Simple nonlinear CP benchmark; not CAIM or Findley. |
+| Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Ninić (2006) Eqs. (1)-(4), (13)-(16) and Tables 1-5 on the PDF (2026-11-05) |
+| Principle | D = sqrt((tau_a/T_e)^2 + k (sigma_n,max/S_e)^2) maximised over all planes (three-dimensional search); k from Eq. (4). |
+| Loading scope | Single-harmonic CA, in-phase and out-of-phase; rss shear amplitude on the plane (source silent); endurance criterion. |
+| Inputs / material parameters | Sigm1 (S_e), Taum1 (T_e); optional k_NIN (else Eq. 4). |
+| Output | Damage index (1 at the limit); fitted life via the shared master curve where valid |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_ninic.py: Table 1 k (Eq. 4); Tables 2-4, 29/32 full-search rows within 0.08 points; Table 5 within 0.6 (rounded loads); surface re-evaluation row 2-11; misprints and non-maximal printed planes as strict xfails. |
+| Python implementation | [src/multifat/models/cp_methods/ninic.py](../../src/multifat/models/cp_methods/ninic.py); Ninic |
+| Automated tests | [tests/methods/test_ninic.py](../../tests/methods/test_ninic.py) |
+| Limitations | Endurance criterion: finite lives only through the shared master curve. Eq. (4) calibrates the uniaxial limit only for S_e/T_e >= sqrt(2) (D = sqrt(k) below, warning). Out-of-phase shear amplitude not defined by the source (rss, matching the tables). |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Scalar criterion and ratio guards; preserve published shear-amplitude definition. |
+| Missing tasks | No known essential coding gap within the declared repository scope. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Scalar criterion and ratio guards; preserve published shear-amplitude definition. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
 | Feasibility / effort / priority | A / Low (preliminary; source-specific amplitude/calibration may increase effort) / Medium |
-| Provenance / prior status | N11; Already reviewed, not implemented |
+| Provenance / prior status | N11; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N11+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN11%5D+Quadratic+damage-plane+strength+criterion) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N11+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN11%5D+Nini%C4%87+Damage+Function+%28quadratic+damage-plane+criterion%29) (no live Issue linked) |
 
 ### N12
 
@@ -400,36 +402,69 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N16
 
-**Liu–Mahadevan characteristic-plane model, isotropic branch** — Y LIU, S MAHADEVAN (2005)
+**Liu–Mahadevan critical-plane criterion and life model** — Y LIU, S MAHADEVAN (2005)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Critical plane;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | Multiaxial high-cycle fatigue criterion and life prediction for metals, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/j.ijfatigue.2005.01.003 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Material-dependent characteristic plane combining normal, shear and hydrostatic amplitudes; proportional CA first, F/L. |
-| Loading scope | Material-dependent characteristic plane combining normal, shear and hydrostatic amplitudes; proportional CA first, F/L. |
-| Inputs / material parameters | S; axial/torsional S–N curves and fatigue limits; mean-stress sensitivity. |
-| Output | Material-dependent characteristic plane combining normal, shear and hydrostatic amplitudes; proportional CA first, F/L. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Distinct crack-plane mechanism; foundation for the Wei random-spectrum extension. |
+| Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Liu & Mahadevan (2005) Eqs. (6)-(25), Tables 1-6 and Figs. 1-9 on the PDF (2026-11-06) |
+| Principle | sqrt([sigma_a,c(1+eta sigma_m,c/f)/f]^2 + (tau_a,c/t)^2 + k(sigma^H_a/f)^2) = beta on the plane at the material angle alpha(t/f) from the maximum normal stress amplitude plane; native life with f_N, t_N S-N curves (Eq. 23). |
+| Loading scope | CA single-harmonic, proportional and non-proportional, normal mean stress (Eq. 21 factor); repository validity t/f >= 0.5. |
+| Inputs / material parameters | Sigm1, Taum1 (index); sigma_f, b_fat, tau_f, b0 (life; fitted from the workbook's R = -1 tension and torsion failures when absent). |
+| Output | Native life (Eq. 23) with Basquin tension and torsion curves; fatigue-limit index as diagnostic |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_liu_mahadevan.py: Eq. (19)/Table 1, both reversed limits, Eq. (23) inversion; Figs. 2-5 reproduced only for hard steel at 0/60/90 deg (other groups strict xfails, unresolved). |
+| Python implementation | [src/multifat/models/cp_methods/liu_mahadevan.py](../../src/multifat/models/cp_methods/liu_mahadevan.py); LiuMahadevan |
+| Automated tests | [tests/methods/test_liu_mahadevan.py](../../tests/methods/test_liu_mahadevan.py) |
+| Limitations | 3D plane rule (worst plane on the alpha-cone) and rss shear amplitude are repository choices; Figs. 2-5 largely not reproduced (unresolved); t/f < 0.5 rejected; Basquin S-N curves; life validation data (Figs. 10-13) not available. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | possible_or_related_source; [EXT11](../../docs/EXTERNAL_IMPLEMENTATIONS.md#ext11); not integrated or independently validated |
-| Missing tasks | Characteristic-plane construction, life-dependent strengths and implicit life solution. Original must establish supported NP scope. |
+| Missing tasks | Resolve the Figs. 2-5 gap (out-of-phase rows) with the authors; validate the life model on the paper's data sets. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Characteristic-plane construction, life-dependent strengths and implicit life solution. Original must establish supported NP scope. |
+| Development disposition | available_validate; Implemented within the named repository scope; the published fatigue-limit comparison is only partly reproduced. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
 | Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / High |
-| Provenance / prior status | N16; Already reviewed, not implemented |
+| Provenance / prior status | N16; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N16+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN16%5D+Liu%E2%80%93Mahadevan+characteristic-plane+model%2C+isotropic+branch) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N16+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN16%5D+Liu%E2%80%93Mahadevan+critical-plane+criterion+and+life+model) (no live Issue linked) |
+
+### N17
+
+**Mean-shear-sensitive weighted-plane criterion, CA branch** — Xiao-Wei Wang, De-Guang Shang, Yu-Juan Sun, Hong Chen (2018)
+
+| Field | Evidence / task |
+| --- | --- |
+| Primary / secondary family | Critical plane;  |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Reference | Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Theoretical and Applied Fracture Mechanics |
+| DOI | https://doi.org/10.1016/j.tafmec.2017.10.007 |
+| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Wang, Shang, Sun & Chen (2018) accepted manuscript, Eqs. (1)-(25), Tables 1-5, Section 5.1 (2026-11-16) |
+| Principle | Critical plane = weighted mean of the instantaneous maximum-shear planes over one cycle, weights from the variation of tau_max (Eqs. 3-7); of the two candidates phi_hat and phi_hat + 90 deg the larger damage is critical. tau_eq = sqrt([tau_a + k_tau \|tau_m\|]^2 + 1/3 [sigma_a + k_sigma sigma_m]^2) (Eq. 18), k_tau and k_sigma from t_-1, f_0, t_0 (Eq. 15). |
+| Loading scope | Single-harmonic CA tension-torsion (axial normal stress and shear) with mean stresses, in and out of phase; the variable-amplitude procedure (Wang-Brown counting, Miner, Eqs. 21-24) is not implemented. |
+| Inputs / material parameters | Sigm1, Taum1; Sig0, Tau0 optional (Eq. 19 estimates); R = -1 torsion failures for the life curve. |
+| Output | Equivalent shear stress tau_eq; life via the shared master curve fitted on the R = -1 pure torsion failures (the paper's torsional S-N curve) |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_wang2018.py: Section 5.1 estimated crack orientation 70 deg for the 30 and 90 deg out-of-phase tests of Table 5; Eqs. (12)-(14) limits give tau_eq = t_-1; Eq. (20) equals Eq. (15) with Eq. (19); Eqs. (8)-(9) constant tau_max case. The paper gives lives only in figures. |
+| Python implementation | [src/multifat/models/cp_methods/wang2018.py](../../src/multifat/models/cp_methods/wang2018.py); Wang2018 |
+| Automated tests | [tests/methods/test_wang2018.py](../../tests/methods/test_wang2018.py) |
+| Limitations | Tension-torsion only (another stress component is out of scope). Constant-amplitude branch only. Eq. (17) violations are out of material scope. Predicted lives are printed only in figures, so no per-test reproduction. |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External source discovery | no_accessible_source_identified; not integrated or independently validated |
+| Missing tasks | Variable-amplitude branch (Wang-Brown counting and Miner on the weighted plane). |
+| Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
+| Roadmap rank | — |
+| Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. BP sphere quadrature and projection helpers; preserve source-specific weights. |
+| Feasibility / effort / priority | A / Medium (preliminary; exact scope and data determine effort) / High |
+| Provenance / prior status | N17; Already implemented, active |
+| Related catalogue ID | None recorded |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N17+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN17%5D+Mean-shear-sensitive+weighted-plane+criterion%2C+CA+branch) (no live Issue linked) |
 
 ### N25
 
@@ -793,3 +828,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Provenance / prior status | G50; New candidate; equation-level overlap unresolved |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=G50+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BG50%5D+Wang%E2%80%93Shang%E2%80%93Wang+ductile%2Fbrittle+HCF+criterion) (no live Issue linked) |
+
+### N58
+
+**Liu–Xie–Hao equivalent stress on the maximum shear stress amplitude plane** — Xiao-Yong Liu, Jiamiao Xie, Wenqian Hao (2025)
+
+| Field | Evidence / task |
+| --- | --- |
+| Primary / secondary family | Critical plane; Stress based |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Reference | A Multiaxial High-Cycle Fatigue Life Evaluation Model Based on the Critical Plane Method, Journal of Materials Engineering and Performance |
+| DOI | https://doi.org/10.1007/s11665-025-11163-z |
+| Reference evidence | DOI and equations from the publisher's PDF supplied by the maintainer (2026-11-05); no Crossref record saved |
+| Formulation evidence | Checked against Liu, Xie & Hao (2025) Eqs. (5)-(13), (21)-(27) and Fig. 3 on the PDF (2026-11-05) |
+| Principle | sqrt(sigma'_n,a^2 + 3 tau'_a^2) on the maximum shear stress amplitude plane; Gerber mean-shear and Serensen mean-normal corrections (Eqs. 25-27). |
+| Loading scope | Single-harmonic CA, proportional and phase-shifted, mean normal and shear stresses; longest-chord shear amplitude. |
+| Inputs / material parameters | Su (sigma_b); Tu (tau_b) optional, else Su/sqrt(3) with a warning. |
+| Output | Equivalent stress damage parameter (MPa); fitted life via the shared master curve where valid |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_liu2025.py: Fig. 3 plane amplitudes (lambda = 0.866 all phases; lambda = sqrt(3) shear all phases, normal at 0 and 90 deg; 30 and 60 deg strict xfails), Eq. (24)-(26) branches, Gerber, reversed tension/torsion. Life results are figures only. |
+| Python implementation | [src/multifat/models/cp_methods/liu2025.py](../../src/multifat/models/cp_methods/liu2025.py); Liu2025 |
+| Automated tests | [tests/methods/test_liu2025.py](../../tests/methods/test_liu2025.py) |
+| Limitations | Torsional ultimate strength rarely in workbooks (coarse Su/sqrt(3) estimate); Eq. (26) silent for compressive means (linear branch used); life from the master curve, not the Basquin constants of Eq. (27). |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External source discovery | no_accessible_source_identified; not integrated or independently validated |
+| Missing tasks | No known essential coding gap within the declared repository scope. |
+| Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
+| Roadmap rank | — |
+| Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
+| Feasibility / effort / priority | A / Low / Medium |
+| Provenance / prior status | N58; Already implemented, active |
+| Related catalogue ID | None recorded |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N58+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN58%5D+Liu%E2%80%93Xie%E2%80%93Hao+equivalent+stress+on+the+maximum+shear+stress+amplitude+plane) (no live Issue linked) |

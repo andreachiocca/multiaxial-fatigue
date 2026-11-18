@@ -1,0 +1,79 @@
+% registry: SINES
+\methodhead{SINES}{Sines (1959): deviatoric amplitude and mean hydrostatic stress}\label{sheet:SINES}
+
+\block{Source} G.~Sines, in G.~Sines, J.~L.~Waisman (eds.), \emph{Metal Fatigue}, McGraw-Hill, New
+York (1959) \cite{sines1959}. Implemented in the form restated and applied by Papadopoulos et al.,
+\emph{Int.\ J.\ Fatigue} 19 (1997) 219--235 \cite{papadopoulos1997}, Eqs.~(62)--(64), p.~9; Table~1.
+
+\block{Idea and scope} Stress-invariant fatigue-limit criterion, the oldest of the invariant criteria
+in common use. As in Crossland (Sheet~\ref{sheet:CROSSLAND}) the amplitude of $\sqrt{J_2}$ drives
+fatigue, but only the \emph{mean} hydrostatic stress shifts the limit; the hydrostatic amplitude has
+no effect. Proposed for the high-cycle fatigue limit of metals with mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\fm$, $\tm$ & MPa & fully reversed tension (bending) and torsion fatigue limits\\
+$f_0$ & MPa & repeated ($R=0$) bending limit in Eq.~\eqref{eq:sines-63}; with the Goodman estimate below it is the amplitude (equal to the mean) of the $R=0$ cycle\\
+$\sigma_u=S_u$ & MPa & ultimate tensile strength (written $\sigma_f$ in the paper's Eq.~64)\\
+$\sqrt{J_{2,a}}$ & MPa & amplitude of $\sqrt{J_2}$, the enclosing radius defined in Sheet~\ref{sheet:CROSSLAND}\\
+$\sigma_{H,m}$ & MPa & mean hydrostatic stress, $\tr\Sm/3$\\
+$\kappa$, $\lambda$ & --, MPa & constants of the criterion (this $\kappa$ is not the ratio of Section~\ref{sec:notation})\\
+$\mathrm{DP}$ & -- & fatigue index, Eq.~\eqref{eq:sines-index}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Papadopoulos et al.\ write Sines' criterion as (Eq.~62)
+\begin{equation}
+\sqrt{J_{2,a}} + \kappa\,\sigma_{H,m} \le \lambda .
+\label{eq:sines-main}
+\end{equation}
+Sines' own calibration (Eq.~63) uses the fully reversed and repeated bending limits,
+\begin{equation}
+\kappa = \frac{3\,\tm}{f_0} - \sqrt3 , \qquad \lambda = \tm .
+\label{eq:sines-63}
+\end{equation}
+With the Goodman estimate $f_0=\fm/(1+\fm/\sigma_u)$ and the torsion-to-bending ratio implied by the
+criterion, $\tm=\fm/\sqrt3$, this becomes the form evaluated in the paper's Table~1 (Eq.~64):
+\begin{equation}
+\sqrt{J_{2,a}} + \kappa\,\sigma_{H,m} \le \tm , \qquad \kappa = \frac{\sqrt3\,\fm}{\sigma_u} .
+\label{eq:sines-64}
+\end{equation}
+The repository returns the index
+\begin{equation}
+\mathrm{DP} = \frac{\sqrt{J_{2,a}} + \kappa\,\sigma_{H,m}}{\tm} , \qquad \kappa = \frac{\sqrt3\,\fm}{S_u} .
+\label{eq:sines-index}
+\end{equation}
+
+\block{Constants and calibration} Paper: $\kappa$ from the reversed and repeated bending limits
+(Eq.~63). Repository: the closed form of Eq.~\eqref{eq:sines-64} from the workbook $\fm$, $\tm$ and
+$S_u$; a measured $f_0$ (\texttt{Sig0}) is not used. Only the master-curve constants are fitted, on
+the uniaxial $R=-1$ design tests.
+
+\block{Life} No native life law. The index is the damage parameter of the shared master curve
+(Section~\ref{sec:mastercurve}), a repository extension of a fatigue-limit criterion.
+
+\block{Repository choices}
+\begin{itemize}
+\item The printed Eq.~(64) coefficient $\kappa=\sqrt3\,\fm/S_u$, independent of $\tm$, as in the
+  paper's Table~1. Fully reversed tension at $\fm$ therefore gives the index $\fm/(\sqrt3\,\tm)$,
+  which is 1 only when $\tm=\fm/\sqrt3$. Eq.~(63) with the Goodman $f_0$ would miss the paper's
+  mean-stress rows by up to 11 points.
+\item $\sqrt{J_{2,a}}$ is the exact enclosing radius of the single-harmonic deviatoric ellipse, as in
+  Crossland.
+\item The index is the damage parameter of the master curve, for finite-life comparisons.
+\item Case-level model: no plane search and no \texttt{\_ext} variant.
+\end{itemize}
+
+\block{Worked example} Synthetic material $\fm=300$, $\tm=200$, $S_u=800\MPa$: $\kappa=0.6495$. Torsion
+at $\tm$ gives index~1; tension at $\fm$ gives $0.8660$ ($=\fm/(\sqrt3\,\tm)$). Tension
+$\sigma_a=200\MPa$ with mean $\sigma_m=150\MPa$: index $0.7397$, equal to
+$(\sigma_a/\sqrt3+\kappa\,\sigma_m/3)/\tm$.
+
+\block{Verification} Papadopoulos et al.\ (1997) Table~1 is reproduced for $\delta=0^\circ$,
+$90^\circ$ and $180^\circ$ with the printed Eq.~(64). The rows at intermediate phase shifts are
+strict xfails: the table used $\sin\delta$ for the $\sin^2\delta$ of Eq.~(44). Rows~14 and~15
+(42CrMo4) are 0.3 points off and kept as strict xfails (unresolved).

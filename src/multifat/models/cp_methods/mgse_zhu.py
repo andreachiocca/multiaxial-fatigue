@@ -1,14 +1,24 @@
-"""MGSE (Zhu et al.) critical-plane damage parameter with material constant.
+"""Zhu et al. (2018) modified generalized strain energy (MGSE_ZHU) criterion.
 
-Zhu et al. (Int. J. Fatigue 2018) propose a modified generalized strain
-energy (MGSE) criterion with an additional material constant k_MGSE:
+Zhu et al., Int. J. Fatigue 113 (2018), Eqs. (7)-(12), pp. 7-8, define::
 
-    MGSE = τ_max * (Δγ/2) + k_MGSE * σ_{n,max} * (Δε_n/2)
+    MGSE = tau_max * (Delta_gamma / 2) + k_MGSE * sigma_{n,max} * (Delta_eps_n / 2)
 
-The left-hand damage parameter is returned for calibration and assessment.
+where tau_max is the maximum shear stress on the critical plane, Delta_gamma / 2
+and Delta_eps_n / 2 are the engineering shear and normal strain amplitudes,
+sigma_{n,max} is the peak normal stress, and k_MGSE weights the normal term.
 
-Without k_MGSE in the workbook, the paper's practical recommendation applies:
-k_MGSE = 1, with a warning.
+Repository choices:
+  - Candidate plane normal is the local z-axis; shear uses (xz, yz) and normal uses zz.
+  - Peak normal stress sigma_{n,max} is clipped at zero (tension-only).
+  - Non-proportional plane shear range uses the default root-sum-square (rss) rule;
+    tau_max comes from the 720-sample harmonic shear maximum via ``params['_tau_max']``
+    (falling back to endpoint max when called outside ``prepare_planes``).
+  - Critical plane maximises the full MGSE parameter, so standard and ``_ext`` coincide.
+  - ``k_MGSE`` is optional and defaults to 1.0 (with a warning) when omitted; in
+    ``multifat-pipeline`` it is derived from Zhu (2018) Eq. (12) over N = 1e4..2e6
+    when Basquin fits are identifiable, else fitted by scatter minimisation.
+  - Life prediction uses the shared elastic master curve instead of a strain-life curve.
 """
 
 from __future__ import annotations

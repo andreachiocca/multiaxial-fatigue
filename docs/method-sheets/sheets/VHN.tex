@@ -1,0 +1,84 @@
+% registry: VHN
+\methodhead{VHN}{Vu, Halm and Nadot (2010): stress-invariant criterion for complex loading}\label{sheet:VHN}
+
+\block{Source} Q.~H.~Vu, D.~Halm, Y.~Nadot, \emph{Int.\ J.\ Fatigue} 32 (2010) 1004--1014
+\cite{vu2010}, Eqs.~(6)--(21); Tables~1--14.
+
+\block{Idea and scope} Stress-invariant endurance criterion that captures the effect of out-of-phase
+loading without an integration over planes. It combines the peak of the alternating octahedral shear
+measure, its mean over the cycle (larger for a rotating, non-proportional path) and a hydrostatic
+term whose mean-stress weight depends on the ultimate strength class. Proposed for the fatigue limit
+of metals under periodic proportional and non-proportional loading, including mean stresses and
+loads of different frequencies (Tables~13--14).
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\fm$, $\tm$ & MPa & fully reversed axial (bending) and torsion fatigue limits\\
+$R_m=S_u$ & MPa & ultimate tensile strength, selects the class constants\\
+$\mathbf s_a(t)$ & MPa & alternating deviatoric stress, $\dev\bigl(\Tsig(t)-\Sm\bigr)$\\
+$J'_2(t)$ & MPa & $\sqrt{\tfrac12\,\mathbf s_a(t):\mathbf s_a(t)}$, alternating octahedral shear measure\\
+$J_{2,\mathrm{mean}}$ & MPa & mean of $J'_2(t)$ over one period (Eq.~7)\\
+$I_{1,a}$, $I_{1,m}$ & MPa & amplitude and mean of $I_1=\tr\Tsig$\\
+$I_f$ & MPa & hydrostatic term, Eq.~\eqref{eq:vhn-class}\\
+$\gamma_1$, $\gamma_2$, $\gamma_3$ & --, --, MPa & weights of the three terms\\
+$\beta$ & MPa & threshold, $\beta=\tm$ (Eq.~12)\\
+$f(t)$, $f_{\max}$ & MPa & criterion function and its maximum over the cycle\\
+$p\ge q$ & MPa & $J'_2$ semi-axes of the single-harmonic alternating deviatoric ellipse\\
+$E(\cdot)$ & -- & complete elliptic integral of the second kind (parameter convention)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The criterion requires $f_{\max}=\max_t f(t)\le\beta$ (Eq.~8), with
+\begin{gather}
+f(t) = \sqrt{\gamma_1\,J'_2(t)^2 + \gamma_2\,J_{2,\mathrm{mean}}^2 + \gamma_3\,I_f(I_{1,a},I_{1,m})} ,
+\label{eq:vhn-main}\\
+\beta = \tm , \qquad \gamma_3 = \frac{\tm^2 - \fm^2/3}{\fm} , \qquad
+\gamma_1 + \frac{4\,\gamma_2}{\pi^2} = 1 \quad\text{(Eq.~13)} .
+\label{eq:vhn-const}
+\end{gather}
+The class constants (Eqs.~17--20) are
+\begin{equation}
+\begin{aligned}
+R_m < 750\MPa :&\quad \gamma_1 = 0.65,\ \gamma_2 = 0.8636,\ I_f = I_{1,a} + I_{1,m} ,\\
+R_m > 750\MPa :&\quad \gamma_1 = 0.3,\ \gamma_2 = 1.7272,\ I_f = I_{1,a} + \frac{\fm}{\tm}\,I_{1,m} .
+\end{aligned}
+\label{eq:vhn-class}
+\end{equation}
+The paper's error index is $100\,(f_{\max}/\tm-1)$ (Eq.~21).
+
+\block{Constants and calibration} Paper: $\beta$ and $\gamma_3$ from the two fatigue limits; $\gamma_1$
+and $\gamma_2$ by strength class, tied by Eq.~(13). Repository: the same closed forms from the workbook
+$\fm$, $\tm$ and $S_u$ (all finite and positive); there are no optional constants. Only the
+master-curve constants are fitted.
+
+\block{Life} No native life law. The index $f_{\max}/\tm$ is the damage parameter of the shared master
+curve (Section~\ref{sec:mastercurve}), a repository extension of a fatigue-limit criterion.
+
+\block{Repository choices}
+\begin{itemize}
+\item For one harmonic the alternating deviator traces an ellipse with $J'_2$ semi-axes $p\ge q$, so
+  $\max_t J'_2=p$ and $J_{2,\mathrm{mean}}=\tfrac{2}{\pi}\,p\,E(1-q^2/p^2)$, computed in closed form
+  with the arithmetic--geometric mean; no time discretisation.
+\item The class boundary: $S_u<750\MPa$ takes the low-strength constants, $S_u\ge750\MPa$ the
+  high-strength ones.
+\item A radicand made negative by a strong compressive mean hydrostatic stress is clamped to~0.
+\item The returned value is the index $f_{\max}/\tm$.
+\item Single-harmonic scope: the two-frequency histories of Tables~13--14 (asynchronous loading) are
+  not implemented.
+\end{itemize}
+
+\block{Worked example} High-strength steel, $\fm=398$, $\tm=260$, $R_m=1025\MPa$; axial
+$\sigma_m=100$, $\sigma_a=260\MPa$ with torsion $\tau_a=150\MPa$ at $90^\circ$: index $0.9500$.
+
+\block{Verification} Tables~1--12: the $I^e$ column (proposed criterion) is reproduced on 117 of 119
+rows within 0.06 points. Two rows are misprints and strict xfails: Table~2 row~9 prints
+$\delta_{xy}=0$, but every index of the row corresponds to $90^\circ$; Table~11 row~1 prints
+$\Sigma_{xx,a}=52.90$, while $I^a$ and $I^e$ correspond to 552.90. The other columns cross-check
+repository methods on the same inputs: $I^a$ (Crossland) 116/117, $I^b$ (Dang Van in the Papuga form)
+115/117, $I^c$ (Papadopoulos) 117/117. Also checked: the calibration identities and the closed-form
+$J_{2,\mathrm{mean}}$ against a 40\,000-step time-domain quadrature (to $10^{-10}$). Tables~13--14 are
+outside the single-harmonic scope.

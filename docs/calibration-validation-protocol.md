@@ -111,7 +111,7 @@ The current pipeline writes a JSON sidecar and overwrites it on reruns; historic
 Before changing the production calibration, run a focused, reproducible comparison on representative datasets:
 
 - **AISI316L**, using the final Janssens-corrected workbook (39 failures and 13 run-outs after the documented overlay). Separate Janssens and Braun material/campaign inputs where needed. The latest Janssens `R = -1` reference limits are 278.5 MPa tensile and 144 MPa torsional.
-- **42CrMo4_QT**, where axial and torsional fatigue data can support at least some of the existing calibration blocks, subject to source and batch checks.
+- **42CrMo4_Santus**, where axial and torsional fatigue data can support at least some of the existing calibration blocks, subject to source and batch checks.
 - **Ti6Al4V / Ti6Al4V_Berto**, where the material-source separation must be made explicit before fitting or evaluating results.
 
 For the methods whose original calibration is verified, evaluate (a) the authors' prescribed calibration, (b) `all_eligible` with a declared alternative objective, and (c) at least one predefined subset. Save selected observation IDs and grouped hold-out IDs for every fit. Compare fitted constants, fit residuals, independent prediction errors, sensitivity to the selection, eligibility failures and computation time. Never fabricate a validation result when all observations are used for fitting.

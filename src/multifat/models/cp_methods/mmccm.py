@@ -1,26 +1,33 @@
-# multifat/models/cp_methods/mmccm.py
-"""Modified Manson-Coffin Curve Method proposed by Wang and Susmel (2016),
-International Journal of Fatigue, doi:10.1016/j.ijfatigue.2015.10.005 (roadmap G22),
-in constant-amplitude form, using Eqs. (1)-(8):
+"""Modified Manson-Coffin Curve Method of Wang and Susmel (2016).
 
-    rho = sigma_n,max / tau_a on the plane with the largest shear strain amplitude (Eq. 1);
-    gamma_a = tau'_f(rho)/G (2N_f)^b(rho) + gamma'_f(rho) (2N_f)^c(rho)             (Eq. 2)
-    tau'_f(rho)/G = rho (1 + nu_e) sigma'_f/E + (1 - rho) tau'_f/G                  (Eq. 5)
-    gamma'_f(rho) = rho (1 + nu_p) eps'_f + (1 - rho) gamma'_f                       (Eq. 6)
-    b(rho) = b b0 / ((b0 - b) rho + b),  c(rho) = c c0 / ((c0 - c) rho + c)          (Eqs. 7-8)
+Published in *International Journal of Fatigue* 83 (2016), pp. 135-149,
+doi:10.1016/j.ijfatigue.2015.10.005 (roadmap G22), constant-amplitude Eqs. (1)-(8)::
 
-Here gamma_a denotes the engineering shear strain amplitude (the longest-chord rule is used for
-harmonic paths; the maximum-variance direction used in the paper gives the same half range for
-a single harmonic). When several planes share the maximum gamma_a, the paper chooses the one
-with the largest rho (p.5); since a larger rho lowers the curve at fixed gamma_a, the repository's
-tie rule based on larger damage picks that same plane. Eq. (2) is solved for N_f by bisection in
-log(2N_f) over [1, 2e12]; the damage parameter is 1/N_f (zero when N_f exceeds 1e12 cycles).
-The repository uses the workbook (elastic) strains and requires the strain-life constants sigma_f,
-epsilon_f, b_fat, c_fat, tau_f, gamma_f, b0 and c0 (no estimation fallback is provided). nu_e = nu,
-while nu_p = ``nu_p`` when supplied and 0.5 otherwise (the paper does not specify it). No rho
-cut-off is given; a non-positive coefficient or a non-negative exponent (beyond a pole of
-Eqs. 7-8) yields infinite damage, so the method has no ``_ext`` variant
-(``ext_variant = False``).
+    rho = sigma_n,max / tau_a
+    gamma_a = (tau'_f(rho) / G) * (2 N_f)^b(rho) + gamma'_f(rho) * (2 N_f)^c(rho)
+    tau'_f(rho) / G = rho * (1 + nu_e) * sigma'_f / E + (1 - rho) * tau'_f / G
+    gamma'_f(rho) = rho * (1 + nu_p) * eps'_f + (1 - rho) * gamma'_f
+    b(rho) = b * b0 / ((b0 - b) * rho + b)
+    c(rho) = c * c0 / ((c0 - c) * rho + c)
+
+Here ``gamma_a`` is the engineering shear-strain amplitude on the maximum-shear-strain
+plane and ``sigma_n,max`` is the peak normal stress on that plane.
+
+Repository choices: Out-of-phase harmonic paths evaluate ``gamma_a`` via the
+``longest_chord`` rule, which gives the same half-range as the paper's maximum-variance
+direction for a single harmonic. Critical-plane ties on ``gamma_a`` select the largest
+damage (``1 / N_f``), which matches the paper's largest-``rho`` tie rule because larger
+``rho`` lowers the curve at fixed ``gamma_a``. Life ``N_f`` is solved by bisection in
+``log(2 N_f)`` over ``[1, 2e12]``, returning damage ``0`` beyond ``1e12`` cycles and
+``dp_reference="model_law"``. Elastic workbook strains are used and all eight strain-life
+constants (``sigma_f``, ``epsilon_f``, ``b_fat``, ``c_fat``, ``tau_f``, ``gamma_f``,
+``b0``, ``c0``) are required, with no UML estimation fallback inside the model
+(``multifat-pipeline`` may fill missing ones: Basquin fits for ``sigma_f``, ``b_fat``,
+``tau_f``, ``b0`` and uniform-material-law estimates for the plastic terms, see
+``eval/material_fits.py``). ``nu_e = nu`` and ``nu_p``
+defaults to ``0.5`` when omitted (unspecified in the paper). No ``rho`` cut-off is
+applied; non-positive curve coefficients or non-negative exponents past a harmonic-mean
+pole return infinite damage, so ``ext_variant = False``.
 """
 
 from __future__ import annotations

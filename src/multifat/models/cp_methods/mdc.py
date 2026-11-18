@@ -1,22 +1,24 @@
-# multifat/models/cp_methods/mdc.py
-"""Critical-plane criterion of Margetin, Ďurka & Chmelko (2016), Frattura ed
-Integrità Strutturale 37:146-152, doi:10.3221/IGF-ESIS.37.20 (roadmap G06),
-Eqs. (4)-(8):
+"""Critical-plane criterion of Margetin, Ďurka & Chmelko (2016).
 
-    tau_r = sqrt(k sigma_a,cr^2 + tau_a,cr^2) = tau'_f (2 N_f)^b_tau,
-    k = (2 tau'_f / sigma'_f)^2 (2 sigma_a,cr / sigma'_f)^(2 (b_tau - b_sigma) / b_sigma) - 1
+Published in *Frattura ed Integrità Strutturale* 37 (2016), pp. 146-152,
+doi:10.3221/IGF-ESIS.37.20 (roadmap G06), Eqs. (4)-(8)::
 
-The critical plane is the one carrying the largest shear-stress amplitude, with the
-axial and torsional Basquin curves sigma_a = sigma'_f (2N)^b_sigma and
-tau_a = tau'_f (2N)^b_tau (Eqs. 5, 6). The factor k is stress-level dependent: it is
-built so that pure axial loading (sigma_a,cr = tau_a,cr = sigma_a/2) reproduces the
-axial curve, while pure torsion reproduces the torsional one. Eqs. (7)-(8) use
-sigma_max in the place of the sigma_a,cr appearing in Eq. (4); taking
-sigma_max = sigma_a,cr reproduces the Nf_com values of Table 4 (the paper tests fully
-reversed loading only), so the criterion carries no mean-stress effect. If the
-radicand becomes negative (k < 0 at low normal stress), it is clamped to zero. The
-damage parameter is tau_r (MPa); equal plane metrics are broken in favour of the
-larger tau_r.
+    tau_r = sqrt(k * sigma_a,cr^2 + tau_a,cr^2) = tau'_f * (2 * N_f)^b_tau
+    k = (2 * tau'_f / sigma'_f)^2 * (2 * sigma_a,cr / sigma'_f)^(2 * (b_tau - b_sigma) / b_sigma) - 1
+
+The critical plane carries the largest shear-stress amplitude, with the axial and
+torsional Basquin curves ``sigma_a = sigma'_f (2N)^b_sigma`` and
+``tau_a = tau'_f (2N)^b_tau`` (Eqs. 5-6). The stress-level-dependent factor ``k``
+reproduces the axial curve under pure axial loading (``sigma_a,cr = tau_a,cr = sigma_a/2``)
+and the torsional curve under pure torsion.
+
+Repository choices: Eqs. (7)-(8) write ``sigma_max`` in place of the ``sigma_a,cr``
+in Eq. (4); taking ``sigma_max = sigma_a,cr`` (no mean-stress effect) reproduces every
+``Nf_com`` entry of Table 4 within 0.3% in ``tau_r``. When ``k < 0`` produces a negative
+radicand at low normal stress, the radicand is clamped to zero. Critical-plane ties on
+shear-stress amplitude are broken in favour of the larger ``tau_r``. ``MDC`` uses native
+Basquin inversion via ``mdc_life`` (``tau_r = tau'_f (2 N_f)^b_tau``) with
+``dp_reference="model_law"`` and damage metric ``tau_r`` (MPa).
 """
 
 from __future__ import annotations

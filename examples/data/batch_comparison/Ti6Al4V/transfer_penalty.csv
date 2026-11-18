@@ -1,0 +1,3 @@
+Method,Design,Target,n,bias_own,bias_transfer,rms_own,rms_transfer,penalty
+MOREL,Ti6Al4V_Berto,Ti6Al4V_Meneghetti,4,0.17847,-0.14877,0.18612,0.19429,0.0081768
+MOREL,Ti6Al4V_Meneghetti,Ti6Al4V_Berto,39,-0.66783,-0.20935,0.81751,0.37191,-0.44561

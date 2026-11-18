@@ -1,0 +1,80 @@
+/BATCH
+/FILNAME,hole_plate_fatigue,1
+/PREP7
+ET,1,PLANE183
+KEYOPT,1,3,3    ! Plane stress with thickness
+R,1,1.0         ! Thickness = 1.0 mm
+MP,EX,1,200000  ! E = 200 GPa
+MP,NUXY,1,0.3
+
+a = 10.0        ! Hole radius
+W = 100.0       ! Width (square quarter-plate)
+L = 100.0       ! Height
+
+RECTNG, 0, W, 0, L
+CYL4, 0, 0, a
+ASBA, 1, 2
+
+! Mesh control: fine hole perimeter & biased ligaments for notch root resolution
+LSEL, S, RADIUS, , a
+LESIZE, ALL, , , 64   ! 64 divisions on quarter-hole (~0.245 mm per element)
+
+LSEL, S, LOC, Y, 0
+LESIZE, ALL, 1.5, , , , , , 1  ! 1.5 mm elements along bottom ligament
+LSEL, S, LOC, X, 0
+LESIZE, ALL, 1.5, , , , , , 1  ! 1.5 mm elements along left ligament
+
+ALLSEL, ALL
+ESIZE, 2.5
+AMESH, ALL
+
+FINISH
+
+/SOLU
+ANTYPE, STATIC
+
+! Symmetry BCs for quarter plate:
+! Y = 0 (bottom ligament): UY = 0
+! X = 0 (left ligament): UX = 0
+NSEL, S, LOC, Y, 0
+D, ALL, UY, 0
+NSEL, S, LOC, X, 0
+D, ALL, UX, 0
+ALLSEL, ALL
+
+! -----------------------------------------------
+! Load Step 1: Uniaxial tension in Y direction
+! -----------------------------------------------
+TIME, 1.0
+NSEL, S, LOC, Y, L
+SF, ALL, PRES, -100.0   ! 100 MPa tension on top edge
+ALLSEL, ALL
+SOLVE
+
+! -----------------------------------------------
+! Load Step 2: Uniaxial tension in X direction
+! -----------------------------------------------
+TIME, 2.0
+NSEL, S, LOC, Y, L
+SF, ALL, PRES, 0.0      ! Remove tension on top edge
+NSEL, S, LOC, X, W
+SF, ALL, PRES, -100.0   ! 100 MPa tension on right edge
+ALLSEL, ALL
+SOLVE
+
+FINISH
+
+/POST1
+! Print NLIST first
+NLIST
+
+! Print Step 1
+SET, 1, 1
+PRNSOL, S, COMP
+
+! Print Step 2
+SET, 2, 1
+PRNSOL, S, COMP
+
+FINISH
+/EXIT

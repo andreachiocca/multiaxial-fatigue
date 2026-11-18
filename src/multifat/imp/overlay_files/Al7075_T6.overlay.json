@@ -1,0 +1,258 @@
+{
+ "schema_version": 1,
+ "workbook": "Al7075_T6.xlsx",
+ "base_sha256": "2a378823426639986ba534f6fda4adefce621d1757def2531f157818306f94fc",
+ "expected_fingerprint": "b5007cc636a17ef396693df62aa66cca3c293567442c36f5454045140ec89cad",
+ "operations": [
+  {
+   "op": "set_summary",
+   "row": 1,
+   "column": "A",
+   "field": "header",
+   "from": "Article DOI",
+   "to": "Article DOI / Reference",
+   "decision": "d111",
+   "source": "Header of the revised format, so the importer records each source's reference with its fatigue limits"
+  },
+  {
+   "op": "set_summary",
+   "row": 2,
+   "column": "D",
+   "field": "Material name",
+   "from": "Al 7075-T6511",
+   "to": "Al 7075-T6",
+   "decision": "d111",
+   "source": "Both sources name the alloy 7075-T6 (Pedranz 2025: 27 times, T6511 once; Benedetti 2021: 12 times); T6511 is the T6 temper of extrusions stress-relieved by stretching. The name now matches the material ID, so the importer's source-identity check passes"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "D",
+   "field": "Material name",
+   "from": "Al 7075-T6511",
+   "to": "Al 7075-T6",
+   "decision": "d111",
+   "source": "Both sources name the alloy 7075-T6 (Pedranz 2025: 27 times, T6511 once; Benedetti 2021: 12 times); T6511 is the T6 temper of extrusions stress-relieved by stretching. The name now matches the material ID, so the importer's source-identity check passes"
+  },
+  {
+   "op": "set_summary",
+   "row": 1,
+   "column": "L",
+   "field": "header",
+   "from": null,
+   "to": "Number of Cycles (cycles)",
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 1,
+   "column": "M",
+   "field": "header",
+   "from": null,
+   "to": "Stress ratio R",
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 1,
+   "column": "N",
+   "field": "header",
+   "from": null,
+   "to": "Axial fatigue limit loading",
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 1,
+   "column": "O",
+   "field": "header",
+   "from": null,
+   "to": "epsilon_f (-)",
+   "decision": "d111",
+   "source": "Benedetti, Menapace, Fontanari, Santus, FFEMS 44 (2021) 2975-2989, doi:10.1111/ffe.13530, Table 4 p. 10, phi60 bar (the bar of Pedranz 2025): strain-controlled LCF, eps'_f = 0.131, c = -0.674. Only the plastic terms are taken: sigma'_f and b stay the Basquin fit of the workbook's HCF tests (the LCF sigma'_f = 1067 MPa, b = -0.0893 give 311 MPa at 2N = 1e6 against about 145 MPa measured)"
+  },
+  {
+   "op": "set_summary",
+   "row": 1,
+   "column": "P",
+   "field": "header",
+   "from": null,
+   "to": "c_fat (-)",
+   "decision": "d111",
+   "source": "Benedetti, Menapace, Fontanari, Santus, FFEMS 44 (2021) 2975-2989, doi:10.1111/ffe.13530, Table 4 p. 10, phi60 bar (the bar of Pedranz 2025): strain-controlled LCF, eps'_f = 0.131, c = -0.674. Only the plastic terms are taken: sigma'_f and b stay the Basquin fit of the workbook's HCF tests (the LCF sigma'_f = 1067 MPa, b = -0.0893 give 311 MPa at 2N = 1e6 against about 145 MPa measured)"
+  },
+  {
+   "op": "set_summary",
+   "row": 1,
+   "column": "Q",
+   "field": "header",
+   "from": null,
+   "to": "gamma_f (-)",
+   "decision": "d111",
+   "source": "gamma'_f = sqrt(3) eps'_f and c0 = c from the measured Benedetti 2021 Table 4 terms, the von Mises rule of multifat.eval.material_fits.strain_life_fill; replaces the steel uniform-material-law estimate"
+  },
+  {
+   "op": "set_summary",
+   "row": 1,
+   "column": "R",
+   "field": "header",
+   "from": null,
+   "to": "c0 (-)",
+   "decision": "d111",
+   "source": "gamma'_f = sqrt(3) eps'_f and c0 = c from the measured Benedetti 2021 Table 4 terms, the von Mises rule of multifat.eval.material_fits.strain_life_fill; replaces the steel uniform-material-law estimate"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "I",
+   "field": "Tensile fatigue limit* (MPa)",
+   "from": 150,
+   "to": 143.8,
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "J",
+   "field": "Torsional fatigue limit* (MPa)",
+   "from": 100,
+   "to": 100.9,
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "K",
+   "field": "K",
+   "from": 1.5,
+   "to": 1.425173,
+   "decision": "d111",
+   "source": "K = Sigm1 / Taum1 = 143.8 / 100.9, kept consistent with the limits (not read by the importer)"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "L",
+   "field": "Number of Cycles (cycles)",
+   "from": null,
+   "to": 5000000,
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "M",
+   "field": "Stress ratio R",
+   "from": null,
+   "to": -1,
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "N",
+   "field": "Axial fatigue limit loading",
+   "from": null,
+   "to": "push-pull",
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 2,
+   "column": "O",
+   "field": "epsilon_f (-)",
+   "from": null,
+   "to": 0.131,
+   "decision": "d111",
+   "source": "Benedetti, Menapace, Fontanari, Santus, FFEMS 44 (2021) 2975-2989, doi:10.1111/ffe.13530, Table 4 p. 10, phi60 bar (the bar of Pedranz 2025): strain-controlled LCF, eps'_f = 0.131, c = -0.674. Only the plastic terms are taken: sigma'_f and b stay the Basquin fit of the workbook's HCF tests (the LCF sigma'_f = 1067 MPa, b = -0.0893 give 311 MPa at 2N = 1e6 against about 145 MPa measured)"
+  },
+  {
+   "op": "set_summary",
+   "row": 2,
+   "column": "P",
+   "field": "c_fat (-)",
+   "from": null,
+   "to": -0.674,
+   "decision": "d111",
+   "source": "Benedetti, Menapace, Fontanari, Santus, FFEMS 44 (2021) 2975-2989, doi:10.1111/ffe.13530, Table 4 p. 10, phi60 bar (the bar of Pedranz 2025): strain-controlled LCF, eps'_f = 0.131, c = -0.674. Only the plastic terms are taken: sigma'_f and b stay the Basquin fit of the workbook's HCF tests (the LCF sigma'_f = 1067 MPa, b = -0.0893 give 311 MPa at 2N = 1e6 against about 145 MPa measured)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "I",
+   "field": "Tensile fatigue limit* (MPa)",
+   "from": 150,
+   "to": 143.8,
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "J",
+   "field": "Torsional fatigue limit* (MPa)",
+   "from": 100,
+   "to": 100.9,
+   "decision": "d111",
+   "source": "Pedranz, Fontanari, Raghavendra, Santus, Torsello, Benedetti, Berto, Int. J. Mech. Sci. 288 (2025) 109961, doi:10.1016/j.ijmecsci.2025.109961, supplementary Appendix B Table 5: plain-specimen strengths at N = 5e6, R = -1 (axial 143.8 MPa from sigma_a = 1344.8/N^0.206 + 88.2; torsion 100.9 MPa from tau_a = 355.9/N^0.0817); the paper evaluates its fatigue limits at 5e6 (Tables 3-4). The supplied 150 / 100 MPa are printed in neither source"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "K",
+   "field": "K",
+   "from": 1.5,
+   "to": 1.425173,
+   "decision": "d111",
+   "source": "K = Sigm1 / Taum1 = 143.8 / 100.9, kept consistent with the limits (not read by the importer)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "O",
+   "field": "epsilon_f (-)",
+   "from": null,
+   "to": 0.131,
+   "decision": "d111",
+   "source": "Benedetti, Menapace, Fontanari, Santus, FFEMS 44 (2021) 2975-2989, doi:10.1111/ffe.13530, Table 4 p. 10, phi60 bar (the bar of Pedranz 2025): strain-controlled LCF, eps'_f = 0.131, c = -0.674. Only the plastic terms are taken: sigma'_f and b stay the Basquin fit of the workbook's HCF tests (the LCF sigma'_f = 1067 MPa, b = -0.0893 give 311 MPa at 2N = 1e6 against about 145 MPa measured)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "P",
+   "field": "c_fat (-)",
+   "from": null,
+   "to": -0.674,
+   "decision": "d111",
+   "source": "Benedetti, Menapace, Fontanari, Santus, FFEMS 44 (2021) 2975-2989, doi:10.1111/ffe.13530, Table 4 p. 10, phi60 bar (the bar of Pedranz 2025): strain-controlled LCF, eps'_f = 0.131, c = -0.674. Only the plastic terms are taken: sigma'_f and b stay the Basquin fit of the workbook's HCF tests (the LCF sigma'_f = 1067 MPa, b = -0.0893 give 311 MPa at 2N = 1e6 against about 145 MPa measured)"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "Q",
+   "field": "gamma_f (-)",
+   "from": null,
+   "to": 0.226899,
+   "decision": "d111",
+   "source": "gamma'_f = sqrt(3) eps'_f and c0 = c from the measured Benedetti 2021 Table 4 terms, the von Mises rule of multifat.eval.material_fits.strain_life_fill; replaces the steel uniform-material-law estimate"
+  },
+  {
+   "op": "set_summary",
+   "row": 4,
+   "column": "R",
+   "field": "c0 (-)",
+   "from": null,
+   "to": -0.674,
+   "decision": "d111",
+   "source": "gamma'_f = sqrt(3) eps'_f and c0 = c from the measured Benedetti 2021 Table 4 terms, the von Mises rule of multifat.eval.material_fits.strain_life_fill; replaces the steel uniform-material-law estimate"
+  }
+ ]
+}

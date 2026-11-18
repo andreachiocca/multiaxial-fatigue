@@ -1,23 +1,24 @@
-# multifat/models/cp_methods/liu_vse.py
-"""Virtual strain energy (VSE) parameters after Liu (1993), ASTM STP 1191:67-84, doi:10.1520/STP24796S
-(roadmap G15), Eqs. (7)-(11).
+"""VSE: Liu (1993) virtual strain energy critical-plane parameters (roadmap G15).
 
-For a given plane, the Mohr stress ranges (Delta sigma_n, Delta tau) combined with the strain ranges
-(Delta eps_n, Delta gamma/2) yield Delta W = Delta W_n + Delta W_s = Delta sigma_n Delta eps_n
-+ Delta tau . Delta(gamma/2), i.e. the dot product 2(OA).2(O'A') shown in Fig. 4.
-  Mode I (Eq. 8): the plane chosen is the one making the tensile contribution Delta W_n largest, and the
-      damage there is Delta W_n + Delta W_s;
-  Mode II (Eq. 9): the plane chosen is the one making the shear contribution Delta W_s largest (Type A),
-      with damage Delta W_n + Delta W_s.
-Taking the maximum of the total over all planes gives the ``_ext`` variant, which is Eq. (7) read
-literally; Eq. (8) instead follows the paper's decomposition, and the two do not coincide in general.
-A single registered model, VSE, uses mode I unless the parameter ``vse_mode = 2`` selects mode II.
-Under uniaxial loading Delta W reduces to Delta sigma Delta eps (Eq. 11), while in torsion the two modes
-coincide (p.73). The paper offers no criterion for picking the mode (it depends on material and
-temperature) and instead fits the life curve, Eq. (6), to the data. Ranges here are endpoint differences
-of the repository cycle, applying the longest-chord rule to harmonic shear (Liu's out-of-phase rules,
-pp.80-81, are stated verbally only: this is a documented adaptation). Since the workbook strains are
-elastic, the plastic term of Eq. (6) does not appear.
+K. C. Liu, ASTM STP 1191 (1993) 67-84, doi:10.1520/STP24796S, Eqs. (7)-(11)::
+
+    dW = dW_n + dW_s = dsigma_n de_n + dtau d(gamma/2)                       (7)
+    mode I  (Eq. 8): dW on the plane maximising dW_n
+    mode II (Eq. 9): dW on the plane maximising dW_s
+
+Under uniaxial loading dW = dsigma de (Eq. 11); in torsion the two modes coincide (p.73). The paper
+gives no rule to choose the mode (it depends on material and temperature) and fits the life
+curve, Eq. (6), to the data. ``VSE_ext`` is Eq. (7) maximised over all planes, which in general
+differs from Eq. (8).
+
+Repository choices:
+  - one registered model, mode I unless the parameter ``vse_mode = 2`` selects mode II;
+  - ranges are endpoint differences of the repository cycle; out-of-phase shear uses the
+    longest-chord rule (Liu's out-of-phase rules, pp.80-81, are verbal only);
+  - workbook strains are elastic, so the plastic term of Eq. (6) is absent; life from the shared
+    master curve DP = A N^b instead of Eq. (6).
+
+User guide: docs/method-guides/VSE.md.
 """
 
 from __future__ import annotations

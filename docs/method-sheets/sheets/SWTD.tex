@@ -1,0 +1,89 @@
+% registry: SWTD
+\methodhead{SWTD}{Kujawski (2014): deviatoric version of the SWT parameter}\label{sheet:SWTD}
+
+\block{Source} D.~Kujawski, \emph{Int.\ J.\ Fatigue} 67 (2014) 95--102 \cite{kujawski2014},
+Eqs.~(23)--(25), p.~7; Tables~2 and~3.
+
+\block{Idea and scope} The normal stress and strain of the SWT parameter are replaced by deviatoric
+stresses and principal deviatoric strain amplitudes, so that an energy-type parameter remains
+active under compressive mean stresses, where $\sigma_{n,\max}$ of SWT drops to zero. Proposed for
+uniaxial (including compression--compression) and torsional cycles; the paper gives no procedure
+for non-proportional loading.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\Tsig_{\max}$, $\Tsig_{\min}$ & MPa & stress tensors at the two loading extrema (load steps 0 and 1)\\
+$\Teps_{\max}$, $\Teps_{\min}$ & -- & strain tensors at the same extrema\\
+$\mathbf S_{\max}$, $\mathbf S_{\min}$ & MPa & deviatoric stress tensors, $\dev\Tsig_{\max}$, $\dev\Tsig_{\min}$\\
+$\mathbf e_a$ & -- & deviatoric strain amplitude tensor, $\tfrac12\dev(\Teps_{\max}-\Teps_{\min})$\\
+$e_{a,i}$, $\mathbf v_i$ & --, -- & principal values and principal directions of $\mathbf e_a$, $i=1,2,3$\\
+$S_{\max,i}$, $S_{\min,i}$ & MPa & normal components of $\mathbf S_{\max}$, $\mathbf S_{\min}$ along $\mathbf v_i$\\
+$\psi$ & rad & phase of a diametral chord of the single-harmonic path\\
+$\mathbf A(\psi)$ & MPa & half-chord tensor $\Ss\cos\psi-\Sc\sin\psi$ (likewise for strain)\\
+$\nu$, $\nu_\text{eff}$ & -- & Poisson's ratio and the paper's effective Poisson's ratio (Table~2)\\
+$\Delta\sigma_\text{eq}$, $\Delta\varepsilon_\text{eq}$ & MPa, -- & equivalent stress and strain ranges in $\nu_\text{eff}$\\
+$E$ & MPa & Young's modulus\\
+$\tau_a$, $\gamma_a$ & MPa, -- & torsional stress and engineering shear strain amplitudes (Table~3)\\
+$\mathrm{SWTD}$ & MPa & damage parameter (MJ/m$^3$)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Kujawski (Eq.~25):
+\begin{equation}
+\mathrm{SWTD} = \max_{i\in\{1,2,3\}}\ \max\bigl(S_{\max,i}\,\lvert e_{a,i}\rvert,\ S_{\min,i}\,\lvert e_{a,i}\rvert\bigr) ,
+\label{eq:swtd-main}
+\end{equation}
+with $S_{\max,i}$, $S_{\min,i}$ and $e_{a,i}$ taken along the same principal axes, as Eqs.~(23)--(24)
+are written in one frame. The repository diagonalises $\mathbf e_a$ once and resolves the deviatoric
+stresses on its principal directions,
+\begin{equation}
+S_{\max,i} = \mathbf v_i^{\mathsf T}\mathbf S_{\max}\mathbf v_i ,\qquad
+S_{\min,i} = \mathbf v_i^{\mathsf T}\mathbf S_{\min}\mathbf v_i ,
+\label{eq:swtd-frame}
+\end{equation}
+and negative products count as zero. The effective Poisson's ratio used by the paper for its
+Table~2 is $\nu_\text{eff}=0.5-(0.5-\nu)\,\Delta\sigma_\text{eq}/(E\,\Delta\varepsilon_\text{eq})$
+(p.~6). In fully reversed torsion Eq.~\eqref{eq:swtd-main} gives $\tau_a\gamma_a/2$.
+
+This is not a critical-plane method: no plane search, tie rule or \texttt{np\_shear\_rule}
+applies, and the global shear-amplitude selection does not change it. Non-proportional histories
+are handled by the chord rule in Repository choices.
+
+\block{Constants and calibration} None in the paper or in the repository. Only the master-curve
+constants are fitted.
+
+\block{Life} The repository uses the master curve on SWTD, Eq.~\eqref{eq:mastercurve}, fitted on
+the uniaxial $R=-1$ design set. The guide records no life law of the paper.
+
+\block{Repository choices}
+\begin{itemize}
+\item Shared eigenframe: $\mathbf S_{\max}$ and $\mathbf S_{\min}$ are projected on the principal
+  axes of $\mathbf e_a$, Eq.~\eqref{eq:swtd-frame}, as Eqs.~(23)--(24) require. Sorting the
+  three spectra independently (the archived code) doubles the compressive transverse terms of
+  Table~2.
+\item Non-proportional single harmonics (no procedure in the paper): the states
+  $\Sm\pm\mathbf A(\psi)$ (and likewise for strain) are evaluated for 360 phases
+  $\psi\in[0,\pi)$ and the largest Eq.~\eqref{eq:swtd-main} is kept. For proportional or in-phase
+  cycles this equals the two-step value.
+\item Pure torsion: Eq.~\eqref{eq:swtd-main} gives $\tau_a\gamma_a/2$, whereas the paper's Table~3
+  (path~A) prints $\tau_a\gamma_a/\sqrt3$; the published equation is kept, without a $2/\sqrt3$
+  rescaling.
+\item Elastic workbook strains (with $\nu$, not $\nu_\text{eff}$), unless total strains are imported.
+\end{itemize}
+
+\block{Worked example} Al~2024-T351, $E=71\,700\MPa$, $\nu=0.3$, elastic strains, stresses
+$\sigma_{xx}$, $\tau_{xy}$. Two-step cycle from $(300,120)$ to $(-100,-120)\MPa$:
+$\mathrm{SWTD}=0.8186\MPa$. Single harmonic $\sigma_{xx}=250\sin\omega t$,
+$\tau_{xy}=150\cos\omega t$ ($90^\circ$ out of phase): $\mathrm{SWTD}=0.5110\MPa$.
+
+\block{Verification} \texttt{tests/methods/test\_swtd.py}: Table~2 (uniaxial
+compression--compression, Eq.~\eqref{eq:swtd-main} with $\nu_\text{eff}$, $E=71.7$\,GPa) matches 10
+of 11 rows within 0.7\%; row 11 is a strict \texttt{xfail} (printed 0.335, Eq.~(25) gives 0.324,
+misprint). Table~3 path~A: $\tfrac{2}{\sqrt3}\,\mathrm{SWTD}$ matches 9 of 10 rows; row 10 is a
+strict \texttt{xfail} (printed 0.58, $\tau_a\gamma_a/\sqrt3=0.61$, row inconsistent). Rotation and
+phase-origin invariance hold. Paths B, C and D of Table~3 are not acceptance targets: B matches only
+independently sorted eigenvalues (which contradicts Table~2), C and D match no single reading.

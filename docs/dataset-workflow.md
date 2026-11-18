@@ -12,7 +12,7 @@ uv run python tools/audit_dataset_migration.py --old-dir Experimental_Data/archi
 
 ## Provenance and import
 
-Header rules live in `multifat.imp.schema` (see [workbook format](workbook-format.md)). An ordering prefix such as `6_` is stripped from the file name, which yields the material ID `42CrMo4_QT`; two files carrying the same ID are rejected, and `--material 42CrMo4_QT` locates `6_42CrMo4_QT.xlsx`. Alloy, treatment and legacy axial/bending suffixes are left unmerged. Workbooks are user inputs. Their Summary sheet stores the material properties, while the Dataset sheet stores the observations. A source-row material name different from the file ID is reported as an identity issue, but does not change the Summary values or rewrite the workbook.
+Header rules live in `multifat.imp.schema` (see [workbook format](workbook-format.md)). An ordering prefix such as `6_` is stripped from the file name, which yields the material ID `42CrMo4_Santus`; two files carrying the same ID are rejected, and `--material 42CrMo4_Santus` locates `6_42CrMo4_Santus.xlsx`. Alloy, treatment and legacy axial/bending suffixes are left unmerged. Workbooks are user inputs. Their Summary sheet stores the material properties, while the Dataset sheet stores the observations. A source-row material name different from the file ID is reported as an identity issue, but does not change the Summary values or rewrite the workbook.
 
 Summary properties other than the R = -1 fatigue limits are taken from the named Average cell when that cell exists; otherwise they come from the row labelled Average. In a revised Summary with a `Stress ratio R` column, the maintainer-approved policy (28 October 2026, Issue #22) uses an equal-weight arithmetic mean of the eligible positive, finite R = -1 source values for each parameter, `Sigm1` and `Taum1`. Values at other stress ratios are never included in those means. Tensile and torsional values are selected separately; source-row names are retained for review, not used to discard values from the supplied workbook. Each selected value retains the contributing Excel rows, references, authors, stress ratios and reference cycle counts in `fatigue_limit_sources`. A property with source values but no usable R = -1 value is unavailable and reported. Legacy workbooks retain the Average-row rule. Properties that are absent remain absent. Strains are undefined without E or nu; stress observations are imported regardless, and only the models that require strains get skipped (`multifat.models.registry.stress_only_models()` finds the others by evaluation).
 
@@ -33,7 +33,7 @@ Legacy workbooks keep their own conventions: a `Null` stress denotes an inactive
 | Material | Constraint |
 |---|---|
 | CX18 | The Summary names 30NCD16 and holds its limits, yet rows 2-3 agree with FatLim's XC18; 3 of its 5 rows also occur in 30NCD16. The importer reads the stored 710 and 450 MPa limits and reports the identity conflict. Their scientific applicability to CX18 needs review. |
-| Ti6Al4V | One Summary source names Ti64Al4V (Delahay). Both source rows have R = -1, so the workbook supplies their mean limits of 576 and 416.75 MPa. The source identity and batch compatibility still need review. |
+| Ti6Al4V | One Summary source names Ti64Al4V (Delahay). Both source rows have R = -1, so the workbook supplies their mean limits of 576 and 416.75 MPa. Resolved by overlay: only the Meneghetti values are kept (d108) and the 4 Delahay rows are removed (d109). |
 | AISI316L | The Average row mixes Janssens' R = -1 amplitude with Braun's R = 0 stress range. The final author-supplied Summary reports 278.5 and 144 MPa at R = -1; the experimental observations and phase shifts are corrected in this final source. The axial limit and the distinct Braun batch require scientific review before using the resulting comparisons. |
 | En3B, GJS600 | Every observation is notched, outside the plain-specimen scope. |
 | Fatigue-limit sets | CX18, 30NCD16, 25CrMo4, 982FA, 34Cr4, GGG60 and S65A contain limit states only. In five sets their pure R = -1 rows contradict the Summary limits (see PROVENANCE.md), so their fatigue index errors await the source check. |
@@ -51,15 +51,43 @@ When several workbooks are supplied (or `--all` is used), `Comparison/eligibilit
 | fatigue_index | the model ran on a fatigue-limit dataset (fatigue index error; no failures counted) |
 | calibration_required | `--no-calibrate` was set, and only constants the pipeline can calibrate are missing |
 | insufficient_inputs | a property or constant that the pipeline cannot supply is missing |
-| out_of_scope | the workbook contains notched specimens only |
+| out_of_scope | the workbook contains notched specimens only, or its loading lies outside the declared scope of the criterion (e.g. GOLOS: in-phase, fully reversed bending–torsion only) |
 | failed | the model raised an error (reported, not hidden) |
 
 Availability is not an accuracy ranking. If two selected workbooks share a material ID, the run stops before anything is written.
 
 ```bash
 uv run multifat-pipeline --all --jobs 8 --results-dir Results/current
-uv run multifat-pipeline --material 42CrMo4_QT --models BP,SWT --no-calibrate
+uv run multifat-pipeline --material 42CrMo4_Santus --models BP,SWT --no-calibrate
 ```
+
+## Workflow classification (issue #18)
+
+The shared importer's block is classified before any assessment
+(`multifat.imp.classification.classify_dataset`), and `multifat-pipeline` writes the result to
+`<MATERIAL>_classification.json` and routes on it:
+
+| `workflow` | Rule | Assessment |
+|---|---|---|
+| `fatigue_life` | >= 2 uniaxial tension R = -1 failures with distinct lives | master curve on the design set; other failures assessed; run-outs censored |
+| `fatigue_limit` | no plain failure, run-outs, both R = -1 limits usable | run-outs judged as limit states by the fatigue index |
+| `ambiguous` | failures without a design set, or run-outs without usable limits | none; the reasons are reported and the workbook is rejected |
+| `out_of_scope` | no plain observation (e.g. notched only) | none |
+
+Every plain observation gets one role (`design`, `assessment`, `censored`, `limit_state`) with its
+observation identity. A run-out is never a failure. The Dataset column `Observation type`
+(decision d113) declares each run-out an interrupted test (`run-out`, censored) or an established
+`fatigue limit` (limit state); a declared type is never overridden. A `fatigue_life` workbook with
+declared fatigue limits is mixed: its failures go through the life assessment and its limit states
+are also judged by the fatigue index, in `FatigueLimit/` with their own run report
+(`FatigueLimit/<MATERIAL>_run_report.tsv`); the workbook's run report and eligibility keep the life
+result. An undeclared run-out (blank cell) follows the rule before d113: in a `fatigue_life`
+workbook it stays a censored life observation and is not taken as an established fatigue limit; in a
+`fatigue_limit` workbook, run-outs stopped below the reference life of the Summary limits are
+listed in `diagnostics` as finite-cycle survivals. The rules reproduce the previous routing for all
+fifteen supplied workbooks. Finding: all 11 run-outs of 25CrMo4 stopped below the 2e6-cycle
+reference of its limits, so its fatigue index errors compare finite-cycle survivals with endurance
+limits (data review, issue #24).
 
 ## Fatigue-limit datasets
 

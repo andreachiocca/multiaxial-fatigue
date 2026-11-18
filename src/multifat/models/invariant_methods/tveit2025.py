@@ -20,15 +20,29 @@ Repository choices:
   - The cycle S(t) = S_mean + S_sin sin(2 pi t) + S_cos cos(2 pi t) is sampled at 1001 points of
     one closed period and repeated as blocks (one block = one cycle). Increments between
     consecutive points are explicit, and the first point of every block is not integrated.
-  - Blocks are repeated until D >= 1 inside a block (the life is then interpolated linearly in the
-    last increment) or until the back-stress and the damage per block are stationary (relative
-    changes below 1e-6 and 1e-5 after at least 8 blocks). The life is then extrapolated with the
-    damage of the last block, N = n + (1 - D) / dD, and the same extrapolation is applied after
-    10000 blocks. A non-positive dD gives an infinite life.
-  - These numerical settings are optional constants with the defaults above: npts_TVEIT (points
-    per cycle), min_blocks_TVEIT, max_blocks_TVEIT, tol_alpha_TVEIT and tol_damage_TVEIT. A
-    constants file may set them. A life extrapolated after max_blocks_TVEIT blocks raises a
-    warning, which the pipeline reports in the notes of the run.
+  - Blocks are repeated until one of these occurs:
+      failure: D >= 1 inside a block. The life is interpolated linearly in the increment that
+        crosses D = 1: block n fails after (n - 1) + (i - 1 + f)/(npts - 1) cycles when the
+        increment from point i - 1 to point i crosses at its fraction f.
+      shakedown: a block (from the second on) without any damage increment. The back-stress
+        moves only together with the damage, so every later block is the same: infinite life.
+      cyclic steady state: from block 400 on, the back-stress shows no net drift over the last
+        200 blocks (distance to its position 200 blocks earlier <= 0.01 times its path length in
+        those blocks; in a steady cycle it moves back and forth, in a shakedown one way only), and
+        the mean damage per block of the last 200 blocks is within 0.1 % of the 200 blocks before.
+        A back-stress that swings in every block can still creep one way, and the peak of beta
+        over the block then sinks until a shakedown. So the steady state is not accepted while the
+        trend of that peak (difference of its means over the two windows) reaches zero before the
+        extrapolated failure and within the remaining blocks; the integration goes on instead.
+        The life is extrapolated, N = n + (1 - D) / mean dD.
+    After 60000 blocks the life is extrapolated in the same way, with a warning. Comparing only
+    two consecutive blocks, as before November 2026, stopped during slow shakedowns and returned
+    lives of 9e7 to 2.4e9 cycles instead of infinity.
+  - These numerical settings are optional constants: npts_TVEIT (points per cycle, 1001),
+    min_blocks_TVEIT (blocks before the steady-state test, 400; at least 2 x 200),
+    max_blocks_TVEIT (60000), tol_alpha_TVEIT (drift tolerance, 0.01) and tol_damage_TVEIT (mean
+    damage tolerance, 1e-3). A constants file may set them. A life extrapolated after
+    max_blocks_TVEIT blocks raises a warning, which the pipeline reports in the notes of the run.
   - With 1001 points per cycle the life is about 0.02 decade shorter than the converged value
     (Table 1 NiCrMo steel, bending at sigma_a = 680 MPa).
   - G uses the deviatoric projection s s - (2/3) J2 I of dJ3/ds. Eq. (10) prints a different
@@ -59,10 +73,12 @@ from ..comparison import ComparisonCapabilities
 from .stress_invariants import harmonic_parts
 
 N_POINTS = 1001  # samples per closed cycle
-MIN_BLOCKS = 8
-MAX_BLOCKS = 10000
-TOL_ALPHA = 1e-6  # relative change of the back-stress between blocks
-TOL_DAMAGE = 1e-5  # relative change of the damage per block
+WINDOW = 200  # blocks per window of the cyclic steady-state test
+MIN_BLOCKS = 2 * WINDOW  # blocks before the steady-state test
+MAX_BLOCKS = 60000
+TOL_ALPHA = 0.01  # net back-stress drift over a window, relative to its movement in the window
+TOL_DAMAGE = 1e-3  # relative change of the mean damage per block between two windows
+_NORM_WEIGHTS = (1.0, 1.0, 1.0, 2.0, 2.0, 2.0)  # tensor norm of the six stored components
 _SQRT3 = math.sqrt(3.0)
 
 # Constants-file names of the numerical settings, the keyword of tveit2025_life and the default.
@@ -138,25 +154,32 @@ def _effective_stress(hxx, hyy, hzz, hxy, hyz, hzx, lam):
 def _block_life(
     comps, f_m1, A, C, K, L, lam, min_blocks, max_blocks, tol_alpha, tol_damage
 ) -> TveitLife:
-    """Integration of Eqs. (6)-(12) over repeated blocks of the sampled cycle."""
+    """Integration of Eqs. (6)-(12) over repeated blocks of the sampled cycle.
+
+    The integration ends at failure (D >= 1 within a block), at shakedown (a block without any
+    damage increment: the back-stress no longer moves, so every later block is the same) or in a
+    cyclic steady state (the back-stress returns to where it was a window earlier, the mean
+    damage per block no longer changes, and the peak of beta is not heading for zero within reach);
+    otherwise after max_blocks blocks.
+    """
     n = comps[0].size
     I1 = (comps[0] + comps[1] + comps[2]).tolist()
     tr3 = np.asarray(I1) / 3.0
     dev = [(comps[k] - tr3).tolist() for k in range(3)] + [comps[k].tolist() for k in range(3, 6)]
     s_xx, s_yy, s_zz, s_xy, s_yz, s_zx = dev
+    w = _NORM_WEIGHTS
 
     alpha = [0.0] * 6
     D = 0.0
-    previous_alpha = None
     block_damage: list[float] = []
-    alpha_change: list[float] = []
-    stable_block = math.nan
-    fail_block = math.nan
-    fail_fraction = math.nan
+    block_movement: list[float] = []  # path length of the back-stress within each block
+    block_beta: list[float] = []  # peak of beta over the integrated points of each block
+    alpha_end = [list(alpha)]  # back-stress at the end of each block (index 0: the start)
     block = 0
     for block in range(1, max_blocks + 1):
         D_start = D
-        failed = False
+        movement = 0.0
+        beta_peak = -math.inf
         for i in range(n):
             hxx = s_xx[i] - alpha[0]
             hyy = s_yy[i] - alpha[1]
@@ -169,6 +192,8 @@ def _block_life(
             )
             beta = (sigma_e + A * I1[i] - f_m1) / f_m1
             D_previous = D
+            if i > 0 and beta > beta_peak:
+                beta_peak = beta
             if i > 0 and beta >= 0 and sigma_e > 1e-14:
                 dI1 = I1[i] - I1[i - 1]
                 dxx = s_xx[i] - s_xx[i - 1]
@@ -190,48 +215,50 @@ def _block_life(
                         alpha[3] += step * hxy
                         alpha[4] += step * hyz
                         alpha[5] += step * hzx
+                        movement += step * math.sqrt(
+                            w[0] * hxx * hxx
+                            + w[1] * hyy * hyy
+                            + w[2] * hzz * hzz
+                            + w[3] * hxy * hxy
+                            + w[4] * hyz * hyz
+                            + w[5] * hzx * hzx
+                        )
                         D = D + d_beta * K * math.exp(L * beta)
             if D_previous < 1 and D >= 1:
-                failed = True
+                # The increment from point i - 1 to point i crosses D = 1, at the fraction `part`
+                # of it; i - 1 increments of the n - 1 in the cycle precede it.
                 part = (1 - D_previous) / (D - D_previous) if D > D_previous else 1.0
-                fail_fraction = 0.0 if i == 0 else (i + part) / (n - 1)
-                break
-        block_damage.append(D - D_start)
-        if previous_alpha is not None:
-            weights = (1.0, 1.0, 1.0, 2.0, 2.0, 2.0)
-            change = math.sqrt(
-                sum((alpha[k] - previous_alpha[k]) ** 2 * weights[k] for k in range(6))
+                return TveitLife((block - 1) + (i - 1 + part) / (n - 1), "explicit_failure", block)
+        damage = D - D_start
+        block_damage.append(damage)
+        block_movement.append(movement)
+        block_beta.append(beta_peak)
+        alpha_end.append(list(alpha))
+        if block >= 2 and damage <= 0.0:
+            return TveitLife(math.inf, "shakedown", block)
+        if block >= max(min_blocks, 2 * WINDOW):
+            drift = math.sqrt(
+                sum(w[k] * (alpha_end[-1][k] - alpha_end[-1 - WINDOW][k]) ** 2 for k in range(6))
             )
-            size = max(math.sqrt(sum(alpha[k] ** 2 * weights[k] for k in range(6))), 1e-12)
-            alpha_change.append(change / size)
-        else:
-            alpha_change.append(math.nan)
-        previous_alpha = list(alpha)
-        if failed:
-            fail_block = block
-            break
-        if block >= max(2, min_blocks):
-            damage_change = abs(block_damage[-1] - block_damage[-2]) / max(
-                abs(block_damage[-1]), 1e-14
-            )
-            if (
-                not math.isnan(alpha_change[-1])
-                and alpha_change[-1] < tol_alpha
-                and damage_change < tol_damage
-            ):
-                stable_block = block
-                break
-    if not math.isnan(fail_block):
-        return TveitLife((fail_block - 1) + fail_fraction, "explicit_failure", block)
-    if math.isnan(stable_block):
-        stable_block = block
-        termination = "max_block_extrapolation"
-    else:
-        termination = "stabilized_extrapolation"
-    damage_per_block = block_damage[int(stable_block) - 1]
-    if damage_per_block <= 0:
-        return TveitLife(math.inf, termination, block)
-    return TveitLife(stable_block + max(0.0, (1 - D) / damage_per_block), termination, block)
+            moved = sum(block_movement[-WINDOW:])
+            last = sum(block_damage[-WINDOW:]) / WINDOW
+            before = sum(block_damage[-2 * WINDOW : -WINDOW]) / WINDOW
+            if drift <= tol_alpha * moved and abs(last - before) <= tol_damage * last:
+                # A back-stress that swings in every block can still creep one way and end in a
+                # shakedown. Keep integrating when the trend of the peak of beta reaches zero before
+                # the extrapolated failure and within the remaining blocks.
+                slope = (sum(block_beta[-WINDOW:]) - sum(block_beta[-2 * WINDOW : -WINDOW])) / (
+                    WINDOW * WINDOW
+                )
+                remaining = (1 - D) / last
+                if not (
+                    slope < 0.0 and block_beta[-1] / -slope < min(remaining, max_blocks - block)
+                ):
+                    return TveitLife(block + remaining, "cyclic_steady_state", block)
+    last = sum(block_damage[-WINDOW:]) / min(WINDOW, len(block_damage))
+    if last <= 0.0:
+        return TveitLife(math.inf, "max_block_extrapolation", block)
+    return TveitLife(block + max(0.0, (1 - D) / last), "max_block_extrapolation", block)
 
 
 def _check_constants(f_m1, t_m1, C, K):
@@ -269,7 +296,7 @@ def tveit2025_life(
     _check_constants(f_m1, t_m1, C, K)
     n_points = _whole_number(n_points, "n_points", 3)
     min_blocks = _whole_number(min_blocks, "min_blocks", 2)
-    max_blocks = _whole_number(max_blocks, "max_blocks", min_blocks)
+    max_blocks = _whole_number(max_blocks, "max_blocks", 2)
     if not (tol_alpha > 0.0 and tol_damage > 0.0):
         raise ValueError(
             f"TVEIT2025 needs tol_alpha > 0 and tol_damage > 0, got {tol_alpha} and {tol_damage}"

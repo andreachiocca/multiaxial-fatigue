@@ -1,0 +1,9 @@
+Design,Target,Path,n,q,q_se
+Ti6Al4V_Meneghetti,Ti6Al4V_Meneghetti,A,6,1.8346e-15,0.0074318
+Ti6Al4V_Meneghetti,Ti6Al4V_Meneghetti,T,4,-0.034256,0.030644
+Ti6Al4V_Meneghetti,Ti6Al4V_Berto,A,9,0.14796,0.051191
+Ti6Al4V_Meneghetti,Ti6Al4V_Berto,T,8,-0.16785,0.022927
+Ti6Al4V_Berto,Ti6Al4V_Meneghetti,A,6,-0.22674,0.016581
+Ti6Al4V_Berto,Ti6Al4V_Meneghetti,T,4,-0.20197,0.020724
+Ti6Al4V_Berto,Ti6Al4V_Berto,A,9,6.005e-15,0.0073281
+Ti6Al4V_Berto,Ti6Al4V_Berto,T,8,-0.3494,0.04339

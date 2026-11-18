@@ -1,0 +1,82 @@
+% registry: MATAKE
+\methodhead{MATAKE}{Matake (1977): fatigue limit on the plane of maximum shear stress amplitude}\label{sheet:MATAKE}
+
+\block{Source} T.~Matake, \emph{Bull.\ JSME} 20 (1977) 257--263 \cite{matake1977}, Eq.~(1), p.~5;
+Appendix, p.~7; Table~3. Restated with the circumscribed-circle amplitude by Papadopoulos et al.\
+\cite{papadopoulos1997}, Table~1.
+
+\block{Idea and scope} Like Findley, a shear amplitude plus a normal stress on a plane, but the
+critical plane is the plane of maximum shear stress amplitude, and the normal-stress coefficient
+follows directly from the two fatigue limits. Proposed for the fatigue limit of metals under
+combined stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\tau_a$ & MPa & shear stress amplitude on the plane\\
+$\sigma_{n,\max}$ & MPa & maximum normal stress on the plane over the cycle, $\sigma_{n,m}+\sigma_{n,a}$\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane\\
+$\Delta\tau$ & MPa & shear stress range on the plane, $\tau_a=\Delta\tau/2$\\
+$a\ge b$ & MPa & semi-axes of the elliptical shear path of an out-of-phase cycle\\
+$\fm$, $\tm$ & MPa & fully reversed bending (or axial) and torsion fatigue limits\\
+$\mu$ & -- & normal stress coefficient, Eq.~\eqref{eq:mtk-mu}\\
+$\mathrm{DP}$ & MPa & damage parameter, Eq.~\eqref{eq:mtk-dp}; $\mathrm{DP}=\tm$ on the limit\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the plane of maximum shear stress amplitude (Eq.~1, p.~5),
+\begin{equation}
+\tau_a + \mu\,\sigma_{n,\max} = \tm ,\qquad \mu = \frac{2\tm}{\fm} - 1 .
+\label{eq:mtk-mu}
+\end{equation}
+The coefficient (Appendix, p.~7) is the slope of the line through $(0,\tm)$ (torsion) and
+$(\fm/2,\fm/2)$ (tension, $45^\circ$ plane). The Appendix prints two different, inconsistent
+expressions for it; both are misprints of $2\tm/\fm-1$. The repository evaluates on every candidate
+plane
+\begin{equation}
+\mathrm{DP} = \tau_a + \mu\,\sigma_{n,\max},\qquad \sigma_{n,\max}=\max(\sigma_{n,m}+\sigma_{n,a},\,0),
+\label{eq:mtk-dp}
+\end{equation}
+with $\mathrm{DP}=\tm$ at both fully reversed limits. \emph{Critical plane}: \texttt{MATAKE} takes
+the plane of largest $\tau_a$ (selection metric $\Delta\tau$), Matake's rule; \texttt{MATAKE\_ext}
+takes the largest DP over all planes. \emph{Ties} (e.g.\ the cone of $45^\circ$ planes in tension) go
+to the larger DP. \emph{Shear amplitude}: default half the longest chord, $\tau_a=a$ (MCC, the circumscribed circle
+of Papadopoulos et al.); the global selection of \texttt{docs/shear-amplitude.md} can switch it to
+\texttt{rss}, $\tau_a=\sqrt{a^2+b^2}$ (MCE).
+
+\block{Constants and calibration} Paper and repository: $\mu$ in closed form from the two limits
+(workbook \texttt{Sigm1}, \texttt{Taum1}). Nothing is fitted except the master-curve constants on the
+uniaxial $R=-1$ design tests. $\mu<0$ when $\tm/\fm<1/2$.
+
+\block{Life} The paper gives none; finite lives use the master curve on DP
+(Section~\ref{sec:mastercurve}), a repository extension. On fatigue-limit datasets
+$\mathrm{DP}/\tm-1$ is Matake's error index.
+
+\block{Repository choices}
+\begin{itemize}
+\item Compression clipped: $\sigma_{n,\max}<0$ is set to 0; Matake's linear relation is not claimed for
+  compressive normal stresses.
+\item Out-of-phase shear amplitude: the circumscribed-circle amplitude (\texttt{longest\_chord},
+  maintainer decision, 17 November 2026; \texttt{rss} before). Papadopoulos et al.\ restate Matake
+  with it, and their Table~1 column is
+  reproduced.
+\item \texttt{MATAKE\_ext} (largest DP over all planes) is a repository variant.
+\item Life from the shared master curve on DP.
+\end{itemize}
+
+\block{Worked example} Synthetic material, $\fm=300$, $\tm=200\MPa$, so $\mu=0.3333$: DP at both
+limits equals $\tm=200.0\MPa$. Tension $\sigma_a=200$ with mean $\sigma_m=100\MPa$: on the $45^\circ$
+planes $\tau_a=\sigma_a/2$ and $\sigma_{n,\max}=(\sigma_m+\sigma_a)/2$, so $\mathrm{DP}=150.00\MPa$,
+fatigue index 0.750.
+
+\block{Verification} Matake (1977) Table~3: shear amplitude and normal stress on the maximum-shear
+plane reproduced; the coefficient derivation is checked, with the Appendix misprints documented, and
+the printed steel row at $22.5^\circ$ is shown to contradict the loading ratio of the grip. Eq.~(1)
+passes through both calibration points; the combined-stress limits lie within $\pm10\%$ of Eq.~(1)
+(validation, not verification). Papadopoulos et al.\ (1997) Table~1, with the circumscribed-circle
+amplitude: 39 of 42 rows within 0.25 points. Strict xfails: row~9 (the closed form gives $+1.7\%$,
+the table prints $-1.4\%$: table calculation error) and rows~17 and~28 (mean torsion with phase
+shift, unresolved). Out of phase the \texttt{rss} rule differs from the table (rows 7, 21); the default matches.

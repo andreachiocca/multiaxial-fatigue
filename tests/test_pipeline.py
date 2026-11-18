@@ -261,9 +261,27 @@ def test_constants_from_our_sidecar(tmp_path):
         ),
         encoding="utf-8",
     )
+    # A sidecar without the provenance needed to judge it is rejected (issue #15) ...
+    with pytest.raises(ValueError, match="insufficiently documented"):
+        run_workbook(wb, models=["FIN"], results_dir=tmp_path / "res", constants=side)
+    # ... a documented one is reused
+    from multifat.imp.experimental_data import load_material_workbook
+    from multifat.models.references import IMPLEMENTATION_REVISION
+    from multifat.report.subsets import dataset_fingerprint
+
+    (block,) = load_material_workbook(wb).values()
+    record = json.loads(side.read_text(encoding="utf-8"))
+    record["provenance"].update(
+        implementation_revision=IMPLEMENTATION_REVISION,
+        failure_fingerprint=dataset_fingerprint(block),
+    )
+    side.write_text(json.dumps(record), encoding="utf-8")
     run_workbook(wb, models=["FIN"], results_dir=tmp_path / "res", constants=side)
     out = json.loads((tmp_path / "res" / "Side_calibration.json").read_text(encoding="utf-8"))
     assert out["params"]["k_FI"] == 0.35
+    # same failures, but a record older than the procedure field is flagged, not rejected
+    assert "calibration procedure 1" in out["constants_source"]["warning"]
+    assert "other failure data" not in out["constants_source"]["warning"]
 
 
 def test_record_for_other_material_rejected(tmp_path):
@@ -375,6 +393,28 @@ def test_record_for_other_dataset_is_flagged(tmp_path):
     assert "input_fingerprint" not in side["provenance"]
 
 
+def test_upstream_record_with_old_revision_is_flagged(tmp_path):
+    """An upstream Calibrations/ record from an earlier revision is flagged in constants_source."""
+    wb = _no_plane_constants(tmp_path / "Rev.xlsx")
+    rec = tmp_path / "old_upstream.json"
+    rec.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "status": "success",
+                "calibration_id": "c_old",
+                "material_id": "Rev",
+                "implementation_revision": "2026-10-07-audit1",
+                "parameters": {"k_FI": 0.4},
+            }
+        ),
+        encoding="utf-8",
+    )
+    run_workbook(wb, models=["FIN"], results_dir=tmp_path / "res", constants=rec)
+    side = json.loads((tmp_path / "res" / "Rev_calibration.json").read_text(encoding="utf-8"))
+    assert "2026-10-07-audit1" in side["constants_source"]["warning"]
+
+
 def test_constants_needs_exactly_one_workbook(tmp_path):
     """Minor: --constants with several workbooks is a usage error, not a traceback."""
     from multifat.cli.pipeline import main
@@ -447,3 +487,68 @@ def test_run_report_notes_flat_curve_and_bound_constant():
     assert "no life predictions" in notes and "k = -1/b = 25" in notes
     assert "L_LI at the search bound" in notes
     assert _life_notes(model, steep, "", set(), bound) == ""
+
+
+def test_loading_outside_a_criterion_scope_is_skipped_not_failed(tmp_path):
+    """GOLOS is defined for in-phase, fully reversed bending-torsion: 90 deg rows put it out of scope."""
+    out = tmp_path / "res"
+    wb = write_workbook(tmp_path / "Synth.xlsx")
+    (outcome,) = run_workbook(wb, models=["GOLOS"], results_dir=out)
+    assert outcome.status == "skipped" and outcome.mode == "out_of_scope"
+    assert "in-phase" in _report(out / "Synth_run_report.tsv")["GOLOS"]["reason"]
+    in_phase = [r for r in basquin_rows() if r[4] == 0]
+    wb = write_workbook(tmp_path / "InPhase.xlsx", rows=in_phase)
+    (outcome,) = run_workbook(wb, models=["GOLOS"], results_dir=out)
+    assert outcome.status == "ok"
+
+
+def test_torsion_design_set_for_models_calibrated_on_torsion(tmp_path):
+    """MWHS fits its master curve on the pure torsion R = -1 failures (Wu et al. 2017, Eq. 19)."""
+    import pandas as pd
+
+    from multifat.imp.experimental_data import extract_pure_torsion, load_material_workbook
+
+    wb = write_workbook(tmp_path / "Synth.xlsx")
+    (block,) = load_material_workbook(wb).values()
+    torsion = extract_pure_torsion({"Synth": block})["Synth"]["points"]
+    assert len(torsion) == 5  # the five torsion rows of basquin_rows()
+    out = tmp_path / "res"
+    (mwhs, fin) = run_workbook(wb, models=["MWHS", "FIN"], results_dir=out)
+    assert mwhs.status == "ok" and fin.status == "ok"
+    rows = pd.read_csv(out / "MWHS_Synth.csv")
+    design = rows[rows.Flag == 0]
+    assert len(design) == len(torsion) and set(design.Loading_type) == {"Torsion"}
+    assert (rows.query("Loading_type == 'Tensile' and Test_status == 'failure'").Flag == 1).all()
+    fin_design = pd.read_csv(out / "FIN_Synth.csv").query("Flag == 0")
+    assert set(fin_design.Loading_type) == {"Tensile"}  # FIN keeps the tension design set
+    assert not set(fin_design.Case_id) & set(design.Case_id)
+
+
+def test_missing_torsion_design_set_is_a_skip(tmp_path):
+    no_torsion = [r for r in basquin_rows() if not (r[8] == 0 and r[10] != 0)]
+    wb = write_workbook(tmp_path / "Synth.xlsx", rows=no_torsion)
+    (outcome,) = run_workbook(wb, models=["MWHS"], results_dir=tmp_path / "res")
+    assert outcome.status == "skipped" and "torsion" in outcome.reason
+
+
+def test_fatigue_limit_only_run_finishes_with_the_comparison(tmp_path, capsys):
+    """A run on fatigue-limit datasets only has no lives to compare; it must not crash."""
+    from pathlib import Path
+
+    from multifat.cli.pipeline import main
+
+    data = Path(__file__).resolve().parents[1] / "Experimental_Data"
+    out = tmp_path / "r"
+    with pytest.raises(SystemExit) as e:
+        main([str(data / "2_CX18.xlsx"), "--models", "CROSSLAND", "--results-dir", str(out)])
+    assert e.value.code == 0
+    assert (out / "FatigueLimit" / "CROSSLAND_CX18_FI.csv").is_file()
+    assert "no life results to compare" in capsys.readouterr().out
+
+
+def test_compare_still_rejects_a_folder_without_results(tmp_path):
+    from multifat.cli import compare
+
+    (tmp_path / "r").mkdir()
+    with pytest.raises(FileNotFoundError, match="No CSV files"):
+        compare.main(["--results_dir", str(tmp_path / "r"), "--out_dir", str(tmp_path / "c")])

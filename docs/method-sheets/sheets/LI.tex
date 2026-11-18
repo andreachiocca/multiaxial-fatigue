@@ -1,0 +1,94 @@
+% registry: LI
+\methodhead{LI}{Li, Li, Yang, Li and Wang (2021): improved strain energy density critical plane}\label{sheet:LI}
+
+\block{Source} P.~Li, Y.~Li, Y.~Yang, B.~Li, F.~Wang, \emph{Eur.\ J.\ Mech.\ A Solids} 90 (2021)
+104353 \cite{li2021}, Eq.~(3) (module docstring: Eq.~(3) / Eq.~(25)); Section~2.4, Eqs.~(31)--(32).
+
+\block{Idea and scope} A strain-energy critical-plane parameter: the shear energy term uses the
+shear stress amplitude augmented by the magnitude of the mean shear stress, so a mean shear of
+either sign is damaging; the normal energy term is weighted by a material constant $L$. The critical
+plane is the plane of maximum shear strain-energy density. Proposed for multiaxial high- and
+low-cycle fatigue of metals under proportional and non-proportional loading with mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\n$ & -- & unit normal of a candidate plane (local $z$ axis; shear components $xz$, $yz$)\\
+$\Delta\tau_t/2=\tau_a$ & MPa & shear stress amplitude on the plane\\
+$\tau_m$, $\boldsymbol\tau_m$ & MPa & mean shear stress, and mean shear stress vector $(\tau_{xz,m},\tau_{yz,m})$ on the plane\\
+$\Delta\gamma_{\max}/2=\gamma_a$ & -- & engineering shear strain amplitude on the plane\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane, Eqs.~\eqref{eq:plane}, \eqref{eq:scalar}\\
+$\sigma_{n,\max}$ & MPa & largest normal stress on the plane over the cycle, clipped at zero\\
+$\Delta\varepsilon_n/2=\varepsilon_{n,a}$ & -- & normal strain amplitude on the plane\\
+$L$ & -- & weight of the normal term (\texttt{L\_LI}, Summary column \texttt{L LI})\\
+$f(N_f)$ & MPa & life function of the paper\\
+$\tau_f'$, $\gamma_f'$, $b_0$, $c_0$ & MPa, --, --, -- & torsional strain--life coefficients and exponents (paper's calibration)\\
+$E$, $\nu$ & MPa, -- & Young's modulus and Poisson's ratio (elastic strains, Section~\ref{sec:notation})\\
+$\sigma_a$ & MPa & fully reversed axial stress amplitude (closed forms); in torsion $\tau_a$, $\tau_m$ are the applied shear amplitude and mean\\
+$\mathrm{DP}$ & MPa & damage parameter (MJ/m$^3$)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Li et al.\ (Eq.~3) write
+\begin{equation}
+\Bigl(\frac{\Delta\tau_t}{2}+\lvert\tau_m\rvert\Bigr)\frac{\Delta\gamma_{\max}}{2}
+ + L\,\sigma_{n,\max}\,\frac{\Delta\varepsilon_n}{2} = f(N_f) .
+\label{eq:li-main}
+\end{equation}
+The repository evaluates, on every plane,
+\begin{equation}
+\mathrm{DP} = \bigl(\tau_a + \lVert\boldsymbol\tau_m\rVert\bigr)\,\gamma_a
+ + L\,\sigma_{n,\max}\,\varepsilon_{n,a},\qquad
+\lVert\boldsymbol\tau_m\rVert = \sqrt{\tau_{xz,m}^2+\tau_{yz,m}^2},\qquad
+\sigma_{n,\max} = \max(\sigma_{n,m}+\sigma_{n,a},\,0) .
+\label{eq:li-plane}
+\end{equation}
+\emph{Critical plane}: the plane maximising the shear energy term
+$(\tau_a+\lVert\boldsymbol\tau_m\rVert)\gamma_a$; ties go to the larger total DP (the paper: the
+larger normal energy). \texttt{LI\_ext} is the largest DP over all planes. \emph{Shear amplitude}:
+default \texttt{np\_shear\_rule = "longest\_chord"}, half the longest chord of the shear path on the
+plane, matching the paper's cycle-range definition; the MCE amplitude can be selected globally
+(\texttt{docs/shear-amplitude.md}, ``Selection for every method'').
+
+\block{Constants and calibration} \emph{Paper} (Section~2.4, Eqs.~31--32): fit
+$\tau_f'$, $\gamma_f'$, $b_0$, $c_0$ on fully reversed torsion tests, then scan $L\in[0,10]$ in steps
+of 0.01 to minimise the axial fitting error against the torsional life curve. \emph{Repository}
+(\texttt{multifat-pipeline}), when $L$ is in neither the workbook nor \texttt{--constants}: minimum
+$\ln N_f$ scatter of the $R=-1$ tension and torsion failures around one master curve,
+$L\in[0,20]$; a value at the bound is reported as unidentified. On fatigue-limit datasets $L$ makes
+the axial and torsional limits give equal DP; with elastic strains on the $45^\circ$ tension plane,
+\begin{equation}
+L = \frac{4(1+\nu)}{1-\nu}\Bigl(\frac{\tm^2}{\fm^2}-\frac12\Bigr) .
+\label{eq:li-limit}
+\end{equation}
+The tests behind $L$ are design rows (\texttt{Flag = 0}). In \texttt{multifat-run} without a value,
+$L=1$ with a warning.
+
+\block{Life} The paper uses a torsional life curve $f(N_f)$. The repository uses the master curve on
+DP, Eq.~\eqref{eq:mastercurve}, fitted on the uniaxial $R=-1$ design set.
+
+\block{Repository choices}
+\begin{itemize}
+\item Mean shear: Euclidean norm of the mean shear vector, not the mean of the endpoint norms, so
+  fully reversed loading has $\lVert\boldsymbol\tau_m\rVert=0$.
+\item $\sigma_{n,\max}<0$ is clipped to $0$.
+\item $L$ optional, default 1.0 with a warning; calibrated as above.
+\item Elastic strains; the master curve replaces the paper's torsional life curve.
+\item The exact coefficient form follows the repository code: the audit records that it was not
+  independently reproduced from the full text.
+\end{itemize}
+
+\block{Worked example} Synthetic material, $E=200\,000\MPa$, $\nu=0.3$, $L=1.5$. Tension
+$\sigma_a=300\MPa$: on the $45^\circ$ plane
+$\mathrm{DP}=(1+\nu)\sigma_a^2/(2E)+L(1-\nu)\sigma_a^2/(4E)=0.410625\MPa$; \texttt{LI\_ext} reaches
+the plane normal to the load, $L\sigma_a^2/E=0.675000\MPa$. Torsion $\tau_a=200\MPa$ with mean
+$\tau_m=\pm50\MPa$: $\mathrm{DP}=(\tau_a+\lvert\tau_m\rvert)\,2(1+\nu)\tau_a/E=0.650000\MPa$ for both
+signs.
+
+\block{Verification} \texttt{tests/test\_method\_audit.py} checks the analytical plane expression
+and that reversed loading gives zero mean shear for either sign. The paper's parameter tables and
+data are not reproduced in \texttt{tests/methods/}; the catalogue status remains
+\emph{requires review}.

@@ -1,0 +1,5 @@
+Batch,Path,Series,n,N_min,N_max,b,S_ref,S_lo,S_hi,decades,extrapolated,tau_over_sigma,S_ref_over_Su
+Ti6Al4V_Meneghetti,A,all,6,42965,1.0524e+05,-0.0020719,532.41,521.53,546.81,0.38905,False,0,0.54327
+Ti6Al4V_Meneghetti,T,all,4,68593,4.2164e+05,-0.069154,521.56,511.51,4440.5,0.78866,False,,0.53221
+Ti6Al4V_Berto,A,all,9,11031,8.0842e+05,-0.1106,643.71,635.47,652.84,1.865,False,0,0.65819
+Ti6Al4V_Berto,T,all,8,11669,5.3761e+05,-0.034835,451.27,440.14,463.4,1.6634,False,,0.46142

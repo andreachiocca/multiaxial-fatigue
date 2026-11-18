@@ -1,0 +1,86 @@
+% registry: MDC
+\methodhead{MDC}{Margetin, \v{D}urka and Chmelko (2016): criterion from the torsion and axial S--N curves}\label{sheet:MDC}
+
+\block{Source} M.~Margetin, R.~\v{D}urka, V.~Chmelko, \emph{Frattura ed Integrit\`a Strutturale} 37
+(2016) 146--152 \cite{margetin2016}, Eqs.~(4)--(8), p.~148; Tables~2 and~4, pp.~149--150.
+
+\block{Idea and scope} An equivalent shear stress $\tau_r$ is defined on the plane of maximum shear
+stress amplitude and mapped directly onto the torsional Basquin curve, which gives a native life. A
+stress-level-dependent weighting factor $k$ of the normal stress interpolates between the axial and
+torsional Basquin curves over the whole life range, without a fixed material ratio. Validated in the
+paper on proportional, fully reversed tension--torsion of S355J2+C steel.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\tau_{a,\mathrm{cr}}$ & MPa & shear stress amplitude on the critical plane\\
+$\sigma_{a,\mathrm{cr}}$ & MPa & normal stress amplitude on the critical plane\\
+$\sigma_{\max}$ & MPa & symbol printed in Eqs.~(7)--(8) in place of $\sigma_{a,\mathrm{cr}}$\\
+$\Delta\tau$ & MPa & shear stress range on the plane (selection metric), $\tau_{a,\mathrm{cr}}=\Delta\tau/2$\\
+$a\ge b$ & MPa & semi-axes of the elliptical shear path of an out-of-phase cycle\\
+$\sigma_a$, $\tau_a$ & MPa & applied axial and torsional stress amplitudes\\
+$\sigma_f'$, $b$ & MPa, -- & axial Basquin coefficient and exponent, $b<0$ (workbook \texttt{sigma\_f}, \texttt{b\_fat})\\
+$\tau_f'$, $b_0$ & MPa, -- & torsional Basquin coefficient and exponent, $b_0<0$ (workbook \texttt{tau\_f}, \texttt{b0})\\
+$k$ & -- & stress-level-dependent normal stress weight, Eq.~\eqref{eq:mdc-k}\\
+$\tau_r$ & MPa & equivalent shear stress, Eq.~\eqref{eq:mdc}; the repository DP\\
+$N_f$ & cycles & fatigue life\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the plane of maximum shear stress amplitude (Eqs.~4--8),
+\begin{gather}
+\tau_r = \sqrt{k\,\sigma_{a,\mathrm{cr}}^2 + \tau_{a,\mathrm{cr}}^2} = \tau_f'(2N_f)^{b_0} ,
+\label{eq:mdc}\\
+\sigma_a = \sigma_f'(2N_f)^{b},\qquad \tau_a = \tau_f'(2N_f)^{b_0} , \label{eq:mdc-basquin}\\
+k = \Bigl(\frac{2\tau_f'}{\sigma_f'}\Bigr)^2\Bigl(\frac{2\,\sigma_{a,\mathrm{cr}}}{\sigma_f'}\Bigr)^{\frac{2(b_0-b)}{b}} - 1 .
+\label{eq:mdc-k}
+\end{gather}
+Eqs.~\eqref{eq:mdc-basquin} are the axial and torsional Basquin curves (Eqs.~5--6). Eqs.~(7)--(8) of
+the paper print $\sigma_{\max}$ where Eq.~(4) has $\sigma_{a,\mathrm{cr}}$ (see Repository choices).
+Pure uniaxial $\sigma_a$ gives $\sigma_{a,\mathrm{cr}}=\tau_{a,\mathrm{cr}}=\sigma_a/2$ on the
+$45^\circ$ planes, and $k$ makes Eq.~\eqref{eq:mdc} reproduce $\sigma_a=\sigma_f'(2N_f)^b$ exactly; pure
+torsion ($\sigma_{a,\mathrm{cr}}=0$) gives $\tau_a=\tau_f'(2N_f)^{b_0}$ for any $k$. \emph{Critical
+plane}: \texttt{MDC} takes the plane of largest $\tau_{a,\mathrm{cr}}$ (selection metric
+$\Delta\tau$); \texttt{MDC\_ext} takes the largest $\tau_r$ over all planes. \emph{Ties} in
+$\tau_{a,\mathrm{cr}}$ go to the larger $\tau_r$. \emph{Shear amplitude}: default \texttt{rss},
+$\tau_{a,\mathrm{cr}}=\sqrt{a^2+b^2}$ (MCE); the global selection of \texttt{docs/shear-amplitude.md}
+can switch it to the longest chord (MCC, $\tau_{a,\mathrm{cr}}=a$).
+
+\block{Constants and calibration} Paper: the four Basquin constants from the axial and torsional S--N
+curves (Table~2). Repository: \texttt{sigma\_f}, \texttt{b\_fat}, \texttt{tau\_f}, \texttt{b0} from
+the workbook or \texttt{--constants}; \texttt{multifat-pipeline} fills missing ones by Basquin fits on
+the workbook's $R=-1$ tension and torsion tests (only identifiable curves; their tests become design
+rows). All four are required, otherwise the model is skipped with the reason. Nothing else is fitted. The Uniform Material
+Law fallback would set $b_0=b$ and make $k$ constant, so it is not used.
+
+\block{Life} Native: $N_f=\tfrac12(\tau_r/\tau_f')^{1/b_0}$ from Eq.~\eqref{eq:mdc}, without a fitted
+master curve. The DP comparison uses the model's own law, $\tau_f'(2N_{f,\exp})^{b_0}$, as reference.
+
+\block{Repository choices}
+\begin{itemize}
+\item $\sigma_{\max}$ of Eqs.~(7)--(8) is read as $\sigma_{a,\mathrm{cr}}$, the normal stress amplitude
+  on the critical plane (no mean-stress sensitivity). All test series of the paper are fully reversed;
+  this reading reproduces every $N_{f,\mathrm{com}}$ of Table~4 within 0.3\% in $\tau_r$, while the
+  applied axial stress (or $\tau_{a,\mathrm{cr}}=$ applied $\tau_a$) misses by factors of 2--70.
+  Consequently tests with $R\neq-1$ are not distinguished by their normal mean stress.
+\item A negative radicand ($k<0$ at low normal stress) is clamped to 0.
+\item Ties of the maximum shear amplitude go to the larger $\tau_r$; out-of-phase amplitude
+  \texttt{rss}.
+\item \texttt{MDC\_ext} is a repository variant.
+\end{itemize}
+
+\block{Worked example} S355J2+C, Table~2 constants ($P=50\%$): $\sigma_f'=636\MPa$, $b=-0.0531$,
+$\tau_f'=550\MPa$, $b_0=-0.0736$. In-phase $\sigma_a=220$, $\tau_a=120\MPa$, fully reversed:
+$\tau_r=174.204\MPa$ and $N_f=3\,040\,907$ cycles.
+
+\block{Verification} Pure axial and pure torsion loading return the Basquin curves of Eqs.~(5)--(6)
+to $10^{-12}$, and the plane search returns the input life in reversed tension. Table~4 (14
+proportional, fully reversed tests): every $N_{f,\mathrm{com}}$ within 0.3\% in $\tau_r$ (life ratios
+0.96--1.005 at the slope $1/b_0=-13.6$); the plane-search $\tau_r$ equals the closed form
+$\sigma_{a,\mathrm{cr}}=\sigma_a/2$, $\tau_{a,\mathrm{cr}}=\sqrt{(\sigma_a/2)^2+\tau_a^2}$. Side
+checks: the repository MCD with $t_A=244$, $\sigma_u=680\MPa$ reproduces the McDiarmid column of
+Table~4 within 4\% in life; FIN with $k=0.131$ gives lives about 18\% shorter than the paper's Findley
+column (1.5\% in stress, unresolved). Not verified: any mean-stress or out-of-phase data.

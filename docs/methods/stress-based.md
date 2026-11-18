@@ -16,22 +16,22 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 6 | 1 | 11 | 0 | 18 |
-| Energy based | 6 | 1 | 13 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 5 | 0 | 8 | 0 | 13 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Energy based | 7 | 1 | 12 | 3 | 23 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
 | Specialized | 0 | 0 | 3 | 0 | 3 |
-| Strain based | 3 | 0 | 10 | 2 | 15 |
-| Stress based | 1 | 0 | 12 | 0 | 13 |
+| Strain based | 4 | 0 | 9 | 2 | 15 |
+| Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 29 | 2 | 81 | 5 | 117 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 161 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](../../docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](../../docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](../../docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -45,15 +45,15 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 | ID | Method / scope | Implementation | Validation | Priority | Counted |
 | --- | --- | --- | --- | --- | --- |
-| [N13](../../METHODS.md#n13) | Modified Gough limit curve | Not implemented | not_tested | Medium | Yes |
+| [N13](../../METHODS.md#n13) | Golos–Dębski–Dębski modified Gough limit curve | Fully implemented | basic_numerical_tests | Medium | Yes |
 | [N14](../../METHODS.md#n14) | Gough–Pollard and Nishihara–Kawamoto baselines | Not implemented | not_tested | Medium | bundle |
 | [N23](../../METHODS.md#n23) | Equal-life surface with path correction | Not implemented | not_tested | Medium | Yes |
-| [N24](../../METHODS.md#n24) | Stress Scale Factor (SSF) family | Not implemented | not_tested | Medium | Yes |
+| [N24](../../METHODS.md#n24) | Stress Scale Factor (SSF) equivalent shear stress | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N38](../../METHODS.md#n38) | von Mises equivalent-amplitude baseline | Not implemented | not_tested | Medium | Yes |
 | [N39](../../METHODS.md#n39) | Tresca equivalent-amplitude baseline | Not implemented | not_tested | Low | Yes |
 | [N40](../../METHODS.md#n40) | Maximum principal stress / Rankine baseline | Not implemented | not_tested | Low | Yes |
-| [G04](../../METHODS.md#g04) | Kakuno–Kawada | Not implemented | not_tested | Medium | Yes |
-| [G05](../../METHODS.md#g05) | Manson–McKnight–Papuga (MMP) | Not implemented | not_tested | Medium | Yes |
+| [G04](../../METHODS.md#g04) | Kakuno–Kawada | Fully implemented | basic_numerical_tests | Medium | Yes |
+| [G05](../../METHODS.md#g05) | Manson–McKnight–Papuga (MMP) | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [G07](../../METHODS.md#g07) | Modified Mohr–Mises hypothesis (MMMH) | Fully implemented | basic_numerical_tests | High | Yes |
 | [G09](../../METHODS.md#g09) | Moment-adapted COIN LiWI (MA-COIN LiWI) | Not implemented | not_tested | Medium | Yes |
 | [G13](../../METHODS.md#g13) | Braccesi–Cianetti–Lori–Pioli equivalent uniaxial process | Not implemented | not_tested | Medium | Yes |
@@ -63,36 +63,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N13
 
-**Modified Gough limit curve** — Krzysztof M. Golos, Daniel K. Debski, Marek A. Debski (2014)
+**Golos–Dębski–Dębski modified Gough limit curve** — Krzysztof M. Golos, Daniel K. Debski, Marek A. Debski (2014)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Stress based;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | A stress-based fatigue criterion to assess high-cycle fatigue under in-phase multiaxial loading conditions, Theoretical and Applied Fracture Mechanics |
 | DOI | https://doi.org/10.1016/j.tafmec.2014.07.005 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Fatigue-limit-ratio-dependent in-phase interaction curve; proportional CA, F. |
-| Loading scope | Fatigue-limit-ratio-dependent in-phase interaction curve; proportional CA, F. |
-| Inputs / material parameters | Axial/bending and torsional amplitudes; corresponding f−1/t−1. |
-| Output | Fatigue-limit-ratio-dependent in-phase interaction curve; proportional CA, F. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Cheap baseline for a wider strength-ratio range. |
+| Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Golos, Dębski & Dębski (2014) Eqs. (26)-(32) on the PDF (2026-11-05) |
+| Principle | Corrected Gough ellipse A (sigma/f-1)^2 + B sigma/f-1 + (tau/t-1)^2 = 1 with A, B linear in f-1/t-1 (Eqs. 30-32). |
+| Loading scope | In-phase, fully reversed bending-torsion (any plane stress with principal amplitudes of opposite sign, reduced frame-invariantly); other cases are skipped as out of scope. |
+| Inputs / material parameters | Sigm1 (f-1), Taum1 (t-1). |
+| Output | Limit-curve index (1 on the curve); fitted life via the shared master curve where valid |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_golos.py: A + B = 1, Eq. (30) special cases (kappa = sqrt3, 4/3), Eq. (31) accuracy, frame-invariant reduction, scope rejection; tests/test_pipeline.py: out-of-scope skip. Paper validation is graphical; Table 2 not reproducible. |
+| Python implementation | [src/multifat/models/invariant_methods/golos.py](../../src/multifat/models/invariant_methods/golos.py); Golos |
+| Automated tests | [tests/methods/test_golos.py](../../tests/methods/test_golos.py) |
+| Limitations | In-phase fully reversed bending-torsion only (no mean stress, no phase effect); index not homogeneous in the load; text statement for kappa = 2 inconsistent with Eq. (30). |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Closed-form evaluator and explicit proportional/mean-stress applicability checks. |
+| Missing tasks | Reproduce Table 2 if the experimental point sets of Figs. 2-7 are obtained. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Closed-form evaluator and explicit proportional/mean-stress applicability checks. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
 | Feasibility / effort / priority | A / Low (preliminary; source-specific amplitude/calibration may increase effort) / Medium |
-| Provenance / prior status | N13; Already reviewed, not implemented |
+| Provenance / prior status | N13; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N13+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN13%5D+Modified+Gough+limit+curve) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N13+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN13%5D+Golos%E2%80%93D%C4%99bski%E2%80%93D%C4%99bski+modified+Gough+limit+curve) (no live Issue linked) |
 
 ### N14
 
@@ -162,36 +162,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N24
 
-**Stress Scale Factor (SSF) family** — V. Anes, L. Reis, B. Li, M. Fonte, M. de Freitas (2014)
+**Stress Scale Factor (SSF) equivalent shear stress** — V. Anes, L. Reis, B. Li, M. Fonte, M. de Freitas (2014)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Stress based;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | New approach for analysis of complex multiaxial loading paths, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/j.ijfatigue.2013.05.004 |
-| Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Calibrated stress-scale surface maps combined loading to equivalent shear; axial–torsional CA P/NP, L. |
-| Loading scope | Calibrated stress-scale surface maps combined loading to equivalent shear; axial–torsional CA P/NP, L. |
-| Inputs / material parameters | Component histories; material-specific SSF map and pure-shear S–N curve. |
-| Output | Calibrated stress-scale surface maps combined loading to equivalent shear; axial–torsional CA P/NP, L. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Material/path-dependent scaling. Cannot transfer 42CrMo4 coefficients to other materials; 2017 is a refinement, not another independent family. |
+| Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
+| Formulation evidence | Checked against Anes et al. (2014) Eqs. (29)-(31), Tables 4-10 and Figs. 12-14 on the PDF (2026-11-06) |
+| Principle | tau_eqv = max_t(\|tau\| + ssf(sigma, lambda)\|sigma\|), lambda = arctan(tau/sigma); ssf a material polynomial surface (Eq. 31) regressed on proportional tension-torsion S-N lines; life on the pure-shear S-N curve. |
+| Loading scope | Fully reversed tension-torsion, proportional and non-proportional, CA; the published surface covers the 42CrMo4 of the paper only. |
+| Inputs / material parameters | The eight Eq. (31) coefficients a_SSF..i_SSF (published values for 42CrMo4_Reis in Calibrations/42CrMo4_Reis/SSF_published.json). |
+| Output | Equivalent shear stress (MPa); life via a master curve fitted on pure torsion failures |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_ssf.py: Tables 5-8 from the Table 4 trend lines (two misprinted cells as strict xfails); Eq. (31) vs Table 9 within 0.06; Fig. 13 ssf range; case 6 peak 415 vs printed 434 MPa (strict xfail). |
+| Python implementation | [src/multifat/models/invariant_methods/ssf.py](../../src/multifat/models/invariant_methods/ssf.py); SSF |
+| Automated tests | [tests/methods/test_ssf.py](../../tests/methods/test_ssf.py) |
+| Limitations | Material-specific surface (42CrMo4, Reis batch); on that workbook the surface was fitted on the assessed tests (in-sample). Printed coefficients rounded (Table 9 gap 0.06). R = -1 tension-torsion only. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Polynomial-map calibration/validation and prescribed frame treatment. |
+| Missing tasks | Per-material ssf calibration from proportional multiaxial S-N data (not implemented by maintainer decision). |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Polynomial-map calibration/validation and prescribed frame treatment. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
 | Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Medium |
-| Provenance / prior status | N24; Already reviewed, not implemented |
+| Provenance / prior status | N24; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N24+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN24%5D+Stress+Scale+Factor+%28SSF%29+family) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N24+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN24%5D+Stress+Scale+Factor+%28SSF%29+equivalent+shear+stress) (no live Issue linked) |
 
 ### N38
 
@@ -299,29 +299,29 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Stress based; Stress interaction |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | A NEW CRITERION OF FATIGUE STRENGTH OF A ROUND BAR SUBJECTED TO COMBINED STATIC AND REPEATED BENDING AND TORSION, Fatigue & Fracture of Engineering Materials and Structures |
 | DOI | https://doi.org/10.1111/j.1460-2695.1979.tb01358.x |
 | Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Preliminary; full equation-level verification pending |
-| Principle | Fatigue-strength interaction for combined static and cyclic bending/torsion. |
-| Loading scope | CA round-bar bending/torsion; static components; broader NP domain unverified |
-| Inputs / material parameters | Bending/torsion stresses and matching fatigue properties |
-| Output | Fatigue strength |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; Original round-bar experimental results |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Not Kawamoto/Nishihara; original full equations still required |
+| Formulation evidence | Checked against Kakuno & Kawada (1979) Eqs. (1)-(12) and Figs. 1-6 on the PDF (2026-11-15) |
+| Principle | Octahedral shear stress amplitude decreasing linearly with the octahedral normal stress amplitude (B) and mean (C), Eq. (4); A, B, C from t-1, f-1 and the pulsating limit (Eqs. 7-9). |
+| Loading scope | Proportional single-harmonic CA with superimposed static stresses of any direction; mean normal stress needs the pulsating limit Sig0. |
+| Inputs / material parameters | Sigm1 (f-1), Taum1 (t-1); Sig0 (pulsating limit, maximum stress) for mean normal stresses. |
+| Output | Fatigue index (1 at the limit); fitted life via the shared master curve where valid |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | basic_numerical_tests; tests/methods/test_kakuno_kawada.py: Eqs. (7)-(10) and (12) to machine precision; Fig. 5 tau intercept 0.559 vs 0.557 read; Fig. 5 sigma intercept 0.906 vs about 0.93 drawn (strict xfail). The paper prints no table. |
+| Python implementation | [src/multifat/models/invariant_methods/kakuno_kawada.py](../../src/multifat/models/invariant_methods/kakuno_kawada.py); KakunoKawada |
+| Automated tests | [tests/methods/test_kakuno_kawada.py](../../tests/methods/test_kakuno_kawada.py) |
+| Limitations | Proportional loading only (principal stress amplitudes). Without Sig0 cases with a mean normal stress are out of scope; the paper's average k1 = 0.83 for steels is not used. Fatigue-limit criterion: finite lives only through the shared master curve. Validated in the source on figures only. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Distinguish bending from axial strength; verify calibration |
+| Missing tasks | No known essential coding gap within the declared repository scope. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Distinguish bending from axial strength; verify calibration |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
-| Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Medium |
-| Provenance / prior status | G04; New distinct formulation candidate |
+| Feasibility / effort / priority | A / Medium (preliminary; exact scope and data determine effort) / Medium |
+| Provenance / prior status | G04; Already implemented, active |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=G04+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BG04%5D+Kakuno%E2%80%93Kawada) (no live Issue linked) |
 
@@ -332,29 +332,29 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Stress based; Equivalent stress |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | Multiaxial fatigue strength of common structural steel and the response of some estimation methods, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/j.ijfatigue.2017.07.001 |
 | Reference evidence | Verified exact-title Crossref work record; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Preliminary; full equation-level verification pending |
-| Principle | Revised Manson–McKnight equivalent-stress estimation within a multiaxial strength comparison. |
-| Loading scope | CA P/NP within published test paths |
-| Inputs / material parameters | Stress component cycles; axial/torsion fatigue properties |
-| Output | Equivalent stress / fatigue strength |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; Original common structural-steel dataset |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Group original MMK and MMP as a development family; do not treat 2017 as original MMK MMP reported in this 2017 paper; original MMK is older |
+| Formulation evidence | Checked against Papuga & Fojtik (2017) Eqs. (19)-(27) and Tables 7-11 on the PDF (2026-11-06) |
+| Principle | Walker-corrected von Mises-type equivalent stress: sigma_a^w (sigma_a + beta_P sigma_m)^(1-w) <= f_-1, kappa-weighted shear amplitude, X_m-weighted mean shear, beta_P from the principal stress extremes. |
+| Loading scope | CA single-harmonic, proportional and non-proportional (phase-blind, as stated in the paper), any mean stress. |
+| Inputs / material parameters | Sigm1, Taum1; Sig0 and Tau0 (estimated from Su and Eq. 23 when missing). |
+| Output | Fatigue index D_p/f_-1; life via the shared master curve |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_mmp.py: Table 11 MMP_WP (24 load cases, both surfaces) within 0.1 point of Delta FI; Table 10 constants; the four calibration limits. |
+| Python implementation | [src/multifat/models/invariant_methods/mmp.py](../../src/multifat/models/invariant_methods/mmp.py); MMP |
+| Automated tests | [tests/methods/test_mmp.py](../../tests/methods/test_mmp.py) |
+| Limitations | Phase-blind for non-proportional loading (paper's own limitation). Sig0/Tau0 estimated when missing. Fatigue-limit criterion; life via the master curve. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Original component/mean definitions; native calibration |
+| Missing tasks | Independent validation on further data sets. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Original component/mean definitions; native calibration |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. |
 | Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Medium |
-| Provenance / prior status | G05; New significant extension / related family |
+| Provenance / prior status | G05; Already implemented, active |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=G05+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BG05%5D+Manson%E2%80%93McKnight%E2%80%93Papuga+%28MMP%29) (no live Issue linked) |
 

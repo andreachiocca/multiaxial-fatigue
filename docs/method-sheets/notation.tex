@@ -1,0 +1,128 @@
+\section{Notation and common procedures}\label{sec:notation}
+
+\subsection{Frame, loading and stress quantities}
+
+\block{Frame} A right-handed orthonormal frame at the critical point of a plain specimen:
+$x$ is the circumferential (hoop) direction, $y$ the specimen axis, $z$ the outward surface
+normal. A thin-walled or solid specimen under axial force, torsion and internal pressure carries
+the plane stress $\sigma_{xx}$ (hoop), $\sigma_{yy}$ (axial), $\tau_{xy}$ (torsion); bending is
+read as an axial stress $\sigma_{yy}$ at the surface. Stresses are in MPa, nominal and linear
+elastic unless a sheet states otherwise.
+
+\block{Harmonic loading} Every test is a constant-amplitude, single-frequency cycle. Each stress
+component is written as
+\begin{equation}
+\Tsig(t) = \Sm + \Ss\sin\omega t + \Sc\cos\omega t ,\qquad 0\le \omega t < 2\pi ,
+\label{eq:harmonic}
+\end{equation}
+with the symmetric tensors $\Sm$ (mean), $\Ss$ and $\Sc$ (in-phase and quadrature parts). For an
+axial amplitude $\sigma_a$ and a torsional amplitude $\tau_a$ with phase shift $\delta$,
+$\sigma_{yy}(t) = \sigma_m + \sigma_a\sin\omega t$ and
+$\tau_{xy}(t) = \tau_m + \tau_a\sin(\omega t + \delta)$, i.e.\ $\tau_a\cos\delta$ enters $\Ss$ and
+$\tau_a\sin\delta$ enters $\Sc$. The loading is \emph{proportional} when $\Ss$ and $\Sc$ are
+parallel (as six-component vectors); the mean $\Sm$ may then have any direction.
+
+\block{Scalar of one harmonic} A scalar $q(t) = m + a\sin\omega t + b\cos\omega t$ has
+\begin{equation}
+q_a = \sqrt{a^2+b^2}\ \text{(amplitude, half range)},\qquad q_m = m,\qquad
+q_{\max} = m + q_a ,\qquad q_{\min} = m - q_a .
+\label{eq:scalar}
+\end{equation}
+The stress ratio of a uniaxial cycle is $R = q_{\min}/q_{\max}$; fully reversed means $R=-1$.
+
+\block{Plane quantities} A material plane is identified by its unit normal $\n$ ($\n$ and $-\n$
+are the same plane). On it, the normal stress and the shear stress vector are
+\begin{equation}
+\sigma_n(t) = \n^{\mathsf T}\Tsig(t)\,\n ,\qquad
+\boldsymbol\tau(t) = \Tsig(t)\,\n - \sigma_n(t)\,\n .
+\label{eq:plane}
+\end{equation}
+$\sigma_{n,a}$, $\sigma_{n,m}$ and $\sigma_{n,\max}$ follow from Eq.~\eqref{eq:scalar}. The shear
+amplitude $\tau_a$ of a non-proportional path (the trace of $\boldsymbol\tau(t)$ is an ellipse)
+needs a rule, stated by each critical-plane sheet.
+
+\block{Invariants} $I_1 = \tr\Tsig$ (first invariant), $\sigma_H = I_1/3$ (hydrostatic stress),
+$\dev\Tsig = \Tsig - \sigma_H\mathbf I$, $J_2 = \tfrac12\,\dev\Tsig:\dev\Tsig$. For one harmonic
+the amplitudes are
+\begin{equation}
+I_{1,a} = \sqrt{(\tr\Ss)^2 + (\tr\Sc)^2},\qquad
+\sqrt{J_{2,a}} = \sqrt{\tfrac12\left(\lVert\dev\Ss\rVert^2 + \lVert\dev\Sc\rVert^2\right)} ,
+\label{eq:invariants}
+\end{equation}
+with $\lVert\cdot\rVert$ the Frobenius norm. For one harmonic, the minimum circumscribed ellipse
+(Li), the prismatic hull (Mamiya) and the principal-coordinate prismatic hull (Khalij) of the
+deviatoric path all give this $\sqrt{J_{2,a}}$; the minimum circumscribed circle does not.
+Uniaxial $\sigma_a$: $\sqrt{J_{2,a}}=\sigma_a/\sqrt3$; torsion $\tau_a$: $\sqrt{J_{2,a}}=\tau_a$.
+
+\block{Elastic strains} Where a criterion needs strains, they are the linear-elastic strains of
+the stress, $\Teps = \bigl[(1+\nu)\Tsig - \nu\,\tr(\Tsig)\,\mathbf I\bigr]/E$, unless a sheet states
+otherwise. Shear strains $\gamma = 2\varepsilon_{ij}$ are engineering strains.
+
+\subsection{Material constants}
+
+\begin{center}\small
+\begin{tabular}{@{}lllp{80mm}@{}}
+\toprule
+Symbol & Code & Unit & Meaning\\\midrule
+$\fm$ & \texttt{Sigm1} & MPa & fully reversed ($R=-1$) axial or bending fatigue limit (amplitude)\\
+$\tm$ & \texttt{Taum1} & MPa & fully reversed torsional fatigue limit (amplitude)\\
+$f_0$ & \texttt{Sig0} & MPa & repeated ($R=0$) axial limit, given as the \emph{maximum} stress of its cycle\\
+$t_0$ & \texttt{Tau0} & MPa & repeated ($R=0$) torsional limit, maximum stress\\
+$S_u$, $S_y$ & \texttt{Su}, \texttt{Sy} & MPa & ultimate tensile strength, (monotonic) yield strength\\
+$E$, $\nu$ & \texttt{E}, \texttt{nu} & MPa, -- & Young's modulus, Poisson's ratio\\
+$\kappa$, $r$ & -- & -- & limit ratios $\kappa = \fm/\tm$ and $r = \tm/\fm = 1/\kappa$\\
+$N_\text{ref}$ & -- & cycles & life at which the limits are defined ($10^6$--$10^7$)\\
+\bottomrule
+\end{tabular}
+\end{center}
+A sheet lists any further constant with its source; a constant fitted by the repository is
+stated as such.
+
+\subsection{From a damage parameter to a life}\label{sec:mastercurve}
+
+\block{Damage parameter} Each criterion maps a loading cycle to a scalar damage parameter
+$\mathrm{DP}$ (an equivalent stress, a fatigue index, an energy). A fatigue-limit criterion
+returns an index that equals 1 on the limit.
+
+\block{Master curve} Unless the method has its own life law, the life follows from
+\begin{equation}
+\mathrm{DP} = A\,N_f^{\,b},\qquad N_f = (\mathrm{DP}/A)^{1/b},
+\label{eq:mastercurve}
+\end{equation}
+fitted by least squares in $\log$--$\log$ space on the \emph{design set}: the plain, fully reversed
+uniaxial tension failures of the material, with $|R+1|\le 10^{-3}$ and every other stress
+component below $10^{-3}$ of the peak (a sheet may state the torsion failures instead). Run-outs
+never enter the fit. The curve is used only if it is identifiable: at least 5 tests, at least one
+decade of life, and a slope significantly different from zero. A criterion that is a fatigue-limit
+condition gains finite lives only through Eq.~\eqref{eq:mastercurve}; this is a repository
+extension and is stated as such.
+
+\block{Load-equivalent error} The error of a prediction is measured on the load, so that criteria
+with different damage parameters are comparable. For a test of life $N_\text{exp}$, $s^*$ is the
+factor on all its stresses (means and amplitudes) at which the model predicts $N_\text{exp}$:
+$\mathrm{DP}(s^*\Tsig) = A N_\text{exp}^{\,b}$. Then
+\begin{equation}
+e_L = \ln(1/s^*) ,
+\label{eq:eload}
+\end{equation}
+$e_L>0$ is conservative (the model reaches its curve at a lower load than the test) and the load is
+misjudged by $e^{e_L}-1$. A load beyond a criterion's domain counts as infinite damage; a root that
+lies on the edge of that domain is rejected.
+
+\block{Fatigue-limit datasets} For a set of limit states (no failures), the reference is the
+damage of the fully reversed axial limit, $\mathrm{DP}_\text{ref}=\mathrm{DP}(\fm)$, and
+$\mathrm{FI} = \mathrm{DP}/\mathrm{DP}_\text{ref}-1$. The load-scaled index $\mathrm{FI}_\text{load}=1/s-1$,
+with $\mathrm{DP}(s\Tsig)=\mathrm{DP}_\text{ref}$, gives the same $e_L=\ln(1+\mathrm{FI}_\text{load})$.
+
+\subsection{Critical-plane search}\label{sec:planes}
+
+A critical-plane criterion evaluates its damage on candidate planes: a 522-plane grid over the
+hemisphere of normals, analytical seed planes, and a local refinement. The selected plane maximises
+the criterion's own selection metric; ties go to the larger damage. The repository reports the
+damage on that plane and, as the variant \texttt{\_ext}, the maximum damage over all planes.
+
+\subsection{Scope}
+
+A criterion is evaluated only on the loading and material its source covers. Outside it the
+repository raises a scope error, the model is reported as skipped, and nothing is extrapolated
+with an invented formula.

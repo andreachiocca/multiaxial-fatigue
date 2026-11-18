@@ -1,0 +1,95 @@
+% registry: GAM
+\methodhead{GAM}{Gon\c{c}alves, Ara\'ujo and Mamiya (2005): stress-based criterion for hard metals}\label{sheet:GAM}
+
+\block{Source} C.~A.~Gon\c{c}alves, J.~A.~Ara\'ujo, E.~N.~Mamiya, \emph{Int.\ J.\ Fatigue} 27 (2005)
+177--187 \cite{goncalves2005}, Eqs.~(11)--(14), Appendix~A (Eqs.~A.1--A.5, A.17); Tables~1--4.
+
+\block{Idea and scope} An endurance criterion of the effective-stress type with two measures of the
+history. The shear solicitation is the size of the rectangular prism that encloses the deviatoric
+path; it is larger for a non-proportional path than for a proportional one of equal
+$\sqrt{J_{2,a}}$. The normal solicitation is the \emph{maximum principal stress} over the cycle, in
+place of the hydrostatic stress: the embryo crack normal to the largest principal stress governs the
+opening effect. Proposed for high-cycle fatigue limits of hard metals,
+$1.3\le\fm/\tm<\sqrt3$, under in-phase and out-of-phase sinusoidal loading of one frequency, with
+mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\fm$, $\tm$ & MPa & fully reversed bending (tension) and torsion fatigue limits, $\fm>\tm$\\
+$\mathbf S(t)$ & MPa & deviatoric stress, $\Tsig(t)-\tfrac13\tr\Tsig(t)\,\mathbf I$\\
+$\mathbf N_i$, $s_i(t)$ & --, MPa & orthonormal basis of the deviatoric space and the components of $\mathbf S(t)$ in it, $i=1,\dots,5$ (Eqs.~A.1--A.3)\\
+$a_i$ & MPa & half-sides of the prism enclosing the deviatoric path, Eq.~\eqref{eq:gam-ai}\\
+$\lambda_i$ & MPa & semi-axes of an ellipsoid enclosing the deviatoric path (Proposition~1)\\
+$m_i$, $p_i$, $q_i$ & MPa & mean, sine and cosine coefficients of $s_i(t)$ for one harmonic\\
+$\sigma_{p,i}(t)$ & MPa & principal stresses at time $t$\\
+$\sigma_{p\max}$ & MPa & largest principal stress over the cycle, Eq.~\eqref{eq:gam-sp}\\
+$\kappa$, $\lambda$ & --, MPa & constants of Eq.~\eqref{eq:gam-const} (this $\kappa$ is not the ratio of Section~\ref{sec:notation})\\
+$I$ & \% & error index (Eq.~14)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The endurance condition (Eq.~12) is
+\begin{equation}
+\sqrt{\sum_{i=1}^{5} a_i^2} + \kappa\,\sigma_{p\max} \le \lambda ,
+\label{eq:gam-main}
+\end{equation}
+with, writing $\mathbf S(t)=\sum_i s_i(t)\mathbf N_i$ (Eqs.~A.1--A.3),
+\begin{gather}
+a_i = \tfrac12\Bigl(\max_t s_i(t) - \min_t s_i(t)\Bigr) \quad\text{(A.17)}, \label{eq:gam-ai}\\
+\sigma_{p\max} = \max_t \max_i \sigma_{p,i}(t) \quad\text{(11)}. \label{eq:gam-sp}
+\end{gather}
+Proposition~1 (Eq.~A.5): for a path enclosed by an ellipsoid with semi-axes $\lambda_i$,
+$\sum_i a_i^2=\sum_i\lambda_i^2$ in \emph{any} orthonormal basis, which avoids the construction of the
+minimum enclosing ellipsoid (Eqs.~8--9). The constants follow from the fully reversed bending and
+torsion limits (Eq.~13):
+\begin{equation}
+\kappa = \frac{\sqrt2}{\fm-\tm}\Bigl(\tm - \frac{\fm}{\sqrt3}\Bigr) , \qquad
+\lambda = \sqrt2\,\frac{\tm\,\fm}{\fm-\tm}\Bigl(1 - \frac{1}{\sqrt3}\Bigr) .
+\label{eq:gam-const}
+\end{equation}
+They place both limits on the threshold: in bending $\sqrt{\sum a_i^2}=\sqrt{2/3}\,\fm$ and
+$\sigma_{p\max}=\fm$; in torsion $\sqrt{\sum a_i^2}=\sqrt2\,\tm$ and $\sigma_{p\max}=\tm$. The error
+index is $I=100\,(\mathrm{LHS}-\lambda)/\lambda$ (Eq.~14), positive on the conservative side. The
+repository returns $\mathrm{DP}=\bigl(\sqrt{\sum a_i^2}+\kappa\,\sigma_{p\max}\bigr)/\lambda$, so
+$I=100\,(\mathrm{DP}-1)$.
+
+\block{Constants and calibration} Paper and repository: $\kappa$ and $\lambda$ in closed form from
+$\fm$ and $\tm$ (Eq.~13), with the $R=-1$ limits of the workbook Summary. Nothing is fitted except the
+master-curve constants $A$, $b$ on the uniaxial $R=-1$ design tests. A material whose limits are
+missing or flagged is skipped.
+
+\block{Life} No native life law. The index is the damage parameter of the shared master curve
+(Section~\ref{sec:mastercurve}); this extends an endurance criterion beyond its source. The index is
+homogeneous of degree~1 in the load.
+
+\block{Repository choices}
+\begin{itemize}
+\item For one harmonic, $s_i(t)=m_i+p_i\sin\omega t+q_i\cos\omega t$, so $a_i^2=p_i^2+q_i^2$ and,
+  the basis being orthonormal, $\sqrt{\sum a_i^2}=\sqrt{\lVert\dev\Ss\rVert^2+\lVert\dev\Sc\rVert^2}$
+  (Frobenius norms), exact and basis-free.
+\item Eq.~\eqref{eq:gam-sp} as written: $\sigma_{p\max}$ is the largest eigenvalue of $\Tsig(t)$
+  maximised over the cycle (720 time samples, then a golden-section refinement). The paper's tables
+  used a phase-free peak instead (see Verification).
+\item $\fm\le\tm$ is rejected ($\kappa$, $\lambda$ undefined). Outside $1.3\le\fm/\tm<\sqrt3$ the
+  criterion is evaluated with a warning; for $\fm/\tm\ge\sqrt3$, $\kappa\le0$.
+\item Finite life through the master curve, a repository extension. No \texttt{\_ext} variant.
+\end{itemize}
+
+\block{Worked example} Hard steel of Nishihara and Kawamoto (paper's Table~1), $\fm=313.9$,
+$\tm=196.2\MPa$: $\kappa=0.1799$, $\lambda=312.76\MPa$. Row 1-1, in phase ($\sigma_a=138.1$,
+$\tau_a=167.1\MPa$): $I=-1.91\,\%$. Row 1-4, $90^\circ$ ($\sigma_a=150.2$, $\tau_a=181.7\MPa$): with
+Eq.~(11), $\sigma_{p\max}=199.5\MPa$ and $I=+2.51\,\%$; with the paper's in-phase peak,
+$\sigma_{p\max}=271.7\MPa$ and the printed $I=+6.66\,\%$.
+
+\block{Verification} Tables~1--4, column $I^d$ (41 fatigue limits, four steels). All 14 in-phase rows
+are reproduced to 0.02 points by Eq.~(12) as written. All 41 rows are reproduced to 0.02 points if
+$\sigma_{p\max}$ is replaced by the phase-free peak $s/2+\sqrt{s^2/4+x^2}$, $s=\sigma_a+\sigma_m$,
+$x=\tau_a+\tau_m$. With Eq.~(11) the 27 out-of-phase rows are 0.3 to 13.4 points lower; they are
+strict xfails, recording a calculation inconsistency of the tables, not of the criterion. Also
+checked: Eq.~(13) puts both limits on the threshold; the closed-form $\sqrt{\sum a_i^2}$ equals the
+half-ranges of Eq.~(A.17) in the basis of Eq.~(A.3) for a random out-of-phase path; the rejection of
+$\fm\le\tm$ and the hard-metal warning.

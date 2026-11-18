@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workbook": "8_AISI316L.xlsx",
-  "base_sha256": "26a97aec4603aa19df29bbd6576c3b72259cc3792eaa6e60df1d5e977f52017c",
+  "base_sha256": "f822e4c39deb6bacb26c2019bda4744ebaf4c7a327c808ccfc19c9b7358821ee",
   "expected_fingerprint": "e245074653e53c978ee11a94812ba9d9fd6e48c0721b98a6f80c5f7a6ee2d9f5",
   "operations": [
     {
@@ -117,7 +117,8 @@
         "Mean TORQUE (Nmm)": "Null",
         "Amplitude TORQUE (Nmm)": "Null",
         "Lambda (tauA/sigmaA)": 0,
-        "Amplitude von Mises (MPa)": 240
+        "Amplitude von Mises (MPa)": 240,
+        "Observation type (failure/run-out/fatigue limit)": "failure"
       },
       "decision": "d056",
       "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8",
@@ -171,7 +172,8 @@
         "Mean TORQUE (Nmm)": "Null",
         "Amplitude TORQUE (Nmm)": "Null",
         "Lambda (tauA/sigmaA)": 0,
-        "Amplitude von Mises (MPa)": 260
+        "Amplitude von Mises (MPa)": 260,
+        "Observation type (failure/run-out/fatigue limit)": "failure"
       },
       "decision": "d056",
       "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8",
@@ -225,7 +227,8 @@
         "Mean TORQUE (Nmm)": "Null",
         "Amplitude TORQUE (Nmm)": "Null",
         "Lambda (tauA/sigmaA)": 0,
-        "Amplitude von Mises (MPa)": 290
+        "Amplitude von Mises (MPa)": 290,
+        "Observation type (failure/run-out/fatigue limit)": "failure"
       },
       "decision": "d056",
       "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8",
@@ -279,7 +282,8 @@
         "Mean TORQUE (Nmm)": "Null",
         "Amplitude TORQUE (Nmm)": "Null",
         "Lambda (tauA/sigmaA)": 0,
-        "Amplitude von Mises (MPa)": 300
+        "Amplitude von Mises (MPa)": 300,
+        "Observation type (failure/run-out/fatigue limit)": "failure"
       },
       "decision": "d056",
       "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8",
@@ -333,7 +337,8 @@
         "Mean TORQUE (Nmm)": "Null",
         "Amplitude TORQUE (Nmm)": "Null",
         "Lambda (tauA/sigmaA)": 0,
-        "Amplitude von Mises (MPa)": 330
+        "Amplitude von Mises (MPa)": 330,
+        "Observation type (failure/run-out/fatigue limit)": "failure"
       },
       "decision": "d056",
       "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8",
@@ -387,7 +392,8 @@
         "Mean TORQUE (Nmm)": "Null",
         "Amplitude TORQUE (Nmm)": "Null",
         "Lambda (tauA/sigmaA)": "Null",
-        "Amplitude von Mises (MPa)": 259.8076211353316
+        "Amplitude von Mises (MPa)": 259.8076211353316,
+        "Observation type (failure/run-out/fatigue limit)": "failure"
       },
       "decision": "d056",
       "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8",
@@ -441,7 +447,8 @@
         "Mean TORQUE (Nmm)": "Null",
         "Amplitude TORQUE (Nmm)": "Null",
         "Lambda (tauA/sigmaA)": "Null",
-        "Amplitude von Mises (MPa)": 270.19992598074487
+        "Amplitude von Mises (MPa)": 270.19992598074487,
+        "Observation type (failure/run-out/fatigue limit)": "failure"
       },
       "decision": "d056",
       "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8",
@@ -495,7 +502,8 @@
         "Mean TORQUE (Nmm)": "Null",
         "Amplitude TORQUE (Nmm)": "Null",
         "Lambda (tauA/sigmaA)": 0.5793991416309013,
-        "Amplitude von Mises (MPa)": 330.0969554539999
+        "Amplitude von Mises (MPa)": 330.0969554539999,
+        "Observation type (failure/run-out/fatigue limit)": "failure"
       },
       "decision": "d056",
       "source": "Janssens 2018 Table 4 p. 4 (N6, N8); Zhu et al. 2019 p. 8; Braun 2024 p. 8",

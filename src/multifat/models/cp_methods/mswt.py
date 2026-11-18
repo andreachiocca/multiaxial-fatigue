@@ -1,23 +1,27 @@
-"""MSWT (Modified Smith-Watson-Topper) critical-plane damage parameter.
+"""Modified Smith-Watson-Topper (MSWT) critical-plane damage parameter (Zhu et al. 2018).
 
-This is the range form of Jiang's plastic-work increment,
-dY = a sigma d eps^p + (1-a)/2 tau d gamma^p (Jiang 2000, Eq. 6; Jiang et al. 2007, Eq. 4),
-as written in Zhu et al. (Int. J. Fatigue 2018), Eq. (13):
+Range form of Jiang's plastic-work increment dY = a sigma d eps^p + (1-a)/2 tau d gamma^p
+(Jiang 2000, Eq. 6; Jiang et al. 2007, Eq. 4) as written in Zhu et al., Int. J. Fatigue
+113 (2018), Eq. (13), p. 8::
 
-    DP_MSWT = 2a d_eps <sigma_max> + (1-a)/2 d_gam d_tau
+    DP_MSWT = 2 * a * Delta_eps * <sigma_max> + (1 - a) / 2 * Delta_gamma * Delta_tau
 
-Assuming a plastic Poisson ratio of 0.5, this recovers Jiang's crack-mode bounds
-(shear for a <= 0.375, mixed for 0.375-0.5, tensile for a >= 0.5). Up to
-2026-10-18 the implementation evaluated sigma_max d_eps/2 + (1-a) d_gam d_tau/4, which gave
-the shear term twice its intended weight (finding U2); the former a carries over
-as a' = a/(2 - a) and yields identical lives.
+Assuming a plastic Poisson ratio of 0.5 recovers Jiang's crack-mode bounds (shear for
+a <= 0.375, mixed for 0.375-0.5, tensile for a >= 0.5). Up to 2026-10-18 the
+implementation evaluated sigma_max d_eps/2 + (1-a) d_gam d_tau/4, which gave the shear
+term twice its intended weight (finding U2); the former a carries over as a' = a/(2 - a)
+and yields identical lives.
 
-In the expressions above <x> is the MacCauley bracket, i.e. max(x,0), d_eps is the
-normal strain range, sigma_max the largest normal stress, and d_gam and d_tau the shear
-strain and shear stress ranges acting on the candidate plane.
-
-For calibration the left-hand DP is evaluated; the critical plane is the one
-on which DP is largest.
+Repository choices:
+  - Implements the scalar range form of Zhu et al. (2018) Eq. (13) on elastic workbook
+    strains, not Jiang's incremental cyclic plasticity model.
+  - Candidate plane normal is the local z-axis; shear uses (xz, yz) and normal uses zz.
+  - Peak normal stress sigma_max is Macaulay-bracketed at zero (<x> = max(x, 0)).
+  - Non-proportional plane shear range uses the default root-sum-square (rss) rule.
+  - Critical plane maximises the full DP, so standard and ``_ext`` variants coincide.
+  - ``a_MSWT`` is optional, validated in [0, 1], and defaults to 0.5 (with a warning)
+    when omitted; ``multifat-pipeline`` calibrates it by scatter minimisation.
+  - Life prediction uses the shared power-law master curve.
 """
 
 from __future__ import annotations

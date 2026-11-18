@@ -1,21 +1,22 @@
-"""Probabilistic two-scale formulation of Doudard, Hild & Calloch (2007), Fatigue Fract Engng Mater Struct
-30:107-114, doi:10.1111/j.1460-2695.2006.01087.x (roadmap item N34), implemented here as point kernels for a
-uniform stress state (not a registered model: it requires the volume ratio V/V0 and S0, neither of which is
-available in the workbooks).
+"""Probabilistic two-scale fatigue criterion of Doudard, Hild & Calloch (2007).
 
-Equation (15) with H~_m = kappa(m) (uniform stress, Eq. 16):
-    P_F = 1 - exp(-(V kappa / V0) (Sigma_T / S0)^m)
-Equation (18)/(36): kappa(m) = int (2 T_a / Sigma_T)^m sin(zeta) dchi dzeta dxi, taken over the entire
-sphere of normals and all in-plane orientations (total measure 8 pi^2), where T_a is the shear amplitude
-along a direction.
-Equations (19) and (20): first and second moments of the fatigue limit, with V_eff = V kappa.
-Equation (22): N = A' / (<Sigma_T - Sigma_inf(P_F)> Sigma_inf(P_F)).
-Equation (26): Tresca amplitude for combined tension-torsion (Sigma0, T0, phase delta).
-Notes on the source: Eq. (14) shows cos(zeta) in place of sin(zeta) (the cos-weighted integral vanishes
-identically by symmetry, whereas Eq. 36 uses sin); Eqs. (A4)-(A5) show 2/pi instead of 1/(2 pi). The
-kappa(16) values quoted in the paper (tension 3.6, torsion 1.0, tension-torsion with 2 T0 = Sigma0: 1.6 at
-delta = 0 and 9.6 at pi/2) lie 5-10 % above the quadrature of Eq. (36) (3.357, 0.9415, 1.459, 9.137), and no
-common scale factor explains the gap (still unresolved).
+Published in *Fatigue & Fracture of Engineering Materials & Structures* 30 (2007),
+pp. 107-114, doi:10.1111/j.1460-2695.2006.01087.x (roadmap item N34), Eqs. (15)-(36)::
+
+    P_F = 1 - exp(-(V * kappa / V0) * (Sigma_T / S0)^m)
+    kappa(m) = int (2 * T_a / Sigma_T)^m * sin(zeta) dchi dzeta dxi   (measure 8 pi^2)
+    N = A' / (<Sigma_T - Sigma_inf(P_F)> * Sigma_inf(P_F))
+
+with Tresca amplitude ``Sigma_T`` (Eq. 26), effective volume ``V_eff = V * kappa``,
+and statistical fatigue-limit moments (Eqs. 19-20).
+
+Repository choices:
+- Provided as uniform-stress point kernels rather than a registered model because the
+  workbooks lack both the stressed volume ratio ``V / V0`` and Weibull scale ``S0``.
+- Quadrature for ``kappa(m)`` uses ``KAPPA_GRID = (48, 64, 128)`` Gauss-Legendre nodes
+  in ``cos(zeta)`` and uniform ``(xi, chi)`` with Eq. (36) ``sin(zeta)`` (fixing the
+  ``cos(zeta)`` misprint in Eq. 14 and ``2/pi`` -> ``1/(2 pi)`` in Eqs. A4-A5). The
+  printed ``kappa(16)`` values exceed direct quadrature by 5-10% (unresolved).
 """
 
 from __future__ import annotations

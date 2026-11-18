@@ -1,5 +1,666 @@
 # Development continuation checkpoint
 
+## Issue #81: Extension points, registry accessors and FatPy mapping (17 November 2026)
+
+- Branch `refactor/issue-81-extension-points` from `main` (commit `4d46d39`).
+- Replaced private cross-package imports with public registry APIs: `available_cp_methods()`,
+  `available_direct_models()`, `base_models()`, `model_names()`, and `PROBE_PARAMS`.
+- Replaced model-name branches in `src/multifat/cli/run.py`:
+  - `ComparisonCapabilities.load_error: bool = True` added; TVEIT2025 overridden to `False` in
+    `models/comparison.py` without touching `tveit2025.py`.
+  - Added `effective_strengths()` method to `BohmePapuga` (inherited by `CAIM`) replacing
+    `_strengths` imports and name branching.
+- Replaced 11-field job tuple in `src/multifat/cli/pipeline.py` with frozen `Job` dataclass.
+- Added frozen `RowGroup` dataclass in `src/multifat/report/export_csv.py` with backward compatibility.
+- Added FatPy correspondence table `src/multifat/data/fatpy_keys.json` and `src/multifat/data/fatpy.py`
+  (`to_fatpy`, `from_fatpy`, `load_fatpy_mapping`), with unit conversion for Young's modulus $E$
+  (GPa <-> MPa).
+- Excluded ambiguous `Sig0`/`Tau0` per maintainer guidance.
+- Guard tests in `tests/test_fatpy.py`: round-trip conversions, markdown table drift check against
+  `docs/notation.md`, no private cross-package imports in `cli/`, `tools/`, or `examples/`, and no
+  model-name branching in `cli/run.py`.
+- Checks: `ruff`, `black`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`,
+  `tools/check_docs.py`, `tools/check_scientific_reviews.py`, `pytest tests/methods -q` (1563 passed),
+  `pytest tests/test_fatpy.py tests/test_notation.py -q` (684 passed).
+- Next action: commit and PR closing #81.
+
+## Issue #13, new methods from the supplied papers (16 November 2026)
+
+- Merged: KHALIJ, KAKUNO, MATSUBARA, PDS_SWT/PDS_FS (#103-#106). Open: #107 (homepage
+  cross-batch figure), #108 (LaTeX method sheets, `docs/method-sheets/`; 46 models pending).
+- Second batch of papers: Zenner, Simbuerger & Liu 2000 (SIH, N15), Bolchoun, Baumgartner &
+  Kaufmann 2017 (N53), Wang, Shang, Sun & Chen 2018 (N17). Maintainer decisions (16 Nov):
+  - WANG2018: tension-torsion only; life on the torsion S-N curve; add Tables 3-5 (7075-T651,
+    52 tests) as a new workbook in a separate data PR.
+  - SIH: shear amplitude = the method's original rule, otherwise longest chord (MCC for one
+    harmonic); Sig0 required for mean stresses, Tau0 from Eq. (7).
+  - A user option must select the shear amplitude (longest chord, MCC, MCE) for every method that
+    uses one (generalise `--shear-amplitude-algorithm`, now FIN only).
+  - Bolchoun deferred: Eq. (15) is garbled in the accepted manuscript, and the method needs an
+    out-of-phase S-N curve as input.
+- Branch `feat/wang2018-criterion` (stacked on `docs/method-sheets`): WANG2018 implemented, guide,
+  sheet, catalogue, audit, ranking regenerated (6 life + 6 limit datasets).
+- WANG2018: PR #109 (stacked on #108).
+- Branch `feat/sih-criterion` (stacked on #109): SIH implemented with the longest chord. Evidence:
+  Section 3 phase independence holds only with rss; the maintainer confirmed the longest
+  chord (16 Nov). Runs on 5 datasets; others lack Sig0 or are outside 0.577-0.866.
+- SIH: PR #110 (stacked on #109); longest chord confirmed by the maintainer (16 Nov).
+- Branch `feat/shear-amplitude-option` (stacked on #110): `--shear-amplitude-algorithm` of
+  multifat-run / multifat-calibrate for every model exposing `np_shear_rule` (all CP methods, SIH);
+  pipeline guard generalised; pipeline itself still method_default.
+- #107-#111 merged (16 Nov). Branch `data/al7075-t651-wang`: workbook 18_Al7075_T651_Wang,
+  45 models run, ranking regenerated.
+- #112 merged. Branch `docs/method-sheets-backfill`: 46 sheets written (four parallel groups),
+  bibliography merged, PENDING emptied. Inconsistencies found between guides, docstrings, audit
+  and code are listed in the PR for the maintainer.
+- #113 merged (all 53 models have a sheet). Maintainer decisions (17 Nov): MATAKE and MCD to
+  the circumscribed circle (others stay RSS, documented exception); EK range enforced; docs-only
+  cleanup PR.
+- Branch `fix/matake-mcd-longest-chord`: done (pipeline before/after on all workbooks, ranking and
+  batch comparison regenerated, revision 2026-11-17).
+- Next action: EK range PR; then the docs-only cleanup PR.
+
+## Issue #18, Observation type (decision d113, 12 November 2026)
+
+- Branch `data/observation-type`: Dataset column `Observation type`, added to all 17 workbooks
+  (XML-only edit, `tools/add_observation_type.py`; FABEST/Delahay rebuilt); importer, classification
+  and pipeline read it; mixed life workbooks also get the fatigue index of declared limits.
+  Overlays re-pinned, MANIFEST and PROVENANCE updated; #71 closed (decision A).
+- Evidence: fingerprints with run-outs, workflows, roles, reasons and diagnostics identical to main
+  on all 17 workbooks; LibreOffice and openpyxl open the edited files; other ZIP members unchanged.
+- Next action: PR closing #18 (role-aware statistics move to #14, maintainer decision 4).
+
+## Issue #78, load-error evaluations (12 November 2026)
+
+- Branch `fix/load-error-evaluations`: cached scaled evaluations in `run.load_errors`; the load
+  factor rejects only a sign change against +inf (scope edge), keeps finite jumps; NaN native life
+  fails the search. `IMPLEMENTATION_REVISION` 2026-11-12.
+- Evidence: run CSVs of every model and life workbook against main differ only in
+  ZHANGYAO_Ti6Al4V_Berto (9 scope-edge values -> NaN); fatigue-index CSVs 0 of 311 differ.
+  A first, stricter check (|DP(s*) - target| <= 1e-6 target) also dropped 3 finite plane-switch
+  crossings (NINIC 25CrMo4, MMP 34Cr4) and was replaced.
+- Open PRs: #97 (#73 snapshot pipeline stage), #98 (#77 design-test selector), this one.
+- Next action: CI and maintainer merge decisions.
+
+## Batch names, decision d112 (12 November 2026)
+
+- Branch `data/batch-names`: `42CrMo4_QT` -> `42CrMo4_Santus` (file, `Calibrations/42CrMo4_Santus/`,
+  upstream record material_id), `Ti6Al4V` -> `Ti6Al4V_Meneghetti` (TVEIT constants moved to
+  `Calibrations/Ti6Al4V_Meneghetti/`, workbook path only). Historical records keep the old names.
+- Evidence: homepage ranking identical to main after name substitution (488 rows, all statistics
+  equal); batch comparison point statistics identical, bootstrap bounds move <= 0.05 (seed drawn in
+  name order). Ranking figure drops materials with < 2 scored methods.
+- Stacked: `docs/readme-visual-system` (README visual system) on top of this branch.
+- Next action: CI on both PRs; maintainer merge decisions (this one first).
+
+## Al7075_T6 Summary review, decision d111 (11 November 2026)
+
+- Branch `data/al7075-summary`. The curator's archive held no Al7075 tests: its "original" workbook
+  pairs the Al7075 Summary with the 60 Ti6Al4V rows of `1_Ti6Al4V`, and the template holds an older
+  Ti6Al4V subset. The repository Al7075 data (87 failures, 14 run-outs) match Pedranz Appendix B.
+- Overlay `Al7075_T6.overlay.json` (limits 143.8 / 100.9 MPa at 5e6; eps'_f, c measured; name
+  Al 7075-T6). Snapshot on Al7075_T6 vs main: limit-based methods move, others unchanged; MDC,
+  MMCCM, LIUMAHADEVAN checked through the pipeline. Ranking CSV regenerated (Al7075 rows only).
+- Next action: CI; then batch renaming and README visual pass (separate PRs).
+
+## Fatigue-limit datasets in the load-error ranking, decision d110 (11 November 2026)
+
+- Branch `analysis/limit-ranking` from main `07bd8b1` + #90. `build_load_error_ranking.py` reads
+  `FatigueLimit/*_FI.csv` (Error_load = ln(1 + FI_load); pure R = -1 axial references left out;
+  CX18 and GGG60 left out until #24); figure in two column blocks with separate mean ranks;
+  `dataset_fingerprint(block, runouts=True)` opt-in for the limit datasets of the manifest.
+- Life rows of `load_error_ranking.csv` identical to main (254 rows, checked frame-equal); batch
+  comparison (#71) unchanged by decision.
+- Next action: CI on the PR; maintainer merge decision.
+
+## Ti6Al4V Meneghetti-only Summary, decision d108 (11 November 2026)
+
+- Branch `data/ti6al4v-meneghetti-summary` (from main `297068b`). Overlay
+  `src/multifat/imp/overlay_files/1_Ti6Al4V.overlay.json` drops the Delahay 2006 Summary row and sets
+  Average to the Meneghetti 2018 values (Su 980, Sy 915, Sigm1 500, Taum1 422.5 MPa), SD to 0.
+  `Experimental_Data/MANIFEST.json` fingerprint updated.
+- Regression snapshot main vs branch: only Ti6Al4V outputs differ. MOREL_Ti6Al4V finite (RMS e_L
+  0.186, 4 tests); FS calibration STD 1.759 -> 1.259; other methods still skipped (#74).
+- Regenerated: batch comparison (Ti6Al4V family, `check` current), load-error ranking CSV, manifest
+  and figure. `plot_load_error_ranking` leaves out of the ranks a material with < 2 scored methods.
+- Checks: black, ruff, doc generators, check_docs, scientific reviews; full pytest 3091 passed.
+- d109 (same PR): `drop_case` overlay operation; the 4 Delahay rows leave `1_Ti6Al4V` (Table 2 of
+  Delahay & Palin-Luc 2006: mislabelled endurance limits of another batch). Snapshot on 1_Ti6Al4V:
+  failures and calibration unchanged; only MOREL run-out rows and their plots differ. Batch
+  comparison regenerated (GOLOS now in the Berto -> Ti6Al4V transfer).
+- PR #88 merged. Branch `data/ti6al4v-delahay`: `17_Ti6Al4V_Delahay.xlsx` built by
+  `tools/build_delahay_ti6al4v.py` from `Experimental_Data/sources/Delahay2006/ti6al4v_tables.csv`
+  (Sigm1 = plane bending 652, Taum1 = 411 MPa; tension 583 and rotating bending 602 as information).
+  Full regression snapshot (merged #88 head vs branch): 0 of 2711 outputs differ; calibrate.log only
+  adds the new dataset. 40 methods run, 6 skipped; Crossland 0 deg FI_load -0.065 checked by hand.
+- PR #89 merged: `compare` no longer crashes on fatigue-limit-only runs (checked on this dataset).
+- Next action: CI on the Delahay PR; maintainer merge decision.
+
+## Issue #69 completion: Replace `np.frompyfunc` in `pypow2` (11 November 2026)
+
+- Root cause / scope: replaced `np.frompyfunc(lambda x: x**2, 1, 1)` in
+  `src/multifat/models/utils/batch.py` (`pypow2`) with a comprehension over
+  `np.asarray(x, dtype=float).ravel().tolist()` reshaped to `arr.shape`. Preserves bitwise
+  parity with CPython `float ** 2` (including `OverflowError` on overflow and `(-0.0) ** 2` sign)
+  while avoiding `np.frompyfunc` object-dtype ufunc state linked to intermittent
+  `python312.dll` (`0xc0000409`) crashes on Windows Python 3.12 + `numpy==2.5.4`
+  (30/30 pipeline stress runs passed after patching vs. 1/12 and 1/24 failures on `main`).
+- Modified files: `src/multifat/models/utils/batch.py`, `tests/test_batched_planes.py`,
+  `CHANGELOG.md`, `docs/audit-checkpoint.md`.
+- Verification (`fix/issue-69-pypow2` off `main` `330782e`):
+  - `black --check .` (`266` files unchanged), `ruff check .`,
+    `tools/generate_workbook_docs.py --check`, `tools/generate_method_docs.py --check`,
+    `tools/check_docs.py` (`1932` local links, `23` tool commands OK), and
+    `tools/check_scientific_reviews.py` passed.
+  - Full `pytest` on `WorkstationUniPi` (`Python 3.11.15`, `numpy==2.4.6`, `--extra fe` with
+    `h5py==3.16.0`): `3178 passed, 25 skipped, 125 xfailed, 61 subtests passed` in `373.98s`.
+  - Full `pytest` on `WorkstationUniTN` (`Python 3.12.12`, `numpy==2.5.4`, without `h5py`):
+    `3039 passed, 67 skipped, 125 xfailed, 61 subtests passed` in `406.44s`.
+  - `tools/regression_snapshot.py` (`--jobs 12`) comparing `main` (`330782e`) vs
+    `fix/issue-69-pypow2` on `WorkstationUniPi`: `outputs: 2760 files, 0 differ`;
+    `logs: 646 files, 0 differ`.
+  - After merging `origin/main` (`3162fd9`, adding PRs `#72`, `#83`, `#84`): `black --check .`
+    (`273` files unchanged), `ruff check .`, `tools/check_docs.py` (`1955` local links OK),
+    docs/review generators, and full `pytest` (`--extra fe`, `WorkstationUniPi`) passed:
+    `3220 passed, 25 skipped, 125 xfailed, 61 subtests passed` in `378.04s`.
+- Remaining / next action: wait for GitHub CI on PR `#87` and merge `fix/issue-69-pypow2` to `main`.
+
+## Cross-batch comparison, issue #71 (10 November 2026)
+
+Branch `analysis/batch-comparison` from `main` at `c09dc4c`. Maintainer decisions on #71:
+Santus 2018 and Benedetti 2022 are one batch (d101); cross-batch transfer wanted (d102); Reis
+fatigue limits as for FABEST (d100); a standalone example pipeline for the article, regenerated
+whenever a method or the data change.
+
+- **Reis limits (d100):** overlay `14_42CrMo4_Reis.overlay.json` adds a Summary source row with
+  Sigm1 = 452, Taum1 = 372 MPa (Anes IJF 62 Table 5 at 1e6). Test in `tests/test_dataset_overlays.py`.
+- **Transfer (d102):** `evaluate_model(..., design_data=)`, `run.load_transfer`,
+  `run_workbook(..., design_workbook=)`, `multifat-pipeline --design-material`. Tests:
+  `tests/test_transfer.py` (design rows and master curve identical to the design batch's own run).
+- **Standalone pipeline:** `examples/batch_comparison.py` (run / analyse / all / check), families in
+  `examples/data/material_families.json`, results in `examples/data/batch_comparison/42CrMo4/`,
+  figures `docs/images/batch_comparison_42CrMo4_{bias,transfer}.png`, guide
+  `docs/batch-comparison.md`. `tests/test_batch_comparison.py` checks the statistics on synthetic
+  data and fails when the committed results are stale (models, revision, dataset fingerprints).
+- **Regression snapshot** (`main` c09dc4c against the branch, calibration included): outside
+  42CrMo4_Reis no run output differs. On Reis 27 outputs are new (methods that needed the limits)
+  and 28 differ only in the `Dataset_fingerprint` column (the fingerprint hashes the Summary);
+  the aggregated Comparison files change accordingly.
+- **Homepage:** `load_error_ranking.csv` Reis rows rebuilt from the full own-batch run (QT and
+  FABEST rows reproduced exactly; 19 -> 43 Reis methods); `load_error_ranking.png` redrawn.
+
+Follow-up (maintainer answers on #71): PR opened; SSF published constants accepted in a transfer
+from 42CrMo4_Reis only (d103); batches are author groups, Santus + Benedetti one (d101 revised);
+Ti6Al4V family added. `eval/load_error.py` secant bounded (|ln s| <= 10, bisection fall-back):
+snapshot of the branch before and after, 0 of 2991 outputs differ. Results regenerated for both
+families.
+
+Statistical redesign (same day, decision d104 proposed): `examples/batch_reference.py` (method-free
+strengths, relative strengths, FABEST yardstick), joint-bootstrap offsets, censored run-out check,
+transfer prediction and load factor in `examples/batch_comparison.py`, figures in
+`examples/batch_plots.py`; Kruskal-Wallis/BH removed. No pipeline or model code changed, so no
+regression snapshot was needed; results regenerated from the runs of the previous step (same
+commit of `src/`). Tests: `tests/test_batch_comparison.py` (11). Findings: batches differ mainly
+in axial strength; the transfer shift is method-free (observed = predicted to 0.001); Santus and
+Benedetti axial series differ by 10 %; Meneghetti tau/sigma is about 1 (data question, #24).
+
+Maintainer answers (11 November): FABEST is one material batch (d105); d104 active; Santus and
+Benedetti decided on the data (one batch, two series); master curves that cannot be identified
+are skipped and the scatter uses n - 2 (#74, branch `fix/master-curve-identifiability`, stacked on
+this one); the any-R calibration fallback is accepted but flagged and documented (#77, branch
+`fix/calibration-r-fallback-flag`). Papers requested: Meneghetti 2018, Benedetti 2022 (ref. [17]).
+
+Remaining: maintainer review of the PR; #24 decision on the `1_Ti6Al4V` Summary, which averages
+Meneghetti and Delahay properties although every failure is Meneghetti's (limit-based methods: RMS
+0.29 with it, 0.04 with Berto's limits).
+
+## Issue #32 completion: All method guides and module docstrings (11 November 2026)
+
+Completed all remaining deliverables for Issue #32 on branch `docs/issue-32-method-guides`
+(branched off `main` at `c016c77`):
+
+- **All 16 remaining registered method guides added under `docs/method-guides/`:**
+  - Batch 1 (`bff58ab`): `LI`, `LIU2021`, `MGSE_YU`, `MGSE_ZHU`, `MSWT`.
+  - Batch 2 (`9e53aff`): `MDC`, `MMCCM`, `SWTD`, `OTT`, `EK`.
+  - Batch 3 (`b33aa44`): `RFB`, `VHN`, `PBP`, `COIN`, `MMMH`, `TVEIT2025`.
+  - Every one of the 46 registered criteria in `src/multifat/models/registry.py` now has a
+    9-section guide matching `docs/method-guides/TEMPLATE.md`, indexed in
+    `docs/method-guides/README.md`, with runnable Python examples and CLI invocations.
+- **All 19 remaining method module docstrings completed:** Added line-1 module docstrings
+  containing literal equation blocks and `Repository choices:` sections across all remaining
+  pending files (`cp_methods/mgse_zhu`, `cp_methods/mswt`, `cp_methods/mdc`,
+  `cp_methods/mmccm`, `energy_based_methods/swtd`, `invariant_methods/ottosen`,
+  `energy_based_methods/ellyin_kujawski`, `integral_methods/robert_fogue_bahuaud`,
+  `invariant_methods/vu_halm_nadot`, `invariant_methods/pbp`, `invariant_methods/coin_liwi`,
+  `invariant_methods/mmmh`, `cp_methods/car_spa`,
+  `invariant_methods/papadopoulos_panoskaltsis`, `integral_methods/doudard`,
+  `integral_methods/flaceliere_morel`, `energy_based_methods/banvillet`,
+  `energy_based_methods/sed_berto_lazzarin`, `energy_based_methods/zhu_edp`), emptying
+  `PENDING_DOCSTRINGS` (`set()`) in `tests/test_method_guides.py`.
+- **Guide ratchet and documentation updates:** Tightened `test_guides_exist` in
+  `tests/test_method_guides.py` to assert `REGISTERED <= {p.stem for p in _guides()}`. Updated
+  `docs/method-guides/README.md`, `README.md`, `docs/user-guide.md`, `CHANGELOG.md`, and
+  `docs/audit-checkpoint.md`.
+- **Checks (`WorkstationUniTN` `DESKTOP-8EMS1B6`, `MPLBACKEND=Agg`, isolated bundle clone, `uv sync --offline` without optional `fe`/`ansys` extras):**
+  - `uv run pytest tests/methods -q`: `1454 passed, 2 skipped, 120 xfailed, 2 warnings in 65.47s`
+  - `uv run pytest --ignore=tests/methods -q`: `1583 passed, 65 skipped, 5 xfailed, 5 warnings, 61 subtests passed in 361.48s` (43 skips from omitted `h5py`, 2 from omitted/opt-in `ansys`, 20 helper modules without module docstrings in `tests/test_notation.py`)
+  - Local post-edit gates verified in final commit pass (`black`, `ruff`, generators, `check_docs.py`, `check_scientific_reviews.py`, `tests/test_method_guides.py`, `tests/test_notation.py`).
+- **Remaining / next action.** Push `docs/issue-32-method-guides` to `origin`, open a PR referencing `Closes #32`, and close Issue #32 upon authorization/merge.
+
+## PR #82 extension: Issues #76 and #80 (11 November 2026)
+
+Issues #76 and #80 added to branch `fix/docs-and-workbook-integrity` (PR #82, after merging
+`origin/main` at `c09dc4c` with PR #70):
+
+- **Issue #76 (`IMPLEMENTATION_REVISION` bump and archival policy).** Bumped
+  `IMPLEMENTATION_REVISION` in `src/multifat/models/references.py` from `"2026-10-07-audit1"` to
+  `"2026-11-11"`. Documented the bump rule in `CONTRIBUTING.md`, `docs/method-audit.md` and
+  `.github/pull_request_template.md`. Kept `check_record_compatibility` rejecting prior-revision
+  pipeline sidecars (`"params"` in record) and updated `load_constants` in
+  `src/multifat/cli/pipeline.py` to append a provenance warning when an upstream `Calibrations/`
+  record carries a mismatched `implementation_revision`. Verified rejection and flagging in
+  `tests/test_calibration_history.py`, `tests/test_pipeline.py` and
+  `tests/test_calibration_records.py`. Follow-up after PR #72 merges: `examples/batch_comparison.py`
+  exists on `origin/analysis/batch-comparison` (#72), not on this branch.
+- **Issue #80 (homepage data manifests, staleness checks and overlay error tests).** Added
+  `examples/homepage_data.py` to write and check `.manifest.json` provenance sidecars alongside
+  `examples/data/load_error_ranking.csv` and `examples/data/42CrMo4_QT_predictions.csv` (recording
+  canonical LF CSV SHA-256, `IMPLEMENTATION_REVISION`, enabled registered models and post-overlay
+  `dataset_fingerprint`s). Updated `examples/build_load_error_ranking.py` and
+  `examples/build_predictions_csv.py` with `--check` and `lineterminator="\n"`. Ran
+  `uv run multifat-pipeline` across all 7 ranking materials on `WorkstationUniTN` (`--models all
+  --no-compare --jobs 4`): `load_error_ranking.csv` reproduced all 263 rows with 0 numeric
+  differences and `42CrMo4_QT_predictions.csv` reproduced all 2,072 rows across 37 valid methods
+  within `5.7e-8` relative difference on `Nf_expected`, so both CSVs were kept unmodified in Git
+  and paired with new `.manifest.json` files. Added `test_committed_homepage_data_is_current` and
+  `test_homepage_manifest_detects_staleness` in `tests/test_gallery_figures.py`, plus invalid
+  operation, schema-version and duplicate `base_sha256` tests in `tests/test_dataset_overlays.py`.
+  Follow-up after PR #72 merges: `test_transfer_native_life_model` belongs in `tests/test_transfer.py`
+  on PR #72 (`load_transfer` does not exist on this branch).
+- **Modified / new files.** `.github/pull_request_template.md`, `CHANGELOG.md`, `CONTRIBUTING.md`,
+  `docs/audit-checkpoint.md`, `docs/method-audit.md`, `examples/build_load_error_ranking.py`,
+  `examples/build_predictions_csv.py`, `examples/homepage_data.py`,
+  `examples/data/42CrMo4_QT_predictions.manifest.json`,
+  `examples/data/load_error_ranking.manifest.json`, `src/multifat/cli/pipeline.py`,
+  `src/multifat/models/references.py`, `tests/test_calibration_history.py`,
+  `tests/test_calibration_records.py`, `tests/test_dataset_overlays.py`,
+  `tests/test_gallery_figures.py`, `tests/test_pipeline.py`.
+- **Checks (`WorkstationUniTN`, `MPLBACKEND=Agg`, private `--basetemp`).**
+  - `uv run ruff check .`: passed
+  - `uv run black --check .`: `266 files would be left unchanged.`
+  - `uv run python tools/generate_method_docs.py --check`: `162 records; 118 counted method/scoped candidates; 51/51 review entries; registry, paths, DOI evidence and generated files OK`
+  - `uv run python tools/generate_workbook_docs.py --check`: `docs/workbook-format.md OK`
+  - `uv run python tools/check_docs.py`: `1834 local documentation links and 23 tool commands OK (external links and frozen provenance excluded)`
+  - `uv run python tools/check_scientific_reviews.py`: `1 scientific review dossier(s); required files and benchmark JSON OK`
+  - `uv run python examples/build_load_error_ranking.py --check`: `load_error_ranking.csv is current`
+  - `uv run python examples/build_predictions_csv.py --check`: `42CrMo4_QT_predictions.csv is current`
+  - `uv run pytest tests/methods -q`: `1454 passed, 2 skipped, 120 xfailed, 2 warnings in 58.76s`
+  - `uv run pytest --ignore=tests/methods -q`: `1656 passed, 25 skipped, 5 xfailed, 5 warnings, 61 subtests passed in 339.62s` (single-process runs hit intermittent hardware access-violation/stack faults on the UniTN workstation around 50%; the overlapping transition run `tests/methods` through `tests/test_dataset_classification.py` passed on rerun with `1559 passed, 2 skipped, 120 xfailed, 6 warnings, 12 subtests passed in 162.36s`).
+- **Remaining / next action.** Commit verified changes on `fix/docs-and-workbook-integrity`, push to
+  `origin`, update PR #82 title/body and clean temporary remote directories.
+
+## PR #64 review response (9 November 2026)
+
+Maintainer review of #64 (six points), addressed on `feat/fe-and-time-history-inputs`:
+
+- **Reverted `main` content restored.** Commit `a28f3c2` had rewritten the G32 and N32 catalogue
+  records back to "obtain original paper" / `available_not_scheduled`, and the 6 November section
+  "Issue #13 methods from the second paper batch" was missing from this file. Both are back as on
+  `main`; `METHODS.md`, `docs/methods/*`, `docs/catalogue/methods.csv`, `docs/COUNT_RECONCILIATION.md`
+  and `docs/METHOD_INDEX.md` were regenerated with `tools/generate_method_docs.py`.
+- **`origin/main` merged** (`baee2f4`, includes #67), by merge commit; both sides kept in this file.
+  Outside the FE and history work, the branch now differs from `main` only in `CLAUDE.md` and
+  `AGENTS.md`.
+- **FE benchmark figure.** `examples/plot_fe_benchmark_maps.py` evaluates FIN, SWT, CROSSLAND and FS
+  (and von Mises); TVEIT2025 is refused on FE histories (native life law,
+  `docs/load-histories.md`). The #67 change cannot alter the figure, so it was not regenerated.
+- **Regression snapshot** (`tools/regression_snapshot.py run --jobs 4`, calibration included, run on
+  WorkstationUniTN): `main` at `baee2f4` against the merged branch: 2,273 output files and 554 log
+  files, 0 differences. The source outside `fe/` and `history/` is identical to `main`.
+- **Project instructions.** `CLAUDE.md` and `AGENTS.md` gain the FE and history layout and the FE
+  adapter rules. The text pointing at the removed `axis-fem` fixtures was stale and now says that
+  no real Abaqus output is in the repository.
+
+Remaining: update the PR description, push the merge, and ping the maintainer (point 6). The merge
+stays with the maintainer's last read.
+
+## Milestone, solver importers and review fixes (6 November 2026)
+
+Approved scope: `docs/superpowers/plans/2026-11-06-solver-importers-handoff.md`;
+execution plan: `docs/superpowers/plans/2026-11-06-solver-importers.md`.
+Started on clean branch `feat/fe-and-time-history-inputs`, HEAD `7ea8a7d`, no open PR.
+Ruling: use this checkpoint as the only ledger and retain the existing branch, as the repository
+and handoff require; no separate skill ledger/worktree or approval pause. The approved handoff
+is the design authority; write the small execution plan and proceed inline.
+Pre-flight: all three adapters share canonical row validation/atomic output; no numerical
+module outside fe/history is changed. Result-state ordinals map solver step/increment identities
+into ascending CSV steps; original identities and times remain in notes. Step-time resets are
+refused instead of guessed into total time. Flat explicit INP nodes only; transformed part/assembly
+coordinates and shell section points are refused.
+
+Task 1: Abaqus adapter and shared output validation added test-first (initial collection failed
+on missing adapter). Real MIT axis-fem RPT/INP preserved with license/source, eight nodes checked
+against file values and the axial expectation. Component sentinels, separate/concatenated frames,
+unit and strain declarations, conflicting element-node values and atomic refusal tests included.
+Focused tests plus notation: 627 passed, 22 existing skips; black and ruff pass.
+Native probe succeeds: ansys-mapdl-reader 0.56.0 imports
+under Python 3.12 with numpy 2.5.4 in uv's isolated environment. No project numpy downgrade.
+UniTN reachable for final full suite. Public MITC_python Ansys shell output inspected but unsuitable
+as a PRNSOL stress fixture (section-point strains only); text parser will be explicitly sample-tested.
+Task 1 committed as `3bed7ec`.
+Task 2: PRNSOL/NLIST and complete Workbench tensor-table conversion implemented test-first;
+targeted tests plus notation: 646 passed, 22 existing skips. Text Ansys support uses hand-written
+samples only; the inspected real shell output is intentionally unsupported. Native source/data
+inspection continues (first RST has no stresses; second is modal, to be refused by the adapter).
+Next exact action: native RST compatibility/frame verification, tests, documentation and final gate.
+
+Task 3: native adapter added after successful isolated Python 3.12/numpy 2.5.4 probe.
+Real MIT pymapdl-reader `tests/testfiles/vol_test.rst` (uncommitted, 2.6 MB) converted and
+re-imported; 11 native tests passed including independent global element-stress averaging.
+Default suite of adapters plus notation: 661 passed, 23 skips (22 existing; one opt-in real RST).
+Dependency emits one upstream PyVista offset deprecation warning. Native scope: default-option
+SOLID185/186/187, one material, real static/transient, small displacement, stress only. Refuse
+modal/complex/cyclic, shell/beam, layered/nondefault options, non-finite unselected midside data
+and multi-material global averaging. Source verifies global stress rotation before averaging;
+strain is not rotated the same way and therefore not exported. Extra `ansys` bounds the reader
+to the inspected 0.56 API; project numpy remains unconstrained upward. No binary fixture committed.
+Next exact action: documentation, mutation test, final quality gate on UniTN and fresh review.
+
+Task 4 in progress: guides, README, AGENTS and decisions d093-d097 updated, with explicit real
+versus sample-only evidence and unsupported DAT/ODB/Workbench variants. S13/S23 process-local
+mutation fails the sentinel test (expected); clean process restored automatically. Two additional
+refusals were RED then GREEN: mixed Step/Total Time and flat INP reuse across multiple instances.
+User approved a local merge of origin/main PR #62; merge `1695f5b` is conflict-free. Its new native
+LIUMAHADEVAN needed one method-matrix documentation row (isolation test RED then GREEN).
+Protected-source diff against origin/main `d0e11c1` is empty. No regression snapshot is required:
+all branch source changes remain inside fe/history, including after the upstream merge.
+Focused adapter/notation/history integration checks: 682 passed, 23 skips. Documentation links,
+scientific dossiers and both generators pass. A downloaded upstream Python source inside ignored
+scratch was included by black's scan; retain it with a text suffix and repeat the final check.
+Full suite and whole-branch reviewer remain outstanding; do not report completion yet.
+
+Resumed after model quota: the first UniTN suite reached 100% without failure markers, but pytest
+raised WinError 5 while cleaning the shared `pytest-current` temporary link; exit 1, no valid green
+full-suite claim. Peak capped job memory 1,948,860,416 bytes. Repeat using a fresh private basetemp,
+without deleting or altering the workstation's shared temporary directory.
+The first fresh reviewer (gpt-6-astra) hit quota before completing. It found two Important history
+bridge bugs: repeated node labels selected the first location silently, and timed unit cases were
+read as time samples. Both are reproduced RED then GREEN with identity-provenance coverage;
+`history/signal.py` now refuses ambiguous IDs and unit cases, directing users to `node_histories`.
+Focused signal/nodes/notation: 661 passed, 22 existing skips; black/ruff/docs/diff checks pass.
+These guard-only changes are uncommitted while a replacement fresh whole-branch reviewer
+(gpt-6.1-sol, the available model after quota) completes the review. No existing-main numerical
+source changed; protected-source diff remains empty. Next action: remaining reviewer findings,
+one test-first fix pass, isolated full-suite rerun, final checkpoint/local commit; no push.
+
+Whole-branch replacement review completed on `d0e11c1..d7ad4b3`: no Critical findings;
+five further Important findings, seven total including the first review's two history guards.
+All entered one test-first fix pass: strict CSV row width before pandas projection; atomic CSV/PVD
+output and refusal of all source aliases; report-wide Abaqus local/section/material checks before
+the first frame; a normalized joint stress/strain scalar-load test (also refuses constant-stress
+cycling strain); and descending numeric solver-step refusal. Each new failing test was observed
+before its fix. The new atomic helper preserves sources and preexisting destinations.
+Ruling: the review declined scientific criterion validity, unsupported solver layouts and native
+reader compatibility beyond recorded evidence; those remain explicitly outside claimed scope.
+No new deferred Minor findings were reported. Focused combined checks running; full rerun pending.
+The static-history regression exposed mean-subtraction roundoff in the new joint gate; subtracting
+the first sample before centering preserves exact constant histories. No valid calculation changes
+outside fe/history. The fix pass remains uncommitted until the isolated full-suite gate succeeds.
+Focused fix-pass verification: 883 passed, 23 skips; black, ruff, documentation links,
+scientific dossiers, both generated-document checks and protected-source diff pass.
+Next exact action: archive the staged tree, run the full suite with private basetemp on UniTN,
+then record its actual result and commit this verified fix pass locally. No further review
+findings remain to implement; no second reviewer pass is needed after these covering tests.
+The private-basetemp full rerun completed: 2 failed, 3066 passed, 26 skipped, 120 xfailed,
+61 subtests passed (291.93 s). Failures were the two node-history life comparisons, reproducible
+on UniTN alone. Investigation traced lost small-strain decimal digits to pandas' default float
+parser. A new bit-exact strain round-trip test failed first; `float_precision="round_trip"` fixes
+it without relaxing assertions. Local CSV/node tests: 81 passed; all 14 node tests on UniTN now
+pass under the same cap. NumPy/pandas versions match across machines (2.5.4/3.0.6).
+CLAUDE.md now carries the solver/history guidance corresponding to AGENTS.md (cross-agent parity).
+The final frozen-tree confirmation run on WorkstationUniTN (fresh basetemp `pytest-confirm-6be012`, peak capped memory 1.91 GB) passed completely:
+3069 passed, 26 skipped, 120 xfailed, 7 warnings, 61 subtests passed in 289.27 s (0:04:49).
+The transient calibration callback failure in unchanged core code did not reproduce on the isolated rerun or across the full confirmation suite.
+All quality gates pass: `black --check .`, `ruff check .`, `tools/check_docs.py` (1832 links OK), `tools/check_scientific_reviews.py`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`, and `git diff origin/main --stat -- src/multifat ':!src/multifat/fe' ':!src/multifat/history'` is empty.
+Repository purged of external repository fixtures (`axis-fem` deleted). Ansys MAPDL 2026 R1 batch mode on WorkstationUniTN generated an in-house 2D plane stress holed-plate fatigue benchmark (`PLANE183`, `KEYOPT(3)=3`) under a 2-step alternating fatigue cycle ($Y$-tension 100 MPa then $X$-tension 100 MPa, rotating principal stress axes by 90 degrees). Refined FE mesh (64 hole divisions, 1.5 mm ligament sizing, 2,864 corner nodes) verified against Howland (1930) finite-width analytical solution: peak stress matches within +0.41% (304.48 MPa vs 303.22 MPa), sub-1% error across entire notch influence zone, global force equilibrium verified to +0.009% (10000.87 N vs 10000.00 N). `rst.py` updated to support PLANE182/183; both `.rst` and `.out` convert into exchange CSV and HDF5. All 46 criteria tested on FE history (38 ok, 8 safely refused). Gallery script `examples/plot_fe_benchmark_maps.py` and 6-panel 300 DPI damage map with inset zooms added (`docs/images/hole_plate_fatigue_damage_maps.png`). Real Abaqus output tests marked with xfail TODO pending Abaqus license/installation. Decision d099 recorded. Local branch `feat/fe-and-time-history-inputs` ready for user review/push instruction.
+
+## Milestone, FE CSV exchange format (6 November 2026)
+
+Branch `feat/fe-and-time-history-inputs`, local and not pushed. Design spec and plan:
+`docs/superpowers/specs/2026-11-06-fe-csv-exchange-design.md` and
+`docs/superpowers/plans/2026-11-06-fe-csv-exchange.md`; documentation `docs/fe-csv-format.md`;
+decisions `d086`-`d092`. This answers the maintainer's CSV proposal on issue 19: the CSV is now the
+recommended user-facing format, the HDF5 file (version 1.1) the internal store.
+
+New or extended, all inside `multifat.fe` and `multifat.history` (no existing module changed):
+`fe/model.py`, `store.py`, `select.py`, `tensors.py` (file version 1.1: instance and material labels,
+split strain, temperature, step numbers, analysis metadata, US-customary and strain unit tables, Hooke
+helper); `fe/csvio.py` (header, column aliases for Abaqus and Ansys, streaming `import_fe_csv`);
+`fe/csvwriter.py` (standard library only); `fe/synthetic.py` (`write_tube_csv`, `--csv`);
+`history/signal.py` (`from_csv` accepts the node-CSV names); `history/nodes.py` (`node_histories`,
+unit-case superposition, `assess_nodes` with per-node status). Committed example
+`docs/examples/fe-csv/tube_two_steps.csv`.
+
+Verified: full pytest 2640 passed, 25 skipped, 76 expected failures (10 min 42 s); black, ruff, `check_docs`, `check_scientific_reviews` and both generators `--check` pass.
+`git diff 84ea401 --stat -- src/multifat ':!src/multifat/fe' ':!src/multifat/history'` is empty (no
+existing source file changed since the merge-base), so no regression snapshot was run for this
+milestone; the last one (UniTN, 0 differences) covers the existing code. No whole-branch review of the
+CSV work was run (model quota); a fresh review is the first task of the next session. `origin/main` has
+moved on (`96de6ad`, upstream PRs #55-#59 adding criteria): merged into the branch on 6 November (`b1df4d8`, no conflicts); full pytest on the merged tree 2942 passed, 25 skipped, 111 expected failures. Two history tests needed adapting to the new criteria: the method table in `docs/load-histories.md` now lists ZHANGYAO, KUJAWSKI2021, WANG2022, MMP and SSF, and the all-methods end-to-end test gives MMP valid limits. Finding for upstream: the registry probe constants (`_PROBE_PARAMS`) break MMP's condition Sigm1 < Sig0 < 2 Sigm1, so `stress_only_models()` lists MMP as needing strain (conservative; not changed here).
+Software checks only: the importer reproduces the analytical tube for
+every flavour, shear convention, unit, row order and strain mode; two deliberate mutations (swapped
+`S13`/`S23`, halved stress shear) fail the tests. Nothing here validates a fatigue criterion.
+
+Deviations from the plan, recorded: x, y, z are required columns (the store needs coordinates); the
+asymmetric-tensor test became a non-finite test (six components cannot be asymmetric); `TimeHistory.
+from_csv` accepts `E_*` or `Eel_*` together with `Epl_*`, and refuses `Eel_*` alone (it is not the total
+strain under plasticity); `Eel_*` alone is accepted by the importer for linear-elastic files only.
+
+Open: reply to the maintainer (questions in `docs/fe-csv-format.md`); tested Abaqus and Ansys export
+scripts and one real file each; automatic solver importers (Abaqus reports, Ansys result files) tested
+on public data; harmonic reduction of a sampled non-proportional cycle; the pull request decision.
+
+Next exact action: run the handoff prompt `docs/superpowers/plans/2026-11-06-solver-importers-handoff.md`
+in a new session (Abaqus reports, Ansys listings, optional native `.rst`, tested on public data), a fresh
+whole-branch review, then merge `origin/main` and decide on the pull request.
+
+## Milestone, load-history bridge, issue 20 (5 November 2026)
+
+Branch `feat/fe-and-time-history-inputs`, local and not pushed, merged with `origin/main` (`84ea401`). Design
+spec and plan: `docs/superpowers/specs/2026-11-05-load-history-bridge-design.md` and
+`docs/superpowers/plans/2026-11-05-load-history-bridge.md`; documentation `docs/load-histories.md`;
+decisions `d079`-`d085`.
+
+New package `src/multifat/history/`, imported by no existing module: `signal.py` (time-history contract
+from arrays, CSV, `fe` file or a documented function, with a hashed record), `channels.py` and
+`proportionality.py`, `rainflow.py` (ASTM E1049 three-point, `half` or `rearrange` residue),
+`events.py`, `accumulate.py` (caller-supplied Basquin `SNCurve`, Miner, endurance), `eligibility.py`
+(method matrix, `IneligibleHistoryError`), `assess.py` (result record) and `example.py`
+(`python -m multifat.history.example`). Exact for proportional histories; a non-proportional history is
+refused unless an explicit, recorded approximation flag is set. Multiaxial counting and the
+equivalent-range extractors are follow-up tasks F1-F8 (sources: Zotero collection `4J6FG4BS`, 42 papers,
+PDFs not fetched). The ASTM E1049 example counts are confirmed by two secondary sources only.
+
+Verified: full pytest 2476 passed, 25 skipped, 76 expected failures, plus one isolation test of the FE
+work that forbade any outside import of `multifat.fe` and was corrected to name `history` as its
+intended consumer (the two isolation files rerun green); black, ruff, `check_docs`,
+`check_scientific_reviews` and both generators pass. Regression snapshot (`--skip-calibrate`,
+WorkstationUniTN): `origin/main` (`84ea401`) against the branch at `1be7d8b`: 2,062 output files and 481
+log files, 0 differences; later commits change only a test; no existing source file changed. A
+whole-branch review (0 critical, 3 important, 12 minor) led to fixes with failing tests first: settable
+proportionality tolerance, `rearrange` as the default residue for a repeating block (`half` under-counts
+it by about a factor 2 and is noted), `event_damage_parameters` for native-life methods, a strain-path
+proportionality check, a scope-restricted column in the method matrix, and hardening of the record,
+counting guards and overflow handling. Deferred minors: strain units other than dimensionless are not
+converted; `record()` with a `.json` suffix writes `x.json.json`. The ASTM E1049 example counts rest on
+secondary sources only.
+
+Next exact action: the pull request decision, and the FE CSV exchange format proposed by the maintainer
+(issue 19 comment), see the discussion with the maintainer.
+
+## Milestone, FE local-history interface, issue 19 (5 November 2026)
+
+Branch `feat/fe-and-time-history-inputs` (renamed from `feat/fe-input-interface`) from `main` (`538ebc3`), merged with `origin/main` (`84ea401`) on 5 November, local and not pushed. Design spec and
+plan: `docs/superpowers/specs/2026-11-05-fe-local-history-interface-design.md` and
+`docs/superpowers/plans/2026-11-05-fe-local-history-interface.md`; format specification
+`docs/fe-input-format.md`; decisions `d072`-`d078`.
+
+New package `src/multifat/fe/`, imported by no existing module: `tensors.py` (component orders,
+shear convention, units, frames), `model.py`, `store.py` (HDF5 file, chunked reading), `select.py`,
+`vtk.py` (`.vtu`/`.pvd` importer), `ranges.py` (explicit pair, longest chord), `bridge.py` (two-state
+bridge, `requires_nonlocal` eligibility), `synthetic.py` (analytical thick-tube oracle and
+`python -m multifat.fe.synthetic`). `h5py` is the optional extra `fe` (`pyproject.toml`, `uv.lock`;
+the CI test job installs it). No existing source, workbook, calibration record or result changed:
+`git diff main --stat -- src/multifat ':!src/multifat/fe'` is empty.
+
+Verified: the new tests (tensors, model, store, select, synthetic, vtk, ranges, bridge, isolation,
+large input) pass; the opt-in test of 1,000,000 locations by 16 load cases (float32, 64 MB chunk
+budget) passed in 81 s with peak memory below four times the budget. The tube is checked against
+its boundary conditions, radial equilibrium and torque and axial resultants, and every importer
+convention is recovered to 1e-10 relative. These are software checks, not validation of a fatigue
+method. Full pytest after the review fix pass and the minor fixes: 1835 passed, 28 skipped, 41 expected failures (the documented
+misprints); black, ruff, `check_docs`, `check_scientific_reviews` and both generators pass. A first full
+run caught three retired-synonym findings in the new modules (`mat`, `spec`, `dataset`), renamed
+before the first docs commit. A whole-branch review then led to five fixes with failing tests first:
+the VTK base64 layout VTK actually writes (one stream; the separate-header layout is still read),
+a `complete` attribute so a crashed export is refused instead of read as zeros, refusal of
+strain-needing methods on a stress-only history, required stress and length units, and an HDF5 chunk
+size that follows the number of load cases (the former default failed above about 21,800 load cases).
+The review's minor findings were fixed too (rotation arrays validated, multi-part `.pvd` rejected,
+source conventions recorded, newer 1.x metadata fields tolerated, unchunked foreign files read,
+duplicate IDs refused on open, NaN screening values ignored, finite component check); the byte
+budget wording, the hydrostatic blind spot of the longest chord and the dropped per-location kind and
+surface flag are documented instead.
+
+Regression snapshot (`tools/regression_snapshot.py run --skip-calibrate --jobs 4`, run on
+WorkstationUniTN): `main` (`538ebc3`) against the branch at `8d02c5c` (the later commit changes only
+`fe/`, tests and docs): 1,708 output files and 409 log files, 0 differences; no existing source file
+changed. The calibration stage was skipped, so calibration records are not re-derived by that run.
+Remaining: the pull request, decided by the maintainer. Follow-ups, not started: PyAnsys/DPF, Abaqus `.odb`, CalculiX and Exodus adapters;
+issue 20 (time-history contract, remaining range rules, maxima over all load cases).
+
+Next exact action: review the branch, then decide on the snapshot run and the pull request.
+
+## TVEIT2025 end of the block integration (9 November 2026)
+
+Branch `tveit2025-end-rule` from `main` at `0cf9091`, by the model's owner (issue #66, approved
+by the maintainer). Only `invariant_methods/tveit2025.py` changes in the source:
+
+- **Shakedown and steady state.** A block without damage increment is a shakedown (infinite life);
+  a cyclic steady state needs no net back-stress drift over 200 blocks and a stable mean damage
+  per block. It replaces the consecutive-block test, which stopped during slow shakedowns.
+- **Within-cycle failure time.** It now counts i - 1 + f increments (the open point recorded
+  below under PR #27 is resolved).
+- **Settings.** The defaults of the five numerical settings change, and the four
+  `TVEIT2025_stage1.json` files carry the new values.
+
+Checks:
+- 16 of 16 histories integrated to 50,000 blocks are reproduced (`tests/test_tveit2025_end_rule.py`);
+- the Figs. 5-6 paper curves still hold within 1 %;
+- the regression snapshot shows no change outside TVEIT2025.
+
+Open: #60 (TVEIT2025 constants rejected by `--constants`). If #64 is merged first, re-merge `main`
+here.
+
+
+## Issue #13 methods from the second paper batch (6 November 2026)
+
+Merged, each with paper tests, guide, catalogue record, audit row, regression snapshot (no change
+to existing outputs) and refreshed homepage figures:
+
+| PR | Method | Paper check |
+| --- | --- | --- |
+| #54 | ZHANGYAO (N06) | Tables 3-8: 50/66 within 0.3 points; tied-plane and mean-stress rows strict xfails |
+| #55 | WANG2022 (N05) | Tables 4-5 lives within 1 %; mean normal stress out of scope (printed Eq. 18) |
+| #56 | KUJAWSKI2021 (N26) | closed forms only; equals SWT on every supplied workbook |
+| #58 | MMP (G05) | Table 11, 24 cases within 0.1 point |
+| #59 | SSF (N24) | Tables 5-8 from Table 4; published 42CrMo4 surface only (in-sample) |
+| #62 | LIUMAHADEVAN (N16) | Eq. (19), both limits exact; Figs. 2-5 reproduced in part (strict xfails, unresolved) |
+
+Also: `--constants` accepts published-constants records (SSF); the native-life load error is NaN
+when a trial load leaves the model's scope.
+
+Postponed by maintainer decision (catalogue `source_review`): G32 Stefanov 1993 (off-radial
+R-function only in the 1980 dissertation) and N32 Lu & Martinez-Esnaola 2021 (reference plane chosen
+against observed lives, in-sample coefficients, no per-test data).
+
+Open: #60 (TVEIT2025 constants rejected by `--constants`, assigned to its owner), #61 (family
+taxonomy).
+
+Next exact action: implement the next #13 batch listed in the 6 November comment on #13 as the
+papers arrive (N34, G24, G38, N36, G29, G11, N09, N17, N15, N53, G04, N19).
+
+
+## Issue #13 methods merged; integration audit (5 November 2026)
+
+PRs #45 to #49 (GAM, NINIC, GOLOS, MWHS, LIU2025) and #50 (homepage figures) are merged into
+`main`.
+
+An integration audit, `--all` with the new models, found four problems, all fixed before merging:
+1. GOLOS was misclassified as needing strains.
+2. Load-scaling searches failed on trial loads beyond a criterion's domain. Such loads now count
+   as +inf damage and the bracketing accepts an infinite end.
+3. LIU2025 could divide by zero in the Serensen branch. It now raises `LoadingScopeError`.
+4. MWHS was fitted on tension tests although its source calibrates on torsion. It now uses the
+   new `design_loading = "torsion"` option.
+
+Checks: full suite green and CI lint green. The regression snapshot shows no change to existing
+model outputs.
+
+Next exact action: implement further #13 candidates as their papers arrive, refreshing the
+homepage figures each time (rule in `docs/adding-methods.md`). Meanwhile, continue the #32
+guides.
+
+## Issue #13 new methods from maintainer-supplied papers (5 November 2026)
+
+Five criteria were implemented from the original PDFs, each with a guide, a paper test, a catalogue
+record and an audit row. They are stacked PRs; merge them in the order listed.
+
+| Order | Method | PR | Branch | Paper check |
+| --- | --- | --- | --- | --- |
+| 1 | GAM (N08) | #45 | `feat/gam-criterion` | Tables 1-4: in-phase rows exact; out-of-phase rows used a phase-free peak, contrary to Eq. (11) (xfail) |
+| 2 | NINIC (N11) | #46 | `feat/ninic-criterion` | Tables 2-4: 29/32 rows within 0.08; Eq. (4) valid only for S_e/T_e >= sqrt(2) |
+| 3 | GOLOS (N13) | stacked | `feat/golos-criterion` | Eq. (30) identities |
+| 4 | MWHS (N28) | stacked | `feat/mwhs-criterion` | Fig. 14 reproduced, except 90 deg of (b) |
+| 5 | LIU2025 (new record N58) | stacked | `feat/liu2025-criterion` | Fig. 3 reproduced, except 2 points |
+
+Notes on the GOLOS and LIU2025 branches:
+- The GOLOS branch adds `LoadingScopeError`. The pipeline reports a model that raises it as
+  skipped, with eligibility `out_of_scope`.
+- GOLOS is out of scope on every supplied workbook.
+- LIU2025 is out of scope on 42CrMo4_QT and Ti6Al4V_Berto because of the estimated Tu.
+
+Checks: full suite green, apart from one shear-rule registry test, which was fixed and re-run.
+Regression snapshots show no change to existing model outputs.
+
+Next exact action: implement the remaining #13 candidates as their PDFs arrive. Requested:
+- Zhang & Yao 2010;
+- Wang et al. 2022;
+- Kujawski 2021;
+- Papuga & Fojtík 2017;
+- Anes et al. 2014;
+- Lu & Martínez-Esnaola 2021;
+- Stefanov 1993;
+- Liu & Mahadevan 2005.
+
+Meanwhile, continue the #32 guides (LI, LIU2021, MGSE_YU, MGSE_ZHU, MSWT, MMCCM).
+
+## Issue #32 guides MKBM, VSE, GSE, GSA; issue #13 candidates (5 November 2026)
+
+- PR #44 (`docs/guides-strain-energy`) adds four guides: MKBM, VSE, GSE and GSA.
+  - It completes the `mkbm`, `liu_vse` and `gsa` docstrings; 19 modules remain in
+    `PENDING_DOCSTRINGS`.
+  - Checks: guide, notation and method tests pass (536); black, ruff and `check_docs` are clean.
+  - Documentation only; the regression snapshot was not run.
+- Issue #13: the prioritised candidate list is posted as a comment on the issue.
+  - Batch 1: N08, N06, N11, N05, N13, N28, N26.
+  - Batch 2: G05, N24, N32, G32, N16.
+  - Blocker: coding waits for the original PDFs from the maintainer.
+
+Next exact action: #32 guides for LI, LIU2021, MGSE_YU, MGSE_ZHU, MSWT and MMCCM, then the
+invariant and integral families. Implement the #13 candidates as their PDFs arrive. TVEIT2025
+stays untouched.
+
 ## Open work after PR #33 (5 November 2026)
 
 Open PRs, each from `main` at `2efee9f` and independent:
@@ -715,4 +1376,5 @@ No pending test failure is known. The unresolved item is source completeness, no
 - `fatigue/report/export_csv.py`
 - `tests/run_material_validation.py`
 - `tests/test_method_audit.py`
+
 

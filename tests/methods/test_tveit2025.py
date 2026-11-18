@@ -71,7 +71,7 @@ def test_inside_endurance_surface_is_infinite():
     assert fatigue_index(*cycle, *constants[:3]) < 1.0
     life = tveit2025_life(*cycle, *constants)
     assert math.isinf(life.Nf)
-    assert life.termination == "stabilized_extrapolation" and life.blocks == MIN_BLOCKS
+    assert life.termination == "shakedown" and life.blocks == 2  # no damage in the first two blocks
 
 
 def test_shakedown_under_mean_shear_is_infinite():
@@ -80,7 +80,7 @@ def test_shakedown_under_mean_shear_is_infinite():
     assert fatigue_index(*cycle, *constants[:3]) > 1.0
     life = tveit2025_life(*cycle, *constants)
     assert math.isinf(life.Nf)
-    assert life.termination == "stabilized_extrapolation" and life.blocks > MIN_BLOCKS
+    assert life.termination == "shakedown" and 2 < life.blocks < MIN_BLOCKS
 
 
 def test_case_model_returns_index_and_native_life():
@@ -159,5 +159,5 @@ def test_invalid_constants_name_the_symbol():
         tveit2025_life(*_cycle(sigma_a=100.0), 150.0, 100.0, 0.2, 0.1, 0.0, 2.0)
     with pytest.raises(ValueError, match="n_points >= 3"):
         tveit2025_life(*_cycle(sigma_a=100.0), 150.0, 100.0, 0.2, 0.1, 1e-5, 2.0, n_points=2)
-    with pytest.raises(ValueError, match="max_blocks >= 8"):
-        tveit2025_life(*_cycle(sigma_a=100.0), 150.0, 100.0, 0.2, 0.1, 1e-5, 2.0, max_blocks=5)
+    with pytest.raises(ValueError, match="max_blocks >= 2"):
+        tveit2025_life(*_cycle(sigma_a=100.0), 150.0, 100.0, 0.2, 0.1, 1e-5, 2.0, max_blocks=1)

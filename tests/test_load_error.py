@@ -96,6 +96,28 @@ def test_native_life_load_error_reaches_the_observed_life():
     )
 
 
+def test_native_life_load_error_is_nan_when_a_trial_load_leaves_the_scope():
+    """A LoadingScopeError at a trial load makes e_L undefined (NaN), not a failed model."""
+    from multifat.models.base import CaseResult
+    from multifat.models.errors import LoadingScopeError
+
+    class ScopedLife:
+        name = "SCOPED"
+
+        def evaluate_case(self, *, S0, E0, S1, E1, params, R_list=None, harmonics=None):
+            amplitude = float(np.max(np.abs(harmonics["S_sin"])))
+            if amplitude > 300.0:
+                raise LoadingScopeError("SCOPED: above 300 MPa")
+            return CaseResult(values={"": amplitude}, aux={})
+
+        def native_life(self, aux, params, fit=None):
+            return (500.0 / aux["dp"]) ** 10
+
+    case = _case(axial=250.0, shear=0.0, mean=(0.0, 0.0, 0.0))
+    assert math.isnan(native_life_load_error(ScopedLife(), {}, case, None, None, 1.0))
+    assert np.isfinite(native_life_load_error(ScopedLife(), {}, case, None, None, 2.0**10))
+
+
 def test_pipeline_exports_the_load_error(tmp_path):
     from multifat.cli.pipeline import run_workbook
     from workbook_factory import write_workbook
@@ -120,3 +142,76 @@ def test_native_load_error_below_the_limit():
     case = _case(axial=330.0, shear=150.0, mean=(0.0, 0.0, 0.0))
     e_L = native_life_load_error(model, params, case, None, fit, 1.0e6)
     assert np.isfinite(e_L) and e_L < 0.0  # the load must grow to fail: non-conservative
+
+
+def test_diverging_secant_falls_back_to_bisection():
+    """A secant step beyond |ln s| = LOG_S_MAX returns None instead of overflowing (#71)."""
+    from multifat.eval.load_error import LOG_S_MAX, _solve_in_log
+
+    # g is flat near 0 and steep far away: the first secant step jumps beyond the bound
+    assert _solve_in_log(lambda x: 1.0 + 1e-6 * x) is None
+    assert _solve_in_log(lambda x: x - 0.3) == pytest.approx(math.exp(0.3))
+    assert LOG_S_MAX == 10.0
+
+
+class _StubResult:
+    def __init__(self, values, aux=None):
+        self.values, self.aux = values, aux or {}
+
+
+class _ScopedStub:
+    """DP = axial amplitude + 5, outside the scope (LoadingScopeError) above 150 MPa (#78)."""
+
+    def evaluate_case(self, *, S0, E0, S1, E1, params, R_list, harmonics=None):
+        from multifat.models.errors import LoadingScopeError
+
+        amplitude = float(np.asarray(harmonics["S_sin"])[1, 1])
+        if amplitude > 150.0:
+            raise LoadingScopeError("stub: above 150 MPa")
+        return _StubResult({"": amplitude + 5.0, "_ext": amplitude + 5.0})
+
+
+def test_load_factor_does_not_return_a_scope_edge_as_a_root():
+    """An unreachable target behind a scope edge is NaN, not the edge (s = 1.5 before #78)."""
+    case = case_from_amplitudes(axial=100.0, shear=0.0, mean=(0.0, 0.0, 0.0), E=E, nu=NU)
+    assert math.isnan(load_factor(_ScopedStub(), {}, case, 200.0, R_LIST))
+    assert math.isnan(master_curve_load_error(_ScopedStub(), {}, case, R_LIST, 105.0, 200.0))
+    # a reachable target is still found
+    assert load_factor(_ScopedStub(), {}, case, 125.0, R_LIST) == pytest.approx(1.2, rel=1e-9)
+
+
+class _NaNLifeStub:
+    """Native life N = 1e6 s^-10, undefined (NaN) above s = 1.3 (#78)."""
+
+    def evaluate_case(self, *, S0, E0, S1, E1, params, R_list, harmonics=None):
+        s = float(np.asarray(harmonics["S_sin"])[1, 1]) / 100.0
+        return _StubResult({"": s}, {"s": s})
+
+    def native_life(self, aux, params, fit):
+        s = aux["s"]
+        return float("nan") if s > 1.3 else 1e6 * s**-10
+
+
+def test_native_search_treats_an_undefined_life_as_a_failed_search():
+    """The true root (N = 1e16 at s = 0.1) lies on the defined side: still found; a target past
+    the NaN region is NaN, not the edge of the region (-ln 1.3 before #78)."""
+    case = case_from_amplitudes(axial=100.0, shear=0.0, mean=(0.0, 0.0, 0.0), E=E, nu=NU)
+    assert native_life_load_error(_NaNLifeStub(), {}, case, R_LIST, None, 1e16) == pytest.approx(
+        -math.log(0.1), abs=1e-9
+    )
+    assert math.isnan(native_life_load_error(_NaNLifeStub(), {}, case, R_LIST, None, 1e3))
+
+
+class _JumpStub:
+    """DP = axial amplitude + 5 below 120 MPa, + 50 above: a finite jump, as a plane switch (#78)."""
+
+    def evaluate_case(self, *, S0, E0, S1, E1, params, R_list, harmonics=None):
+        amplitude = float(np.asarray(harmonics["S_sin"])[1, 1])
+        dp = amplitude + (5.0 if amplitude < 120.0 else 50.0)
+        return _StubResult({"": dp, "_ext": dp})
+
+
+def test_load_factor_keeps_a_finite_jump_across_the_target():
+    """A finite jump across the target is a crossing (s = 1.2), unlike a jump to +inf."""
+    case = case_from_amplitudes(axial=100.0, shear=0.0, mean=(0.0, 0.0, 0.0), E=E, nu=NU)
+    assert load_factor(_JumpStub(), {}, case, 150.0, R_LIST) == pytest.approx(1.2, rel=1e-9)

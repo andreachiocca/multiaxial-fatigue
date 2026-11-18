@@ -35,9 +35,12 @@ def resolve_findley_algorithm(selection: str = "method_default") -> str:
     if not isinstance(selection, str) or selection not in (
         *ALGORITHMS,
         "rss",
+        "longest_chord",
         "method_default",
     ):
         raise ValueError(f"Unknown Findley shear amplitude algorithm {selection!r}")
+    if selection == "longest_chord":  # half the longest chord = MCC radius for one harmonic
+        return "mcc_harmonic"
     return "mce_harmonic" if selection in {"method_default", "rss"} else selection
 
 

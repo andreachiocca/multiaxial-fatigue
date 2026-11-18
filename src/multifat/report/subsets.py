@@ -56,15 +56,71 @@ def _history(case) -> dict:
     }
 
 
-def dataset_fingerprint(block: dict) -> str:
-    """Hash of the material properties and the failure histories (lives and stress histories)."""
+def dataset_fingerprint(block: dict, runouts: bool = False) -> str:
+    """Hash of the material properties and the failure histories (lives and stress histories).
+
+    With ``runouts`` the run-out histories are hashed too: a fatigue-limit dataset holds only
+    run-outs (its limit states), so without them its fingerprint would track the properties only.
+    The default keeps every recorded fingerprint unchanged.
+    """
     props = {k: v for k, v in block["material"].items() if k != "extra"}
     props.update(block["material"].get("extra") or {})
-    failures = sorted(
-        json.dumps(json_value({"N": c["meta"]["Nf_cycles"], **_history(c)}), sort_keys=True)
-        for c in block["cases"].values()
-    )
-    return _sha({"properties": props, "failures": failures})
+
+    # Failures at a phase that is not a multiple of 90 deg hold trigonometric values whose last
+    # bits differ between platforms (first in 18_Al7075_T651_Wang): such a dataset hashes its
+    # failure histories rounded to 1e-6 MPa, like the run-outs. Every other recorded
+    # fingerprint is unchanged.
+    decimals = RUNOUT_DECIMALS if _has_oblique_phase(block["cases"]) else None
+
+    def histories(cases) -> list[str]:
+        def history(c):
+            h = _history(c)
+            return h if decimals is None else _rounded(h, decimals)
+
+        return sorted(
+            json.dumps(json_value({"N": c["meta"]["Nf_cycles"], **history(c)}), sort_keys=True)
+            for c in cases.values()
+        )
+
+    content = {"properties": props, "failures": histories(block["cases"])}
+    if runouts:
+        # rounded to 1e-6 MPa: out-of-phase harmonics hold trigonometric values (cos 90 deg =
+        # 6e-17) whose last bits differ between platforms' math libraries
+        content["runouts"] = sorted(
+            json.dumps(
+                json_value({"N": c["meta"]["Nf_cycles"], **_rounded(_history(c), RUNOUT_DECIMALS)}),
+                sort_keys=True,
+            )
+            for c in (block.get("runouts") or {}).values()
+        )
+    return _sha(content)
+
+
+RUNOUT_DECIMALS = 6
+
+
+def _has_oblique_phase(cases) -> bool:
+    """True when a case has a load phase that is not a multiple of 90 deg."""
+    for c in cases.values():
+        for key, value in c.get("meta", {}).items():
+            if "phase" not in key.lower():
+                continue
+            try:
+                phase = float(value)
+            except (TypeError, ValueError):
+                continue
+            if np.isfinite(phase) and phase % 90.0 != 0.0:
+                return True
+    return False
+
+
+def _rounded(value, decimals: int):
+    """Copy with every array rounded (and -0.0 turned into 0.0)."""
+    if isinstance(value, dict):
+        return {k: _rounded(v, decimals) for k, v in value.items()}
+    if isinstance(value, (np.ndarray, list, tuple)):
+        return np.round(np.asarray(value, dtype=float), decimals) + 0.0
+    return value
 
 
 def observation_index(block: dict) -> dict[tuple[str, int], dict]:

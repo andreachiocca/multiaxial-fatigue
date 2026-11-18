@@ -1,0 +1,88 @@
+% registry: GOLOS
+\methodhead{GOLOS}{Golos, D\k{e}bski and D\k{e}bski (2014): modified Gough limit curve}\label{sheet:GOLOS}
+
+\block{Source} K.~M.~Golos, D.~K.~D\k{e}bski, M.~A.~D\k{e}bski, \emph{Theor.\ Appl.\ Fract.\ Mech.}\ 73
+(2014) 3--8 \cite{golos2014}, Eqs.~(26)--(32); Table~2, Figs.~2--8.
+
+\block{Idea and scope} A fatigue-limit curve for combined bending and torsion that interpolates two
+classical curves with one corrected ellipse whose coefficients are linear in $\kappa=\fm/\tm$: the
+Gough ellipse, i.e.\ the von Mises (HMH) equivalent stress ($\kappa=\sqrt3$), and the curve of
+D\k{e}bski's equivalent stress ($\kappa=4/3$). Proposed for high-cycle fatigue limits under
+\emph{in-phase, fully reversed} bending and torsion; the paper uses six steels with
+$1.53\le\kappa\le1.75$.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\fm$, $\tm$ & MPa & fully reversed bending (or tension) and torsion fatigue limits\\
+$\kappa$ & -- & limit ratio $\fm/\tm$\\
+$\sigma$, $\tau$ & MPa & bending and torsion stress amplitudes (in phase, zero mean)\\
+$A$, $B$, $C$ & -- & coefficients of the curve, Eqs.~\eqref{eq:golos-30}--\eqref{eq:golos-main} (not the master-curve $A$)\\
+$\sigma_1\ge0\ge\sigma_2$ & MPa & in-plane principal stress amplitudes of a fully reversed proportional plane stress\\
+$\mathrm{DP}$ & -- & left-hand side of Eq.~\eqref{eq:golos-main}, 1 on the limit curve\\
+$\sigma_{eq}$ & MPa & D\k{e}bski's equivalent stress (Eqs.~27--28)\\
+$r_i$ & -- & normal distance of a test point to the curve in the normalised plane (scatter index, Table~2)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The generalised Gough ellipse (Eq.~29) is
+\begin{equation}
+A\Bigl(\frac{\sigma}{\fm}\Bigr)^2 + B\,\frac{\sigma}{\fm} + C\Bigl(\frac{\tau}{\tm}\Bigr)^2 = 1 ,
+\label{eq:golos-29}
+\end{equation}
+with the coefficients fixed by the two reference curves (Eq.~30),
+\begin{equation}
+A = \frac{2}{3\sqrt3-4}\,\kappa + \frac{\sqrt3-4}{3\sqrt3-4} , \qquad
+B = -\frac{2}{3\sqrt3-4}\,\kappa + \frac{2\sqrt3}{3\sqrt3-4} , \qquad C = 1 .
+\label{eq:golos-30}
+\end{equation}
+The engineering approximation of Eq.~(31) gives the final criterion (Eq.~32),
+\begin{equation}
+\Bigl(\frac{\sigma}{\fm}\Bigr)^2(1.67\,\kappa - 1.90) + \frac{\sigma}{\fm}(-1.67\,\kappa + 2.90)
++ \Bigl(\frac{\tau}{\tm}\Bigr)^2 = 1 .
+\label{eq:golos-main}
+\end{equation}
+$A+B=1$ in both forms, so the bending limit lies on the curve for every $\kappa$. $\kappa=\sqrt3$ gives
+$A=1$, $B=0$, the Gough ellipse (Eq.~26); $\kappa=4/3$ gives $A=1/3$, $B=2/3$, the curve of
+$\sigma_{eq}=\sigma/3+\tfrac23\sqrt{\sigma^2+4\tau^2}$ (Eqs.~27--28).
+
+\block{Constants and calibration} Paper and repository: $A$ and $B$ from $\kappa=\fm/\tm$, $C=1$; nothing
+is fitted except the master-curve constants. The text also states $A=1$, $B=0$ for $\kappa=2$; Eq.~(30)
+is the straight line through the $\kappa=4/3$ and $\kappa=\sqrt3$ points and gives $A=1.45$, $B=-0.45$
+there, so the statement contradicts the equations. For $\kappa>1.737$, Eq.~(31) gives $B<0$, and a
+small bending stress lowers the index below the torsion-only value.
+
+\block{Life} No native life law. The index is the damage parameter of the shared master curve
+(Section~\ref{sec:mastercurve}), an extension of the limit curve. The linear term makes the index
+non-homogeneous in the load, so the load-equivalent error, Eq.~\eqref{eq:eload}, is the cross-method
+metric.
+
+\block{Repository choices}
+\begin{itemize}
+\item Eq.~\eqref{eq:golos-main}, i.e.\ the approximated coefficients of Eq.~(31), as the paper's final
+  criterion; Eq.~(30) is available as an option. The two differ by less than 0.01 for
+  $1.5\le\kappa\le1.75$.
+\item Frame-invariant reduction: a fully reversed, in-phase plane stress whose principal amplitudes
+  satisfy $\sigma_1\ge0\ge\sigma_2$ is exactly a bending--torsion state in a rotated frame, with
+  $\sigma=\sigma_1+\sigma_2$ and $\tau=\sqrt{-\sigma_1\sigma_2}$.
+\item Every other case (a mean stress, a phase shift, a triaxial state, principal amplitudes of equal
+  sign) raises \texttt{LoadingScopeError}; the model is skipped and recorded as \texttt{out\_of\_scope}.
+  On every supplied workbook, which all contain mean stresses or out-of-phase tests, it is skipped.
+\item Finite life through the master curve. No \texttt{\_ext} variant.
+\end{itemize}
+
+\block{Worked example} Hard steel of Nishihara and Kawamoto, $\fm=313.9$, $\tm=196.2\MPa$
+($\kappa=1.60$): $A=0.772$, $B=0.228$, $C=1$. Three in-phase fatigue limits of that dataset (as
+tabulated by Gon\c{c}alves et al.\ \cite{goncalves2005}): $(\sigma,\tau)=(138.1,167.1)$,
+$(245.3,122.6)$ and $(299.1,62.8)\MPa$ give the index 0.975, 1.040 and 1.021; the Gough ellipse gives
+0.919, 1.001 and 1.010.
+
+\block{Verification} Checked: $A+B=1$ for Eqs.~(30) and~(31); the special cases $\kappa=\sqrt3$ and
+$\kappa=4/3$ (Eq.~28 coincides with Eq.~27); the accuracy of Eq.~(31) on the paper's range; the
+inconsistency at $\kappa=2$; the frame-invariant reduction of a rotated bending--torsion state; the
+rejection of every out-of-scope case; the pipeline skip (\texttt{out\_of\_scope}) on an out-of-phase
+workbook. Not reproduced: the scatter index of Table~2, because the experimental points of
+Figs.~2--7 are not tabulated and its $r_i$ is the normal distance to the curve.

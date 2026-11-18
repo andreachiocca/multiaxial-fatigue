@@ -25,6 +25,32 @@ This workflow retains the present FABER WG4.3 scope of constant-amplitude loadin
 and smooth/plain geometries. It does not introduce a new fatigue formulation or
 censored-data regression.
 
+## Calibration history in the pipeline (issue #15)
+
+Every `<MATERIAL>_calibration.json` written by `multifat-pipeline` with fitted constants carries a
+persistent `calibration_id` = `<UTC time>_<12 hex digits>`, and a copy is archived as
+`<archive>/<MATERIAL>/<calibration_id>.json` (archive: `--calibration-archive DIR`, default
+`<results-dir>/calibrations`). The hex digits are the start of the SHA-256 of the record without
+its creation time, Git state and file paths (`multifat.cli.records.content_signature`): an
+equivalent rerun finds its earlier record and keeps that id, a different calibration gets a new
+file. Archived files are created exclusively and never replaced. The run report names the record
+in its `calibration_id` column, and `calibration_procedure` records the version of the calibration
+rules (2 since PR #34).
+
+Reuse a record with `--calibration-id ID` (one workbook; the same archive) or `--constants FILE`.
+A pipeline record is **rejected** when its provenance lacks `implementation_revision` or
+`failure_fingerprint` (insufficiently documented) or when it was made with another implementation
+revision of the methods (its constants belong to other formulations). It is used **with a
+warning** in `constants_source.warning` when it was made on other failure data (transferred, not
+calibrated) or with another calibration-procedure version. Upstream `Calibrations/` records keep
+their own schema and checks; missing legacy provenance is never inferred.
+
+```bash
+uv run multifat-pipeline --material AISI316L --calibration-archive Calibrations
+uv run multifat-pipeline --material AISI316L --calibration-archive Calibrations \
+    --calibration-id 20261105T101500123456Z_0123456789ab
+```
+
 ## Public method and plane-selection variants
 
 The name without a suffix selects **each method's declared default**: `FS` evaluates
@@ -59,7 +85,7 @@ Symbols (`DP`, `N`, `A`, `b`, the plane coefficients) are the ones of
 |---|---|---|
 | Elastic constants, yield/ultimate strengths, supplied fatigue strengths and strain-life properties | Material inputs, including existing optional-property estimates where explicitly reported | Excel |
 | `K` | Existing ratio of fatigue strengths; not an optimisation output | Excel |
-| `k_FS`, `k_FI`, `L_LI`, `k_MGSE`, `a_MSWT` | Dimensionless coefficients of the existing FS, Findley, Li, MGSE_ZHU and scalar MSWT implementations | JSON |
+| `k_FS`, `k_FI`, `L_LI`, `k_MGSE`, `a_MSWT`, `k_PDS` | Dimensionless coefficients of the existing FS, Findley, Li, MGSE_ZHU, scalar MSWT and PDS_FS implementations | JSON |
 | `A`, `b`, `A_surv` | Master curve `DP = A*N**b` and its existing damage-space shift | JSON, separately for standard and `_ext` variants |
 | `STD`, `STD_ln_DP`, `R2_log`, `n` | Fit diagnostics and number of usable failure observations | JSON |
 | Plane grid, search bounds, refinement counts, selection tolerances and scatter settings | Numerical calibration settings, distinct from material properties | JSON metadata and versioned procedure |
@@ -73,12 +99,12 @@ and master curves use `FIN`. `_ext` is a separate stored curve, not a new materi
 
 ```bash
 # Fit the requested coefficient and both FS curve variants.
-python scripts/0_calibrate_material_params.py --material 42CrMo4_QT --models FS
-python scripts/1_run_material.py --material 42CrMo4_QT --model FS_ext --results-dir Results/current --plot-dir Results/current/plots
+python scripts/0_calibrate_material_params.py --material 42CrMo4_Santus --models FS
+python scripts/1_run_material.py --material 42CrMo4_Santus --model FS_ext --results-dir Results/current --plot-dir Results/current/plots
 
 # BP/CAIM require no fitted method coefficients, but still need master curves.
-python scripts/0_calibrate_material_params.py --material 42CrMo4_QT --models BP CAIM
-python scripts/1_run_material.py --material 42CrMo4_QT --model BP --results-dir Results/current --no-plots
+python scripts/0_calibrate_material_params.py --material 42CrMo4_Santus --models BP CAIM
+python scripts/1_run_material.py --material 42CrMo4_Santus --model BP --results-dir Results/current --no-plots
 python scripts/2_compare_results.py --results_dir Results/current --out_dir Results/Comparison
 ```
 
@@ -110,8 +136,8 @@ prevents a successful record from being written. No default coefficient is silen
 | `error` | An unexpected exception, kept with its traceback in the log | exit code 1 |
 
 The search intervals are k_FS, k_FI in [0, 3], L_LI in [0, 20] (widened from [0, 5] in November 2026:
-on both 42CrMo4 datasets the minimum lay just outside it, at 7.07 and 5.36), k_MGSE in [0, 5] and
-a_MSWT in [0, 1]. The lower bound 0 and the upper bound 1 of a_MSWT (a weight) are limits of the
+on both 42CrMo4 datasets the minimum lay just outside it, at 7.07 and 5.36), k_MGSE in [0, 5],
+a_MSWT in [0, 1] and k_PDS in [0, 10] (Albinmousa & Al Hussain 2021 report 0.1 to 5.0). The lower bound 0 and the upper bound 1 of a_MSWT (a weight) are limits of the
 constants themselves; the other upper bounds only limit the search. A scatter minimum on such a
 search bound is not a calibrated optimum: it is listed under `at_bound` and `unidentified` in the
 sidecar and handed to no model, so a model that requires it is skipped with that reason (Ti6Al4V:
@@ -120,12 +146,25 @@ noted in the run report. A model whose master curve cannot be inverted for life 
 `k = -1/b > 15`) still runs, with DP errors only; the run report says so.
 
 Calibration stays all-or-nothing per material: an `infeasible` material yields exactly the constants
-it yielded before the status existed, so `1_Ti6Al4V` keeps its Basquin and strain-life estimates and
+it yielded before the status existed, so `1_Ti6Al4V_Meneghetti` keeps its Basquin and strain-life estimates and
 loses the plane constants of every block, not only the one that failed. Models that read a lost
 constant with a fallback still run, and the run report marks them `ok (default constant)` with a note
 naming the block and the default value; models that require it stay `skipped` with the same pointer
 appended to their reason. Block isolation (`partial`) is reserved for a later change and is not
 produced.
+
+**Tests outside R = −1 (issue #77, decision d107).** The plane constants (`k_FS`, `k_FI`, `L_LI`,
+`k_MGSE`, `a_MSWT`, `k_PDS`) are defined on fully reversed tension and torsion tests, selected with
+|R + 1| ≤ 10⁻³, the tolerance shared by every design-test selector (#77). When a material has none, the selection relaxes the tolerance (0.02, 0.05, 0.1, 0.2, 0.5)
+and, as a last resort, accepts any stress ratio. The maintainer accepts this fallback, with two
+conditions:
+
+- the record says how far it went: `selection.tension_rtol_R`, `torsion_rtol_R`, `tension_any_R`,
+  `torsion_any_R`, and the sentence `selection.r_fallback`;
+- every result that adopted such a constant is marked `ok (R fallback)` in the run report, with
+  the constant and the tests in its notes.
+
+None of the current workbooks needs the fallback.
 
 Each material is independent: one `infeasible` or `error` material does not stop the batch, the
 materials after it are calibrated as usual, and the process exits 1 so a script can detect the
@@ -232,11 +271,12 @@ schema-version-1 files to remain readable without rewriting them.
 ## Findley amplitude selection
 
 > **In this repository.** The option is `multifat-calibrate --shear-amplitude-algorithm`; it sets the
-> Findley shear amplitude (MCE or MCC) in the k_FI calibration through the plane shear rule of the
-> established search and returns `amplitude_settings` with the result. No record is written, so the
+> shear amplitude (MCE or MCC/longest chord) of every calibrated critical-plane criterion (FS, FIN,
+> LI, MGSE_ZHU, MSWT) through the plane shear rule of the established search and returns
+> `amplitude_settings` with the result. No record is written, so the
 > store-specific text below (Script 0/1, JSON signatures, compatibility table, fingerprints) describes
-> upstream only; `multifat-pipeline --constants` rejects a record whose Findley amplitude is not MCE
-> and does not expose the option. See [harmonic shear amplitudes](shear-amplitude.md#findley-calibration-selection).
+> upstream only; `multifat-pipeline --constants` rejects a record whose amplitude differs from a
+> method's own and does not expose the option. See [harmonic shear amplitudes](shear-amplitude.md#findley-calibration-selection).
 
 Upstream's Findley calibration accepts the following Script 0 option. The mathematical
 definitions and amplitude/range conventions are given in

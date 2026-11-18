@@ -1,5 +1,5 @@
 {
-    "params": {
+    "hand_entered_constants": {
         "Sigm1_TVEIT": 500.0,
         "Taum1_TVEIT": 422.0,
         "A_TVEIT": 0.510725229826353,
@@ -7,11 +7,12 @@
         "K_TVEIT": 2.09182156413546e-05,
         "L_TVEIT": 2.39874133089254,
         "npts_TVEIT": 1001,
-        "min_blocks_TVEIT": 8,
-        "max_blocks_TVEIT": 10000,
-        "tol_alpha_TVEIT": 1e-06,
-        "tol_damage_TVEIT": 1e-05
+        "min_blocks_TVEIT": 400,
+        "max_blocks_TVEIT": 60000,
+        "tol_alpha_TVEIT": 0.01,
+        "tol_damage_TVEIT": 0.001
     },
+    "material_id": "Ti6Al4V_Berto",
     "provenance": {
         "workbook": "Experimental_Data/15_Ti6Al4V_Berto.xlsx",
         "model": "TVEIT2025",
@@ -24,9 +25,9 @@
     "notes": {
         "Sigm1_TVEIT, Taum1_TVEIT": "fatigue limits [MPa] the constants were calibrated with; they replace the workbook Sigm1 and Taum1 for TVEIT2025 only",
         "npts_TVEIT": "points per load cycle; 1001 gives lives about 0.02 decade shorter than converged",
-        "min_blocks_TVEIT": "cycles integrated before the stationarity test is applied",
-        "max_blocks_TVEIT": "cycles integrated at most; the life is then extrapolated from the damage of the last cycle (warning in the run notes)",
-        "tol_alpha_TVEIT": "relative change of the back-stress per cycle below which the cycle is stationary",
-        "tol_damage_TVEIT": "relative change of the damage per cycle below which the cycle is stationary"
+        "min_blocks_TVEIT": "cycles integrated before the cyclic steady-state test is applied (at least 400)",
+        "max_blocks_TVEIT": "cycles integrated at most; the life is then extrapolated from the mean damage of the last 200 cycles (warning in the run notes)",
+        "tol_alpha_TVEIT": "largest net drift of the back-stress over 200 cycles, relative to its path length in those cycles, for a cyclic steady state",
+        "tol_damage_TVEIT": "largest relative change of the mean damage per cycle between two windows of 200 cycles, for a cyclic steady state"
     }
 }

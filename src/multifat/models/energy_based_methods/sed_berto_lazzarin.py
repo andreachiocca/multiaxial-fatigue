@@ -1,24 +1,23 @@
-"""Strain energy density (SED) averaged over the control volume for sharp V-notches
-loaded in combined mode I and mode III, after Berto & Lazzarin (2011), Int J
-Fatigue 33:1055-1065, doi:10.1016/j.ijfatigue.2010.11.019 (roadmap G30). The
-implementation consists of standalone point kernels that receive the notch
-quantities as explicit arguments; it is deliberately not registered as a model,
-because a plain specimen has no singular stress field, in which case the
-averaged SED falls back to the local value and R1 and R3 are no longer needed.
+"""Averaged strain energy density (SED) criterion of Berto & Lazzarin (2011).
 
-Eq. (7):  Delta W = (1/E) [e1 Delta K1^2 / R1^(2(1 - lambda1)) + e3 Delta K3^2 / R3^(2(1 - lambda3))]
-Eq. (8a): R1 = (sqrt(2 e1) Delta K1A / Delta sigma1A)^(1/(1 - lambda1))
-Eq. (8b): R3 = (sqrt(e3/(1 + nu)) Delta K3A / Delta tau3A)^(1/(1 - lambda3))
+Published in *International Journal of Fatigue* 33 (2011), pp. 1055-1065,
+doi:10.1016/j.ijfatigue.2010.11.019 (roadmap G30), Eqs. (7)-(8)::
 
-Here Delta K denotes the notch stress intensity factor ranges, lambda the
-Williams eigenvalues, and e1, e3 the SED shape constants associated with the
-opening angle (2 alpha = 90 deg, nu = 0.3: lambda1 = 0.5445, lambda3 = 0.6667,
-e1 = 0.1462, e3 = 0.3103, p.1063), while the A-level ranges are taken from
-notched and plain specimens at the same N_A. By construction, evaluating Eq. (7)
-at the A level yields Delta sigma1A^2/(2E) for mode I and
-(1 + nu) Delta tau3A^2 / E for mode III. The phase effect reported in the paper
-appears only in the scatter band (no separate term), and the load ratio is
-weighted by c_W (Eq. 1), equal to 1 for R = 0 and 0.5 for R = -1.
+    Delta W = (1 / E) * (e1 * Delta K1^2 / R1^(2 * (1 - lambda1))
+                         + e3 * Delta K3^2 / R3^(2 * (1 - lambda3)))
+    R1 = (sqrt(2 * e1) * Delta K1A / Delta sigma1A)^(1 / (1 - lambda1))
+    R3 = (sqrt(e3 / (1 + nu)) * Delta K3A / Delta tau3A)^(1 / (1 - lambda3))
+
+where ``Delta K`` are Mode I and Mode III notch stress intensity factor ranges,
+``lambda1, lambda3`` are the Williams eigenvalues, and ``e1, e3`` are opening-angle SED
+shape constants calibrated at shared life ``N_A``.
+
+Repository choices:
+- Deliberately exposed as standalone notch kernels (``control_radii``, ``averaged_sed``)
+  and not registered as a workbook model because smooth specimens carry no singular stress
+  field (``Delta K1, Delta K3``), causing control radii ``R1, R3`` to vanish.
+- Does not add a separate phase-shift term or apply mean-stress factor ``c_W`` automatically
+  beyond explicit caller inputs.
 """
 
 from __future__ import annotations

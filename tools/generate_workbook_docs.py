@@ -37,7 +37,7 @@ def render() -> str:
         "",
         "One `.xlsx` file per material in `Experimental_Data/` (subfolders such as `archive/` are not",
         "read). The material ID is the file name without extension and without an ordering prefix",
-        "such as `6_` (`6_42CrMo4_QT.xlsx` is `42CrMo4_QT`); two files with the same ID are rejected.",
+        "such as `6_` (`6_42CrMo4_Santus.xlsx` is `42CrMo4_Santus`); two files with the same ID are rejected.",
         "`multifat-pipeline <workbook>` validates it, calibrates missing constants, runs every",
         "registered model and compares the results. Workbooks are never modified.",
         "",
@@ -51,6 +51,11 @@ def render() -> str:
         "run, the others are reported as skipped. A Summary in the revised format (a `Stress ratio R`",
         "column) is also checked for source rows naming another alloy than the file and for a",
         "tensile fatigue limit averaged over different stress ratios, which is then not used.",
+        "An optional column `Axial fatigue limit loading` records, for each source row, how the",
+        "axial R = -1 fatigue limit was obtained: `push-pull`, `rotating bending`, `plane bending`",
+        "or `bending`. The value is kept with the source of `Sigm1`, reported in the validation",
+        "summary, and maps the limit onto the FatPy keys `fat_lim_ten_m1` (push-pull) or",
+        "`fat_lim_ben_m1` (bending). It does not change the limit value used by the models.",
         "",
         "| Parameter | Header contains | Required at load |",
         "|---|---|---|",
@@ -85,6 +90,14 @@ def render() -> str:
         "Empty or `Null` stress cells are read as 0. Stresses in MPa, phases in degrees with",
         "respect to the axial load.",
         "Radial = sigma_xx, axial = sigma_yy, shear = tau_xy; strains are linear elastic.",
+        "",
+        "The optional column `Observation type (failure/run-out/fatigue limit)` (decision d113)",
+        "declares what a row is: `failure` (Run out `No`), `run-out` (an interrupted test, a",
+        "censored life) or `fatigue limit` (an established limit state, from a staircase or derived",
+        "from an S-N curve; both with Run out `Yes`). A type that contradicts Run out, or any other",
+        "text, stops the import. A blank cell leaves the row undeclared: a run-out is then a limit",
+        "state only in a workbook without failures. A life workbook with declared fatigue limits is",
+        "mixed: its limit states are also judged by the fatigue index (`FatigueLimit/`).",
         "",
         "A `Phase AXIAL load` column marks the revised format (October 2026 collection). There the",
         "radial and torsional phases are taken relative to the axial phase, an empty stress cell is",
@@ -131,10 +144,14 @@ def render() -> str:
     return "\n".join(out) + "\n"
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
+def build_parser() -> argparse.ArgumentParser:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true")
-    args = ap.parse_args()
+    return ap
+
+
+def main() -> None:
+    args = build_parser().parse_args()
     text = render()
     if args.check:
         if not OUT.exists() or OUT.read_text(encoding="utf-8") != text:

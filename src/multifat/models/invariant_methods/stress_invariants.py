@@ -39,6 +39,35 @@ def hydrostatic_amplitude_mean(S_mean, S_sin, S_cos) -> tuple[float, float]:
     return float(sigma_H_a), float(trace_mean / 3.0)
 
 
+PEAK_SAMPLES = 720  # time samples bracketing the peak before the golden-section refinement
+
+
+def peak_principal_stress(S_mean, S_sin, S_cos) -> float:
+    """max over eta of the largest principal stress of S_mean + S_sin sin(eta) + S_cos cos(eta)."""
+
+    def largest_eig(phase):
+        phase = np.atleast_1d(phase)
+        tensor = (
+            S_mean + np.sin(phase)[:, None, None] * S_sin + np.cos(phase)[:, None, None] * S_cos
+        )
+        return np.linalg.eigvalsh(tensor)[:, -1]
+
+    samples = np.linspace(0.0, 2.0 * np.pi, PEAK_SAMPLES, endpoint=False)
+    largest = largest_eig(samples)
+    # coincident maxima give the same value, which is all this needs
+    top = int(np.argmax(largest))
+    spacing = samples[1] - samples[0]
+    lo, hi = samples[top] - spacing, samples[top] + spacing
+    for _ in range(60):  # golden-section search inside the bracket
+        left = hi - 0.618034 * (hi - lo)
+        right = lo + 0.618034 * (hi - lo)
+        if largest_eig(left)[0] >= largest_eig(right)[0]:
+            hi = right
+        else:
+            lo = left
+    return max(float(largest[top]), float(largest_eig(0.5 * (lo + hi))[0]))
+
+
 def harmonic_parts(S0, S1, harmonics):
     if harmonics is None:
         start, end = np.asarray(S0, dtype=float), np.asarray(S1, dtype=float)

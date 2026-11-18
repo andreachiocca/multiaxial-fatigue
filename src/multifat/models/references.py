@@ -1,6 +1,6 @@
 """Bibliography and audit decisions. See docs/method-audit.md for scope."""
 
-IMPLEMENTATION_REVISION = "2026-10-07-audit1"
+IMPLEMENTATION_REVISION = "2026-11-17"
 REFERENCES = {
     "FS": (
         "Fatemi & Socie (1988), A critical plane approach to multiaxial fatigue damage including out-of-phase loading",
@@ -90,6 +90,66 @@ REFERENCES = {
         "Crossland (1956), Effect of large hydrostatic pressures on the torsional fatigue strength of an alloy steel; as restated by Papadopoulos et al. (1997), A comparative study of multiaxial high-cycle fatigue criteria for metals, Eqs. (44), (65)-(66)",
         "10.1016/S0142-1123(96)00064-3",
     ),
+    "KUJAWSKI2021": (
+        "Kujawski (2021), An interpretation and modification of the SWT function, Eqs. (9)-(13)",
+        "10.1111/ffe.13488",
+    ),
+    "SIH": (
+        "Zenner, Simbuerger & Liu (2000), On the fatigue limit of ductile metals under complex multiaxial loading, Eqs. (6)-(7), Table 1 (shear stress intensity hypothesis of Zenner, Heidenreich & Richter)",
+        "10.1016/S0142-1123(99)00107-3",
+    ),
+    "WANG2018": (
+        "Wang, Shang, Sun & Chen (2018), Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Eqs. (2)-(9), (15)-(20)",
+        "10.1016/j.tafmec.2017.10.007",
+    ),
+    "WANG2022": (
+        "Wang, Sun, Liu, Liu & Shang (2022), Multiaxial high-cycle fatigue failure and life prediction based on critical plane method, Eqs. (10), (15), (18)-(24)",
+        "10.1177/10567895221091308",
+    ),
+    "ZHANGYAO": (
+        "Zhang & Yao (2011), An improved multiaxial high-cycle fatigue criterion based on critical plane approach, Eqs. (3), (6), (7), (A1)",
+        "10.1111/j.1460-2695.2010.01523.x",
+    ),
+    "LIU2025": (
+        "Liu, Xie & Hao (2025), A multiaxial high-cycle fatigue life evaluation model based on the critical plane method, Eqs. (21)-(27)",
+        "10.1007/s11665-025-11163-z",
+    ),
+    "MWHS": (
+        "Wu, Li, Fang & Song (2017), Evaluation of multiaxial fatigue life prediction criteria for Ni-based superalloy GH4169, Eq. (19)",
+        "10.1177/0954406217708214",
+    ),
+    "NINIC": (
+        "Ninic (2006), A stress-based multiaxial high-cycle fatigue damage criterion, Eqs. (1)-(4)",
+        "10.1016/j.ijfatigue.2005.04.014",
+    ),
+    "GOLOS": (
+        "Golos, Debski & Debski (2014), A stress-based fatigue criterion to assess high-cycle fatigue under in-phase multiaxial loading conditions, Eqs. (29)-(32)",
+        "10.1016/j.tafmec.2014.07.005",
+    ),
+    "PDS_SWT": (
+        "Albinmousa & Al Hussain (2021), Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Eqs. (8), (12)-(13), (17)-(18)",
+        "10.1016/j.finmec.2021.100025",
+    ),
+    "PDS_FS": (
+        "Albinmousa & Al Hussain (2021), Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Eqs. (9), (12), (14), (17), (19)",
+        "10.1016/j.finmec.2021.100025",
+    ),
+    "MATSUBARA": (
+        "Matsubara, Hayashida & Kano (2018), Predicting the multiaxial fatigue limit and the multiaxial high-cycle fatigue life based on the unified equivalent shear stress from axial strength characteristics with various waveforms, Eqs. (9), (13)-(15)",
+        "10.1016/j.ijfatigue.2017.12.001",
+    ),
+    "KAKUNO": (
+        "Kakuno & Kawada (1979), A new criterion of fatigue strength of a round bar subjected to combined static and repeated bending and torsion, Eqs. (4), (6)-(10)",
+        "10.1111/j.1460-2695.1979.tb01358.x",
+    ),
+    "KHALIJ": (
+        "Khalij, Pagnacco & Troian (2017), Fatigue criterion improvement of Gough and Nishihara & Kawamoto to predict the fatigue damage of a wide range of metallic materials, Eqs. (12), (22), (23), (26)",
+        "10.1016/j.ijfatigue.2017.02.016",
+    ),
+    "GAM": (
+        "Goncalves, Araujo & Mamiya (2005), Multiaxial fatigue: a stress based criterion for hard metals, Eqs. (11)-(13), (A.17)",
+        "10.1016/j.ijfatigue.2004.05.006",
+    ),
     "SINES": (
         "Sines (1959), Behavior of metals under complex static and alternating stresses; as restated by Papadopoulos et al. (1997), A comparative study of multiaxial high-cycle fatigue criteria for metals, Eqs. (44), (62)-(64)",
         "10.1016/S0142-1123(96)00064-3",
@@ -121,6 +181,18 @@ REFERENCES = {
     "PBP": (
         "Cristofori, Susmel & Tovo (2008), A stress invariant based criterion to estimate fatigue damage under multiaxial loading, Eqs. (4)-(13)",
         "10.1016/j.ijfatigue.2007.11.006",
+    ),
+    "LIUMAHADEVAN": (
+        "Liu & Mahadevan (2005), Multiaxial high-cycle fatigue criterion and life prediction for metals, Eqs. (6), (19)-(24)",
+        "10.1016/j.ijfatigue.2005.01.003",
+    ),
+    "SSF": (
+        "Anes, Reis, Li, Fonte & de Freitas (2014), New approach for analysis of complex multiaxial loading paths, Eqs. (29)-(31)",
+        "10.1016/j.ijfatigue.2013.05.004",
+    ),
+    "MMP": (
+        "Papuga & Fojtik (2017), Multiaxial fatigue strength of common structural steel and the response of some estimation methods, Eqs. (19)-(25)",
+        "10.1016/j.ijfatigue.2017.07.001",
     ),
     "MMMH": (
         "Mertens & Liebich (2017), A time dependent equivalent stress function for proportional and non-proportional transient loaded and notched metallic components, Eqs. (1), (4), (20)-(25), smooth surface; endurance-limit Haigh line with M of Dubbel (2004) E1",

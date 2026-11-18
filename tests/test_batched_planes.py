@@ -4,7 +4,8 @@ import numpy as np
 import pytest
 
 from multifat.eval.evaluator import best_cp_for_case, evaluate_planes, prepare_planes
-from multifat.models.registry import _available_cp_methods
+from multifat.models.registry import available_cp_methods
+from multifat.models.utils.batch import pypow2
 from multifat.planes.sampling import build_R_list
 
 PARAMS = dict(
@@ -62,10 +63,10 @@ def _case(rng, harmonic):
     )
 
 
-@pytest.mark.parametrize("name", sorted(_available_cp_methods()))
+@pytest.mark.parametrize("name", sorted(available_cp_methods()))
 @pytest.mark.parametrize("harmonic", [False, True])
 def test_batch_equals_scalar_bitwise(name, harmonic):
-    method = _available_cp_methods()[name]
+    method = available_cp_methods()[name]
     R_list = build_R_list()
     rng = np.random.default_rng(7)
     for _ in range(4):
@@ -87,3 +88,35 @@ def test_non_orthonormal_plane_rejected():
     z = np.zeros((3, 3))
     with pytest.raises(ValueError, match="orthonormal"):
         prepare_planes(S0=z, E0=z, S1=z, E1=z, R_list=R)
+
+
+def test_pypow2_matches_cpython_float_pow():
+    edge = np.array(
+        [0.0, -0.0, 1.0, -1.0, np.inf, -np.inf, np.nan, 1e-160, 1e-310, -1e-310, 1e100, -1e100]
+    )
+    rng = np.random.default_rng(0)
+    scales = [rng.normal(0.0, s, size=2500) for s in (1e-10, 1.0, 1e5, 1e100)]
+    samples = np.concatenate([edge, *scales])
+
+    for arr in (
+        samples,
+        samples.reshape(4, -1),
+        samples.reshape(2, 2, -1),
+        np.array(-3.25),
+        np.array([1, -2, 3], dtype=int),
+        np.empty((0,), dtype=float),
+        np.empty((2, 0), dtype=float),
+    ):
+        got = pypow2(arr)
+        expected_flat = [float(v) ** 2 for v in np.asarray(arr, dtype=float).ravel().tolist()]
+        expected = np.array(expected_flat, dtype=float).reshape(np.asarray(arr).shape)
+        assert isinstance(got, np.ndarray)
+        assert got.dtype == np.float64
+        assert got.shape == expected.shape
+        assert np.array_equal(got, expected, equal_nan=True)
+        assert np.array_equal(np.signbit(got), np.signbit(expected))
+
+
+def test_pypow2_overflow_matches_cpython():
+    with pytest.raises(OverflowError):
+        pypow2(np.array([1e200]))

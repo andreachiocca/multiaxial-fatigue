@@ -8,7 +8,7 @@ is not sufficient.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal
 
 LifePrediction = Literal["master_curve", "native"]
@@ -22,6 +22,7 @@ class ComparisonCapabilities:
     life_prediction: LifePrediction = "master_curve"
     dp_comparison: bool = True
     dp_reference: DPReference = "master_curve"
+    load_error: bool = True
 
     def __post_init__(self):
         if self.life_prediction not in ("master_curve", "native"):
@@ -34,12 +35,21 @@ class ComparisonCapabilities:
 
 DEFAULT_CAPABILITIES = ComparisonCapabilities()
 
+# Method-level capability overrides for models owned externally or declared without newer fields.
+_MODEL_CAPABILITY_OVERRIDES: dict[str, dict] = {
+    # TVEIT2025 integrates damage cycle-by-cycle, making iterative load scaling prohibitively slow.
+    "TVEIT2025": {"load_error": False},
+}
+
 
 def capabilities_for_model(model) -> ComparisonCapabilities:
     """Obtain the registered model's comparison capabilities."""
     value = getattr(model, "comparison_capabilities", DEFAULT_CAPABILITIES)
     if not isinstance(value, ComparisonCapabilities):
         raise TypeError(f"{model.name} must declare ComparisonCapabilities")
+    name = getattr(model, "name", None)
+    if name in _MODEL_CAPABILITY_OVERRIDES:
+        return replace(value, **_MODEL_CAPABILITY_OVERRIDES[name])
     return value
 
 

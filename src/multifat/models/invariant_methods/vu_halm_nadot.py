@@ -1,21 +1,26 @@
-"""Vu, Halm & Nadot (2010), Int J Fatigue 32:1004-1014, doi:10.1016/j.ijfatigue.2009.11.006
-(roadmap N20), Eqs. (6)-(21):
+"""Vu, Halm & Nadot (2010) stress-invariant fatigue criterion.
 
-    f(t) = sqrt(gamma1 J'2(t)^2 + gamma2 J2,mean^2 + gamma3 I_f(I1,a, I1,m)) <= beta,
+Published in *International Journal of Fatigue* 32 (2010), pp. 1004-1014,
+doi:10.1016/j.ijfatigue.2009.11.006 (roadmap N20), Eqs. (6)-(21)::
 
-J'2(t) = sqrt(S^a(t):S^a(t)/2) is taken on the deviator of the alternating stress Sigma(t) - Sigma_m
-(the mean shear component drops out), J2,mean is its average over the period (Eq. 7), and I1,a, I1,m
-are the amplitude and the mean of I1 (Eqs. 9-10). beta = t_-1 (Eq. 12) while
-gamma3 = (t_-1^2 - f_-1^2/3)/f_-1 (Eq. 15); the ultimate-strength branch (Eqs. 17-20) reads:
-R_m < 750 MPa: gamma1 = 0.65, gamma2 = 0.8636, I_f = I1,a + I1,m; for R_m > 750 MPa:
-gamma1 = 0.3, gamma2 = 1.7272, I_f = I1,a + (f_-1/t_-1) I1,m. The coefficients obey
-gamma1 + 4 gamma2/pi^2 = 1 (Eq. 13). The value returned is f_max / beta; the error index of Eq. (21)
-is 100 (index - 1).
+    f(t) = sqrt(gamma1 * J'_2(t)^2 + gamma2 * J_{2,mean}^2 + gamma3 * I_f(I_{1,a}, I_{1,m})) <= beta
+    beta = t_-1,   gamma3 = (t_-1^2 - f_-1^2 / 3) / f_-1,   gamma1 + 4 * gamma2 / pi^2 = 1
 
-Under a single harmonic the alternating deviator describes an ellipse with semi-axes p >= q (in the
-J2 norm), so max J'2 = p and J2,mean = (2/pi) p E(1 - q^2/p^2), E being the complete elliptic
-integral of the second kind (computed via the arithmetic-geometric mean). A negative radicand
-(compressive mean) is clipped to 0.
+where ``J'_2(t) = sqrt(S^a(t) : S^a(t) / 2)`` acts on the alternating deviatoric stress
+``Sigma(t) - Sigma_m``, ``J_{2,mean}`` is its cycle mean, and ``I_{1,a}, I_{1,m}`` are
+the amplitude and mean of ``I_1`` (with ``gamma1, gamma2`` and ``I_f`` branched at
+``R_m = 750`` MPa, Eqs. 17-20).
+
+Repository choices:
+- For single-harmonic cycles the alternating deviator traces an ellipse with J2 semi-axes
+  ``p >= q``, so ``max J'_2 = p`` and ``J_{2,mean} = (2 / pi) * p * E(1 - q^2 / p^2)``
+  are evaluated in closed form via the arithmetic-geometric mean (``_elliptic_second_kind``).
+- The ultimate-strength branch switches at ``Su < 750`` vs ``Su >= 750`` MPa, with finite
+  positive ``Sigm1``, ``Taum1``, and ``Su`` required. Multi-frequency histories (Tables
+  13-14) are outside the single-harmonic scope.
+- Negative radicands under compressive mean stress clamp to ``0`` before taking the root,
+  and the normalized index ``f_max / t_-1`` is returned (Eq. 21 error index is
+  ``100 * (index - 1)``).
 """
 
 from __future__ import annotations

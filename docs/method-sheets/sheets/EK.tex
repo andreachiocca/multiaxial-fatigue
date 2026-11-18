@@ -1,0 +1,92 @@
+% registry: EK
+\methodhead{EK}{Ellyin and Kujawski (1993): multiaxial criterion with mean-stress effect}\label{sheet:EK}
+
+\block{Source} F.~Ellyin, D.~Kujawski, in \emph{Advances in Multiaxial Fatigue}, ASTM STP 1191
+(1993) 55--66 \cite{ellyin1993}, Eqs.~(5b), (9)--(18), pp.~60--61; Fig.~2.
+
+\block{Idea and scope} The damage parameter is the cyclic distortional strain-energy range, raised
+by a mean-stress factor built on the sum of the principal mean stresses and divided by a
+multiaxial constraint factor computed from the free-surface principal strains. The paper applies
+the high-cycle form (Eqs.~16--18) ``when bulk material response is essentially elastic''; it does
+not treat non-proportional cycles.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\Delta W_d$, $\Delta W_d^e$, $\Delta W_d^p$ & MPa & distortional strain-energy range per reversal; elastic and plastic parts\\
+$\bar\sigma$, $\Delta\bar\sigma=2\bar\sigma$ & MPa & effective (von Mises) stress amplitude and range\\
+$\sigma_m$ & MPa & sum of the principal mean stresses, $\sigma_{1,m}+\sigma_{2,m}+\sigma_{3,m}=\tr\Sm$ (Eq.~5b)\\
+$\sigma_a$, $\sigma_{-1}$ & MPa & uniaxial stress amplitude and fully reversed uniaxial strength (Eq.~18)\\
+$E$, $\nu=\nu_e$ & MPa, -- & Young's modulus and elastic Poisson's ratio\\
+$E^*$ & MPa & $3E/[2(1+\nu)]$\\
+$\bar\rho$ & -- & multiaxial constraint factor, Eq.~\eqref{eq:ek-rho}\\
+$\bar\nu$, $\nu_p$ & -- & effective Poisson's ratio (Eq.~13) and plastic Poisson's ratio (0.5)\\
+$\varepsilon_{\max}$, $\gamma_{\max}$ & -- & maximum in-plane principal strain and maximum shear strain over the cycle\\
+$\varepsilon_r$ & -- & normal strain of the free surface (Eq.~14)\\
+$\varepsilon_{xx}$, $\varepsilon_{yy}$, $\varepsilon_{zz}$ & -- & surface strains ($x$--$y$ the surface, $z$ its normal)\\
+$\alpha$, $n$ & -- & mean-stress weight (\texttt{alpha\_EK}) and constraint exponent (\texttt{n\_EK})\\
+$K'$, $n'$ & MPa, -- & optional cyclic Ramberg--Osgood coefficient and exponent (\texttt{K\_prime}, \texttt{n\_prime})\\
+$\Delta\varepsilon_p$, $\varepsilon_{p,a}$ & -- & plastic strain range and amplitude\\
+$\psi$ & MPa & damage parameter (MJ/m$^3$)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Ellyin and Kujawski (Eqs.~11--18) define
+\begin{equation}
+\psi = \frac{\Delta W_d}{\bar\rho^{\,n}}\Bigl(1+\alpha\,\frac{\sigma_m}{\bar\sigma}\Bigr),\qquad
+\Delta W_d^e = \frac{\Delta\bar\sigma^2}{2E^*},\qquad E^* = \frac{3E}{2(1+\nu)} ,
+\label{eq:ek-main}
+\end{equation}
+with $\sigma_m$ the sum of the principal mean stresses, without a factor $1/3$ (Eq.~5b), and the
+constraint factor (Eq.~12)
+\begin{equation}
+\bar\rho = (1+\bar\nu)\,\frac{\varepsilon_{\max}}{\gamma_{\max}} ,
+\label{eq:ek-rho}
+\end{equation}
+where $\bar\nu=\nu_e$ for elastic strains (Eq.~13). Its limiting values are $\bar\rho=1$ uniaxial,
+$1+\nu$ in reversed torsion and $1-\nu$ equibiaxial (p.~60). The paper sets $\alpha=1/2$ and $n=1$
+(p.~61, Eq.~18); in uniaxial loading this gives
+$\sigma_a/\sigma_{-1}=\bigl(1+\sigma_m/(2\sigma_a)\bigr)^{-1/2}$. The repository computes
+$\bar\sigma=\sqrt3\sqrt{J_{2,a}}$, $\varepsilon_{\max}$ and $\gamma_{\max}$ from the surface strains
+with $\varepsilon_{zz}=-\nu(\varepsilon_{xx}+\varepsilon_{yy})/(1-\nu)$ (Eq.~14), the maxima taken
+over 360 phase samples of the cycle.
+
+This is not a critical-plane method: no plane search, tie rule or \texttt{np\_shear\_rule}
+applies, and the global shear-amplitude selection does not change it.
+
+\block{Constants and calibration} $\alpha=0.5$ and $n=1$ by default, as in the paper; both can be
+supplied (\texttt{alpha\_EK}, \texttt{n\_EK}). $K'$, $n'$ are optional and never fitted. No EK
+constant is calibrated statistically; only the master curve is fitted.
+
+\block{Life} The repository uses the master curve on $\psi$, Eq.~\eqref{eq:mastercurve}, fitted on
+the uniaxial $R=-1$ design set.
+
+\block{Repository choices}
+\begin{itemize}
+\item High-cycle elastic form by default, $\Delta W_d=\Delta W_d^e$: $K'$, $n'$ are rarely present in
+  HCF workbooks and never fitted. When both are supplied, the Masing plastic term
+  $\Delta W_d^p=\frac{1-n'}{2(1+n')}\,\Delta\bar\sigma\,\Delta\varepsilon_p$ with
+  $\varepsilon_{p,a}=(\bar\sigma/K')^{1/n'}$, $\nu_p=0.5$ and a strain-weighted $\bar\nu$ (equal to
+  Eq.~13 in uniaxial tension) is added under assumed stress control.
+\item Free surface: $x$--$y$ is the surface plane and $\varepsilon_{zz}$ follows from plane stress.
+\item Non-proportional single harmonics (not treated in the paper): $\bar\sigma$ is $\sqrt3$ times
+  the longest deviatoric half-chord, and $\varepsilon_{\max}$, $\gamma_{\max}$ are maxima over the
+  period.
+\item Mean stress: Eq.~(18) holds for $-1.06\le\sigma_m/\sigma_a\le4.4$, read as
+  $\sigma_m/\bar\sigma$; a case outside is out of scope and the model is skipped (maintainer
+  decision, 17 November 2026). A non-positive factor $1+\alpha\sigma_m/\bar\sigma$, possible only
+  with a user $\alpha$, sets $\psi=0$.
+\end{itemize}
+
+\block{Worked example} Steel, $E=206\,000\MPa$, $\nu=0.3$, zero mean: uniaxial $300\MPa$ gives
+$\bar\rho=1.00$, $\psi=0.75728\MPa$; torsion $200\MPa$ gives $\bar\rho=1.30$, $\psi=0.77670\MPa$.
+
+\block{Verification} \texttt{tests/methods/test\_ellyin\_kujawski.py} (Eqs.~(5b), (9)--(18) and
+Fig.~2 checked on the paper): $\bar\rho=1$, $1+\nu$, $1-\nu$ for uniaxial, torsional and equibiaxial states; Eq.~(13)
+gives $\nu_e$ for elastic strains; the Eq.~(18) uniaxial mean-stress curve from
+$\sigma_m/\sigma_a=-0.8$ to $4.0$; the torsion-to-tension ratio $\sqrt{(1+\nu)/3}$ ($n=1$) and
+$1/\sqrt3$ ($n=0$); no effect of a mean shear stress; phase-origin invariance; the Masing term
+recovers Eq.~(13) and the uniaxial closed-form energy. The paper prints no per-test values.

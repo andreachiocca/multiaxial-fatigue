@@ -95,8 +95,8 @@ def install(archive, destination, *, apply=False, replace_edited=False):
         return data
 
 
-def main():
-    parser = argparse.ArgumentParser()
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("archive", help="Supplied exp_data.zip containing New_Exp_data/")
     parser.add_argument("--destination", default="Experimental_Data")
     parser.add_argument("--apply", action="store_true")
@@ -105,7 +105,11 @@ def main():
         action="store_true",
         help="also replace active workbooks edited since they were installed (archived first)",
     )
-    args = parser.parse_args()
+    return parser
+
+
+def main():
+    args = build_parser().parse_args()
     install(args.archive, args.destination, apply=args.apply, replace_edited=args.replace_edited)
 
 

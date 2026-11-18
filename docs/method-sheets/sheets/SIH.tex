@@ -1,0 +1,90 @@
+% registry: SIH
+\methodhead{SIH}{Zenner, Heidenreich and Richter: shear stress intensity hypothesis}\label{sheet:SIH}
+
+\block{Source} H.~Zenner, A.~Simb\"urger, J.~Liu, \emph{Int.\ J.\ Fatigue} 22 (2000) 137--145
+\cite{zenner2000}, Eqs.~(4)--(7), Table~1. The hypothesis is that of Zenner, Heidenreich and
+Richter (1983); the shear amplitude for a rotating shear vector is defined in Liu (1991) and Liu
+and Zenner (1993), which were not consulted.
+
+\block{Idea and scope} Integral approach. The squared shear and normal stress amplitudes, each
+corrected by its mean stress, are averaged over all planes through the point. The mean square of
+the shear stress over all planes is proportional to $J_2'$ (Novozhilov, Eq.~4). So for constant
+principal directions the hypothesis reduces to the octahedral criterion. When the principal
+directions rotate, the shear amplitude is spread over more planes instead of being lowered on the
+worst one. Proposed for fatigue limits of ductile steels ($R_m$ = 400--1600\MPa) with
+$0.577\le\tau_W/\sigma_W\le0.866$. The source covers alternating and static normal and shear
+stresses, phase shifts, different frequencies and non-sinusoidal waveforms (179 test series,
+Table~2).
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\gamma,\varphi$ & rad & polar and azimuth angles of the plane normal, $\gamma\in[0,\pi]$, $\varphi\in[0,2\pi)$\\
+$\tau_{\gamma\varphi,a}$, $\tau_{\gamma\varphi,m}$ & MPa & shear stress amplitude and mean on the plane\\
+$\sigma_{\gamma\varphi,a}$, $\sigma_{\gamma\varphi,m}$ & MPa & normal stress amplitude and mean on the plane\\
+$\sigma_W=\fm$, $\tau_W=\tm$ & MPa & fully reversed axial and torsion limits\\
+$\sigma_{Sch}$, $\tau_{Sch}$ & MPa & pulsating ($R=0$) axial and torsion limits, maximum stress\\
+$a,b$ & -- & weights of the shear and normal terms\\
+$m$, $n$ & MPa$^{-2}$, MPa$^{-1}$ & mean shear and mean normal stress sensitivities\\
+$\sigma_{eq,a}$ & MPa & equivalent stress amplitude, Eq.~\eqref{eq:sih}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} The equivalent stress amplitude (Eq.~6) and the failure condition are
+\begin{equation}
+\sigma_{eq,a}=\left\{\frac{15}{8\pi}\int_0^{\pi}\!\!\int_0^{2\pi}\Bigl[a\,\tau_{\gamma\varphi,a}^2\bigl(1+m\,\tau_{\gamma\varphi,m}^2\bigr)
++b\,\sigma_{\gamma\varphi,a}^2\bigl(1+n\,\sigma_{\gamma\varphi,m}\bigr)\Bigr]\sin\gamma\,d\gamma\,d\varphi\right\}^{1/2}=\sigma_W .
+\label{eq:sih}
+\end{equation}
+The constants (Table~1) make the four limits exact:
+\begin{gather}
+a=\tfrac15\Bigl[3\Bigl(\frac{\sigma_W}{\tau_W}\Bigr)^2-4\Bigr],\qquad
+b=\tfrac15\Bigl[6-2\Bigl(\frac{\sigma_W}{\tau_W}\Bigr)^2\Bigr],\\
+a\,m=\frac{\sigma_W^2-(\sigma_W/\tau_W)^2(\tau_{Sch}/2)^2}{\tfrac{12}{7}(\tau_{Sch}/2)^4},\qquad
+b\,n=\frac{\sigma_W^2-(\sigma_{Sch}/2)^2-\tfrac{4}{21}\,a\,m\,(\sigma_{Sch}/2)^4}{\tfrac{15}{14}(\sigma_{Sch}/2)^3}.
+\end{gather}
+Here $12/7$, $4/21$ and $15/14$ are $\tfrac{15}{8\pi}\oint$ of $\tau^4$ (torsion), $\tau^4$
+(tension) and $\sigma^3$ (tension) for unit stresses. When $\tau_{Sch}$ is not measured (Eq.~7),
+\begin{equation}
+\tau_{Sch}=\frac{4\,\tau_W}{2\sigma_W/\sigma_{Sch}+1}.
+\end{equation}
+With $a=1$, $b=0$ and no means, Eq.~\eqref{eq:sih} is Eq.~(5), which gives $\tau_W/\sigma_W=1/\sqrt3$;
+for constant principal directions it equals $\tfrac{3}{\sqrt2}\tau_{oct,a}$ (Eq.~5b).
+
+\block{Constants and calibration} $a,b,m,n$ from $\sigma_W,\tau_W,\sigma_{Sch},\tau_{Sch}$; nothing
+is fitted. The source says $\sigma_{Sch}$ may be estimated from the mean stress sensitivity, but
+gives no formula.
+
+\block{Life} None: a fatigue-limit criterion. Section~6 states that lives under variable amplitude
+need damage sums integrated per plane. The repository reads finite lives on the master curve of
+the index $\sigma_{eq,a}/\sigma_W$ (Section~\ref{sec:mastercurve}).
+
+\block{Repository choices}
+\begin{itemize}
+\item Shear amplitude of a rotating shear vector: half the longest chord of the single-harmonic
+  ellipse, i.e.\ its minimum circumscribed circle radius (maintainer decision; the source
+  definition is not available). The quadratic amplitude $\sqrt{s^2+c^2}$ is selectable. Section~3
+  states that Eq.~(5) does not depend on the phase between $\sigma_x$ and $\tau_{xy}$. That holds
+  exactly with the quadratic amplitude; with the longest chord, Eq.~(5) drops by 7\% at
+  $90^\circ$ for $\tau_{xy,a}=\sigma_{x,a}/2$. The maintainer confirmed the longest chord with
+  this evidence.
+\item $\tau_{\gamma\varphi,m}$ is the magnitude of the mean shear vector.
+\item Mean stresses require \texttt{Sig0}; \texttt{Tau0} defaults to Eq.~(7).
+\item $\tau_W/\sigma_W$ outside $[0.577,0.866]$ is out of material scope. A negative integral is
+  clipped to zero.
+\item 32$\times$64 Gauss--Legendre $\times$ azimuth quadrature; the model returns
+  $\sigma_{eq,a}/\sigma_W$.
+\end{itemize}
+
+\block{Worked example} Hard steel of Nishihara and Kawamoto, $\sigma_W=313.9$,
+$\tau_W=196.2\MPa$ ($\tau_W/\sigma_W=0.625$): $a=0.7358$, $b=0.1761$. Bending--torsion limits of
+Papadopoulos et al.\ (1997), Table~1. In phase, $\sigma_a=138.1$, $\tau_a=167.1\MPa$: index 0.959
+with either amplitude. At $90^\circ$, $\sigma_a=150.2$, $\tau_a=181.7\MPa$: index 0.998 with the
+longest chord, 1.042 with the quadratic amplitude.
+
+\block{Verification} Checked: the Table~1 factors as sphere integrals; the four limits exact; Eq.~(5)
+and Eq.~(5b); the Section~3 phase independence (quadratic amplitude). The paper gives only the
+statistics of 179 series (Table~2), not the series.

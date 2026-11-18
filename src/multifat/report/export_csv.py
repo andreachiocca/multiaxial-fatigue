@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import csv
+from dataclasses import dataclass
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 from multifat.eval.metrics import log10_dp_ratio
@@ -50,14 +51,14 @@ def infer_method_family(method_name: str) -> str:
         from multifat.models import registry as reg  # type: ignore
 
         try:
-            cp = reg._available_cp_methods()  # type: ignore[attr-defined]
+            cp = reg.available_cp_methods()  # type: ignore[attr-defined]
             if base in cp:
                 return "cp_methods"
         except Exception:
             pass
 
         try:
-            direct = reg._available_direct_models()  # type: ignore[attr-defined]
+            direct = reg.available_direct_models()  # type: ignore[attr-defined]
             if base in direct:
                 fam = _family_from_module(direct[base].__class__.__module__)
                 return fam if fam != "UNKNOWN" else "direct_models"
@@ -125,14 +126,32 @@ def infer_method_family(method_name: str) -> str:
     return "UNKNOWN"
 
 
+@dataclass(frozen=True)
+class RowGroup:
+    """A group of observations (assessment, design, or run-outs) for results export."""
+
+    cycles: Any = None
+    values: Any = None
+    pred: Any = None
+    loading_type: Any = None
+    dp_fit: Any = None
+    error_ln_dp: Any = None
+    native: Any = None
+    observation_ids: Any = None
+    error_load: Any = None
+
+
 def save_fatigue_csv(
     *,
     out_dir: str,
     method_name: str,
     material_name: str,
-    N_exp,
-    CP,
-    N_pred,
+    cases: RowGroup | None = None,
+    design: RowGroup | None = None,
+    runouts: RowGroup | None = None,
+    N_exp=None,
+    CP=None,
+    N_pred=None,
     N_design=None,
     F_design=None,
     N_pred_design=None,
@@ -217,6 +236,67 @@ def save_fatigue_csv(
     family = (method_family or infer_method_family(method_name)).strip() or "UNKNOWN"
 
     mode = str(metric_mode or "Nf").strip() or "Nf"
+
+    if cases is not None:
+        if N_exp is None:
+            N_exp = cases.cycles
+        if CP is None:
+            CP = cases.values
+        if N_pred is None:
+            N_pred = cases.pred
+        if loading_type is None:
+            loading_type = cases.loading_type
+        if DP_fit is None:
+            DP_fit = cases.dp_fit
+        if Error_ln_dp is None:
+            Error_ln_dp = cases.error_ln_dp
+        if N_native is None:
+            N_native = cases.native
+        if observation_ids is None:
+            observation_ids = cases.observation_ids
+        if Error_load is None:
+            Error_load = cases.error_load
+
+    if design is not None:
+        if N_design is None:
+            N_design = design.cycles
+        if F_design is None:
+            F_design = design.values
+        if N_pred_design is None:
+            N_pred_design = design.pred
+        if loading_type_design is None:
+            loading_type_design = design.loading_type
+        if DP_fit_design is None:
+            DP_fit_design = design.dp_fit
+        if Error_ln_dp_design is None:
+            Error_ln_dp_design = design.error_ln_dp
+        if N_native_design is None:
+            N_native_design = design.native
+        if observation_ids_design is None:
+            observation_ids_design = design.observation_ids
+        if Error_load_design is None:
+            Error_load_design = design.error_load
+
+    if runouts is not None:
+        if N_runout is None:
+            N_runout = runouts.cycles
+        if CP_runout is None:
+            CP_runout = runouts.values
+        if N_pred_runout is None:
+            N_pred_runout = runouts.pred
+        if loading_type_runout is None:
+            loading_type_runout = runouts.loading_type
+        if DP_fit_runout is None:
+            DP_fit_runout = runouts.dp_fit
+        if N_native_runout is None:
+            N_native_runout = runouts.native
+        if observation_ids_runout is None:
+            observation_ids_runout = runouts.observation_ids
+
+    if N_exp is None or CP is None or N_pred is None:
+        raise ValueError(
+            "save_fatigue_csv requires assessment cases (N_exp, CP, N_pred or cases=RowGroup(...))"
+        )
 
     # Convert inputs
     N_exp = np.asarray(N_exp, dtype=float).ravel()

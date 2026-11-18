@@ -1,0 +1,94 @@
+% registry: OTT
+\methodhead{OTT}{Tveit, Reyes and Erduran (2024): reduced Ottosen criterion with a Hershey--Hosford norm}\label{sheet:OTT}
+
+\block{Source} Tveit, Reyes and Erduran, \emph{Results in Engineering} 22 (2024) 102171
+\cite{tveit2024}, Eqs.~(11)--(17) and~(19), p.~6; Table~A.1. The reduced form casts the continuum
+endurance surface of Ottosen, Stenstr\"om and Ristinmaa \cite{ottosen2008} as a cycle-based
+criterion.
+
+\block{Idea and scope} An endurance condition on two cycle quantities: the amplitude of a
+non-quadratic (Hershey--Hosford) deviatoric norm and the mean of the first stress invariant. The
+exponent $m$ of the norm is set by the limit ratio $t_{-1}/b_{-1}$, so the deviatoric surface moves
+between Tresca ($m=1$) and von Mises ($m=2$) and beyond. The mean term is calibrated on the repeated
+($R=0$) bending strength. Proposed for the fatigue limit of ductile metals under proportional and
+non-proportional loading with mean stresses; the paper's calibrated range is
+$0.5\le t_{-1}/b_{-1}\le0.5852$.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$b_{-1}=\fm$ & MPa & fully reversed bending (axial) fatigue limit\\
+$t_{-1}=\tm$ & MPa & fully reversed torsion fatigue limit\\
+$b_0$ & MPa & repeated ($R=0$) bending fatigue limit, maximum stress of the cycle\\
+$\kappa_{\mathrm{T}}=t_{-1}/b_{-1}$ & -- & limit ratio of the paper (the inverse of the $\kappa$ of Section~\ref{sec:notation})\\
+$m$ & -- & Hershey--Hosford exponent, Eq.~\eqref{eq:ott-kappa}\\
+$A$ & -- & mean-stress sensitivity, Eq.~\eqref{eq:ott-const}\\
+$S_0$ & MPa & endurance threshold, Eq.~\eqref{eq:ott-const}\\
+$I_1$ & MPa & first stress invariant, $\tr\Tsig$\\
+$I_{1,m}$ & MPa & mean of $I_1$ over the load path $P$, Eq.~\eqref{eq:ott-i1m}\\
+$s_{1,a},s_{2,a},s_{3,a}$ & MPa & principal values of the deviatoric stress amplitude (proportional cycle)\\
+$\sigma_{e,a}$ & MPa & Hershey--Hosford effective stress amplitude, Eq.~\eqref{eq:ott-se}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Fatigue endurance requires (Eq.~11)
+\begin{equation}
+\sigma_{e,a} + A\,I_{1,m} \le S_0 ,
+\label{eq:ott-main}
+\end{equation}
+with the mean first invariant (Eq.~12) and, for proportional cycles, the Hershey--Hosford effective
+stress amplitude of exponent $m$ (Eq.~13),
+\begin{gather}
+I_{1,m} = \tfrac12\Bigl(\min_P I_1 + \max_P I_1\Bigr) , \label{eq:ott-i1m}\\
+\sigma_{e,a} = \left(\frac{|s_{1,a}-s_{2,a}|^m + |s_{2,a}-s_{3,a}|^m + |s_{3,a}-s_{1,a}|^m}{2}\right)^{1/m} .
+\label{eq:ott-se}
+\end{gather}
+The three material parameters follow from Eqs.~(14)--(17):
+\begin{gather}
+S_0 = b_{-1}, \qquad A = \frac{2\,b_{-1}}{b_0} - 1 , \label{eq:ott-const}\\
+\kappa_{\mathrm{T}} = \frac{t_{-1}}{b_{-1}} = \left(1 + 2^{m-1}\right)^{-1/m} . \label{eq:ott-kappa}
+\end{gather}
+For $m=2$, $\sigma_{e,a}$ is the von Mises amplitude and $\kappa_{\mathrm{T}}=1/\sqrt3$; $m=1$ gives
+Tresca and $\kappa_{\mathrm{T}}=1/2$. Eq.~\eqref{eq:ott-kappa} reaches its maximum
+$\kappa_{\mathrm{T}}\approx0.58524$ at $m=2.7670$. For non-proportional cycles the paper calls for
+the smallest hypersphere that encloses the deviatoric path, without giving a construction. The
+paper's error index is $\mathrm{Err}=(1-f_a)\,100\,\%$ (Eq.~19), with $f_a$ the amplitude scale
+factor to the endurance limit.
+
+\block{Constants and calibration} Paper: $S_0$, $A$ and $m$ in closed form from $b_{-1}$, $t_{-1}$
+and $b_0$ (Eqs.~14--17); nothing is fitted. Repository: the same closed forms. $m$ is read from
+\texttt{m\_OTT} when supplied; otherwise Eq.~\eqref{eq:ott-kappa} is inverted by bisection on
+$1\le m\le2.7670$. $A$ is read from \texttt{A\_OTT} when supplied; otherwise from $b_0$
+(\texttt{Sig0}), or from the estimate of Eq.~(1) of B\"ohme, Papuga and Lange \cite{bohme2026} built
+from $S_u$ and $\fm$. Only the master-curve constants are fitted.
+
+\block{Life} No native life law. The left-hand side of Eq.~\eqref{eq:ott-main}, in MPa, is the
+damage parameter of the shared master curve (Section~\ref{sec:mastercurve}), a repository
+extension of an endurance criterion.
+
+\block{Repository choices}
+\begin{itemize}
+\item The whole left-hand side $\sigma_{e,a}+A\,I_{1,m}$ is the damage parameter (MPa).
+\item $b_0$: from \texttt{A\_OTT} when supplied, otherwise from \texttt{Sig0}, otherwise from the
+  B\"ohme et al.\ (2026) Eq.~(1) estimate built from \texttt{Su} and \texttt{Sigm1}.
+\item $m$: when \texttt{m\_OTT} is omitted, Eq.~\eqref{eq:ott-kappa} is inverted for
+  $\kappa_{\mathrm{T}}=\tm/\fm$ and clamped to $[1.0,\,2.7670]$: $\kappa_{\mathrm{T}}\le0.5$ gives
+  $m=1$, and $\kappa_{\mathrm{T}}\ge0.58524$ gives the cap $m=2.7670$ (outside the calibrated range).
+\item Non-proportional cycles: the Hershey--Hosford norm is centrally symmetric and a single-harmonic
+  path is symmetric about $\Sm$, so the enclosing ball is centred at $\Sm$ and its radius is the
+  maximum of $\sigma_e\bigl(\Tsig(t)-\Sm\bigr)$ over 720 phase angles of one period. For proportional
+  cycles this recovers Eq.~\eqref{eq:ott-se} exactly.
+\end{itemize}
+
+\block{Worked example} Steel with $b_{-1}=433$, $t_{-1}=250$, $b_0=700\MPa$: $m=2.0007$. Bending
+amplitude $300\MPa$ with mean $100\MPa$ and torsion amplitude $150\MPa$: in phase,
+$\sigma_{e,a}+A\,I_{1,m}=420.57\MPa$; at $90^\circ$, $323.71\MPa$.
+
+\block{Verification} Table~A.1: every in-phase row reproduces the printed $\mathrm{Err}$ for both the
+modified ($m$) and the original ($m=2$) model. The out-of-phase rows of the table come from the
+paper's incremental (Runge--Kutta) model; the reduced closed form agrees with them within about
+0.8 points, except 30NCD16 at $90^\circ$, where the table prints 0.00 for both models and the reduced
+form gives $-26$ to $-34\,\%$ (strict xfail).

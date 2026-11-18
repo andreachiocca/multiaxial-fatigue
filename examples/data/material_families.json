@@ -1,0 +1,22 @@
+{
+ "_doc": "Batches of one material compared by examples/batch_comparison.py (issue #71). The unit is a workbook (material ID). Batches are named after their first author or project (d112); all 42CrMo4 batches are +QT. Tests by different author groups are different batches, except Santus 2018 and Benedetti 2022 (one batch, decision d101). 'constants' maps a batch to a published-constants record (Calibrations/) used on its own run and when it is the design batch of a transfer. 'fabest_benchmark': true adds the scatter between the series of the FABEST source file (one material batch, d105) as the test-series yardstick.",
+ "42CrMo4": {
+  "batches": [
+   "42CrMo4_Santus",
+   "42CrMo4_Reis",
+   "42CrMo4_FABEST"
+  ],
+  "constants": {
+   "42CrMo4_Reis": "Calibrations/42CrMo4_Reis/SSF_published.json"
+  },
+  "notes": "42CrMo4 +QT. 42CrMo4_Santus: Santus 2018 and Benedetti 2022 (Trento bars), one material batch, two test series (d101, d105); 42CrMo4_Reis: Anes/Reis 2014; 42CrMo4_FABEST: FABEST PBS series. SSF runs only with the surface published for the Reis batch: in sample on Reis, out of sample when Reis is the design batch.",
+  "fabest_benchmark": true
+ },
+ "Ti6Al4V": {
+  "batches": [
+   "Ti6Al4V_Meneghetti",
+   "Ti6Al4V_Berto"
+  ],
+  "notes": "Ti6Al4V_Meneghetti: Meneghetti 2018 failures (10); the Summary keeps the Meneghetti properties only (overlay, d108) and the 4 Delahay 2006 rows are removed (d109). Ti6Al4V_Berto: Berto 2015 (48 failures). All assessed tests are torsional. Batch names follow the author or project (d112)."
+ }
+}

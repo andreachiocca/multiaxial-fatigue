@@ -1,0 +1,80 @@
+% registry: MCD
+\methodhead{MCD}{McDiarmid (1991): general criterion for high-cycle multiaxial fatigue failure}\label{sheet:MCD}
+
+\block{Source} D.~L.~McDiarmid, \emph{Fatigue Fract.\ Engng Mater.\ Struct.} 14 (1991)
+\cite{mcdiarmid1991}, Eqs.~(7)--(8), p.~437. Restated with the circumscribed-circle amplitude by
+Papadopoulos et al.\ \cite{papadopoulos1997}, Table~1.
+
+\block{Idea and scope} The shear amplitude on the plane of maximum shear amplitude, with a
+normal-stress term normalised by the ultimate tensile strength. The shear strength depends on whether
+cracks grow along the surface (case A) or into the depth (case B). Proposed for high-cycle
+multiaxial fatigue of metals; the relation is stated for $0\le\sigma_{n,\max}\le\sigma_u$.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\tau_a$ & MPa & shear stress amplitude on the plane\\
+$\sigma_{n,\max}$ & MPa & maximum normal stress on the plane, $\sigma_{n,a}+\sigma_{n,m}$\\
+$\sigma_{n,m}$, $\sigma_{n,a}$ & MPa & mean and amplitude of the normal stress on the plane\\
+$\Delta\tau$ & MPa & shear stress range on the plane, $\tau_a=\Delta\tau/2$\\
+$a\ge b$ & MPa & semi-axes of the elliptical shear path of an out-of-phase cycle\\
+$t_{A,B}$ & MPa & shear fatigue strength for case-A (surface) or case-B (depth) cracks\\
+$\tm$ & MPa & fully reversed torsion fatigue limit; the repository sets $t_A=\tm$\\
+$\sigma_u=S_u$ & MPa & ultimate tensile strength\\
+$\fm$ & MPa & fully reversed tension limit (only as the value implied by the criterion)\\
+$\mathrm{DP}$ & MPa & damage parameter, Eq.~\eqref{eq:mcd-dp}; $\mathrm{DP}=\tm$ on the limit\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} On the plane of maximum shear stress amplitude (Eqs.~7--8, p.~437),
+\begin{equation}
+\frac{\tau_a}{t_{A,B}} + \frac{\sigma_{n,\max}}{2\,\sigma_u} = 1 ,\qquad 0\le\sigma_{n,\max}\le\sigma_u .
+\label{eq:mcd-main}
+\end{equation}
+Multiplying by $t_A$, the repository evaluates on every candidate plane
+\begin{equation}
+\mathrm{DP} = \tau_a + \frac{\tm}{2\,S_u}\,\sigma_{n,\max},\qquad
+\sigma_{n,\max}=\max(\sigma_{n,m}+\sigma_{n,a},\,0),
+\label{eq:mcd-dp}
+\end{equation}
+equal to $\tm$ on McDiarmid's limit. In reversed tension the criterion implies
+$\fm = t_A/\bigl(\tfrac12 + t_A/(4\sigma_u)\bigr)$. \emph{Critical plane}: \texttt{MCD} takes the
+plane of largest $\tau_a$ (selection metric $\Delta\tau$); \texttt{MCD\_ext} takes the largest DP over
+all planes. \emph{Ties} go to the larger DP. \emph{Shear amplitude}: default half the
+longest chord, $\tau_a=a$ (MCC, the circumscribed circle of Papadopoulos et al.); the global selection
+of \texttt{docs/shear-amplitude.md} can switch it to \texttt{rss}, $\tau_a=\sqrt{a^2+b^2}$ (MCE).
+
+\block{Constants and calibration} Paper: $t_A$ (or $t_B$) from torsion tests, $\sigma_u$ from a
+tensile test. Repository: workbook \texttt{Taum1} and \texttt{Su}; nothing else is fitted except the
+master-curve constants on the uniaxial $R=-1$ design tests. The measured \texttt{Sigm1} is not an
+input; it can be compared with the implied $\fm$ above.
+
+\block{Life} The paper gives none; finite lives use the master curve on DP
+(Section~\ref{sec:mastercurve}), a repository extension.
+
+\block{Repository choices}
+\begin{itemize}
+\item Case A only, with $t_A=\tm$; the case-B strength is not supplied by the workbooks.
+\item Validity range not enforced: $\sigma_{n,\max}>\sigma_u$ is evaluated; $\sigma_{n,\max}<0$ is
+  clipped to 0.
+\item Out-of-phase plane association: McDiarmid's rule (plane of maximum principal-stress range) is
+  not implemented; the shear amplitude is the circumscribed-circle amplitude with which Papadopoulos
+  et al.\ restate McDiarmid (\texttt{longest\_chord}, maintainer decision, 17 November 2026;
+  \texttt{rss} before).
+\item \texttt{MCD\_ext} is a repository variant; life from the shared master curve on DP.
+\end{itemize}
+
+\block{Worked example} Synthetic material, $\tm=200$, $S_u=800\MPa$: the tension limit implied by
+McDiarmid is $355.6\MPa$, and reversed tension at that amplitude gives $\mathrm{DP}=\tm$. Tension
+$\sigma_a=200$ with mean $\sigma_m=100\MPa$: on the $45^\circ$ planes $\tau_a=\sigma_a/2$,
+$\sigma_{n,\max}=(\sigma_m+\sigma_a)/2$, so $\mathrm{DP}=118.75\MPa$, fatigue index 0.594.
+
+\block{Verification} Eqs.~(7)/(8) on reversed torsion, reversed bending (the line of Eq.~8) and a
+mean normal stress entering $\sigma_{n,\max}$. Papadopoulos et al.\ (1997) Table~1 with the
+circumscribed-circle amplitude: 41 of 43 rows within 0.25 points; rows~17 and~28 (mean torsion with
+phase shift) are strict xfails, unresolved. Margetin et al.\ \cite{margetin2016} Table~4, McDiarmid column
+($t_A=244$, $\sigma_u=680\MPa$): lives within 4\%. Not implemented: case B and the source's
+out-of-phase plane rule.

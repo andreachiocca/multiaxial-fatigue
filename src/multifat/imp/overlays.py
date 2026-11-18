@@ -15,7 +15,11 @@ import hashlib
 import json
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+import warnings
+
+if TYPE_CHECKING:
+    from multifat.imp.schema import ValidationReport
 
 OVERLAY_DIR = Path(__file__).with_name("overlay_files")
 SCHEMA_VERSION = 1
@@ -38,6 +42,16 @@ def _overlays_by_base_hash() -> dict[str, Path]:
             raise OverlayError(f"{path.name} and {index[base].name} name the same base file")
         index[base] = path
     return index
+
+
+@lru_cache(maxsize=None)
+def _overlay_target_workbooks(overlay_dir: Path) -> set[str]:
+    names: set[str] = set()
+    for path in sorted(overlay_dir.glob("*.overlay.json")):
+        wb_name = json.loads(path.read_text(encoding="utf-8")).get("workbook")
+        if wb_name:
+            names.add(str(wb_name))
+    return names
 
 
 def overlay_path(workbook: str | Path) -> Path | None:
@@ -105,18 +119,47 @@ def _apply_one(wb, op: dict[str, Any]) -> None:
             raise OverlayError(f"Dataset row {row} is not empty; add_case needs a free row")
         for header, value in op["values"].items():
             ws.cell(row, _column_index(ws, header)).value = value
+    elif kind == "drop_case":
+        # Clear one test row; row numbers of the other rows are kept, and the importer reads an
+        # empty row as no test. The row is identified by number (specimen names need not be
+        # unique) and checked against its authors, specimen name and the 'check' values.
+        ws = wb["Dataset"]
+        row = op["row"]
+        expected = {
+            "Authors": op["authors"],
+            "Specimen name": op["specimen"],
+            **op.get("check", {}),
+        }
+        for header, value in expected.items():
+            current = ws.cell(row, _column_index(ws, header)).value
+            if not _same(current, value):
+                raise OverlayError(
+                    f"Dataset row {row} {header!r} is {current!r}, expected {value!r}"
+                )
+        for c in range(1, ws.max_column + 1):
+            ws.cell(row, c).value = None
     else:
         raise OverlayError(f"unknown overlay operation {kind!r}")
 
 
-def apply_overlay_to_workbook(wb, workbook: str | Path) -> dict[str, Any] | None:
+def apply_overlay_to_workbook(
+    wb, workbook: str | Path, report: ValidationReport | None = None
+) -> dict[str, Any] | None:
     """Apply the overlay of ``workbook`` to the loaded ``wb`` in memory.
 
     Returns the overlay identity recorded in provenance, or None when there is no overlay for
-    this file or the file is not the base it was written against.
+    this file or the file is not the base it was written against. Emits a ``RuntimeWarning`` and
+    records a warning on ``report`` when an overlay exists for the file name but the SHA-256
+    does not match.
     """
     path = overlay_path(workbook)
     if path is None:
+        wb_name = Path(workbook).name
+        if wb_name in _overlay_target_workbooks(OVERLAY_DIR):
+            msg = f"{wb_name}: SHA-256 does not match any overlay; overlay was not applied"
+            warnings.warn(msg, RuntimeWarning, stacklevel=2)
+            if report is not None:
+                report.warnings.append(msg)
         return None
     overlay = load_overlay(path)
     for op in overlay["operations"]:

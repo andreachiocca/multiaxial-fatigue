@@ -1,0 +1,229 @@
+{
+ "schema_version": 1,
+ "workbook": "1_Ti6Al4V_Meneghetti.xlsx",
+ "base_sha256": "78808b28fc8546bf3361b121c2f768dc5b4291be53b68b79d90e8cab1ece04dd",
+ "expected_fingerprint": "c3b9a43f4f521b2f5d42196a14b61b824949dbed4b537e6b08d4fd247425871c",
+ "operations": [
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "E",
+   "field": "Young's modulus (MPa)",
+   "from": 110000,
+   "to": "Null",
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "F",
+   "field": "Poisson's ratio (-)",
+   "from": 0.3,
+   "to": "Null",
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "G",
+   "field": "Tensile strength (MPa)",
+   "from": 1090,
+   "to": "Null",
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "H",
+   "field": "Yield strength (MPa)",
+   "from": 980,
+   "to": "Null",
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "I",
+   "field": "Tensile fatigue limit (MPa)",
+   "from": 652,
+   "to": "Null",
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "J",
+   "field": "Torsional fatigue limit (MPa)",
+   "from": 411,
+   "to": "Null",
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 3,
+   "column": "M",
+   "field": "K",
+   "from": 1.586374695863747,
+   "to": "Null",
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 6,
+   "column": "G",
+   "field": "Average Tensile strength (MPa)",
+   "from": 1035,
+   "to": 980,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 6,
+   "column": "H",
+   "field": "Average Yield strength (MPa)",
+   "from": 947.5,
+   "to": 915,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 6,
+   "column": "I",
+   "field": "Average Tensile fatigue limit (MPa)",
+   "from": 576,
+   "to": 500,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 6,
+   "column": "J",
+   "field": "Average Torsional fatigue limit (MPa)",
+   "from": 416.75,
+   "to": 422.5,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 6,
+   "column": "M",
+   "field": "Average K",
+   "from": 1.3849033242632345,
+   "to": 1.183431952662722,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 7,
+   "column": "G",
+   "field": "Standard deviation Tensile strength (MPa)",
+   "from": 55,
+   "to": 0,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 7,
+   "column": "H",
+   "field": "Standard deviation Yield strength (MPa)",
+   "from": 32.5,
+   "to": 0,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 7,
+   "column": "I",
+   "field": "Standard deviation Tensile fatigue limit (MPa)",
+   "from": 76,
+   "to": 0,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 7,
+   "column": "J",
+   "field": "Standard deviation Torsional fatigue limit (MPa)",
+   "from": 5.75,
+   "to": 0,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "set_summary",
+   "row": 7,
+   "column": "M",
+   "field": "Standard deviation K",
+   "from": 0.20147137160051243,
+   "to": 0,
+   "decision": "d108",
+   "source": "Meneghetti et al. 2018, TAFM 96, doi:10.1016/j.tafmec.2018.06.010, Table 1 p. 6 and Summary row 2: every failure of this workbook is Meneghetti's; the Delahay 2006 row (Ti64Al4V, Su 1090 MPa) is a different batch (d101) and no longer enters the material values (d108)"
+  },
+  {
+   "op": "drop_case",
+   "row": 58,
+   "authors": "Delahay T",
+   "specimen": "SPECIMEN_5",
+   "check": {
+    "Run out (Yes/No)": "Yes",
+    "Amplitute AXIAL stress  (MPa)": 652
+   },
+   "decision": "d109",
+   "source": "Delahay & Palin-Luc 2006, IJF 28:474, doi:10.1016/j.ijfatigue.2005.06.048, Table 2 p. 479: these rows are median staircase endurance limits of annealed Ti-6Al-4V (another batch, d101), not run-outs; the workbook labels plane bending as axial and gives 441 for the torsion limit 411. Removed from this dataset (d109); the limits are to form a separate dataset from Table 2."
+  },
+  {
+   "op": "drop_case",
+   "row": 59,
+   "authors": "Delahay T",
+   "specimen": "SPECIMEN_5",
+   "check": {
+    "Run out (Yes/No)": "Yes",
+    "Amplitute SHEAR stress  (MPa)": 441
+   },
+   "decision": "d109",
+   "source": "Delahay & Palin-Luc 2006, IJF 28:474, doi:10.1016/j.ijfatigue.2005.06.048, Table 2 p. 479: these rows are median staircase endurance limits of annealed Ti-6Al-4V (another batch, d101), not run-outs; the workbook labels plane bending as axial and gives 441 for the torsion limit 411. Removed from this dataset (d109); the limits are to form a separate dataset from Table 2."
+  },
+  {
+   "op": "drop_case",
+   "row": 60,
+   "authors": "Delahay T",
+   "specimen": "SPECIMEN_5",
+   "check": {
+    "Run out (Yes/No)": "Yes",
+    "Amplitute AXIAL stress  (MPa)": 442,
+    "Amplitute SHEAR stress  (MPa)": 255
+   },
+   "decision": "d109",
+   "source": "Delahay & Palin-Luc 2006, IJF 28:474, doi:10.1016/j.ijfatigue.2005.06.048, Table 2 p. 479: these rows are median staircase endurance limits of annealed Ti-6Al-4V (another batch, d101), not run-outs; the workbook labels plane bending as axial and gives 441 for the torsion limit 411. Removed from this dataset (d109); the limits are to form a separate dataset from Table 2."
+  },
+  {
+   "op": "drop_case",
+   "row": 61,
+   "authors": "Delahay T",
+   "specimen": "SPECIMEN_5",
+   "check": {
+    "Run out (Yes/No)": "Yes",
+    "Amplitute AXIAL stress  (MPa)": 567,
+    "Amplitute SHEAR stress  (MPa)": 328,
+    "Phase TORSIONAL load (°)": 90
+   },
+   "decision": "d109",
+   "source": "Delahay & Palin-Luc 2006, IJF 28:474, doi:10.1016/j.ijfatigue.2005.06.048, Table 2 p. 479: these rows are median staircase endurance limits of annealed Ti-6Al-4V (another batch, d101), not run-outs; the workbook labels plane bending as axial and gives 441 for the torsion limit 411. Removed from this dataset (d109); the limits are to form a separate dataset from Table 2."
+  }
+ ]
+}

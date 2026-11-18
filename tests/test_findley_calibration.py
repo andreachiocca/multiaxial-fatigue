@@ -204,7 +204,7 @@ def test_unknown_algorithm_rejected(synthetic):
         _calibrate_fin(data, material, shear_amplitude_algorithm="mcc")
 
 
-def test_amplitude_applies_only_to_findley(synthetic):
+def test_explicit_amplitude_applies_to_every_calibrated_plane_criterion(synthetic):
     data, material = synthetic
     out = cal.calibrate_material_params(
         data=data,
@@ -215,7 +215,10 @@ def test_amplitude_applies_only_to_findley(synthetic):
         n_refine_1d=1,
         shear_amplitude_algorithm="mcc_harmonic",
     )
-    assert "amplitude_settings" not in out and out["FI"] is None
+    # Since the option covers every critical-plane criterion, k_FS records its amplitude too.
+    assert out["FI"] is None
+    assert out["amplitude_settings"]["FS"]["algorithm"] == "mcc_harmonic"
+    assert set(out["amplitude_settings"]) == {"FS"}
 
 
 def test_cli_accepts_the_option(tmp_path, monkeypatch, capsys):

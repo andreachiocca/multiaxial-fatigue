@@ -1,0 +1,74 @@
+{
+  "10_En3B.xlsx": {
+    "sha256": "0f21e6c41a65a83afbe25dc359d1e0b9fe04c48ee04640568e106275f4e7bf94",
+    "dataset_fingerprint": "e38744e48bfde9e8dfeb978ef2473a3c5c8410ff9b8958931ae7110849ac2f43"
+  },
+  "11_GJS600.xlsx": {
+    "sha256": "39c07d6f7e9d15d5c3b4416f1c3a581bb2e7ee619fe777408880aaa9794b89b7",
+    "dataset_fingerprint": "38bba4d81b6b31708d126012f5d9025868d3186b373ee0605a007afd0757ef13"
+  },
+  "12_GGG60.xlsx": {
+    "sha256": "367bc0e8f28bc134f694356812fcd3f0f639e6ff7160c0c9ba71cc4e01d1c45a",
+    "dataset_fingerprint": "b4c039dc6c7448a38aa42244aaa96c28d2759f2ef864901d433a638823e9b1aa"
+  },
+  "13_S65A.xlsx": {
+    "sha256": "efa0778484ad51afc4e1186953b4e480316c007043de27cf703b042b4c91aab0",
+    "dataset_fingerprint": "6b4ff5c4296f33851f3edf821b5f0c251c025f6bdb4db6a04b5471fadd131144"
+  },
+  "14_42CrMo4_Reis.xlsx": {
+    "sha256": "3fa6c5d8a20e54a39dd8272d17285fcb6f4708c39a85dd917c0d46c530b053e3",
+    "dataset_fingerprint": "45f0fd6adcb6f8c86a5cd51c45193ca7ae53eb68993ea7b60de7ebca877c4f7e"
+  },
+  "15_Ti6Al4V_Berto.xlsx": {
+    "sha256": "500fb0dc62d63afafb99b9a632824b063b6ee9000759527840ace10cb0caf765",
+    "dataset_fingerprint": "75758708c36215a60aad7e144b9a18dc8ff4304726226aa3295e557026a38f02"
+  },
+  "16_42CrMo4_FABEST.xlsx": {
+    "sha256": "242b6098c4e8fce2065c1116c1c0c885d84d7deeb2dbcb7731b075c399e87a25",
+    "dataset_fingerprint": "7f9f7d14d4460376ce190ad7de2ce21528450df1fe0b6172129f6a7039c234b8"
+  },
+  "17_Ti6Al4V_Delahay.xlsx": {
+    "sha256": "fd0e79f7845f76540d57319fa07b94be8b7c5ba47c6f4f5f38da3a2dd703df30",
+    "dataset_fingerprint": "0327f6fdc6f90e7c0c62378108bdf606c27fd8d56a2cda2357f2059496e71008"
+  },
+  "1_Ti6Al4V_Meneghetti.xlsx": {
+    "sha256": "78808b28fc8546bf3361b121c2f768dc5b4291be53b68b79d90e8cab1ece04dd",
+    "dataset_fingerprint": "c3b9a43f4f521b2f5d42196a14b61b824949dbed4b537e6b08d4fd247425871c"
+  },
+  "2_CX18.xlsx": {
+    "sha256": "f9fd79fdfb657e41050be1c867eb7125f05795c45638d00d40f7226612ce9fc1",
+    "dataset_fingerprint": "ed52773be6d62432542e4b9b611769de2990a9933536a1f7d38b2d8e2a06c5ec"
+  },
+  "3_25CrMo4.xlsx": {
+    "sha256": "3fcc36daf35c12806b467b1005d4d5450d4284b618b758597705cc34c3afe17b",
+    "dataset_fingerprint": "75af4a6143a08a9000ba6df062b33141eb0625daf0523f6037193bcdf088d69c"
+  },
+  "4_30NCD16.xlsx": {
+    "sha256": "0deaa15c8d667ec409483c78e9e28cd85a4af767f977ae9b2412e40ff049595e",
+    "dataset_fingerprint": "6bfc38eb684ddc100dd9da3f8e16f45837732ff4e81a5ea756cfda0132f850aa"
+  },
+  "5_34Cr4.xlsx": {
+    "sha256": "7f3e60c008e6449beb3f13ce0306f004c0e413ae2c8211f14ca895b648987edf",
+    "dataset_fingerprint": "3f5853afa48f1b4c7117d7c1e9fd90036f5727eb243fea5076286e9b353c9e34"
+  },
+  "6_42CrMo4_Santus.xlsx": {
+    "sha256": "1327f64f68305d4e4453e784803a5bccce7596dc17db0ab032125598a1fd93d6",
+    "dataset_fingerprint": "50fcebd49c4006212a50d303f4549cf0351c59047b2f0e9bcdebf3323aec15a3"
+  },
+  "7_982FA.xlsx": {
+    "sha256": "cb91fc0b0c2a2f7ca88c44b7686cf68a389cc6b2a9d5c382fb754af731f8ac34",
+    "dataset_fingerprint": "9abfb930bb0a584cd71aa8a11ce9165df5b7fd7446c24688b045e34504b22059"
+  },
+  "8_AISI316L.xlsx": {
+    "sha256": "f822e4c39deb6bacb26c2019bda4744ebaf4c7a327c808ccfc19c9b7358821ee",
+    "dataset_fingerprint": "e245074653e53c978ee11a94812ba9d9fd6e48c0721b98a6f80c5f7a6ee2d9f5"
+  },
+  "Al7075_T6.xlsx": {
+    "sha256": "2a378823426639986ba534f6fda4adefce621d1757def2531f157818306f94fc",
+    "dataset_fingerprint": "b5007cc636a17ef396693df62aa66cca3c293567442c36f5454045140ec89cad"
+  },
+  "18_Al7075_T651_Wang.xlsx": {
+    "sha256": "7ae0c8cc2f40a3ec00e5eb667ea21ab50bd017f84e4b0c408618e84ae2dcb0e1",
+    "dataset_fingerprint": "a5dac85f0f32b65b5eccfce17e49ce0253e892619c94d83b0b995d8129052e3d"
+  }
+}

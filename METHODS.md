@@ -16,22 +16,22 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 6 | 1 | 11 | 0 | 18 |
-| Energy based | 6 | 1 | 13 | 3 | 23 |
-| Integral and hybrid | 5 | 0 | 4 | 0 | 9 |
-| Invariant based | 5 | 0 | 8 | 0 | 13 |
+| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Energy based | 7 | 1 | 12 | 3 | 23 |
+| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
 | Probabilistic | 0 | 0 | 5 | 0 | 5 |
 | Specialized | 0 | 0 | 3 | 0 | 3 |
-| Strain based | 3 | 0 | 10 | 2 | 15 |
-| Stress based | 1 | 0 | 12 | 0 | 13 |
+| Strain based | 4 | 0 | 9 | 2 | 15 |
+| Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 29 | 2 | 81 | 5 | 117 |
+| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
-All 161 inherited records remain traceable. 44 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
+All 164 inherited records remain traceable. 45 bundles, overlap checks, related publications, unresolved leads and broad workstreams are excluded from progress totals. Absence from those totals is not a scientific rejection. The [51-publication coverage register](docs/research/Review_51_Coverage.csv) preserves every supplied review entry.
 
 Browse [contribution opportunities and status/loading/validation views](docs/METHOD_INDEX.md), or inspect the [complete count reconciliation and record dispositions](docs/COUNT_RECONCILIATION.md). Roadmap selection never removes an entry here.
 
@@ -61,12 +61,13 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [I_MCD](#i_mcd) | McDiarmid (surface-crack repository scope) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_CARSPA](#i_carspa) | Carpinteri–Spagnoli | Partially implemented | not_tested | High | Yes |
 | [N04](#n04) | Modified Wöhler Curve Method / Susmel–Lazzarin | Fully implemented | reference_examples_reproduced | High | Yes |
-| [N05](#n05) | Wang maximum-shear-plane HCF criterion | Not implemented | not_tested | High | Yes |
-| [N06](#n06) | Nonlinear critical-plane HCF criterion | Not implemented | not_tested | High | Yes |
+| [N05](#n05) | Wang–Sun–Liu–Liu–Shang maximum-shear-plane HCF criterion | Fully implemented | reference_examples_reproduced | High | Yes |
+| [N06](#n06) | Zhang–Yao nonlinear critical-plane HCF criterion | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N07](#n07) | Sectional critical-plane criterion | Not implemented | not_tested | High | Yes |
-| [N11](#n11) | Quadratic damage-plane strength criterion | Not implemented | not_tested | Medium | Yes |
+| [N11](#n11) | Ninić Damage Function (quadratic damage-plane criterion) | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N12](#n12) | Revised multiaxial fatigue damage function | Not implemented | not_tested | Medium | Yes |
-| [N16](#n16) | Liu–Mahadevan characteristic-plane model, isotropic branch | Not implemented | not_tested | High | Yes |
+| [N16](#n16) | Liu–Mahadevan critical-plane criterion and life model | Fully implemented | basic_numerical_tests | High | Yes |
+| [N17](#n17) | Mean-shear-sensitive weighted-plane criterion, CA branch | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N25](#n25) | A90(T) deviatoric tensile critical-plane model | Not implemented | not_tested | Medium | Yes |
 | [R01](#r01) | Original Carpinteri–Spagnoli | Not implemented | not_tested | High | related_publication |
 | [R02](#r02) | Dang Van elastic-shakedown CA formulation | Not implemented | not_tested | High | related_publication |
@@ -78,6 +79,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [G33](#g33) | Zhai–Zou–Hu–Chen–Jin shakedown-constrained Walker model | Not implemented | not_tested | Medium | Yes |
 | [G43](#g43) | Xu et al. mean-stress/biaxiality modification | Not implemented | not_tested | Low | Yes |
 | [G50](#g50) | Wang–Shang–Wang ductile/brittle HCF criterion | Not implemented | not_tested | Medium | overlap_review |
+| [N58](#n58) | Liu–Xie–Hao equivalent stress on the maximum shear stress amplitude plane | Fully implemented | reference_examples_reproduced | Medium | Yes |
 
 ### I_FIN
 
@@ -141,24 +143,24 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N05
 
-**Wang maximum-shear-plane HCF criterion** — Yang Wang, Guo-Qin Sun, Jinfeng Liu, Xiaodong Liu, Deguang Shang (2022)
+**Wang–Sun–Liu–Liu–Shang maximum-shear-plane HCF criterion** — Yang Wang, Guo-Qin Sun, Jinfeng Liu, Xiaodong Liu, Deguang Shang (2022)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | Multiaxial high-cycle fatigue failure and life prediction based on critical plane method, International Journal of Damage Mechanics; https://doi.org/10.1177/10567895221091308 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#n05) |
 
 ### N06
 
-**Nonlinear critical-plane HCF criterion** — CHENG-CHENG ZHANG, WEI-XING YAO (2010)
+**Zhang–Yao nonlinear critical-plane HCF criterion** — CHENG-CHENG ZHANG, WEI-XING YAO (2010)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | An improved multiaxial high-cycle fatigue criterion based on critical plane approach, Fatigue & Fracture of Engineering Materials & Structures; https://doi.org/10.1111/j.1460-2695.2010.01523.x |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#n06) |
@@ -177,12 +179,12 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N11
 
-**Quadratic damage-plane strength criterion** — D NINIC (2006)
+**Ninić Damage Function (quadratic damage-plane criterion)** — D NINIC (2006)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | A stress-based multiaxial high-cycle fatigue damage criterion, International Journal of Fatigue; https://doi.org/10.1016/j.ijfatigue.2005.04.014 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#n11) |
@@ -201,15 +203,27 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N16
 
-**Liu–Mahadevan characteristic-plane model, isotropic branch** — Y LIU, S MAHADEVAN (2005)
+**Liu–Mahadevan critical-plane criterion and life model** — Y LIU, S MAHADEVAN (2005)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | Multiaxial high-cycle fatigue criterion and life prediction for metals, International Journal of Fatigue; https://doi.org/10.1016/j.ijfatigue.2005.01.003 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | possible_or_related_source; [EXT11](docs/EXTERNAL_IMPLEMENTATIONS.md#ext11); not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#n16) |
+
+### N17
+
+**Mean-shear-sensitive weighted-plane criterion, CA branch** — Xiao-Wei Wang, De-Guang Shang, Yu-Juan Sun, Hong Chen (2018)
+
+| Field | Evidence / task |
+| --- | --- |
+| Reference / DOI | Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Theoretical and Applied Fracture Mechanics; https://doi.org/10.1016/j.tafmec.2017.10.007 |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External sources | no_accessible_source_identified; not integrated or independently validated |
+| Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#n17) |
 
 ### N25
 
@@ -343,6 +357,18 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | External sources | not_individually_searched; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#g50) |
 
+### N58
+
+**Liu–Xie–Hao equivalent stress on the maximum shear stress amplitude plane** — Xiao-Yong Liu, Jiamiao Xie, Wenqian Hao (2025)
+
+| Field | Evidence / task |
+| --- | --- |
+| Reference / DOI | A Multiaxial High-Cycle Fatigue Life Evaluation Model Based on the Critical Plane Method, Journal of Materials Engineering and Performance; https://doi.org/10.1007/s11665-025-11163-z |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External sources | no_accessible_source_identified; not integrated or independently validated |
+| Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#n58) |
+
 <a id="family-energy-based"></a>
 
 ## Energy based
@@ -359,7 +385,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [I_ZHU_EDP](#i_zhu_edp) | Zhu equivalent damage parameter | Partially implemented | basic_numerical_tests | High | Yes |
 | [N21](#n21) | Equivalent Second Moment of Load Path (ESMLP) | Not implemented | not_tested | Medium | Yes |
 | [N22](#n22) | Moment of Load Path (MLP), closed CA stress-path branch | Not implemented | not_tested | Medium | Yes |
-| [N26](#n26) | Negative-mean-stress modified SWT | Not implemented | not_tested | Low | Yes |
+| [N26](#n26) | Kujawski negative-mean-stress modified SWT (mSWT) | Fully implemented | basic_numerical_tests | Low | Yes |
 | [N30](#n30) | Normalized energy critical-plane parameter | Not implemented | not_tested | Medium | Yes |
 | [N41](#n41) | Elastic strain-energy equivalent-stress baseline | Not implemented | not_tested | Low | Yes |
 | [N48](#n48) | Froustey–Lasserre energetic criterion | Not implemented | not_tested | Low | Yes |
@@ -504,12 +530,12 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N26
 
-**Negative-mean-stress modified SWT** — Daniel Kujawski (2021)
+**Kujawski negative-mean-stress modified SWT (mSWT)** — Daniel Kujawski (2021)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | An interpretation and modification of the SWT function, Fatigue & Fracture of Engineering Materials & Structures; https://doi.org/10.1111/ffe.13488 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/energy-based.md#n26) |
@@ -775,8 +801,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [I_BP](#i_bp) | Böhme–Papuga | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_CAIM](#i_caim) | Critical–integral approach (CAIM) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [N03](#n03) | Papadopoulos, specified 2001 formulation | Fully implemented | reference_examples_reproduced | High | Yes |
-| [N15](#n15) | Original Liu–Zenner integral criterion | Not implemented | not_tested | Medium | Yes |
-| [N17](#n17) | Mean-shear-sensitive weighted-plane criterion, CA branch | Not implemented | not_tested | High | Yes |
+| [N15](#n15) | Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N50](#n50) | Grubisic–Simbürger formulation | Not implemented | not_tested | Low | Yes |
 | [N53](#n53) | Substitute-amplitude/NP-damage method, CA branch | Not implemented | not_tested | Medium | Yes |
 | [G02](#g02) | Papuga–Růžička integral criterion (PI; later PIN) | Fully implemented | reference_examples_reproduced | High | Yes |
@@ -784,6 +809,8 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [L01](#l01) | Kenmeugne–Vidal-Salle–Robert–Bahuaud selective integral (Fatigue 1996) | Not implemented | not_tested | Low | unresolved_lead |
 | [L02](#l02) | Fogue–Bahuaud early global criterion | Not implemented | not_tested | Low | unresolved_lead |
 | [L06](#l06) | Grubisic–Simbürger original | Not implemented | not_tested | Low | related_publication |
+| [N59](#n59) | Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter | Fully implemented | basic_numerical_tests | Medium | Yes |
+| [N60](#n60) | Albinmousa–Al Hussain polar damage sum, Fatemi–Socie parameter | Fully implemented | basic_numerical_tests | Medium | implementation |
 
 ### I_BP
 
@@ -823,27 +850,15 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N15
 
-**Original Liu–Zenner integral criterion** — H Zenner (2000)
+**Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion** — H Zenner (2000)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | On the fatigue limit of ductile metals under complex multiaxial loading, International Journal of Fatigue; https://doi.org/10.1016/s0142-1123(99)00107-3 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n15) |
-
-### N17
-
-**Mean-shear-sensitive weighted-plane criterion, CA branch** — Xiao-Wei Wang, De-Guang Shang, Yu-Juan Sun, Hong Chen (2018)
-
-| Field | Evidence / task |
-| --- | --- |
-| Reference / DOI | Multiaxial high-cycle fatigue life prediction model considering mean shear stress effect under constant and variable amplitude loading, Theoretical and Applied Fracture Mechanics; https://doi.org/10.1016/j.tafmec.2017.10.007 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
-| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
-| External sources | no_accessible_source_identified; not integrated or independently validated |
-| Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n17) |
 
 ### N50
 
@@ -929,6 +944,30 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | External sources | not_individually_searched; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#l06) |
 
+### N59
+
+**Albinmousa–Al Hussain polar damage sum, Smith–Watson–Topper parameter** — Jafar Albinmousa, Mohammed Al Hussain (2021)
+
+| Field | Evidence / task |
+| --- | --- |
+| Reference / DOI | Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Forces in Mechanics; https://doi.org/10.1016/j.finmec.2021.100025 |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External sources | no_accessible_source_identified; not integrated or independently validated |
+| Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n59) |
+
+### N60
+
+**Albinmousa–Al Hussain polar damage sum, Fatemi–Socie parameter** — Jafar Albinmousa, Mohammed Al Hussain (2021)
+
+| Field | Evidence / task |
+| --- | --- |
+| Reference / DOI | Polar damage sum concept for constant amplitude proportional and nonproportional multiaxial fatigue analysis, Forces in Mechanics; https://doi.org/10.1016/j.finmec.2021.100025 |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
+| Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
+| External sources | not_individually_searched; not integrated or independently validated |
+| Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n60) |
+
 <a id="family-invariant-based"></a>
 
 ## Invariant based
@@ -938,11 +977,11 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [I_OTT](#i_ott) | Ottosen/Tveit proportional reduction (archived scope) | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N01](#n01) | Crossland | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N02](#n02) | Sines | Fully implemented | reference_examples_reproduced | High | Yes |
-| [N08](#n08) | Hard-metal deviatoric-amplitude/principal-stress criterion | Not implemented | not_tested | High | Yes |
-| [N09](#n09) | Unified equivalent shear stress | Not implemented | not_tested | High | Yes |
+| [N08](#n08) | Gonçalves–Araújo–Mamiya prismatic-hull criterion for hard metals | Fully implemented | reference_examples_reproduced | High | Yes |
+| [N09](#n09) | Unified equivalent shear stress | Fully implemented | basic_numerical_tests | High | Yes |
 | [N10](#n10) | Modified Marin-type mean-shear criterion | Not implemented | not_tested | Medium | Yes |
 | [N18](#n18) | Piecewise ruled S–N surface | Not implemented | not_tested | Medium | Yes |
-| [N19](#n19) | Improved Gough / Nishihara–Kawamoto criterion | Not implemented | not_tested | Medium | Yes |
+| [N19](#n19) | Improved Gough / Nishihara–Kawamoto criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N20](#n20) | Stress-invariant endurance criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N33](#n33) | Published proportional Hershey–Hosford–Sines reduction | Not implemented | not_tested | Low | related_scope |
 | [N47](#n47) | Original Marin mean-stress criterion | Not implemented | not_tested | Low | Yes |
@@ -988,12 +1027,12 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N08
 
-**Hard-metal deviatoric-amplitude/principal-stress criterion** — Camilla A. Gonçalves, José A. Araújo, Edgar N. Mamiya (2005)
+**Gonçalves–Araújo–Mamiya prismatic-hull criterion for hard metals** — Camilla A. Gonçalves, José A. Araújo, Edgar N. Mamiya (2005)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | Multiaxial fatigue: a stress based criterion for hard metals, International Journal of Fatigue; https://doi.org/10.1016/j.ijfatigue.2004.05.006 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/invariant-based.md#n08) |
@@ -1005,7 +1044,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | Predicting the multiaxial fatigue limit and the multiaxial high-cycle fatigue life based on the unified equivalent shear stress from axial strength characteristics with various waveforms, International Journal of Fatigue; https://doi.org/10.1016/j.ijfatigue.2017.12.001 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/invariant-based.md#n09) |
@@ -1041,7 +1080,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | Fatigue criterion improvement of Gough and Nishihara & Kawamoto to predict the fatigue damage of a wide range of metallic materials, International Journal of Fatigue; https://doi.org/10.1016/j.ijfatigue.2017.02.016 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/invariant-based.md#n19) |
@@ -1749,7 +1788,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [I_LIU2021](#i_liu2021) | Liu et al. (2021) modified shear amplitude | Requires review | basic_numerical_tests | Existing | Yes |
 | [I_GSA](#i_gsa) | Ince–Glinka generalized strain amplitude | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [N27](#n27) | Wu–Hu–Song (WHS) | Not implemented | not_tested | Medium | Yes |
-| [N28](#n28) | Modified WHS (MWHS) | Not implemented | not_tested | Medium | Yes |
+| [N28](#n28) | Modified Wu–Hu–Song (MWHS) | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N29](#n29) | Original Kandil–Brown–Miller (KBM) | Not implemented | not_tested | Low | Yes |
 | [N31](#n31) | Load-path-sensitive modified fatigue parameter | Not implemented | not_tested | Medium | Yes |
 | [N46](#n46) | Wang–Brown strain-based assessment, selected original version | Not implemented | not_tested | Low | Yes |
@@ -1824,12 +1863,12 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N28
 
-**Modified WHS (MWHS)** — ZR Wu, X Li, L Fang, YD Song (2017)
+**Modified Wu–Hu–Song (MWHS)** — ZR Wu, X Li, L Fang, YD Song (2017)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | Evaluation of multiaxial fatigue life prediction criteria for Ni-based superalloy GH4169, Proceedings of the Institution of Mechanical Engineers, Part C: Journal of Mechanical Engineering Science; https://doi.org/10.1177/0954406217708214 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/strain-based.md#n28) |
@@ -1972,15 +2011,15 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 | ID | Method / scope | Implementation | Validation | Priority | Counted |
 | --- | --- | --- | --- | --- | --- |
-| [N13](#n13) | Modified Gough limit curve | Not implemented | not_tested | Medium | Yes |
+| [N13](#n13) | Golos–Dębski–Dębski modified Gough limit curve | Fully implemented | basic_numerical_tests | Medium | Yes |
 | [N14](#n14) | Gough–Pollard and Nishihara–Kawamoto baselines | Not implemented | not_tested | Medium | bundle |
 | [N23](#n23) | Equal-life surface with path correction | Not implemented | not_tested | Medium | Yes |
-| [N24](#n24) | Stress Scale Factor (SSF) family | Not implemented | not_tested | Medium | Yes |
+| [N24](#n24) | Stress Scale Factor (SSF) equivalent shear stress | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N38](#n38) | von Mises equivalent-amplitude baseline | Not implemented | not_tested | Medium | Yes |
 | [N39](#n39) | Tresca equivalent-amplitude baseline | Not implemented | not_tested | Low | Yes |
 | [N40](#n40) | Maximum principal stress / Rankine baseline | Not implemented | not_tested | Low | Yes |
-| [G04](#g04) | Kakuno–Kawada | Not implemented | not_tested | Medium | Yes |
-| [G05](#g05) | Manson–McKnight–Papuga (MMP) | Not implemented | not_tested | Medium | Yes |
+| [G04](#g04) | Kakuno–Kawada | Fully implemented | basic_numerical_tests | Medium | Yes |
+| [G05](#g05) | Manson–McKnight–Papuga (MMP) | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [G07](#g07) | Modified Mohr–Mises hypothesis (MMMH) | Fully implemented | basic_numerical_tests | High | Yes |
 | [G09](#g09) | Moment-adapted COIN LiWI (MA-COIN LiWI) | Not implemented | not_tested | Medium | Yes |
 | [G13](#g13) | Braccesi–Cianetti–Lori–Pioli equivalent uniaxial process | Not implemented | not_tested | Medium | Yes |
@@ -1990,12 +2029,12 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N13
 
-**Modified Gough limit curve** — Krzysztof M. Golos, Daniel K. Debski, Marek A. Debski (2014)
+**Golos–Dębski–Dębski modified Gough limit curve** — Krzysztof M. Golos, Daniel K. Debski, Marek A. Debski (2014)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | A stress-based fatigue criterion to assess high-cycle fatigue under in-phase multiaxial loading conditions, Theoretical and Applied Fracture Mechanics; https://doi.org/10.1016/j.tafmec.2014.07.005 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/stress-based.md#n13) |
@@ -2026,12 +2065,12 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N24
 
-**Stress Scale Factor (SSF) family** — V. Anes, L. Reis, B. Li, M. Fonte, M. de Freitas (2014)
+**Stress Scale Factor (SSF) equivalent shear stress** — V. Anes, L. Reis, B. Li, M. Fonte, M. de Freitas (2014)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | New approach for analysis of complex multiaxial loading paths, International Journal of Fatigue; https://doi.org/10.1016/j.ijfatigue.2013.05.004 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/stress-based.md#n24) |
@@ -2079,7 +2118,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | A NEW CRITERION OF FATIGUE STRENGTH OF A ROUND BAR SUBJECTED TO COMBINED STATIC AND REPEATED BENDING AND TORSION, Fatigue & Fracture of Engineering Materials and Structures; https://doi.org/10.1111/j.1460-2695.1979.tb01358.x |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; basic_numerical_tests |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/stress-based.md#g04) |
@@ -2091,7 +2130,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | Multiaxial fatigue strength of common structural steel and the response of some estimation methods, International Journal of Fatigue; https://doi.org/10.1016/j.ijfatigue.2017.07.001 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/stress-based.md#g05) |

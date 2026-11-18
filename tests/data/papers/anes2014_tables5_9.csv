@@ -1,0 +1,24 @@
+# Anes V, Reis L, Li B, Fonte M, de Freitas M (2014) New approach for analysis of complex multiaxial loading paths. Int J Fatigue 62:21-33. doi:10.1016/j.ijfatigue.2013.05.004
+# Tables 5-8, p.28: ssf calibration of the proportional cases 1, 3, 4, 5 at N = 1e3..1e7 (MPa): AC pure-shear amplitude, AB shear amplitude, AD axial amplitude, BC shear increment, ssf = BC/AD.
+# Table 9, p.29, repeats sigma_a = AD, lambda = arctan(sar) and ssf for the regression of Eq. (31).
+case,N,AC,AB,AD,BC,ssf,lambda
+1,1e3,567,0,737,0,0.77,0
+1,1e4,493,0,626,0,0.79,0
+1,1e5,428,0,532,0,0.81,0
+1,1e6,372,0,452,0,0.82,0
+1,1e7,324,0,383,0,0.84,0
+3,1e3,567,219,656,349,0.53,0.32
+3,1e4,493,194,582,299,0.51,0.32
+3,1e5,428,172,516,256,0.50,0.32
+3,1e6,372,153,458,220,0.48,0.32
+3,1e7,324,135,406,188,0.46,0.32
+4,1e3,567,375,650,192,0.30,0.52
+4,1e4,493,323,558,171,0.31,0.52
+4,1e5,428,277,480,151,0.32,0.52
+4,1e6,372,238,412,134,0.33,0.52
+4,1e7,324,204,354,119,0.34,0.52
+5,1e3,508,508,508,59,0.12,0.79
+5,1e4,493,389,389,104,0.27,0.79
+5,1e5,428,298,298,131,0.44,0.79
+5,1e6,372,228,228,144,0.63,0.79
+5,1e7,324,175,175,149,0.85,0.79

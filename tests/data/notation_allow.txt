@@ -11,6 +11,12 @@
 BestCP all_damage all_metric atol check_orthonormal critical_only evaluate grid grid_damage
 grid_metric grid_normals method name n_seeds objective pool prepare refine return_normals
 seed_normals shear_rule values
+# kind: PDS selector between the SWT and FS damage parameters of Eqs. (8)-(9).
+kind
+# k_tau, k_sigma, phi: WANG2018 mean-shear and mean-normal sensitivities and plane angle, Eqs. (2), (15).
+k_tau k_sigma phi
+# exact: GOLOS switch between the published coefficient forms, Eq. (30) or the approximation (31).
+exact
 
 # Workbook and case plumbing: the imported series and models behind a calibration, the block/case
 # selection of the endurance scan, and the components of a constructed proportional case.
@@ -22,10 +28,10 @@ N_hi N_lo b b0 sf tf bounds stdnum expected observed
 ax color curve curve_range error_factors label loglog n_curve return_figax return_warnings show y
 
 # Names a criterion introduces for its own quantities, defined by the equation its module cites.
-A_prime C_A E_amp F1 F_NP G H_c K_prime R1 R3 S_amp S_max S_min T_Slim X Y alpha alpha_w
+A_prime C_A C_a N_star E_amp sy F1 F_NP G H_c K_prime R1 R3 S_amp S_max S_min T_Slim X Y alpha alpha_w s_1max s_3min shear_weight w coefficients lam tau s t b_fat geometry
 axial axial_stress b_sigma b_tau dK1 dK1A dK3 dK3A dW0 d_T dsigma1A dtau3A e1 e3 eps_a f
 gamma_a h h_c h_m history k_a k_phi lambda1 lambda3 n_prime nu_bar p phase_shift probability
-psi q r r_m rho shear_stress sigma sigma_0 sigma_A sigma_T sigma_eq sigma_eq_max sigma_f
+psi q r r_m rho shear_stress sigma sigma_0 sigma_A sigma_T sigma_yt sigma_eq sigma_eq_max sigma_f
 sigma_inf sigma_op sigma_star tau_A tau_f tau_r volume volume_ratio v0_su_m xi
 
 # Tveit et al. (2025) Eqs. (6)-(7): back-stress modulus C and damage constants K and L.
@@ -40,7 +46,7 @@ n_points min_blocks max_blocks tol_alpha tol_damage
 algorithm cosine sine shear_amplitude_algorithm cos sin x
 
 # Generic bookkeeping of the registry, the parameter reader, and the reference table.
-default warn context names
+default warn context names include_variants
 
 # Method output variant is an interface selector for fatigue-index evaluation.
 variant

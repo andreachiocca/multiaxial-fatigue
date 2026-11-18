@@ -1,38 +1,29 @@
-"""Modified Mohr-Mises hypothesis (MMMH) of Mertens & Liebich (2017), Int J Fatigue,
-doi:10.1016/j.ijfatigue.2017.06.003 (roadmap G07): kernel routines for smooth surfaces
-(m_a = n_el = m_o1 = m_a1 = 1), together with the registered MMMH model.
+"""Modified Mohr-Mises hypothesis (MMMH) of Mertens & Liebich (2017).
 
-Eq. (1):  sigma_eq,MMM(eta) = V(eta) sqrt((4 - k_a^2) M_M^2 + k_a^2 R_M^2),
-Eq. (4):  M_M = (sigma_1 + sigma_2)/2 - sigma_3,  |R_M| = |sigma_1 - sigma_2|/2  (surface, sigma_3 = sigma_z),
-Eq. (9):  V = sign(sqrt(4 - k_a^2) M_M + k_a R_M),  Eq. (25): sigma_eq,a = (max - min)/2.
+Published in *International Journal of Fatigue* (2017), doi:10.1016/j.ijfatigue.2017.06.003
+(roadmap G07), Eqs. (1), (4), (9), (22)-(25) for smooth surfaces (``m_a = n_el = m_o1 = m_a1 = 1``)::
 
-Regardless of the signs taken by M_M and R_M, the square root keeps the Mertens expression
-I1^2 - k_a^2 I2. For one harmonic the mean-free signal flips sign when shifted by half a period, so
-both M_M and the signed R_M of Tab. 1 flip as well, sigma_eq,MMM flips, and
-sigma_eq,a = max_t sqrt(I1^2 - k_a^2 I2) = COIN with k_phi = 0.5. In the time-domain routine below a
-shear stress taken in the frame that cancels it at the smallest radius supplies the sign of R_M
-(Eqs. 14-19); the quotient of Eq. (20) only fixes a global sign of R_M, so it does not alter the
-single-harmonic amplitude and is left out.
+    sigma_eq,MMM(eta) = V(eta) * sqrt((4 - k_a^2) * M_M^2 + k_a^2 * R_M^2),   k_a = s_-1 / t_-1
+    M_M = (sigma_1 + sigma_2) / 2 - sigma_3,   |R_M| = |sigma_1 - sigma_2| / 2
+    V   = sign(sqrt(4 - k_a^2) * M_M + k_a * R_M)
+    sigma_eq,a = (max sigma_eq,MMM - min sigma_eq,MMM) / 2
+    sigma_eq,m = sigma_o1 - sigma_a1
 
-Equivalent mean stress (Eqs. 22-24): sigma_eq,m = sigma_o1 - sigma_a1, where sigma_o1 is the largest
-maximum principal stress of the total stress and sigma_a1 the amplitude of the signed principal
-stress sigma_1. Eq. (22) takes the largest maximum principal stress of the total stress across the
-cycle; Eq. (23) takes the half range of the signed sigma_1(eta) = M_plane + R_M of Eq. (21), using
-the global sign quot of Eq. (20) and Tab. 1 step 9. Since for one harmonic the mean-free stress flips
-sign after half a period, the sigma_1,max of the mean-free stress coincides with |sigma_2,min| and
-step 9 yields quot,o: R_M carries the sign of sigma_1 at its maximum, sigma_1 attains sigma_1,max
-there and -sigma_1,max half a period later, and sigma_a1 = max_eta sigma_1(eta) of the mean-free
-stress, for proportional and non-proportional loading alike (cross-checked in the tests against a
-literal implementation of Eqs. 20-23).
+For one harmonic, the mean-free stress flips sign every half period, so
+``sigma_eq,a = max_t sqrt(I_1^2 - k_a^2 I_2)`` reduces to ``COIN`` with ``k_phi = 0.5``,
+and ``sigma_eq,m`` equals the difference between the cycle peaks of maximum principal
+total stress and alternating principal stress (Eqs. 20-24).
 
-Assessment (registered model): reproducing the load-cycle dependent Haigh diagrams of the paper
-calls for M_N from refs. [16, 23] (Konstruktion 1997; dissertation Hahn 1995), which cannot be
-obtained. The paper permits endurance-limit values taken from guidelines, so this model adopts the
-endurance-limit Haigh line sigma_A(sigma_m) = s_-1 - M sigma_m, with the mean-stress sensitivity
-M = (s_-1 - s_0/2)/(s_0/2) from Dubbel (2004) E1 (between R = -1 and R = 0) and k_a = s_-1/t_-1,
-and returns (sigma_eq,a + M sigma_eq,m)/s_-1. As with CROSSLAND, the life follows from the fitted
-universal curve.
-Source note: for k_a^2 = 0, Eq. (8) yields |s1a + s2a| whereas the text reports |s1a - s2a|.
+Repository choices:
+- Because the paper's load-cycle-dependent Haigh diagrams rely on unobtainable internal
+  references ([16, 23]), the registered ``MMMH`` model evaluates the endurance-limit Haigh
+  line ``(sigma_eq,a + M * sigma_eq,m) / s_-1`` for universal master-curve life prediction.
+- Mean-stress sensitivity ``M`` uses optional ``M_MMMH`` when supplied, or
+  ``M = 2 * Sigm1 / Sig0 - 1`` (Dubbel 2004, E1) using ``Sig0`` or the Boehme et al. (2026)
+  Eq. (1) estimate from ``Su`` and ``Sigm1``. Requires ``0 < Sigm1 / Taum1 <= 2``.
+- Time-domain sign selection for ``R_M`` drops the constant global quotient of Eq. (20),
+  which cancels in the single-harmonic half-range; Eq. (8)'s text misprint
+  ``|s1a - s2a|`` for ``k_a^2 = 0`` (actually ``|s1a + s2a|``) is not followed.
 """
 
 from __future__ import annotations
@@ -43,7 +34,7 @@ import numpy as np
 
 from ..base import CaseResult
 from .coin_liwi import coin_amplitude
-from .stress_invariants import harmonic_parts
+from .stress_invariants import harmonic_parts, peak_principal_stress
 
 
 def mmmh_amplitude(S_sin, S_cos, k_a: float) -> float:
@@ -79,37 +70,11 @@ def mmmh_mean_proportional(S_mean, S_amp) -> float:
     return float(top_mean - half_range)
 
 
-def _peak_principal_stress(S_mean, S_sin, S_cos, n_samples: int = 720) -> float:
-    """max over eta of the largest principal stress of S_mean + S_sin sin(eta) + S_cos cos(eta)."""
-
-    def largest_eig(phase):
-        phase = np.atleast_1d(phase)
-        tensor = (
-            S_mean + np.sin(phase)[:, None, None] * S_sin + np.cos(phase)[:, None, None] * S_cos
-        )
-        return np.linalg.eigvalsh(tensor)[:, -1]
-
-    samples = np.linspace(0.0, 2.0 * np.pi, n_samples, endpoint=False)
-    largest = largest_eig(samples)
-    # coincident maxima give the same value, which is all this needs
-    top = int(np.argmax(largest))
-    spacing = samples[1] - samples[0]
-    lo, hi = samples[top] - spacing, samples[top] + spacing
-    for _ in range(60):  # golden-section search inside the bracket
-        left = hi - 0.618034 * (hi - lo)
-        right = lo + 0.618034 * (hi - lo)
-        if largest_eig(left)[0] >= largest_eig(right)[0]:
-            hi = right
-        else:
-            lo = left
-    return max(float(largest[top]), float(largest_eig(0.5 * (lo + hi))[0]))
-
-
 def mmmh_mean(S_mean, S_sin, S_cos) -> float:
     """sigma_eq,m of Eq. (24) (smooth: m_o1 = m_a1 = n_el = 1) for a single-harmonic cycle."""
     S_mean, S_sin, S_cos = (np.asarray(comp, dtype=float) for comp in (S_mean, S_sin, S_cos))
-    peak_total = _peak_principal_stress(S_mean, S_sin, S_cos)  # Eq. (22)
-    peak_oscillating = _peak_principal_stress(np.zeros((3, 3)), S_sin, S_cos)  # Eq. (23), see above
+    peak_total = peak_principal_stress(S_mean, S_sin, S_cos)  # Eq. (22)
+    peak_oscillating = peak_principal_stress(np.zeros((3, 3)), S_sin, S_cos)  # Eq. (23), see above
     return float(peak_total - peak_oscillating)
 
 

@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from multifat.models.registry import get_models, _available_cp_methods
+from multifat.models.registry import get_models, available_cp_methods
 from multifat.models.references import DISABLED_METHODS, REFERENCES
 from multifat.eval.evaluator import best_cp_for_case
 from multifat.models.base import CPPlaneResult
@@ -50,6 +50,7 @@ class MethodAuditTests(unittest.TestCase):
             FS=ga * (1 + 0.5 * sn / 250),
             FIN=ta + 0.2 * sn,
             SWT=sn * ea,
+            KUJAWSKI2021=sn * ea,  # no mean: identical to SWT
             MATAKE=ta + (2 * 145 / 240 - 1) * sn,
             MCD=ta + 145 / (2 * 600) * sn,
             MGSE_YU=ta * ga + sn * ea,
@@ -67,11 +68,17 @@ class MethodAuditTests(unittest.TestCase):
             MWCM=ta / (145 - sn / ta * (145 - 240 / 2)),
             MMCCM=1.0 / float(mmccm_life(ga, sn / ta, _mmccm_constants(p))),
             VSE=(2 * sn) * (2 * ea) + (2 * ta) * ga,
+            LIU2025=np.sqrt(sn**2 + 3 * ta**2),
+            ZHANGYAO=np.sqrt(ta**2 - ta * sn + (145 / 240) ** 2 * (240 + 2 * ta) * sn) / 145,
+            MWHS=0.02 + 0.5 * (1 + sn / 250) * np.sqrt(sn * 2 * ea / p["E"]),
+            NINIC=np.sqrt(
+                (ta / 145) ** 2 + (240 / 145) ** 2 * (1 - (120 / 145) ** 2) * (sn / 240) ** 2
+            ),
         )
-        self.assertEqual(set(expected), set(_available_cp_methods()))
+        self.assertEqual(set(expected), set(available_cp_methods()))
         for name, value in expected.items():
             with self.subTest(name=name):
-                model = _available_cp_methods()[name]
+                model = available_cp_methods()[name]
                 r = model.evaluate_on_plane(S0r=s, S1r=-s, E0r=e, E1r=-e, params=p)
                 self.assertAlmostEqual(r.damage, value, places=11)
 
@@ -184,7 +191,7 @@ class MethodAuditTests(unittest.TestCase):
             for variant in (name, name + "_ext"):
                 with self.assertRaisesRegex(NotImplementedError, "disabled by numerical audit"):
                     get_models([variant])
-        for model in get_models(list(_available_cp_methods()) + ["BP", "CAIM"]):
+        for model in get_models(list(available_cp_methods()) + ["BP", "CAIM"]):
             self.assertIn(model.name, REFERENCES)
             self.assertTrue(model.reference["citation"])
 
@@ -204,7 +211,9 @@ class DamageMetricTests(unittest.TestCase):
         fit = fit_power_law_with_survival_std(n, dp, stdnum=2)
         self.assertEqual(fit["b"], 0.0)
         self.assertTrue(np.isfinite(fit["A_surv"]))
-        self.assertAlmostEqual(fit["A_surv"], np.exp(-2 * np.std(np.log(dp), ddof=1)))
+        self.assertAlmostEqual(
+            fit["A_surv"], np.exp(-2 * np.std(np.log(dp), ddof=2))
+        )  # n - 2 dof (#74)
         self.assertTrue(np.isnan(fit["STD"]))
 
     def test_unidentifiable_calibration_is_not_reported_as_an_optimum(self):

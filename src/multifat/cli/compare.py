@@ -558,14 +558,21 @@ def read_results_csv(csv_path: Path) -> Optional[pd.DataFrame]:
     return frame
 
 
-def collect_all_results(results_dir: Path) -> pd.DataFrame:
-    csv_paths = sorted(
-        [
-            path
-            for path in results_dir.rglob("*.csv")
-            if path.is_file() and not {"Comparison", "FatigueLimit"} & set(path.parts)
-        ]
+def _life_result_csvs(results_dir: Path) -> list[Path]:
+    return sorted(
+        path
+        for path in results_dir.rglob("*.csv")
+        if path.is_file() and not {"Comparison", "FatigueLimit"} & set(path.parts)
     )
+
+
+def only_fatigue_limit_results(results_dir: Path) -> bool:
+    """True when the folder holds fatigue-index results (FatigueLimit/) but no life results."""
+    return not _life_result_csvs(results_dir) and any(results_dir.rglob("FatigueLimit/*_FI.csv"))
+
+
+def collect_all_results(results_dir: Path) -> pd.DataFrame:
+    csv_paths = _life_result_csvs(results_dir)
     if not csv_paths:
         raise FileNotFoundError(f"No CSV files located under: {results_dir}")
 
@@ -2054,6 +2061,14 @@ def main(argv=None) -> None:
     pdf_lw = float(max(cli_args.pdf_lw, 0.1))
     factors = [float(f) for f in (cli_args.factors or []) if np.isfinite(f) and f > 1.0]
 
+    if only_fatigue_limit_results(results_root):
+        # Fatigue-limit datasets have no lives to compare: the pipeline already wrote their
+        # fatigue-index summary under FatigueLimit/ (issue: compare crash on limit-only runs).
+        print(
+            f"[INFO] {results_root}: only fatigue-limit results (FatigueLimit/); "
+            "no life results to compare."
+        )
+        return
     frame = collect_all_results(results_root)
     disabled = frame["Method"].astype(str).str.removesuffix("_ext").isin(DISABLED_METHODS)
     if disabled.any():

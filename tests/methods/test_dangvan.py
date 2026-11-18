@@ -1,8 +1,9 @@
 """DANGVAN, Dang Van criterion as restated by Boehme, Papuga & Lange (2026) FFEMS,
 doi:10.1111/ffe.70244 (Zotero 5T8PJV87): Eq. (3) p.4 with a = kappa, b = 3 - 1.5 kappa,
 kappa = s_-1/t_-1 (Eq. 4); Eq. (16) closed forms p.8; Table 4 DV column p.8
-(crop _audit-trail/phase2/crops/5T8PJV87/p8.png). Documented variant: Dang Van (1993, 1999)
-gives no closed-form a, b.
+(crop _audit-trail/phase2/crops/5T8PJV87/p8.png). Documented variant of Dang Van (1973), the
+registered reference; neither it nor the later restatements (Dang Van 1993, 1999; background
+only) give closed-form a, b.
 """
 
 import numpy as np

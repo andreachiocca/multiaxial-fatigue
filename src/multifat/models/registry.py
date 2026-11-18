@@ -17,7 +17,8 @@ from typing import Iterable
 
 from .cp_adapter import CPModelAdapter
 from .base import FatigueModel
-from .comparison import DEFAULT_CAPABILITIES
+from .comparison import capabilities_for_model
+from .errors import LoadingScopeError
 from .references import ensure_enabled, method_reference
 
 # CP (critical-plane) plane-level methods
@@ -30,6 +31,13 @@ from .cp_methods.mdc import MDC
 from .cp_methods.mwcm import MWCM
 from .cp_methods.mmccm import MMCCM
 from .cp_methods.liu_vse import LiuVSE
+from .cp_methods.ninic import Ninic
+from .cp_methods.mwhs import MWHS
+from .cp_methods.liu2025 import Liu2025
+from .cp_methods.zhang_yao import ZhangYao
+from .cp_methods.wang2018 import Wang2018
+from .cp_methods.wang2022 import Wang2022
+from .cp_methods.kujawski2021 import Kujawski2021
 
 # Additional critical-plane formulations
 from .cp_methods.mgse_yu import MGSE_Yu
@@ -51,19 +59,29 @@ from .invariant_methods.ottosen import OttosenReduced
 from .invariant_methods.tveit2025 import Tveit2025
 from .cp_methods.dangvan import DangVan
 from .invariant_methods.crossland import Crossland
+from .invariant_methods.goncalves_araujo_mamiya import GoncalvesAraujoMamiya
+from .invariant_methods.golos import Golos
+from .invariant_methods.kakuno_kawada import KakunoKawada
+from .invariant_methods.khalij import Khalij
+from .invariant_methods.matsubara import Matsubara
 from .invariant_methods.sines import Sines
 from .integral_methods.papadopoulos import Papadopoulos
+from .integral_methods.polar_damage_sum import PolarDamageSumFS, PolarDamageSumSWT
 from .integral_methods.papuga_ruzicka import PapugaCriticalPlane, PapugaIntegral
 from .integral_methods.robert_fogue_bahuaud import RobertFogueBahuaud
+from .integral_methods.sih import SIH
 from .invariant_methods.vu_halm_nadot import VuHalmNadot
 from .invariant_methods.pbp import ProjectionByProjection
 from .invariant_methods.coin_liwi import CoinLiwi
 from .invariant_methods.mmmh import MMMH
+from .invariant_methods.mmp import MMP
+from .invariant_methods.ssf import SSF
+from .cp_methods.liu_mahadevan import LiuMahadevan
 from .integral_methods.morel import Morel
 from .energy_based_methods.ellyin_kujawski import EllyinKujawski
 
 
-def _available_cp_methods():
+def available_cp_methods():
     """Instantiate all available critical-plane methods."""
 
     return {
@@ -84,10 +102,15 @@ def _available_cp_methods():
         "LI": LI(),
         "GSE": GSE(),
         "GSA": GSA(),
+        "NINIC": Ninic(),
+        "MWHS": MWHS(),
+        "LIU2025": Liu2025(),
+        "ZHANGYAO": ZhangYao(),
+        "KUJAWSKI2021": Kujawski2021(),
     }
 
 
-def _available_direct_models():
+def available_direct_models():
     """Instantiate all available non-CP (direct / invariant) models."""
 
     return {
@@ -98,24 +121,64 @@ def _available_direct_models():
         "TVEIT2025": Tveit2025(),
         "DANGVAN": DangVan(),
         "CROSSLAND": Crossland(),
+        "WANG2018": Wang2018(),
+        "WANG2022": Wang2022(),
+        "GAM": GoncalvesAraujoMamiya(),
+        "GOLOS": Golos(),
+        "KHALIJ": Khalij(),
+        "KAKUNO": KakunoKawada(),
+        "MATSUBARA": Matsubara(),
+        "PDS_SWT": PolarDamageSumSWT(),
+        "PDS_FS": PolarDamageSumFS(),
         "SINES": Sines(),
         "PAPADOPOULOS": Papadopoulos(),
         "PCR": PapugaCriticalPlane(),
         "PI": PapugaIntegral(),
         "RFB": RobertFogueBahuaud(),
+        "SIH": SIH(),
         "VHN": VuHalmNadot(),
         "PBP": ProjectionByProjection(),
         "COIN": CoinLiwi(),
         "MMMH": MMMH(),
+        "MMP": MMP(),
+        "SSF": SSF(),
+        "LIUMAHADEVAN": LiuMahadevan(),
         "MOREL": Morel(),
         "EK": EllyinKujawski(),
     }
 
 
+# Backward-compatible private aliases
+_available_cp_methods = available_cp_methods
+_available_direct_models = available_direct_models
+
+
+def base_models():
+    """Instantiate every registered base model, mapping its name to its instance."""
+    return {**available_cp_methods(), **available_direct_models()}
+
+
+def model_names(*, include_variants: bool = False) -> list[str]:
+    """Return registered model names.
+
+    Parameters
+    ----------
+    include_variants:
+        If True, appends the critical-plane ``_ext`` variant names (e.g. ``FS_ext``).
+        Default is False (base model names only).
+    """
+    cp = list(available_cp_methods())
+    direct = list(available_direct_models())
+    bases = cp + direct
+    if include_variants:
+        return bases + [f"{name}_ext" for name in cp]
+    return bases
+
+
 def declared_param_names() -> set[str]:
     """Every material constant a registered model requires or optionally reads."""
     names: set[str] = set()
-    for m in list(_available_cp_methods().values()) + list(_available_direct_models().values()):
+    for m in base_models().values():
         names |= set(m.required_params()) | set(getattr(m, "optional_params", {}))
     return names
 
@@ -123,7 +186,7 @@ def declared_param_names() -> set[str]:
 def param_table() -> list[tuple[str, list[str], dict[str, str]]]:
     """(model, required params, {optional param: default or fallback}) for each registered model."""
     rows = []
-    for name, m in {**_available_cp_methods(), **_available_direct_models()}.items():
+    for name, m in base_models().items():
         rows.append((name, sorted(m.required_params()), dict(getattr(m, "optional_params", {}))))
     return rows
 
@@ -149,8 +212,8 @@ def get_models(names: Iterable[str]):
     via :class:`~multifat.models.cp_adapter.CPModelAdapter`.
     """
 
-    direct = _available_direct_models()
-    cp = _available_cp_methods()
+    direct = available_direct_models()
+    cp = available_cp_methods()
 
     out: list[FatigueModel] = []
     for n in names:
@@ -166,21 +229,21 @@ def get_models(names: Iterable[str]):
 
     for model in out:
         model.reference = method_reference(model.name)
-        if not hasattr(model, "comparison_capabilities"):
-            model.comparison_capabilities = DEFAULT_CAPABILITIES
+        model.comparison_capabilities = capabilities_for_model(model)
     return out
 
 
 # Nominal constants for probing a model; only finiteness of its value is used.
-_PROBE_PARAMS = {
+PROBE_PARAMS = {
     "Sy": 700.0, "Su": 900.0, "Sigm1": 400.0, "Taum1": 250.0, "Sig0": 300.0, "Tau0": 200.0,
     "k_FS": 1.0, "k_FI": 0.3, "L_LI": 3.0, "k_MGSE": 1.0, "a_MSWT": 0.3, "alpha_w": 0.0,
     "xi_ZHU": 1.0, "sigma_f": 1200.0, "b_fat": -0.09, "epsilon_f": 0.5, "c_fat": -0.6,
     "tau_f": 700.0, "gamma_f": 0.9, "b0": -0.09, "c0": -0.6,
     "Sigm1_TVEIT": 400.0, "Taum1_TVEIT": 250.0,
-    "npts_TVEIT": 1001.0, "min_blocks_TVEIT": 8.0, "max_blocks_TVEIT": 10000.0,
-    "tol_alpha_TVEIT": 1e-6, "tol_damage_TVEIT": 1e-5,
+    "npts_TVEIT": 1001.0, "min_blocks_TVEIT": 400.0, "max_blocks_TVEIT": 60000.0,
+    "tol_alpha_TVEIT": 0.01, "tol_damage_TVEIT": 1e-3,
 }  # fmt: skip
+_PROBE_PARAMS = PROBE_PARAMS
 
 
 @functools.lru_cache(maxsize=1)
@@ -203,9 +266,10 @@ def stress_only_models() -> frozenset[str]:
     harm = {"S_mean": z, "S_sin": s_sin, "S_cos": s_cos, "E_mean": nan, "E_sin": nan, "E_cos": nan}
     R_list = build_R_list(n1=6, n2=12)
     out = set()
-    for name, model in {**_available_cp_methods(), **_available_direct_models()}.items():
-        m = CPModelAdapter(model) if name in _available_cp_methods() else model
-        params = {k: _PROBE_PARAMS.get(k, 1.0) for k in declared_param_names()}
+    cp_methods = available_cp_methods()
+    for name, model in base_models().items():
+        m = CPModelAdapter(model) if name in cp_methods else model
+        params = {k: PROBE_PARAMS.get(k, 1.0) for k in declared_param_names()}
         params.update(E=None, nu=None)
         try:
             with warnings.catch_warnings(), np.errstate(all="ignore"):
@@ -217,6 +281,10 @@ def stress_only_models() -> frozenset[str]:
             v = res.values.get("")
             if v is not None and np.isfinite(v):
                 out.add(name)
+        except LoadingScopeError:
+            # The probe load lies outside the criterion's scope (e.g. GOLOS, in-phase only): it was
+            # rejected before any strain was read, so the model needs no strain.
+            out.add(name)
         except Exception:
             pass
     return frozenset(out)

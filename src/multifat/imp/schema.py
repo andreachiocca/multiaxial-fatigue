@@ -93,7 +93,13 @@ DATASET_OPTIONAL = {
     "mean_p": ["mean", "pressure"],
     "amp_p": ["amplit", "pressure"],
     "specimen": ["specimen"],
+    # Decision d113 (issue #18): failure, run-out (censored life) or fatigue limit (limit state)
+    "observation_type": ["observation", "type"],
 }
+
+# Values of the Observation type column (decision d113). A blank cell leaves the row undeclared:
+# a run-out is then a limit state only in a workbook without failures (the rule before d113).
+OBSERVATION_TYPES = ("failure", "run-out", "fatigue limit")
 
 
 def workbook_files(folder) -> list:
@@ -241,6 +247,19 @@ def is_yes_value(x: Any) -> bool:
         return int(x) == 1
     t = str(x).strip().lower()
     return t.startswith("yes") or t in {"true", "1", "runout", "run-out", "run out"}
+
+
+def parse_observation_type(x: Any) -> str | None:
+    """Declared Observation type (one of ``OBSERVATION_TYPES``), None if blank.
+
+    Raises ValueError for any other text: the column is a declaration and is not guessed.
+    """
+    if is_nullish(x):
+        return None
+    t = norm_text(x).replace("runout", "run-out").replace("run out", "run-out")
+    if t not in OBSERVATION_TYPES:
+        raise ValueError(f"Observation type {x!r} is not one of {', '.join(OBSERVATION_TYPES)}")
+    return t
 
 
 def match_constant_columns(headers: Iterable[Any], names: dict[str, Iterable[str]]) -> dict:
