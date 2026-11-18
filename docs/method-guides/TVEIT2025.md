@@ -117,7 +117,8 @@ a file, $A$ is the Goodman estimate.
 model over many cycles. A record in `Calibrations/<material>/` or in the run's calibration archive
 with the same workbook bytes, overlay, inputs file, procedure version and implementation revision
 is reused instead of repeated (the protocol allows identical deterministic reruns to reuse a
-record).
+record). The implementation revision is that of the repository, so the committed records are
+regenerated whenever it changes.
 
 **Confidence.** Each calibration lists what weakens it, each finding major or minor, with what to
 try; the level is *high* without findings, *medium* with minor findings only and *low* with a major

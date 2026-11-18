@@ -37,7 +37,9 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 - An identical calibration (workbook bytes, overlay, inputs file, procedure version, implementation
   revision) is reused from `Calibrations/<material>/` or the run's archive.
 - Optional inputs `Calibrations/<material>/TVEIT2025_inputs.json` (schema 2) for Al7075_T6,
-  42CrMo4_Santus, 42CrMo4_Reis, Ti6Al4V_Meneghetti and Ti6Al4V_Berto, and their first records.
+  42CrMo4_Santus, 42CrMo4_Reis, Ti6Al4V_Meneghetti and Ti6Al4V_Berto, and their first records;
+  a record for AISI316L (Goodman A, confidence medium) once its fatigue limit was settled (#120).
+  The records are regenerated for implementation revision 2026-11-18, with identical constants.
 - The TVEIT2025 method sheet (`docs/method-sheets/sheets/TVEIT2025.tex`) describes this
   calibration.
 - Calibration guide `docs/calibration-guides/TVEIT2025/` (LaTeX and PDF, with its figure

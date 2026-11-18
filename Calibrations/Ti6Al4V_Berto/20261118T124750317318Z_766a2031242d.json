@@ -978,7 +978,7 @@
    },
    "identity": {
     "procedure": 2,
-    "implementation_revision": "2026-11-12",
+    "implementation_revision": "2026-11-18",
     "workbook_sha256": "500fb0dc62d63afafb99b9a632824b063b6ee9000759527840ace10cb0caf765",
     "overlay_sha256": null,
     "inputs_sha256": "c355bd4e32bc3b536d4a17c98a405d82f60725e7d19c66efbb507ffb80ef746f"
@@ -1018,7 +1018,7 @@
   ]
  },
  "provenance": {
-  "created_utc": "2026-11-16T15:05:10+00:00",
+  "created_utc": "2026-11-18T12:47:50+00:00",
   "workbook": "Experimental_Data/15_Ti6Al4V_Berto.xlsx",
   "workbook_sha256": "500fb0dc62d63afafb99b9a632824b063b6ee9000759527840ace10cb0caf765",
   "failures": 48,
@@ -1026,9 +1026,9 @@
   "assumptions_applied": null,
   "failure_fingerprint": "75758708c36215a60aad7e144b9a18dc8ff4304726226aa3295e557026a38f02",
   "multifat_version": "0.1.0.dev0",
-  "implementation_revision": "2026-11-12",
+  "implementation_revision": "2026-11-18",
   "git": {
-   "commit": "9791d4152603d23577d7281f88cff5f238a424a0",
+   "commit": "ff95a2859e44c658bf2b462b22ef836ad1f0bf95",
    "dirty": false
   },
   "python": "3.11.9",
@@ -1041,9 +1041,10 @@
    "refined_plane_search": true,
    "master_curve_stdnum": 0.0,
    "master_curve_survival_probability": 0.5,
+   "master_curve_model": "basquin",
    "flat_curve_k_max": 15.0
   }
  },
  "calibration_procedure": 2,
- "calibration_id": "20261116T150510557167Z_f5dddf76be3d"
+ "calibration_id": "20261118T124750317318Z_766a2031242d"
 }

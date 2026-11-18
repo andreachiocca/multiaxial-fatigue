@@ -69,7 +69,10 @@ inputs or the data gives a new calibration and a new record; old records stay.
 The records committed for Al7075_T6, 42CrMo4_Santus, 42CrMo4_Reis, Ti6Al4V_Meneghetti and
 Ti6Al4V_Berto were made this way from a clean checkout; each holds the constants, the three
 calibration tests, the C range of the equivalent sets and the calibration confidence with its
-findings. AISI316L has none until its fatigue limit is settled (#102).
+findings. The AISI316L record, made after its fatigue limit was settled (#102, #120), has no
+inputs file: A is the Goodman estimate. The reuse identity holds the repository's
+implementation revision, so the records are regenerated when main bumps it (on 18 November,
+for 2026-11-18: identical constants, points and confidence).
 
 ## Provisional TVEIT2025 records
 

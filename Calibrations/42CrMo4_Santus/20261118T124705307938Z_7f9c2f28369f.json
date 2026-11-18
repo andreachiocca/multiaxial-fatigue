@@ -1222,7 +1222,7 @@
    },
    "identity": {
     "procedure": 2,
-    "implementation_revision": "2026-11-12",
+    "implementation_revision": "2026-11-18",
     "workbook_sha256": "1327f64f68305d4e4453e784803a5bccce7596dc17db0ab032125598a1fd93d6",
     "overlay_sha256": null,
     "inputs_sha256": "afd38837026b3480b5272f4752c2335c59ea66c909c41b474b85b4fd030a6a2c"
@@ -1262,7 +1262,7 @@
   ]
  },
  "provenance": {
-  "created_utc": "2026-11-16T15:04:07+00:00",
+  "created_utc": "2026-11-18T12:47:05+00:00",
   "workbook": "Experimental_Data/6_42CrMo4_Santus.xlsx",
   "workbook_sha256": "1327f64f68305d4e4453e784803a5bccce7596dc17db0ab032125598a1fd93d6",
   "failures": 45,
@@ -1270,9 +1270,9 @@
   "assumptions_applied": null,
   "failure_fingerprint": "50fcebd49c4006212a50d303f4549cf0351c59047b2f0e9bcdebf3323aec15a3",
   "multifat_version": "0.1.0.dev0",
-  "implementation_revision": "2026-11-12",
+  "implementation_revision": "2026-11-18",
   "git": {
-   "commit": "9791d4152603d23577d7281f88cff5f238a424a0",
+   "commit": "ff95a2859e44c658bf2b462b22ef836ad1f0bf95",
    "dirty": false
   },
   "python": "3.11.9",
@@ -1285,9 +1285,10 @@
    "refined_plane_search": true,
    "master_curve_stdnum": 0.0,
    "master_curve_survival_probability": 0.5,
+   "master_curve_model": "basquin",
    "flat_curve_k_max": 15.0
   }
  },
  "calibration_procedure": 2,
- "calibration_id": "20261116T150407260169Z_528efb141fbd"
+ "calibration_id": "20261118T124705307938Z_7f9c2f28369f"
 }

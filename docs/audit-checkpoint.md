@@ -10,7 +10,7 @@
   record with the same identity, optional `Calibrations/<material>/TVEIT2025_inputs.json`.
 - Records committed for Al7075_T6 (medium), 42CrMo4_Santus (low: failures below the limit),
   42CrMo4_Reis (medium), Ti6Al4V_Meneghetti (low: narrow stress range, L on its bound) and
-  Ti6Al4V_Berto (medium); none for AISI316L until #102.
+  Ti6Al4V_Berto (medium); AISI316L (medium, Goodman A) since #102 was settled by #120.
 - 16 November, after the pre-push check (9791d41, records regenerated in 87b74d1): a failure below
   f_-1 is major only when it failed before the reference life of f_-1 (Summary "Number of
   Cycles"), minor after it (`late_failures_below_limit`); a calibration point whose integration
@@ -34,7 +34,7 @@
   examples whose numbers come from the committed records (Al7075_T6, both Ti6Al4V, both 42CrMo4)
   and from Al7075_T651_Wang calibrated at run time. `make_figures.py` calls the pipeline's
   calibration and reuses the records (34 s). The PDF text matches the source (16 pages, no
-  unresolved reference). No AISI316L example: its calibration points are unpublished PSI tests.
+  unresolved reference). No AISI316L example: the earlier draft used unpublished PSI tests.
   Documentation only, so the snapshot above still holds; lint 6/6.
 - 18 November: main `7dcb9a7` (#115 to #118) merged in (daffed6; conflicts in CHANGELOG and this
   file only; `cli/pipeline.py` merged cleanly with the #117 refactor). The two findings of the
@@ -45,7 +45,15 @@
   also searches `<target>_from_<design>`, where it archives its record, so a repeat reuses it.
   Five new tests, all failing on the previous code. The method guide no longer names
   `LOAD_ERROR_SKIP` (replaced by the `load_error` capability in #117). Full suite 3520 passed,
-  67 skipped, 128 xfailed; lint 6/6. Regression snapshot against main `7dcb9a7`: running.
+  67 skipped, 128 xfailed; lint 6/6. The snapshot against `7dcb9a7` was stopped when main moved
+  again.
+- Main `35401a8` (#101, #40, #120) merged in (ff95a28; conflicts in CHANGELOG and this file only).
+  #120 sets the AISI316L f_-1 to 271.6 MPa (#102) and the implementation revision to 2026-11-18,
+  which is part of the reuse identity, so the committed records were no longer reused. All five
+  regenerated from the clean checkout ff95a28: identical constants, points, profile, equivalent
+  sets and confidence; only the revision differs. New record for AISI316L (no inputs file, Goodman
+  A = 271.6/585 = 0.464; points 277.4, 335.2, 381.4 MPa of Janssens; C 3.16, K 3.28e-4, L 5.32;
+  37 equivalent sets; confidence medium, six minor findings).
 - Evidence (16 November, main `904e1f1` merged in; conflicts only in CHANGELOG and this file):
   full suite 3443 passed, 67 skipped, 128 xfailed; black, ruff, both generators (--check),
   check_docs and check_scientific_reviews pass. Regression snapshot against main `904e1f1` (main
