@@ -607,4 +607,19 @@ ledgers.
 * **Rationale:** The symbol $\sigma_\infty$ assumes stress dimensions, which is a misnomer for strain- and energy-based criteria. Furthermore, unconstrained fitting of Kohout–Věchet and Stromeyer on failures alone produced $\sigma_\infty = 274.19\text{ MPa}$ on AISI316L, higher than the lowest failure stress ($271.6\text{ MPa}$), turning real failures into infinite-life predictions and inducing severe selection bias in finite-life statistics. Bounding $\mathrm{DP}_\infty$ below the minimum failure load and using design run-outs to anchor the likelihood resolves the selection bias while keeping default Basquin regression unchanged.
 * **Effect:** Default Basquin regression is bit-for-bit unchanged. On materials with design run-outs evaluated with `--sn-model kohout_vechet` or `--sn-model stromeyer`, all design failures receive finite life predictions and $\mathrm{DP}_\infty$ reflects both failure and run-out evidence.
 
+### d116
+* **Date:** 2026-11-18
+* **Topic:** Accuracy KPI, complexity axis and family-wise selection rule for criteria comparison (issue #57)
+* **Status:** Active
+* **Decision:**
+  1. Establish the relative RMS load error against the material median as the central cross-material accuracy KPI $Z_m = \frac{1}{K_m}\sum_k \ln(R_{mk} / \operatorname{med}_{m'} R_{m'k})$, with bootstrap standard error $\mathrm{SE}(Z_m)$ estimated from test-level resampling within each material.
+  2. Keep complexity as an explicit two-count axis $(p_{\mathrm{in}}, p_{\mathrm{fit}})$ reported beside $Z_m$ and never folded into an arbitrary composite loss:
+     - $p_{\mathrm{fit}}$ counts quantities fitted on fatigue data (2 for master-curve models + calibrated plane constants; or native-law terms);
+     - $p_{\mathrm{in}}$ counts distinct experimental characterisation classes required beyond the calibration paths.
+  3. Adopt the family-wise 1-SE selection rule: filter methods by material coverage ($K_m \ge K_{\min}$), identify statistically indistinguishable candidates ($Z_m \le Z_{\mathrm{best}} + \mathrm{SE}_{\mathrm{best}}$) within each family, and select the simplest model (lowest $p_{\mathrm{in}}$, then lowest $p_{\mathrm{fit}}$, then lowest $Z$).
+  4. Provide the ranking tool via `multifat-rank` and `multifat-compare --rank`, exporting `summary_ranking.csv`, `family_selection.csv`, and `ranking_cell_stats.csv`.
+* **Rationale:** RMS load error combines bias and scatter in physical ln-load units. Scoring relative to the material median prevents dataset difficulty or sample size from dominating the ranking. Complexity counting by experimental characterisation classes approximates the testing cost of introducing a new material. The 1-SE selection rule provides a principled, reproducible, Occam's-razor criterion for identifying top-performing methods.
+* **Effect:** No numerical changes to existing simulation pipelines or calibrated constants. Registered models expose `fitted_constants` and `input_classes`. Users and review article analyses can generate cross-material rankings and family selections reproducible across pipelines.
+
+
 

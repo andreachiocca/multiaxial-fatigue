@@ -233,6 +233,8 @@ class LiuMahadevan:
     comparison_capabilities = ComparisonCapabilities(
         life_prediction="native", dp_comparison=False, dp_reference="none"
     )
+    fitted_constants = ("sigma_f", "b_fat", "tau_f", "b0")
+    input_classes = ("axial fatigue limit", "torsional fatigue limit")
 
     def required_params(self) -> set[str]:
         return {"Sigm1", "Taum1", *_LIFE_KEYS}

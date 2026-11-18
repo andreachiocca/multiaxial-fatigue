@@ -37,6 +37,8 @@ from ..utils.param_utils import get_param
 
 class MSWT:
     name = "MSWT"
+    fitted_constants = ("a_MSWT",)
+    input_classes = ("elastic constants",)
     optional_params = {"a_MSWT": "0.5"}
 
     def required_params(self) -> set[str]:

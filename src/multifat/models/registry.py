@@ -13,7 +13,7 @@ themselves isolated in their respective subfolders:
 from __future__ import annotations
 
 import functools
-from typing import Iterable
+from typing import Any, Iterable
 
 from .cp_adapter import CPModelAdapter
 from .base import FatigueModel
@@ -288,3 +288,40 @@ def stress_only_models() -> frozenset[str]:
         except Exception:
             pass
     return frozenset(out)
+
+
+def model_complexity(model):
+    """Return the two-axis complexity metrics (p_in, p_fit, input_classes, fitted_constants)."""
+    from .complexity import get_model_complexity
+
+    return get_model_complexity(model)
+
+
+def complexity_table() -> list[dict[str, Any]]:
+    """Return the complexity summary records across all base models."""
+    from .complexity import get_model_complexity
+
+    family_map = {
+        "cp_methods": "Critical plane",
+        "invariant_methods": "Invariant",
+        "integral_methods": "Integral",
+        "energy_based_methods": "Energy",
+    }
+
+    rows: list[dict[str, Any]] = []
+    for name, model in base_models().items():
+        comp = get_model_complexity(model)
+        inner = getattr(model, "_m", model)
+        pkg = type(inner).__module__.split(".")[2]
+        fam = family_map.get(pkg, pkg)
+        rows.append(
+            {
+                "Method": name,
+                "Family": fam,
+                "p_in": comp.p_in,
+                "p_fit": comp.p_fit,
+                "Input_classes": ", ".join(comp.input_classes),
+                "Fitted_constants": ", ".join(comp.fitted_constants),
+            }
+        )
+    return rows

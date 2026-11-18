@@ -6,6 +6,27 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### Relative RMS load error ranking, complexity axis and family selection (issue #57, decision d116)
+
+- Established the relative RMS load error against the material median as the cross-material accuracy KPI
+  $Z_m = \frac{1}{K_m}\sum_k \ln(R_{mk} / \operatorname{med}_{m'} R_{m'k})$ with bootstrap standard error
+  $\mathrm{SE}(Z_m)$ from test-level resampling within each material.
+- Introduced explicit two-axis complexity $(p_{\mathrm{in}}, p_{\mathrm{fit}})$ in `multifat.models.complexity`:
+  $p_{\mathrm{fit}}$ counts quantities fitted on fatigue data (master curve, calibrated plane constants, native
+  laws), while $p_{\mathrm{in}}$ counts experimental characterisation classes beyond calibration S-N paths.
+- Added model-level declarations for `fitted_constants` and `input_classes`, exposed through `CPModelAdapter`
+  and central registry accessors (`r.model_complexity()`, `r.complexity_table()`).
+- Added the ranking engine in `multifat.report.ranking`: per-cell metrics, cross-material aggregation,
+  bootstrap standard error estimation, equivalence class detection, and leave-one-material-out pick stability.
+- Adopted the family-wise 1-SE selection rule: filter methods by material coverage ($K_m \ge K_{\min}$), identify
+  candidates within $Z_{\mathrm{best}} + \mathrm{SE}_{\mathrm{best}}$ for each family, and select the simplest
+  model by lowest $(p_{\mathrm{in}}, p_{\mathrm{fit}}, Z_m)$.
+- Added CLI tool `multifat-rank` in `src/multifat/cli/rank.py` and the `--rank` flag to `multifat-compare`,
+  exporting `summary_ranking.csv`, `family_selection.csv`, and `ranking_cell_stats.csv`.
+- Added unit tests in `tests/test_ranking.py` covering complexity counts, cell statistics, 1-SE selection,
+  equivalence classes, and CLI workflows.
+
+
 ### Master-curve DP_inf refactor and censored S–N fitting with run-outs (issue #38, decision d115)
 
 - Refactored master-curve horizontal asymptote parameter from `sigma_inf` to `DP_inf` (with `sigma_inf`
