@@ -1,5 +1,112 @@
 # Development continuation checkpoint
 
+## TVEIT2025 stage 2 (calibration) by the authors' procedure (13, 16 and 17 November 2026)
+
+- Branch `tveit2025-calibration` (from main `d5f3a5f`): without supplied constants the pipeline
+  calibrates A, C, K, L of TVEIT2025 (Tveit et al. 2025, Sect. 4; Ottosen et al. 2008, Sect. 5)
+  through a model extension point (`calibrated_params`, `calibrate_constants`; result under
+  `model_calibrations.<MODEL>`; no model name in `cli/`, #81). Calibration confidence
+  (`eval/calibration_confidence.py`: major/minor findings, level high/medium/low), reuse of a
+  record with the same identity, optional `Calibrations/<material>/TVEIT2025_inputs.json`.
+- Records committed for Al7075_T6 (medium), 42CrMo4_Santus (low: failures below the limit),
+  42CrMo4_Reis (medium), Ti6Al4V_Meneghetti (low: narrow stress range, L on its bound) and
+  Ti6Al4V_Berto (medium); AISI316L (medium, Goodman A) since #102 was settled by #120.
+- 16 November, after the pre-push check (9791d41, records regenerated in 87b74d1): a failure below
+  f_-1 is major only when it failed before the reference life of f_-1 (Summary "Number of
+  Cycles"), minor after it (`late_failures_below_limit`); a calibration point whose integration
+  reached max_blocks_TVEIT is minor (`point_at_block_limit`; none of the 15 points: 401 to 38 837
+  blocks); the record names its inputs file relative to the repository (the earlier records held
+  a local path; a test now scans the committed records). Regenerated records: identical
+  constants, design rows and points; levels unchanged (Santus gains a minor finding).
+  Full suite 3449 passed, 67 skipped, 128 xfailed; lint 6/6. Regression snapshot of 87b74d1
+  against main `904e1f1`: exit codes identical (869 runs, 447 nonzero in both); every changed
+  file passes the automated check; the five committed records are reused; 13 011 s, with the
+  suite running alongside.
+- Main `4d46d39` (LaTeX method sheets, #113) merged in (63e94dc): documentation and one test only,
+  nothing under `src/`, `tools/` or the data, so the snapshot above still holds; conflict in
+  CHANGELOG only. The new TVEIT2025 sheet said the calibration is not implemented; its "Constants
+  and calibration" block now describes it (not compiled here: no LaTeX on this machine; the sheet
+  test passes). Full suite after the merge: 3495 passed (46 new sheet tests), 67 skipped,
+  128 xfailed; lint 6/6.
+- PR #114 opened on 17 November (head 0e7887f, CI green). Then the calibration guide
+  `docs/calibration-guides/TVEIT2025/` (LaTeX source, PDF compiled on Overleaf, figures and
+  `make_figures.py`): the six steps with this PR's rules, the confidence findings, and worked
+  examples whose numbers come from the committed records (Al7075_T6, both Ti6Al4V, both 42CrMo4)
+  and from Al7075_T651_Wang calibrated at run time. `make_figures.py` calls the pipeline's
+  calibration and reuses the records (34 s). The PDF text matches the source (16 pages, no
+  unresolved reference). No AISI316L example: the earlier draft used unpublished PSI tests.
+  Documentation only, so the snapshot above still holds; lint 6/6.
+- 18 November: main `7dcb9a7` (#115 to #118) merged in (daffed6; conflicts in CHANGELOG and this
+  file only; `cli/pipeline.py` merged cleanly with the #117 refactor). The two findings of the
+  automated review of #114 fixed in `cli/pipeline.py`: (P1) a model's own calibration runs only
+  when none of its declared parameters is entered by hand (`--constants` or a Summary column);
+  with only some entered the model is skipped with the reason (status `partly_supplied`), instead
+  of fitting C, K, L with other inputs than those of its evaluation; (P2) a cross-batch transfer
+  also searches `<target>_from_<design>`, where it archives its record, so a repeat reuses it.
+  Five new tests, all failing on the previous code. The method guide no longer names
+  `LOAD_ERROR_SKIP` (replaced by the `load_error` capability in #117). Full suite 3520 passed,
+  67 skipped, 128 xfailed; lint 6/6. The snapshot against `7dcb9a7` was stopped when main moved
+  again.
+- Main `35401a8` (#101, #40, #120) merged in (ff95a28; conflicts in CHANGELOG and this file only).
+  #120 sets the AISI316L f_-1 to 271.6 MPa (#102) and the implementation revision to 2026-11-18,
+  which is part of the reuse identity, so the committed records were no longer reused. All five
+  regenerated from the clean checkout ff95a28: identical constants, points, profile, equivalent
+  sets and confidence; only the revision differs. New record for AISI316L (no inputs file, Goodman
+  A = 271.6/585 = 0.464; points 277.4, 335.2, 381.4 MPa of Janssens; C 3.16, K 3.28e-4, L 5.32;
+  37 equivalent sets; confidence medium, six minor findings).
+- Evidence (18 November, d2394a7 against main `35401a8`): full suite 3528 passed, 67 skipped,
+  128 xfailed; the 6 failures are `tests/test_sn_curves.py` only, because the local environment
+  lacks scipy, which #40 made a dependency (the same 6 fail on main here; CI installs it from the
+  lock). Lint 6/6. Regression snapshot: exit codes identical (869 runs, 447 nonzero in both);
+  51 outputs and 19 logs differ, every changed file passes the automated check (967 files, of
+  which 117 FABEST, checked by counts only); the six committed records are reused, also by the
+  transfer; Al7075_T651_Wang is calibrated at run time. 5829 s on main, 14 796 s on the branch
+  (the full suite ran alongside for its first 20 minutes).
+- Main `b3c2da3` (#121 censored S-N fits, #122 complexity ranking) merged in (dc42366; conflicts in
+  CHANGELOG and this file only). Neither bumps the implementation revision; in TVEIT2025 #122 only
+  adds the attributes `fitted_constants` and `input_classes`. After the merge the TVEIT2025
+  calibration of the seven life workbooks is identical to that of the snapshot (constants, the 11
+  TVEIT keys of the sidecar, design rows, confidence; six records reused, Wang recalibrated), so
+  the snapshot was not repeated. Full suite 3549 passed, 67 skipped, 128 xfailed; the 8 failures
+  were the S-N tests without scipy, which pass (9/9) once scipy 1.15.3 (the locked version) is
+  installed; scipy is imported only by `eval/sn_curves.py`, outside the snapshot's default path.
+- 20 November: main `f3f23d5` (#123, Palmgren and Bastenaire S-N models: `eval/sn_curves.py`,
+  its tests and docs only; no revision bump) merged in; lint 6/6; S-N, notation and TVEIT2025
+  tests pass.
+- Evidence (16 November, main `904e1f1` merged in; conflicts only in CHANGELOG and this file):
+  full suite 3443 passed, 67 skipped, 128 xfailed; black, ruff, both generators (--check),
+  check_docs and check_scientific_reviews pass. Regression snapshot against main `904e1f1` (main
+  run from a worktree, so the workbook paths differ): exit codes identical (869 runs); every
+  changed file passes an automated check (TVEIT2025 outputs, its run-report row and its sidecar
+  keys on the eight life workbooks and the transfer; checkout paths, run times, calibration ids);
+  no other model's row, CSV column or constant changes; fatigue-limit workbooks unchanged; the
+  committed records are reused. On 13 November at 91831cd against `d5f3a5f`: the same result,
+  suite 3228 passed. The fix of the source display (cced61c) moves no number.
+- New workbook 18_Al7075_T651_Wang (#112): no record; calibrated at run time in 21 s: A 0.396
+  (Goodman), C 1, K 1.40e-5, L 6.66, confidence medium (one axial R = -1 failure at 215 MPa
+  below Sigm1 = 221.99 MPa, the S-N curve at 1e6 cycles, but after 1.19e6 cycles: minor; low
+  before the reference-life rule). FKM_MEAN_STRESS has steel only.
+- Cost: TVEIT2025 now runs in `--models all`; its evaluation took 4866 s on Al7075_T6 (101 tests:
+  87 failures, 14 run-outs; C = 1e-4), 811 s on Ti6Al4V_Berto, 440 s on 42CrMo4_Santus. Each test
+  is integrated cycle by cycle (1001 points, plain Python); with C = 1e-4, 13 of 15 sampled
+  Al7075_T6 tests need 14 000 to 60 000 blocks (6 reach max_blocks). Snapshot: 7410 s alone on
+  13 November; 11 857 s on 16 November while the main snapshot ran at the same time (8 jobs each).
+- Modified: `cli/pipeline.py`, `eval/tveit2025_calibration.py`, `eval/calibration_confidence.py`,
+  `models/invariant_methods/tveit2025.py`, `Calibrations/` (inputs, records, README), method guide
+  and sheet, calibration guide, audit, protocol and workflow docs, CHANGELOG, tests
+  (`tests/methods/test_tveit2025_calibration.py`, `tests/test_tveit2025_calibration_pipeline.py`,
+  `tests/test_calibration_confidence.py`).
+- Open questions for the maintainer (in the PR): design set of a native-life model (Flag 0 for the
+  three calibration tests only?); confidence for other models; TVEIT2025 run time in `--models all`
+  and in the next regeneration of the homepage ranking and batch comparison (not regenerated here).
+- Open question added on 18 November: should the reuse identity of TVEIT2025 records hold a
+  TVEIT-specific version instead of the repository-wide implementation revision, which every
+  numerical change to any model bumps?
+- Next action: answer the maintainer's review of #114; later modes `all_eligible` and `subset`
+  (#14); a faster integration (compiled loop or parallel tests) in its own PR, with
+  a resolution check (the three points again at twice npts_TVEIT; minor finding when the life
+  moves by more than 0.05 decade).
+
 ## Issue #38 completion: Palmgren and Bastenaire master-curve models (18 November 2026)
 
 - Branch `feat/sn-palmgren-bastenaire` from `main` (`b3c2da3`, includes PR #122).

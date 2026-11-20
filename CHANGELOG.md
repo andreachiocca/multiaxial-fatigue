@@ -6,6 +6,48 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### TVEIT2025 calibration by the authors' procedure (stage 2)
+
+- Without supplied constants, `multifat-pipeline` calibrates `A_TVEIT`, `C_TVEIT`, `K_TVEIT` and
+  `L_TVEIT` on any fatigue-life workbook (`eval/tveit2025_calibration.py`; Tveit et al. 2025,
+  Sect. 4; Ottosen et al. 2008, Sect. 5): the workbook's own `Sigm1`, `Taum1`; `A` in the authors'
+  order (fatigue limit at a tensile mean stress, a hand-entered value, FKM for a declared material
+  type, Goodman); `C`, `K`, `L` by Eq. (25) on three axial R = -1 failures of the source of the
+  Summary limits, with Eq. (25) profiled over `C` because uniaxial data do not identify it.
+  `--constants` takes precedence; `--no-calibrate` turns it off.
+- Values entered by hand (`--constants`, or a Summary column named like a declared parameter)
+  are not used by a model's own calibration, so it runs only when none is entered. With only some
+  entered (e.g. `Sigm1_TVEIT`, `npts_TVEIT` or `A_TVEIT` alone), the model is not calibrated and
+  is skipped with the reason (status `partly_supplied`), instead of being fitted with other
+  inputs than those of its evaluation (review of #114).
+- A repeated cross-batch transfer reuses its calibration: the record archived under
+  `<target>_from_<design>` is searched too (review of #114).
+- New extension point for models that calibrate their constants by their own procedure
+  (`calibrated_params`, `calibrate_constants`): the result is kept under
+  `model_calibrations.<MODEL>` in the sidecar and the archived record, and its tests become
+  design rows (Flag 0). No model name in `cli/`.
+- Calibration confidence (`eval/calibration_confidence.py`): named findings, major or minor, each
+  with what to try (estimated A, failures below `Sigm1`, limits and tests of different sources,
+  points close together, a constant on its search bound, the unidentified `C`, a calibration
+  point whose integration reached `max_blocks_TVEIT`, ...); level high, medium or low. Printed,
+  recorded and noted on the run-report row. A failure below `Sigm1` is major only when it failed
+  before the reference life of `Sigm1`; after it, it agrees with a limit defined at that life
+  (minor).
+- The record names the inputs file relative to the repository, not by a local path.
+- An identical calibration (workbook bytes, overlay, inputs file, procedure version, implementation
+  revision) is reused from `Calibrations/<material>/` or the run's archive.
+- Optional inputs `Calibrations/<material>/TVEIT2025_inputs.json` (schema 2) for Al7075_T6,
+  42CrMo4_Santus, 42CrMo4_Reis, Ti6Al4V_Meneghetti and Ti6Al4V_Berto, and their first records;
+  a record for AISI316L (Goodman A, confidence medium) once its fatigue limit was settled (#120).
+  The records are regenerated for implementation revision 2026-11-18, with identical constants.
+- The TVEIT2025 method sheet (`docs/method-sheets/sheets/TVEIT2025.tex`) describes this
+  calibration.
+- Calibration guide `docs/calibration-guides/TVEIT2025/` (LaTeX and PDF, with its figure
+  script): the six steps, the confidence findings, and worked examples from the committed
+  records (Al7075_T6, both Ti6Al4V and both 42CrMo4 batches) and from Al7075_T651_Wang.
+- Changed numerically: TVEIT2025 now runs, with calibrated constants, in pipeline runs without
+  `--constants` (it was skipped for missing constants); no other model changes.
+
 ### Palmgren and Bastenaire master-curve models (issue #38, decision d117)
 
 - Added Palmgren ($\mathrm{DP} = a(N + B)^b + \mathrm{DP}_\infty$, $p = 4$) and Bastenaire ($N = \frac{A}{\mathrm{DP} - \mathrm{DP}_\infty}\exp[-\alpha(\mathrm{DP} - \mathrm{DP}_\infty)]$, $p = 3$) master-curve models to `multifat.eval.sn_curves`.

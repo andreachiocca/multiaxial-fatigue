@@ -68,7 +68,7 @@ All 53 registered criteria have a dedicated guide below, grouped by family.
 | [Projection-by-Projection](PBP.md) | `PBP` | Stress invariants (deviatoric covariance) | $\Gamma/\sqrt{J_{2A,\rho}}$ (index) | `Sigm1`, `Taum1` |
 | [COIN LiWI](COIN.md) | `COIN` | Stress invariants (complex phasors) | $\sqrt{k_\phi H + (1 - k_\phi)\lvert C\rvert}/s_{-1}$ (index) | `Sigm1`, `Taum1`; `k_phi` |
 | [Modified Mohr–Mises](MMMH.md) | `MMMH` | Stress invariants (signed Mohr–Mises) | $(\sigma_{\mathrm{eq},a} + M\,\sigma_{\mathrm{eq},m})/s_{-1}$ (index) | `Sigm1`, `Taum1`; `M_MMMH`, `Sig0` or `Su` |
-| [Tveit et al. 2025](TVEIT2025.md) | `TVEIT2025` | Incremental continuum damage (native life) | virgin $(\sigma_e + A\,I_1)/f_{-1}$ (index); life $N_f$ from $D = 1$ | `A_TVEIT`, `C_TVEIT`, `K_TVEIT`, `L_TVEIT` (`--constants`) |
+| [Tveit et al. 2025](TVEIT2025.md) | `TVEIT2025` | Incremental continuum damage (native life) | virgin $(\sigma_e + A\,I_1)/f_{-1}$ (index); life $N_f$ from $D = 1$ | `A_TVEIT`, `C_TVEIT`, `K_TVEIT`, `L_TVEIT` (calibrated, Eq. 25, or `--constants`) |
 | [Dang Van](DANGVAN.md) | `DANGVAN` | Mesoscopic | $\sigma_{eq,DV}/f_{-1}$ (index) | `Sigm1`, `Taum1` |
 | [Papadopoulos](PAPADOPOULOS.md) | `PAPADOPOULOS` | Mesoscopic, integral | $\gamma_N/t_{-1}$, Eq. (41) (index) | `Sigm1`, `Taum1` |
 | [Robert–Fogue–Bahuaud](RFB.md) | `RFB` | Integral | $\frac{1}{s_{-1}}\sqrt{\langle(a\tau_a + b\sigma_{n,a} + d\sigma_{n,m})^2\rangle}$ (index) | `Sigm1`, `Taum1`; `Sig0` or `Su` |

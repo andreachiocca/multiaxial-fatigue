@@ -1,0 +1,1294 @@
+{
+ "params": {
+  "Sigm1_TVEIT": 433.0,
+  "Taum1_TVEIT": 344.0,
+  "A_TVEIT": 0.20625000000000002,
+  "C_TVEIT": 0.0017782794100389228,
+  "K_TVEIT": 1.904115561345138e-05,
+  "L_TVEIT": 10.378102493213165,
+  "npts_TVEIT": 1001,
+  "min_blocks_TVEIT": 400,
+  "max_blocks_TVEIT": 60000,
+  "tol_alpha_TVEIT": 0.01,
+  "tol_damage_TVEIT": 0.001
+ },
+ "status": "calibrated",
+ "reason": "",
+ "model_calibrations": {
+  "TVEIT2025": {
+   "params": {
+    "Sigm1_TVEIT": 433.0,
+    "Taum1_TVEIT": 344.0,
+    "A_TVEIT": 0.20625000000000002,
+    "C_TVEIT": 0.0017782794100389228,
+    "K_TVEIT": 1.904115561345138e-05,
+    "L_TVEIT": 10.378102493213165,
+    "npts_TVEIT": 1001,
+    "min_blocks_TVEIT": 400,
+    "max_blocks_TVEIT": 60000,
+    "tol_alpha_TVEIT": 0.01,
+    "tol_damage_TVEIT": 0.001
+   },
+   "source": {
+    "Sigm1_TVEIT": "fatigue limit (workbook Summary)",
+    "Taum1_TVEIT": "fatigue limit (workbook Summary)",
+    "A_TVEIT": "FKM estimate for steel: A = a_M Su/1000 + b_M with a_M = 0.35, b_M = -0.1, Su = 875 MPa (Tveit et al. 2025, Eq. 26)",
+    "C_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures; C is not identified by uniaxial data: equivalent sets (E <= 1.05 E_min) span C 0.0001 to 5.62; the chosen C is the admissible one of lowest E",
+    "K_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+    "L_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+    "npts_TVEIT": "time-integration setting checked by gate G2",
+    "min_blocks_TVEIT": "time-integration setting checked by gate G2",
+    "max_blocks_TVEIT": "time-integration setting checked by gate G2",
+    "tol_alpha_TVEIT": "time-integration setting checked by gate G2",
+    "tol_damage_TVEIT": "time-integration setting checked by gate G2"
+   },
+   "design_case_ids": {
+    "C_TVEIT": [
+     21,
+     19,
+     25
+    ],
+    "K_TVEIT": [
+     21,
+     19,
+     25
+    ],
+    "L_TVEIT": [
+     21,
+     19,
+     25
+    ]
+   },
+   "confidence": {
+    "level": "low",
+    "major": 1,
+    "minor": 6,
+    "findings": [
+     {
+      "code": "failures_below_limit",
+      "severity": "major",
+      "what": "12 axial R = -1 failure(s) lie below Sigm1 = 433 MPa and failed before its reference life of 2e+06 cycles (lowest 361.1 MPa)",
+      "why": "the failures contradict the fatigue limit, and the model predicts an infinite life for every test below it",
+      "advice": "check Sigm1 against the failures and run-outs of the same source, e.g. with a censored fit of the limit"
+     },
+     {
+      "code": "A_estimated",
+      "severity": "minor",
+      "what": "A = 0.2063 is estimated (fkm), not measured",
+      "why": "every mean-stress prediction depends on A",
+      "advice": "a fatigue limit at a tensile mean stress (e.g. an R = 0.1 staircase) gives A directly (Tveit et al. 2025, Eq. 23)"
+     },
+     {
+      "code": "C_not_identified",
+      "severity": "minor",
+      "what": "C varies from 0.0001 to 5.62 among the equivalent sets",
+      "why": "uniaxial data cannot fix C; it matters under mean shear stress and non-proportional loading",
+      "advice": "a test with a mean shear stress or 90 deg out-of-phase tension-torsion decides C"
+     },
+     {
+      "code": "late_failures_below_limit",
+      "severity": "minor",
+      "what": "1 axial R = -1 failure(s) lie below Sigm1 = 433 MPa but failed after its reference life of 2e+06 cycles (lowest 383 MPa at 2.63e+06 cycles)",
+      "why": "they agree with a limit defined at that life, but Sigm1 is a true threshold of the model, which predicts an infinite life for them",
+      "advice": "for a material without a true fatigue limit, a limit at a longer reference life (the S-N curve of the same source at that life)"
+     },
+     {
+      "code": "low_point_near_limit",
+      "severity": "minor",
+      "what": "the LOW point (450 MPa) lies within 3.9 % of Sigm1 = 433 MPa",
+      "why": "near its asymptote the model curve is steep; a residual of a few tenths of a decade is expected there",
+      "advice": "a LOW level further above the fatigue limit"
+     },
+     {
+      "code": "poor_fit",
+      "severity": "minor",
+      "what": "a calibration point is missed by 0.37 decade",
+      "why": "with Sigm1 fixed the curve cannot pass through three arbitrary points; a large residual points at the limit or at one of the points",
+      "advice": "check the fatigue limit and the chosen points"
+     },
+     {
+      "code": "single_specimen_level",
+      "severity": "minor",
+      "what": "single specimen at the HIGH level (600 MPa)",
+      "why": "one specimen that disagrees with other data can bend the whole curve",
+      "advice": "more replicates at that level"
+     }
+    ]
+   },
+   "record": {
+    "procedure": 2,
+    "mode": "author",
+    "references": [
+     "Tveit et al. (2025) Mech. Mater. 209, 105452, Sect. 4, Eqs. (22)-(26)",
+     "Ottosen et al. (2008) Int. J. Fatigue 30, 996-1006, Sect. 5, Eqs. (23)-(32)"
+    ],
+    "inputs_file": "Calibrations/42CrMo4_Santus/TVEIT2025_inputs.json",
+    "inputs_sha256": "afd38837026b3480b5272f4752c2335c59ea66c909c41b474b85b4fd030a6a2c",
+    "inputs": {
+     "schema": "multifat/tveit2025-calibration-inputs/2",
+     "material_id": "42CrMo4_Santus",
+     "material_type": "steel",
+     "notes": "No fatigue limit at a mean stress is available, so A is the FKM estimate for steel (Tveit et al. 2025, Eq. 26) with the Summary Su. Sigm1 = 433 MPa is the limit of Benedetti et al. (2022), so the calibration tests are Benedetti's; the Santus et al. (2018) axial failures below it are listed by the confidence (issue #24)."
+    },
+    "fatigue_limits": {
+     "Sigm1": 433.0,
+     "Taum1": 344.0,
+     "origin": "workbook Summary",
+     "sources": [
+      {
+       "authors": "Benedetti et al.",
+       "reference": "10.1016/j.ijfatigue.2022.106787",
+       "reference_cycles": 2000000.0,
+       "excel_row": 3
+      }
+     ]
+    },
+    "mean_stress_slope": {
+     "A": 0.20625000000000002,
+     "route": "fkm",
+     "equation": "FKM estimate for steel: A = a_M Su/1000 + b_M with a_M = 0.35, b_M = -0.1, Su = 875 MPa (Tveit et al. 2025, Eq. 26)",
+     "source": "FKM guideline (Haenel et al. 2003); Su from the workbook Summary",
+     "material_type": "steel",
+     "goodman_because": ""
+    },
+    "numerical_settings": {
+     "npts_TVEIT": 1001,
+     "min_blocks_TVEIT": 400,
+     "max_blocks_TVEIT": 60000,
+     "tol_alpha_TVEIT": 0.01,
+     "tol_damage_TVEIT": 0.001
+    },
+    "calibration_source": {
+     "match": "same reference",
+     "source": "10.1016/j.ijfatigue.2022.106787"
+    },
+    "candidates": 10,
+    "calibration_points": [
+     {
+      "case_id": 21,
+      "specimen_id": "Plain_axial_24",
+      "excel_row": 25,
+      "sigma_m": 0.0,
+      "sigma_a": 450.0,
+      "N_exp": 274825.0,
+      "source": [
+       "Benedetti et al.",
+       "10.1016/j.ijfatigue.2022.106787"
+      ],
+      "role": "LOW",
+      "replicates": 3,
+      "reason": "LOW level 450 MPa (3 replicate(s)); log10 N closest to the level median 5.4391"
+     },
+     {
+      "case_id": 19,
+      "specimen_id": "Plain_axial_20",
+      "excel_row": 21,
+      "sigma_m": 0.0,
+      "sigma_a": 500.0,
+      "N_exp": 147470.0,
+      "source": [
+       "Benedetti et al.",
+       "10.1016/j.ijfatigue.2022.106787"
+      ],
+      "role": "MID",
+      "replicates": 3,
+      "reason": "MID level 500 MPa (3 replicate(s)); log10 N closest to the level median 5.1687"
+     },
+     {
+      "case_id": 25,
+      "specimen_id": "Plain_axial_31",
+      "excel_row": 32,
+      "sigma_m": 0.0,
+      "sigma_a": 600.0,
+      "N_exp": 3620.0,
+      "source": [
+       "Benedetti et al.",
+       "10.1016/j.ijfatigue.2022.106787"
+      ],
+      "role": "HIGH",
+      "replicates": 1,
+      "reason": "HIGH level 600 MPa (1 replicate(s)); log10 N closest to the level median 3.5587"
+     }
+    ],
+    "validation": "every other test of the workbook is an independent assessment of these constants; the calibration tests are design points (Flag = 0)",
+    "objective": "Eq. (25): sum (1 - ln N / ln N_exp)^2, closed-form N, 10 per lost point",
+    "optimiser": {
+     "method": "profile over C: simplex in ln K, ln L at each C of a fixed grid",
+     "C_grid": "8 per decade over the C bounds",
+     "bounds": {
+      "C": [
+       0.0001,
+       1000.0
+      ],
+      "K": [
+       1e-12,
+       0.1
+      ],
+      "L": [
+       0.05,
+       50.0
+      ]
+     },
+     "max_evaluations_per_simplex": 2000,
+     "family": "E <= 1.05 E_min",
+     "G2_decades": 0.1
+    },
+    "E_min": 0.007816705805599176,
+    "profile": [
+     {
+      "C": 0.0001,
+      "K": 1.902665699537974e-05,
+      "L": 10.367626597054686,
+      "E": 0.007816705805599176
+     },
+     {
+      "C": 0.0001333521432163324,
+      "K": 1.9026945870054024e-05,
+      "L": 10.367836014535836,
+      "E": 0.007816713085392701
+     },
+     {
+      "C": 0.00017782794100389227,
+      "K": 1.9027334082173874e-05,
+      "L": 10.36811372015926,
+      "E": 0.007816731042163709
+     },
+     {
+      "C": 0.00023713737056616554,
+      "K": 1.9027844230899973e-05,
+      "L": 10.368484197791949,
+      "E": 0.007816761825471077
+     },
+     {
+      "C": 0.00031622776601683794,
+      "K": 1.9028527819252912e-05,
+      "L": 10.36897785391747,
+      "E": 0.007816797200824385
+     },
+     {
+      "C": 0.00042169650342858224,
+      "K": 1.902943923880254e-05,
+      "L": 10.369636142647872,
+      "E": 0.007816845932429338
+     },
+     {
+      "C": 0.0005623413251903491,
+      "K": 1.9030653883976254e-05,
+      "L": 10.370514046576108,
+      "E": 0.007816911320263615
+     },
+     {
+      "C": 0.0007498942093324559,
+      "K": 1.903227333109727e-05,
+      "L": 10.371684780152172,
+      "E": 0.007816998491158082
+     },
+     {
+      "C": 0.001,
+      "K": 1.903443329100328e-05,
+      "L": 10.373245723352618,
+      "E": 0.00781711448058567
+     },
+     {
+      "C": 0.001333521432163324,
+      "K": 1.9037314229557773e-05,
+      "L": 10.375327129263296,
+      "E": 0.007817269002805674
+     },
+     {
+      "C": 0.0017782794100389228,
+      "K": 1.904115561345138e-05,
+      "L": 10.378102493213165,
+      "E": 0.007817474968077855
+     },
+     {
+      "C": 0.0023713737056616554,
+      "K": 1.904627847636064e-05,
+      "L": 10.381803010265417,
+      "E": 0.007817749199600868
+     },
+     {
+      "C": 0.0031622776601683794,
+      "K": 1.905311067704184e-05,
+      "L": 10.386736630862355,
+      "E": 0.007818114235190956
+     },
+     {
+      "C": 0.004216965034285823,
+      "K": 1.906222286355608e-05,
+      "L": 10.393314115485222,
+      "E": 0.00781859991388021
+     },
+     {
+      "C": 0.005623413251903491,
+      "K": 1.907437410187848e-05,
+      "L": 10.402082575597541,
+      "E": 0.007819245571301574
+     },
+     {
+      "C": 0.007498942093324558,
+      "K": 1.9090581048909178e-05,
+      "L": 10.41377037556493,
+      "E": 0.007820103046123954
+     },
+     {
+      "C": 0.01,
+      "K": 1.9112197395537385e-05,
+      "L": 10.429347248618177,
+      "E": 0.007821240264690285
+     },
+     {
+      "C": 0.01333521432163324,
+      "K": 1.9141030891894825e-05,
+      "L": 10.450103294178323,
+      "E": 0.007822745751635626
+     },
+     {
+      "C": 0.01778279410038923,
+      "K": 1.9179492832323234e-05,
+      "L": 10.47775390787454,
+      "E": 0.00782473395551001
+     },
+     {
+      "C": 0.023713737056616554,
+      "K": 1.9230805826767348e-05,
+      "L": 10.514576826344863,
+      "E": 0.007827351222571739
+     },
+     {
+      "C": 0.03162277660168379,
+      "K": 1.929927127411722e-05,
+      "L": 10.563593741477954,
+      "E": 0.00783078190471349
+     },
+     {
+      "C": 0.042169650342858224,
+      "K": 1.9390640735973226e-05,
+      "L": 10.628805751421867,
+      "E": 0.007835253370733774
+     },
+     {
+      "C": 0.05623413251903491,
+      "K": 1.9512602562321303e-05,
+      "L": 10.715500798257493,
+      "E": 0.007841037844476172
+     },
+     {
+      "C": 0.07498942093324558,
+      "K": 1.967544477743444e-05,
+      "L": 10.830649453406823,
+      "E": 0.007848446926160265
+     },
+     {
+      "C": 0.1,
+      "K": 1.9892944977433027e-05,
+      "L": 10.983411003164814,
+      "E": 0.007857813333439592
+     },
+     {
+      "C": 0.1333521432163324,
+      "K": 2.0183567490564045e-05,
+      "L": 11.185777640704142,
+      "E": 0.007869451389259095
+     },
+     {
+      "C": 0.1778279410038923,
+      "K": 2.057207757027671e-05,
+      "L": 11.453386787725076,
+      "E": 0.00788358693969868
+     },
+     {
+      "C": 0.23713737056616552,
+      "K": 2.1091713388874096e-05,
+      "L": 11.806543676367122,
+      "E": 0.007900249246260527
+     },
+     {
+      "C": 0.31622776601683794,
+      "K": 2.17870983308466e-05,
+      "L": 12.271514313562355,
+      "E": 0.007919126261017036
+     },
+     {
+      "C": 0.4216965034285822,
+      "K": 2.2718135930467625e-05,
+      "L": 12.882184523517266,
+      "E": 0.007939403716589627
+     },
+     {
+      "C": 0.5623413251903491,
+      "K": 2.3965207220936314e-05,
+      "L": 13.68223935776307,
+      "E": 0.007959636893136392
+     },
+     {
+      "C": 0.7498942093324559,
+      "K": 2.563605981437419e-05,
+      "L": 14.728118646100759,
+      "E": 0.007977731234829283
+     },
+     {
+      "C": 1.0,
+      "K": 2.7874956349654258e-05,
+      "L": 16.093123582031673,
+      "E": 0.007991111844076073
+     },
+     {
+      "C": 1.333521432163324,
+      "K": 3.087481415592593e-05,
+      "L": 17.873201369208736,
+      "E": 0.00799711823338355
+     },
+     {
+      "C": 1.7782794100389228,
+      "K": 3.4893327168195015e-05,
+      "L": 20.19507501443029,
+      "E": 0.007993567374058588
+     },
+     {
+      "C": 2.371373705661655,
+      "K": 4.027442193294425e-05,
+      "L": 23.227509844641318,
+      "E": 0.007979323714416956
+     },
+     {
+      "C": 3.1622776601683795,
+      "K": 4.747677455015264e-05,
+      "L": 27.19664021990222,
+      "E": 0.007954665866139327
+     },
+     {
+      "C": 4.216965034285822,
+      "K": 5.711175652540846e-05,
+      "L": 32.40644806586967,
+      "E": 0.007921293203368323
+     },
+     {
+      "C": 5.623413251903491,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 0.007881956670335933
+     },
+     {
+      "C": 7.498942093324558,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 10.0,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 13.33521432163324,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 17.78279410038923,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 23.71373705661655,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 31.622776601683793,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 42.169650342858226,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 56.23413251903491,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 74.98942093324558,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 100.0,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 133.3521432163324,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 177.82794100389228,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 237.13737056616552,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 316.22776601683796,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 421.6965034285823,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 562.341325190349,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 749.8942093324558,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     },
+     {
+      "C": 1000.0,
+      "K": 6.999391977551102e-05,
+      "L": 39.26580460930706,
+      "E": 30.0
+     }
+    ],
+    "family": {
+     "n_equivalent": 39,
+     "C_range": [
+      0.0001,
+      5.623413251903491
+     ],
+     "K_range": [
+      1.902665699537974e-05,
+      6.999391977551102e-05
+     ],
+     "L_range": [
+      10.367626597054686,
+      39.26580460930706
+     ]
+    },
+    "admissibility_checked": [
+     {
+      "C": 0.0001,
+      "E": 0.007816705805599176,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536913.4753383377,
+        "status": "valid",
+        "N_transient": 486415.9182271872,
+        "termination": "cyclic_steady_state",
+        "blocks": 33194,
+        "log10_transient_minus_closed": -0.04289652490715312,
+        "residual_closed": 0.29084806728752216,
+        "residual_transient": 0.24795154238036957
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64677.23541181032,
+        "status": "valid",
+        "N_transient": 50646.973308060726,
+        "termination": "cyclic_steady_state",
+        "blocks": 23669,
+        "log10_transient_minus_closed": -0.1061979511972071,
+        "residual_closed": -0.3579522322654177,
+        "residual_transient": -0.4641501834626249
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.8434514234636,
+        "status": "valid",
+        "N_transient": 605.2249163356634,
+        "termination": "explicit_failure",
+        "blocks": 606,
+        "log10_transient_minus_closed": -0.8219681072203548,
+        "residual_closed": 0.045176335754698066,
+        "residual_transient": -0.7767917714656569
+       }
+      ]
+     },
+     {
+      "C": 0.0001333521432163324,
+      "E": 0.007816713085392701,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536913.5548266072,
+        "status": "valid",
+        "N_transient": 497549.5278463566,
+        "termination": "cyclic_steady_state",
+        "blocks": 24992,
+        "log10_transient_minus_closed": -0.03306804977680322,
+        "residual_closed": 0.29084813158338335,
+        "residual_transient": 0.25778008180657985
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64677.20447060695,
+        "status": "valid",
+        "N_transient": 53929.85714712432,
+        "termination": "cyclic_steady_state",
+        "blocks": 17846,
+        "log10_transient_minus_closed": -0.07892197031720283,
+        "residual_closed": -0.3579524400293553,
+        "residual_transient": -0.43687441034655866
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.844032246014,
+        "status": "valid",
+        "N_transient": 647.1898355386048,
+        "termination": "explicit_failure",
+        "blocks": 648,
+        "log10_transient_minus_closed": -0.792853281254025,
+        "residual_closed": 0.04517639855226876,
+        "residual_transient": -0.7476768827017561
+       }
+      ]
+     },
+     {
+      "C": 0.00017782794100389227,
+      "E": 0.007816731042163709,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536913.7524133507,
+        "status": "valid",
+        "N_transient": 505905.77265471185,
+        "termination": "cyclic_steady_state",
+        "blocks": 18842,
+        "log10_transient_minus_closed": -0.025834893078784837,
+        "residual_closed": 0.2908482914057902,
+        "residual_transient": 0.2650133983270051
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64677.12957691745,
+        "status": "valid",
+        "N_transient": 56393.58561899798,
+        "termination": "cyclic_steady_state",
+        "blocks": 13480,
+        "log10_transient_minus_closed": -0.059521028529613496,
+        "residual_closed": -0.3579529429257804,
+        "residual_transient": -0.41747397145539383
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.845766688883,
+        "status": "valid",
+        "N_transient": 711.2236244790787,
+        "termination": "explicit_failure",
+        "blocks": 712,
+        "log10_transient_minus_closed": -0.7518789825930519,
+        "residual_closed": 0.04517658607730044,
+        "residual_transient": -0.7067023965157516
+       }
+      ]
+     },
+     {
+      "C": 0.00023713737056616554,
+      "E": 0.007816761825471077,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536914.0542590455,
+        "status": "valid",
+        "N_transient": 512182.1760009203,
+        "termination": "cyclic_steady_state",
+        "blocks": 14229,
+        "log10_transient_minus_closed": -0.02048031130468253,
+        "residual_closed": 0.29084853556024187,
+        "residual_transient": 0.2703682242555589
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64676.99749805971,
+        "status": "valid",
+        "N_transient": 58243.779712087584,
+        "termination": "cyclic_steady_state",
+        "blocks": 10206,
+        "log10_transient_minus_closed": -0.04550029981256465,
+        "residual_closed": -0.35795382981080504,
+        "residual_transient": -0.40345412962336985
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.8486398584837,
+        "status": "valid",
+        "N_transient": 817.2343799121653,
+        "termination": "explicit_failure",
+        "blocks": 818,
+        "log10_transient_minus_closed": -0.6915388387438157,
+        "residual_closed": 0.0451768967193637,
+        "residual_transient": -0.6463619420244517
+       }
+      ]
+     },
+     {
+      "C": 0.00031622776601683794,
+      "E": 0.007816797200824385,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536914.4231599385,
+        "status": "valid",
+        "N_transient": 516901.23482496914,
+        "termination": "cyclic_steady_state",
+        "blocks": 10771,
+        "log10_transient_minus_closed": -0.01649750094039426,
+        "residual_closed": 0.29084883395356176,
+        "residual_transient": 0.27435133301316705
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64676.84730672905,
+        "status": "valid",
+        "N_transient": 59634.6389207536,
+        "termination": "cyclic_steady_state",
+        "blocks": 7752,
+        "log10_transient_minus_closed": -0.03525024792260112,
+        "residual_closed": -0.35795483831992564,
+        "residual_transient": -0.3932050862425274
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.851858184005,
+        "status": "valid",
+        "N_transient": 1004.2087278231154,
+        "termination": "explicit_failure",
+        "blocks": 1005,
+        "log10_transient_minus_closed": -0.6020618235979263,
+        "residual_closed": 0.04517724467881656,
+        "residual_transient": -0.5568845789191095
+       }
+      ]
+     },
+     {
+      "C": 0.00042169650342858224,
+      "E": 0.007816845932429338,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536914.9192518685,
+        "status": "valid",
+        "N_transient": 520458.68854015897,
+        "termination": "cyclic_steady_state",
+        "blocks": 8178,
+        "log10_transient_minus_closed": -0.013519208822076578,
+        "residual_closed": 0.29084923522772926,
+        "residual_transient": 0.27733002640565235
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64676.639874112036,
+        "status": "valid",
+        "N_transient": 60682.548428948576,
+        "termination": "cyclic_steady_state",
+        "blocks": 5913,
+        "log10_transient_minus_closed": -0.02768363788873973,
+        "residual_closed": -0.3579562311983536,
+        "residual_transient": -0.38563986908709325
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.8564156909274,
+        "status": "valid",
+        "N_transient": 1337.1887329352917,
+        "termination": "explicit_failure",
+        "blocks": 1338,
+        "log10_transient_minus_closed": -0.47769359936171574,
+        "residual_closed": 0.04517773742762948,
+        "residual_transient": -0.43251586193408637
+       }
+      ]
+     },
+     {
+      "C": 0.0005623413251903491,
+      "E": 0.007816911320263615,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536915.5793372123,
+        "status": "valid",
+        "N_transient": 523147.5719253561,
+        "termination": "cyclic_steady_state",
+        "blocks": 6232,
+        "log10_transient_minus_closed": -0.011281791814774067,
+        "residual_closed": 0.2908497691507697,
+        "residual_transient": 0.27956797733599614
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64676.36058969058,
+        "status": "valid",
+        "N_transient": 61474.72604523103,
+        "termination": "cyclic_steady_state",
+        "blocks": 4537,
+        "log10_transient_minus_closed": -0.022048971657699923,
+        "residual_closed": -0.3579581065577606,
+        "residual_transient": -0.38000707821546
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.862422975046,
+        "status": "valid",
+        "N_transient": 1824.177970796679,
+        "termination": "explicit_failure",
+        "blocks": 1825,
+        "log10_transient_minus_closed": -0.34281975067593473,
+        "residual_closed": 0.045178386922688094,
+        "residual_transient": -0.29764136375324673
+       }
+      ]
+     },
+     {
+      "C": 0.0007498942093324559,
+      "E": 0.007816998491158082,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536916.4814043524,
+        "status": "valid",
+        "N_transient": 525196.3596113565,
+        "termination": "cyclic_steady_state",
+        "blocks": 4775,
+        "log10_transient_minus_closed": -0.009585028322137923,
+        "residual_closed": 0.2908504988044941,
+        "residual_transient": 0.2812654704823563
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64675.99021831819,
+        "status": "valid",
+        "N_transient": 62071.82537629316,
+        "termination": "cyclic_steady_state",
+        "blocks": 3503,
+        "log10_transient_minus_closed": -0.01784856960032677,
+        "residual_closed": -0.3579605935669611,
+        "residual_transient": -0.3758091631672885
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.870430621841,
+        "status": "valid",
+        "N_transient": 2321.1928432748537,
+        "termination": "explicit_failure",
+        "blocks": 2322,
+        "log10_transient_minus_closed": -0.2381766003510144,
+        "residual_closed": 0.04517925269128645,
+        "residual_transient": -0.19299734765972815
+       }
+      ]
+     },
+     {
+      "C": 0.001,
+      "E": 0.00781711448058567,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536917.6757875963,
+        "status": "valid",
+        "N_transient": 526774.1415105808,
+        "termination": "cyclic_steady_state",
+        "blocks": 3681,
+        "log10_transient_minus_closed": -0.00828325354288495,
+        "residual_closed": 0.29085146490163055,
+        "residual_transient": 0.28256821135874605
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64675.49758943508,
+        "status": "valid",
+        "N_transient": 62483.4792926685,
+        "termination": "cyclic_steady_state",
+        "blocks": 2706,
+        "log10_transient_minus_closed": -0.014974574166473964,
+        "residual_closed": -0.3579639015460062,
+        "residual_transient": -0.3729384757124798
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.881248926542,
+        "status": "valid",
+        "N_transient": 2726.767979919578,
+        "termination": "cyclic_steady_state",
+        "blocks": 2309,
+        "log10_transient_minus_closed": -0.16824080737930736,
+        "residual_closed": 0.04518042233909801,
+        "residual_transient": -0.1230603850402098
+       }
+      ]
+     },
+     {
+      "C": 0.001333521432163324,
+      "E": 0.007817269002805674,
+      "G1": true,
+      "G2": false,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536919.251277782,
+        "status": "valid",
+        "N_transient": 528012.220890648,
+        "termination": "cyclic_steady_state",
+        "blocks": 2862,
+        "log10_transient_minus_closed": -0.007265001466579157,
+        "residual_closed": 0.290852739260291,
+        "residual_transient": 0.283587737793712
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64674.83927700053,
+        "status": "valid",
+        "N_transient": 62786.79243613925,
+        "termination": "cyclic_steady_state",
+        "blocks": 2110,
+        "log10_transient_minus_closed": -0.012867061131876412,
+        "residual_closed": -0.35796832212139273,
+        "residual_transient": -0.37083538325326937
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.895508017299,
+        "status": "valid",
+        "N_transient": 3031.4640400325775,
+        "termination": "cyclic_steady_state",
+        "blocks": 1807,
+        "log10_transient_minus_closed": -0.12223811363012915,
+        "residual_closed": 0.045181963991205124,
+        "residual_transient": -0.07705614963892406
+       }
+      ]
+     },
+     {
+      "C": 0.0017782794100389228,
+      "E": 0.007817474968077855,
+      "G1": true,
+      "G2": true,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 450.0,
+        "N_exp": 274825.0,
+        "N_closed": 536921.3641257709,
+        "status": "valid",
+        "N_transient": 529016.1455344937,
+        "termination": "cyclic_steady_state",
+        "blocks": 2247,
+        "log10_transient_minus_closed": -0.006441758030825362,
+        "residual_closed": 0.2908544482629297,
+        "residual_transient": 0.2844126902321042
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 500.0,
+        "N_exp": 147470.0,
+        "N_closed": 64673.96334312763,
+        "status": "valid",
+        "N_transient": 63024.49934462031,
+        "termination": "cyclic_steady_state",
+        "blocks": 1678,
+        "log10_transient_minus_closed": -0.01122007174783235,
+        "residual_closed": -0.3579742040969474,
+        "residual_transient": -0.3691942758447797
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 600.0,
+        "N_exp": 3620.0,
+        "N_closed": 4016.9146028054847,
+        "status": "valid",
+        "N_transient": 3258.519310409324,
+        "termination": "cyclic_steady_state",
+        "blocks": 1433,
+        "log10_transient_minus_closed": -0.09087229996484103,
+        "residual_closed": 0.04518402845651551,
+        "residual_transient": -0.04568827150832561
+       }
+      ]
+     }
+    ],
+    "chosen": {
+     "C": 0.0017782794100389228,
+     "K": 1.904115561345138e-05,
+     "L": 10.378102493213165,
+     "E": 0.007817474968077855,
+     "G1": true,
+     "G2": true,
+     "points": [
+      {
+       "sigma_m": 0.0,
+       "sigma_a": 450.0,
+       "N_exp": 274825.0,
+       "N_closed": 536921.3641257709,
+       "status": "valid",
+       "N_transient": 529016.1455344937,
+       "termination": "cyclic_steady_state",
+       "blocks": 2247,
+       "log10_transient_minus_closed": -0.006441758030825362,
+       "residual_closed": 0.2908544482629297,
+       "residual_transient": 0.2844126902321042
+      },
+      {
+       "sigma_m": 0.0,
+       "sigma_a": 500.0,
+       "N_exp": 147470.0,
+       "N_closed": 64673.96334312763,
+       "status": "valid",
+       "N_transient": 63024.49934462031,
+       "termination": "cyclic_steady_state",
+       "blocks": 1678,
+       "log10_transient_minus_closed": -0.01122007174783235,
+       "residual_closed": -0.3579742040969474,
+       "residual_transient": -0.3691942758447797
+      },
+      {
+       "sigma_m": 0.0,
+       "sigma_a": 600.0,
+       "N_exp": 3620.0,
+       "N_closed": 4016.9146028054847,
+       "status": "valid",
+       "N_transient": 3258.519310409324,
+       "termination": "cyclic_steady_state",
+       "blocks": 1433,
+       "log10_transient_minus_closed": -0.09087229996484103,
+       "residual_closed": 0.04518402845651551,
+       "residual_transient": -0.04568827150832561
+      }
+     ],
+     "C_at_search_bound": false
+    },
+    "identifiability": "C is not identified by uniaxial data: equivalent sets (E <= 1.05 E_min) span C 0.0001 to 5.62; the chosen C is the admissible one of lowest E",
+    "confidence": {
+     "level": "low",
+     "major": 1,
+     "minor": 6,
+     "findings": [
+      {
+       "code": "failures_below_limit",
+       "severity": "major",
+       "what": "12 axial R = -1 failure(s) lie below Sigm1 = 433 MPa and failed before its reference life of 2e+06 cycles (lowest 361.1 MPa)",
+       "why": "the failures contradict the fatigue limit, and the model predicts an infinite life for every test below it",
+       "advice": "check Sigm1 against the failures and run-outs of the same source, e.g. with a censored fit of the limit"
+      },
+      {
+       "code": "A_estimated",
+       "severity": "minor",
+       "what": "A = 0.2063 is estimated (fkm), not measured",
+       "why": "every mean-stress prediction depends on A",
+       "advice": "a fatigue limit at a tensile mean stress (e.g. an R = 0.1 staircase) gives A directly (Tveit et al. 2025, Eq. 23)"
+      },
+      {
+       "code": "C_not_identified",
+       "severity": "minor",
+       "what": "C varies from 0.0001 to 5.62 among the equivalent sets",
+       "why": "uniaxial data cannot fix C; it matters under mean shear stress and non-proportional loading",
+       "advice": "a test with a mean shear stress or 90 deg out-of-phase tension-torsion decides C"
+      },
+      {
+       "code": "late_failures_below_limit",
+       "severity": "minor",
+       "what": "1 axial R = -1 failure(s) lie below Sigm1 = 433 MPa but failed after its reference life of 2e+06 cycles (lowest 383 MPa at 2.63e+06 cycles)",
+       "why": "they agree with a limit defined at that life, but Sigm1 is a true threshold of the model, which predicts an infinite life for them",
+       "advice": "for a material without a true fatigue limit, a limit at a longer reference life (the S-N curve of the same source at that life)"
+      },
+      {
+       "code": "low_point_near_limit",
+       "severity": "minor",
+       "what": "the LOW point (450 MPa) lies within 3.9 % of Sigm1 = 433 MPa",
+       "why": "near its asymptote the model curve is steep; a residual of a few tenths of a decade is expected there",
+       "advice": "a LOW level further above the fatigue limit"
+      },
+      {
+       "code": "poor_fit",
+       "severity": "minor",
+       "what": "a calibration point is missed by 0.37 decade",
+       "why": "with Sigm1 fixed the curve cannot pass through three arbitrary points; a large residual points at the limit or at one of the points",
+       "advice": "check the fatigue limit and the chosen points"
+      },
+      {
+       "code": "single_specimen_level",
+       "severity": "minor",
+       "what": "single specimen at the HIGH level (600 MPa)",
+       "why": "one specimen that disagrees with other data can bend the whole curve",
+       "advice": "more replicates at that level"
+      }
+     ]
+    }
+   },
+   "identity": {
+    "procedure": 2,
+    "implementation_revision": "2026-11-18",
+    "workbook_sha256": "1327f64f68305d4e4453e784803a5bccce7596dc17db0ab032125598a1fd93d6",
+    "overlay_sha256": null,
+    "inputs_sha256": "afd38837026b3480b5272f4752c2335c59ea66c909c41b474b85b4fd030a6a2c"
+   },
+   "status": "calibrated",
+   "reason": ""
+  }
+ },
+ "source": {
+  "Sigm1_TVEIT": "fatigue limit (workbook Summary)",
+  "Taum1_TVEIT": "fatigue limit (workbook Summary)",
+  "A_TVEIT": "FKM estimate for steel: A = a_M Su/1000 + b_M with a_M = 0.35, b_M = -0.1, Su = 875 MPa (Tveit et al. 2025, Eq. 26)",
+  "C_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures; C is not identified by uniaxial data: equivalent sets (E <= 1.05 E_min) span C 0.0001 to 5.62; the chosen C is the admissible one of lowest E",
+  "K_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+  "L_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+  "npts_TVEIT": "time-integration setting checked by gate G2",
+  "min_blocks_TVEIT": "time-integration setting checked by gate G2",
+  "max_blocks_TVEIT": "time-integration setting checked by gate G2",
+  "tol_alpha_TVEIT": "time-integration setting checked by gate G2",
+  "tol_damage_TVEIT": "time-integration setting checked by gate G2"
+ },
+ "design_case_ids": {
+  "C_TVEIT": [
+   21,
+   19,
+   25
+  ],
+  "K_TVEIT": [
+   21,
+   19,
+   25
+  ],
+  "L_TVEIT": [
+   21,
+   19,
+   25
+  ]
+ },
+ "provenance": {
+  "created_utc": "2026-11-18T12:47:05+00:00",
+  "workbook": "Experimental_Data/6_42CrMo4_Santus.xlsx",
+  "workbook_sha256": "1327f64f68305d4e4453e784803a5bccce7596dc17db0ab032125598a1fd93d6",
+  "failures": 45,
+  "runouts": 11,
+  "assumptions_applied": null,
+  "failure_fingerprint": "50fcebd49c4006212a50d303f4549cf0351c59047b2f0e9bcdebf3323aec15a3",
+  "multifat_version": "0.1.0.dev0",
+  "implementation_revision": "2026-11-18",
+  "git": {
+   "commit": "ff95a2859e44c658bf2b462b22ef836ad1f0bf95",
+   "dirty": false
+  },
+  "python": "3.11.9",
+  "numpy": "2.4.6",
+  "settings": {
+   "plane_grid": [
+    20,
+    40
+   ],
+   "refined_plane_search": true,
+   "master_curve_stdnum": 0.0,
+   "master_curve_survival_probability": 0.5,
+   "master_curve_model": "basquin",
+   "flat_curve_k_max": 15.0
+  }
+ },
+ "calibration_procedure": 2,
+ "calibration_id": "20261118T124705307938Z_7f9c2f28369f"
+}

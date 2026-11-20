@@ -1,0 +1,816 @@
+{
+ "params": {
+  "Sigm1_TVEIT": 500.0,
+  "Taum1_TVEIT": 422.5,
+  "A_TVEIT": 0.5102040816326531,
+  "C_TVEIT": 1.333521432163324,
+  "K_TVEIT": 0.00017096863544904613,
+  "L_TVEIT": 0.05000000000000001,
+  "npts_TVEIT": 1001,
+  "min_blocks_TVEIT": 400,
+  "max_blocks_TVEIT": 60000,
+  "tol_alpha_TVEIT": 0.01,
+  "tol_damage_TVEIT": 0.001
+ },
+ "status": "calibrated",
+ "reason": "",
+ "model_calibrations": {
+  "TVEIT2025": {
+   "params": {
+    "Sigm1_TVEIT": 500.0,
+    "Taum1_TVEIT": 422.5,
+    "A_TVEIT": 0.5102040816326531,
+    "C_TVEIT": 1.333521432163324,
+    "K_TVEIT": 0.00017096863544904613,
+    "L_TVEIT": 0.05000000000000001,
+    "npts_TVEIT": 1001,
+    "min_blocks_TVEIT": 400,
+    "max_blocks_TVEIT": 60000,
+    "tol_alpha_TVEIT": 0.01,
+    "tol_damage_TVEIT": 0.001
+   },
+   "source": {
+    "Sigm1_TVEIT": "fatigue limit (workbook Summary)",
+    "Taum1_TVEIT": "fatigue limit (workbook Summary)",
+    "A_TVEIT": "Goodman estimate A = Sigm1 / Su with Su = 980 MPa (Tveit et al. 2025, Sect. 4)",
+    "C_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures; C is not identified by uniaxial data: equivalent sets (E <= 1.05 E_min) span C 0.0001 to 3.16; the chosen C is the admissible one of lowest E",
+    "K_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+    "L_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+    "npts_TVEIT": "time-integration setting checked by gate G2",
+    "min_blocks_TVEIT": "time-integration setting checked by gate G2",
+    "max_blocks_TVEIT": "time-integration setting checked by gate G2",
+    "tol_alpha_TVEIT": "time-integration setting checked by gate G2",
+    "tol_damage_TVEIT": "time-integration setting checked by gate G2"
+   },
+   "design_case_ids": {
+    "C_TVEIT": [
+     4,
+     0,
+     2
+    ],
+    "K_TVEIT": [
+     4,
+     0,
+     2
+    ],
+    "L_TVEIT": [
+     4,
+     0,
+     2
+    ]
+   },
+   "confidence": {
+    "level": "low",
+    "major": 2,
+    "minor": 4,
+    "findings": [
+     {
+      "code": "constant_at_bound",
+      "severity": "major",
+      "what": "L of the chosen set lies on its search bound",
+      "why": "a constant on its bound is set by the search, not by the data",
+      "advice": "more informative tests (another stress level, a mean stress, a multiaxial test); the bound is not a calibrated value"
+     },
+     {
+      "code": "narrow_stress_range",
+      "severity": "major",
+      "what": "the points span only 523.2 to 550.5 MPa (5.2 %)",
+      "why": "points this close carry little S-N trend, and K and L are poorly determined",
+      "advice": "add failures over a wider stress range of the same source"
+     },
+     {
+      "code": "A_estimated",
+      "severity": "minor",
+      "what": "A = 0.5102 is estimated (goodman), not measured",
+      "why": "every mean-stress prediction depends on A",
+      "advice": "a fatigue limit at a tensile mean stress (e.g. an R = 0.1 staircase) gives A directly (Tveit et al. 2025, Eq. 23)"
+     },
+     {
+      "code": "C_not_identified",
+      "severity": "minor",
+      "what": "C varies from 0.0001 to 3.16 among the equivalent sets",
+      "why": "uniaxial data cannot fix C; it matters under mean shear stress and non-proportional loading",
+      "advice": "a test with a mean shear stress or 90 deg out-of-phase tension-torsion decides C"
+     },
+     {
+      "code": "low_point_near_limit",
+      "severity": "minor",
+      "what": "the LOW point (523.2 MPa) lies within 4.6 % of Sigm1 = 500 MPa",
+      "why": "near its asymptote the model curve is steep; a residual of a few tenths of a decade is expected there",
+      "advice": "a LOW level further above the fatigue limit"
+     },
+     {
+      "code": "single_specimen_level",
+      "severity": "minor",
+      "what": "single specimen at the LOW level (523.2 MPa), HIGH level (550.5 MPa)",
+      "why": "one specimen that disagrees with other data can bend the whole curve",
+      "advice": "more replicates at that level"
+     }
+    ]
+   },
+   "record": {
+    "procedure": 2,
+    "mode": "author",
+    "references": [
+     "Tveit et al. (2025) Mech. Mater. 209, 105452, Sect. 4, Eqs. (22)-(26)",
+     "Ottosen et al. (2008) Int. J. Fatigue 30, 996-1006, Sect. 5, Eqs. (23)-(32)"
+    ],
+    "inputs_file": "Calibrations/Ti6Al4V_Meneghetti/TVEIT2025_inputs.json",
+    "inputs_sha256": "6250fda8a903455338b7c072501eed1b034ecd7c614d5c1e5fdb464389056889",
+    "inputs": {
+     "schema": "multifat/tveit2025-calibration-inputs/2",
+     "material_id": "Ti6Al4V_Meneghetti",
+     "material_type": "titanium alloy",
+     "notes": "No fatigue limit at a mean stress is available and the FKM guideline gives no values for titanium alloys, so A is the Goodman estimate Sigm1/Su, as Tveit et al. (2025, Sect. 4) do where FKM gives none."
+    },
+    "fatigue_limits": {
+     "Sigm1": 500.0,
+     "Taum1": 422.5,
+     "origin": "workbook Summary",
+     "sources": [
+      {
+       "authors": "Meneghetti et al.",
+       "reference": "10.1016/j.tafmec.2018.06.010",
+       "reference_cycles": 2000000.0,
+       "excel_row": 2
+      }
+     ]
+    },
+    "mean_stress_slope": {
+     "A": 0.5102040816326531,
+     "route": "goodman",
+     "equation": "Goodman estimate A = Sigm1 / Su with Su = 980 MPa (Tveit et al. 2025, Sect. 4)",
+     "source": "Goodman relation; Sigm1 and Su from the workbook Summary",
+     "material_type": "titanium alloy",
+     "goodman_because": "FKM_MEAN_STRESS has no values for material type 'titanium alloy'"
+    },
+    "numerical_settings": {
+     "npts_TVEIT": 1001,
+     "min_blocks_TVEIT": 400,
+     "max_blocks_TVEIT": 60000,
+     "tol_alpha_TVEIT": 0.01,
+     "tol_damage_TVEIT": 0.001
+    },
+    "calibration_source": {
+     "match": "same reference",
+     "source": "10.1016/j.tafmec.2018.06.010"
+    },
+    "candidates": 6,
+    "calibration_points": [
+     {
+      "case_id": 4,
+      "specimen_id": "Axial Plain",
+      "excel_row": 52,
+      "sigma_m": 0.0,
+      "sigma_a": 523.20339806564,
+      "N_exp": 85644.66011619,
+      "source": [
+       "Meneghetti et al.",
+       "10.1016/j.tafmec.2018.06.010"
+      ],
+      "role": "LOW",
+      "replicates": 1,
+      "reason": "LOW level 523.203 MPa (1 replicate(s)); log10 N closest to the level median 4.9327"
+     },
+     {
+      "case_id": 0,
+      "specimen_id": "Axial Plain",
+      "excel_row": 48,
+      "sigma_m": 0.0,
+      "sigma_a": 534.72048327797,
+      "N_exp": 42965.4273003532,
+      "source": [
+       "Meneghetti et al.",
+       "10.1016/j.tafmec.2018.06.010"
+      ],
+      "role": "MID",
+      "replicates": 2,
+      "reason": "MID level 534.72 MPa (2 replicate(s)); log10 N closest to the level median 4.8276"
+     },
+     {
+      "case_id": 2,
+      "specimen_id": "Axial Plain",
+      "excel_row": 50,
+      "sigma_m": 0.0,
+      "sigma_a": 550.47192454612,
+      "N_exp": 74235.9147219274,
+      "source": [
+       "Meneghetti et al.",
+       "10.1016/j.tafmec.2018.06.010"
+      ],
+      "role": "HIGH",
+      "replicates": 1,
+      "reason": "HIGH level 550.472 MPa (1 replicate(s)); log10 N closest to the level median 4.8706"
+     }
+    ],
+    "validation": "every other test of the workbook is an independent assessment of these constants; the calibration tests are design points (Flag = 0)",
+    "objective": "Eq. (25): sum (1 - ln N / ln N_exp)^2, closed-form N, 10 per lost point",
+    "optimiser": {
+     "method": "profile over C: simplex in ln K, ln L at each C of a fixed grid",
+     "C_grid": "8 per decade over the C bounds",
+     "bounds": {
+      "C": [
+       0.0001,
+       1000.0
+      ],
+      "K": [
+       1e-12,
+       0.1
+      ],
+      "L": [
+       0.05,
+       50.0
+      ]
+     },
+     "max_evaluations_per_simplex": 2000,
+     "family": "E <= 1.05 E_min",
+     "G2_decades": 0.1
+    },
+    "E_min": 0.003625547417591671,
+    "profile": [
+     {
+      "C": 0.0001,
+      "K": 0.0001132401729904562,
+      "L": 0.05000000000000001,
+      "E": 0.003669566845266938
+     },
+     {
+      "C": 0.0001333521432163324,
+      "K": 0.00011324165623501535,
+      "L": 0.05000000000000001,
+      "E": 0.003669563721544672
+     },
+     {
+      "C": 0.00017782794100389227,
+      "K": 0.00011324363404661338,
+      "L": 0.05000000000000001,
+      "E": 0.003669559551118176
+     },
+     {
+      "C": 0.00023713737056616554,
+      "K": 0.0001132462733195655,
+      "L": 0.05000000000000001,
+      "E": 0.0036695539893206877
+     },
+     {
+      "C": 0.00031622776601683794,
+      "K": 0.00011324979022355635,
+      "L": 0.05000000000000001,
+      "E": 0.003669546573246367
+     },
+     {
+      "C": 0.00042169650342858224,
+      "K": 0.00011325448264656416,
+      "L": 0.05000000000000001,
+      "E": 0.0036695366875009695
+     },
+     {
+      "C": 0.0005623413251903491,
+      "K": 0.00011326073852942743,
+      "L": 0.05000000000000001,
+      "E": 0.0036695235065748967
+     },
+     {
+      "C": 0.0007498942093324559,
+      "K": 0.00011326908095662267,
+      "L": 0.05000000000000001,
+      "E": 0.0036695059357577976
+     },
+     {
+      "C": 0.001,
+      "K": 0.0001132802064571675,
+      "L": 0.05000000000000001,
+      "E": 0.0036694825138607074
+     },
+     {
+      "C": 0.001333521432163324,
+      "K": 0.00011329504219465378,
+      "L": 0.05000000000000001,
+      "E": 0.00366945129825304
+     },
+     {
+      "C": 0.0017782794100389228,
+      "K": 0.00011331482398702432,
+      "L": 0.05000000000000001,
+      "E": 0.00366940970249379
+     },
+     {
+      "C": 0.0023713737056616554,
+      "K": 0.00011334120506433953,
+      "L": 0.05000000000000001,
+      "E": 0.0036693542888307173
+     },
+     {
+      "C": 0.0031622776601683794,
+      "K": 0.00011337638118672711,
+      "L": 0.05000000000000001,
+      "E": 0.003669280491549242
+     },
+     {
+      "C": 0.004216965034285823,
+      "K": 0.00011342328748257403,
+      "L": 0.05000000000000001,
+      "E": 0.0036691822553260333
+     },
+     {
+      "C": 0.005623413251903491,
+      "K": 0.00011348583311282442,
+      "L": 0.05000000000000001,
+      "E": 0.0036690515640279845
+     },
+     {
+      "C": 0.007498942093324558,
+      "K": 0.00011356923198710919,
+      "L": 0.05000000000000001,
+      "E": 0.003668877831845963
+     },
+     {
+      "C": 0.01,
+      "K": 0.00011368042755194027,
+      "L": 0.05000000000000001,
+      "E": 0.0036686471259209635
+     },
+     {
+      "C": 0.01333521432163324,
+      "K": 0.00011382868617642148,
+      "L": 0.05000000000000001,
+      "E": 0.0036683411898293136
+     },
+     {
+      "C": 0.01778279410038923,
+      "K": 0.000114026345289785,
+      "L": 0.05000000000000001,
+      "E": 0.003667936245180927
+     },
+     {
+      "C": 0.023713737056616554,
+      "K": 0.0001142898428675461,
+      "L": 0.05000000000000001,
+      "E": 0.00366740157887749
+     },
+     {
+      "C": 0.03162277660168379,
+      "K": 0.00011464107843975147,
+      "L": 0.05000000000000001,
+      "E": 0.0036666979591123347
+     },
+     {
+      "C": 0.042169650342858224,
+      "K": 0.00011510920232119089,
+      "L": 0.05000000000000001,
+      "E": 0.003665776053039273
+     },
+     {
+      "C": 0.05623413251903491,
+      "K": 0.000115733004953338,
+      "L": 0.05000000000000001,
+      "E": 0.003664575173646092
+     },
+     {
+      "C": 0.07498942093324558,
+      "K": 0.00011656407003600066,
+      "L": 0.05000000000000001,
+      "E": 0.0036630229987740645
+     },
+     {
+      "C": 0.1,
+      "K": 0.00011767094601337989,
+      "L": 0.05000000000000001,
+      "E": 0.0036610373484370394
+     },
+     {
+      "C": 0.1333521432163324,
+      "K": 0.00011914462792614374,
+      "L": 0.05000000000000001,
+      "E": 0.003658531738027368
+     },
+     {
+      "C": 0.1778279410038923,
+      "K": 0.0001211057850768925,
+      "L": 0.05000000000000001,
+      "E": 0.0036554270815530535
+     },
+     {
+      "C": 0.23713737056616552,
+      "K": 0.00012371422246864222,
+      "L": 0.05000000000000001,
+      "E": 0.0036516723859506784
+     },
+     {
+      "C": 0.31622776601683794,
+      "K": 0.00012718131861254805,
+      "L": 0.05000000000000003,
+      "E": 0.0036472767970630302
+     },
+     {
+      "C": 0.4216965034285822,
+      "K": 0.0001317863427210726,
+      "L": 0.05000000000000001,
+      "E": 0.003642352908967168
+     },
+     {
+      "C": 0.5623413251903491,
+      "K": 0.00013789793968097287,
+      "L": 0.05000000000000001,
+      "E": 0.003637165678692562
+     },
+     {
+      "C": 0.7498942093324559,
+      "K": 0.00014600263078732526,
+      "L": 0.05000000000000001,
+      "E": 0.0036321725074480128
+     },
+     {
+      "C": 1.0,
+      "K": 0.00015674291618557697,
+      "L": 0.05000000000000001,
+      "E": 0.0036280309021140206
+     },
+     {
+      "C": 1.333521432163324,
+      "K": 0.00017096863544904613,
+      "L": 0.05000000000000001,
+      "E": 0.003625547417591671
+     },
+     {
+      "C": 1.7782794100389228,
+      "K": 0.00018980660187343414,
+      "L": 0.05000000000000001,
+      "E": 0.003625553706111054
+     },
+     {
+      "C": 2.371373705661655,
+      "K": 0.00021475512486138752,
+      "L": 0.05000000000000001,
+      "E": 0.0036287249955633477
+     },
+     {
+      "C": 3.1622776601683795,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 0.0036353922371498773
+     },
+     {
+      "C": 4.216965034285822,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 5.623413251903491,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 7.498942093324558,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 10.0,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 13.33521432163324,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 17.78279410038923,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 23.71373705661655,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 31.622776601683793,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 42.169650342858226,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 56.23413251903491,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 74.98942093324558,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 100.0,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 133.3521432163324,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 177.82794100389228,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 237.13737056616552,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 316.22776601683796,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 421.6965034285823,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 562.341325190349,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 749.8942093324558,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     },
+     {
+      "C": 1000.0,
+      "K": 0.00024781176273759033,
+      "L": 0.05000000000000001,
+      "E": 30.0
+     }
+    ],
+    "family": {
+     "n_equivalent": 37,
+     "C_range": [
+      0.0001,
+      3.1622776601683795
+     ],
+     "K_range": [
+      0.0001132401729904562,
+      0.00024781176273759033
+     ],
+     "L_range": [
+      0.05000000000000001,
+      0.05000000000000003
+     ]
+    },
+    "admissibility_checked": [
+     {
+      "C": 1.333521432163324,
+      "E": 0.003625547417591671,
+      "G1": true,
+      "G2": true,
+      "points": [
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 523.20339806564,
+        "N_exp": 85644.66011619,
+        "N_closed": 94646.68264977382,
+        "status": "valid",
+        "N_transient": 92051.38731547343,
+        "termination": "cyclic_steady_state",
+        "blocks": 403,
+        "log10_transient_minus_closed": -0.01207505843437584,
+        "residual_closed": 0.04340510642566191,
+        "residual_transient": 0.03133004799128576
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 534.72048327797,
+        "N_exp": 42965.4273003532,
+        "N_closed": 63425.17678593537,
+        "status": "valid",
+        "N_transient": 62697.8087513719,
+        "termination": "cyclic_steady_state",
+        "blocks": 403,
+        "log10_transient_minus_closed": -0.005009323631496976,
+        "residual_closed": 0.1691425511095279,
+        "residual_transient": 0.16413322747803125
+       },
+       {
+        "sigma_m": 0.0,
+        "sigma_a": 550.47192454612,
+        "N_exp": 74235.9147219274,
+        "N_closed": 43789.21377015078,
+        "status": "valid",
+        "N_transient": 42845.52543711992,
+        "termination": "cyclic_steady_state",
+        "blocks": 402,
+        "log10_transient_minus_closed": -0.0094616743789242,
+        "residual_closed": -0.22924691664118418,
+        "residual_transient": -0.23870859102010833
+       }
+      ]
+     }
+    ],
+    "chosen": {
+     "C": 1.333521432163324,
+     "K": 0.00017096863544904613,
+     "L": 0.05000000000000001,
+     "E": 0.003625547417591671,
+     "G1": true,
+     "G2": true,
+     "points": [
+      {
+       "sigma_m": 0.0,
+       "sigma_a": 523.20339806564,
+       "N_exp": 85644.66011619,
+       "N_closed": 94646.68264977382,
+       "status": "valid",
+       "N_transient": 92051.38731547343,
+       "termination": "cyclic_steady_state",
+       "blocks": 403,
+       "log10_transient_minus_closed": -0.01207505843437584,
+       "residual_closed": 0.04340510642566191,
+       "residual_transient": 0.03133004799128576
+      },
+      {
+       "sigma_m": 0.0,
+       "sigma_a": 534.72048327797,
+       "N_exp": 42965.4273003532,
+       "N_closed": 63425.17678593537,
+       "status": "valid",
+       "N_transient": 62697.8087513719,
+       "termination": "cyclic_steady_state",
+       "blocks": 403,
+       "log10_transient_minus_closed": -0.005009323631496976,
+       "residual_closed": 0.1691425511095279,
+       "residual_transient": 0.16413322747803125
+      },
+      {
+       "sigma_m": 0.0,
+       "sigma_a": 550.47192454612,
+       "N_exp": 74235.9147219274,
+       "N_closed": 43789.21377015078,
+       "status": "valid",
+       "N_transient": 42845.52543711992,
+       "termination": "cyclic_steady_state",
+       "blocks": 402,
+       "log10_transient_minus_closed": -0.0094616743789242,
+       "residual_closed": -0.22924691664118418,
+       "residual_transient": -0.23870859102010833
+      }
+     ],
+     "C_at_search_bound": false
+    },
+    "identifiability": "C is not identified by uniaxial data: equivalent sets (E <= 1.05 E_min) span C 0.0001 to 3.16; the chosen C is the admissible one of lowest E",
+    "confidence": {
+     "level": "low",
+     "major": 2,
+     "minor": 4,
+     "findings": [
+      {
+       "code": "constant_at_bound",
+       "severity": "major",
+       "what": "L of the chosen set lies on its search bound",
+       "why": "a constant on its bound is set by the search, not by the data",
+       "advice": "more informative tests (another stress level, a mean stress, a multiaxial test); the bound is not a calibrated value"
+      },
+      {
+       "code": "narrow_stress_range",
+       "severity": "major",
+       "what": "the points span only 523.2 to 550.5 MPa (5.2 %)",
+       "why": "points this close carry little S-N trend, and K and L are poorly determined",
+       "advice": "add failures over a wider stress range of the same source"
+      },
+      {
+       "code": "A_estimated",
+       "severity": "minor",
+       "what": "A = 0.5102 is estimated (goodman), not measured",
+       "why": "every mean-stress prediction depends on A",
+       "advice": "a fatigue limit at a tensile mean stress (e.g. an R = 0.1 staircase) gives A directly (Tveit et al. 2025, Eq. 23)"
+      },
+      {
+       "code": "C_not_identified",
+       "severity": "minor",
+       "what": "C varies from 0.0001 to 3.16 among the equivalent sets",
+       "why": "uniaxial data cannot fix C; it matters under mean shear stress and non-proportional loading",
+       "advice": "a test with a mean shear stress or 90 deg out-of-phase tension-torsion decides C"
+      },
+      {
+       "code": "low_point_near_limit",
+       "severity": "minor",
+       "what": "the LOW point (523.2 MPa) lies within 4.6 % of Sigm1 = 500 MPa",
+       "why": "near its asymptote the model curve is steep; a residual of a few tenths of a decade is expected there",
+       "advice": "a LOW level further above the fatigue limit"
+      },
+      {
+       "code": "single_specimen_level",
+       "severity": "minor",
+       "what": "single specimen at the LOW level (523.2 MPa), HIGH level (550.5 MPa)",
+       "why": "one specimen that disagrees with other data can bend the whole curve",
+       "advice": "more replicates at that level"
+      }
+     ]
+    }
+   },
+   "identity": {
+    "procedure": 2,
+    "implementation_revision": "2026-11-18",
+    "workbook_sha256": "78808b28fc8546bf3361b121c2f768dc5b4291be53b68b79d90e8cab1ece04dd",
+    "overlay_sha256": "664a0e3a3c547eee0893fce1abb564c2bb3f8116261b4fe8053544f30f98d50f",
+    "inputs_sha256": "6250fda8a903455338b7c072501eed1b034ecd7c614d5c1e5fdb464389056889"
+   },
+   "status": "calibrated",
+   "reason": ""
+  }
+ },
+ "source": {
+  "Sigm1_TVEIT": "fatigue limit (workbook Summary)",
+  "Taum1_TVEIT": "fatigue limit (workbook Summary)",
+  "A_TVEIT": "Goodman estimate A = Sigm1 / Su with Su = 980 MPa (Tveit et al. 2025, Sect. 4)",
+  "C_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures; C is not identified by uniaxial data: equivalent sets (E <= 1.05 E_min) span C 0.0001 to 3.16; the chosen C is the admissible one of lowest E",
+  "K_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+  "L_TVEIT": "TVEIT2025 Eq. (25), author procedure, on 3 axial R = -1 failures",
+  "npts_TVEIT": "time-integration setting checked by gate G2",
+  "min_blocks_TVEIT": "time-integration setting checked by gate G2",
+  "max_blocks_TVEIT": "time-integration setting checked by gate G2",
+  "tol_alpha_TVEIT": "time-integration setting checked by gate G2",
+  "tol_damage_TVEIT": "time-integration setting checked by gate G2"
+ },
+ "design_case_ids": {
+  "C_TVEIT": [
+   4,
+   0,
+   2
+  ],
+  "K_TVEIT": [
+   4,
+   0,
+   2
+  ],
+  "L_TVEIT": [
+   4,
+   0,
+   2
+  ]
+ },
+ "provenance": {
+  "created_utc": "2026-11-18T12:40:09+00:00",
+  "workbook": "Experimental_Data/1_Ti6Al4V_Meneghetti.xlsx",
+  "workbook_sha256": "78808b28fc8546bf3361b121c2f768dc5b4291be53b68b79d90e8cab1ece04dd",
+  "failures": 10,
+  "runouts": 0,
+  "assumptions_applied": {
+   "name": "1_Ti6Al4V_Meneghetti.overlay.json",
+   "sha256": "664a0e3a3c547eee0893fce1abb564c2bb3f8116261b4fe8053544f30f98d50f",
+   "base_sha256": "78808b28fc8546bf3361b121c2f768dc5b4291be53b68b79d90e8cab1ece04dd",
+   "operations": 21,
+   "expected_fingerprint": "c3b9a43f4f521b2f5d42196a14b61b824949dbed4b537e6b08d4fd247425871c"
+  },
+  "failure_fingerprint": "c3b9a43f4f521b2f5d42196a14b61b824949dbed4b537e6b08d4fd247425871c",
+  "multifat_version": "0.1.0.dev0",
+  "implementation_revision": "2026-11-18",
+  "git": {
+   "commit": "ff95a2859e44c658bf2b462b22ef836ad1f0bf95",
+   "dirty": false
+  },
+  "python": "3.11.9",
+  "numpy": "2.4.6",
+  "settings": {
+   "plane_grid": [
+    20,
+    40
+   ],
+   "refined_plane_search": true,
+   "master_curve_stdnum": 0.0,
+   "master_curve_survival_probability": 0.5,
+   "master_curve_model": "basquin",
+   "flat_curve_k_max": 15.0
+  }
+ },
+ "calibration_procedure": 2,
+ "calibration_id": "20261118T124009135687Z_16615341b336"
+}

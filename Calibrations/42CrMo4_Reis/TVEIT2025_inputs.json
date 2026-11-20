@@ -1,0 +1,6 @@
+{
+ "schema": "multifat/tveit2025-calibration-inputs/2",
+ "material_id": "42CrMo4_Reis",
+ "material_type": "steel",
+ "notes": "No fatigue limit at a mean stress is available, so A is the FKM estimate for steel (Tveit et al. 2025, Eq. 26) with the Summary Su."
+}

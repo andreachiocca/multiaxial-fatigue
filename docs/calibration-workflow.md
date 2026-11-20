@@ -120,6 +120,18 @@ prevents a successful record from being written. No default coefficient is silen
 > running on the constant's default value and the run report says so; the section below defines the
 > vocabulary that records it.
 
+**Constants a model calibrates by its own procedure.** A model whose constants follow the
+procedure of its own papers, not the scatter objective above, names them in `calibrated_params`
+and provides `calibrate_constants(workbook, data, material, progress=..., archives=...)`. When none
+of them is supplied, `multifat-pipeline` calls it after the plane constants (not with
+`--no-calibrate`): the result goes to the sidecar under `model_calibrations.<MODEL>` (status,
+reason, constants, sources, design tests, record and, optionally, a calibration confidence from
+`multifat.eval.calibration_confidence`); its constants join `params`, and its tests become design
+rows (Flag 0) of the models that adopt them. A calibration that cannot be made leaves the
+constants absent, so the model is skipped with the reason. The run report notes the confidence
+(`calibration confidence low (2 major, ...)`). TVEIT2025 is the first such model: see its
+[method guide](method-guides/TVEIT2025.md).
+
 ## Calibration status
 
 > **In this repository.** `multifat-calibrate` prints, and `<MATERIAL>_calibration.json` stores as

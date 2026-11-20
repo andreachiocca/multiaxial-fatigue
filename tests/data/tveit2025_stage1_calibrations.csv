@@ -1,0 +1,10 @@
+# Stage-1 TVEIT2025 calibrations (hand-entered constants of Calibrations/<material>/TVEIT2025_stage1.json).
+# Repository records, not paper numbers. f_m1 and A are the stage-1 inputs (earlier workbook values), and
+# source is the source of their calibration tests; the current calibration uses each workbook's own limits.
+# E_stage1: Eq. (25) of the stage-1 constants on the three points; E_min_stage1: the lowest Eq. (25)
+# over the stage-1 fits (MATLAB fmincon, 60 starts, rng(2026), plus 30 L-BFGS-B starts), which the
+# repository fit must reach. Points: LOW, MID, HIGH of the three-point rule, as specimen:sigma_a:N.
+material,workbook,source,f_m1,A,C,K,L,E_stage1,E_min_stage1,points
+Al7075_T6,Al7075_T6.xlsx,Pedranz,150,0.409090909090983,0.0058810706677093,4.78973967061803e-06,2.65517174595015,0.000574765487113,0.0005745632288014,Plain_axial_3:170:529531|Plain_axial_1:190:322262|Plain_axial_12:230:73200
+42CrMo4_Santus,6_42CrMo4_Santus.xlsx,Benedetti,433,0.245625,0.0040672184319305,1.91047799401683e-05,10.1293188952565,0.0077830272693749,0.0077814612214996,Plain_axial_24:450:274825|Plain_axial_20:500:147470|Plain_axial_31:600:3620
+Ti6Al4V_Berto,15_Ti6Al4V_Berto.xlsx,Berto,500,0.510725229826353,0.0024530336099279,2.09182156413546e-05,2.39874133089254,0.0048501259022817,0.0048495286520689,Axial_Plain_8:510.766978103797:602214.6719323|Axial_Plain_4:613.477174240674:138140.084016818|Axial_Plain_1:822.468669772594:11031.3528048772

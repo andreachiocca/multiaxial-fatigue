@@ -41,6 +41,18 @@ C K L
 # maximum number of repeated cycles, and the stationarity tolerances of back-stress and damage.
 n_points min_blocks max_blocks tol_alpha tol_damage
 
+# Calibration of Tveit et al. (2025), Eq. (25) with the closed form of Ottosen et al. (2008): the
+# calibration tests (sigma_m, sigma_a, N_exp), a candidate (C, K, L) set and the candidate tests,
+# the root-uniqueness gate, the optional inputs file, its path and hash, the workbook properties,
+# the time-integration settings, the axial tests, failures and their sources, the fatigue limits
+# and a declared source, the identity of a calibration and the record folders searched for it,
+# and a progress callback.
+points candidate candidates check_unique inputs path inputs_sha256 properties settings tests
+failures sources limits declared identity folders archives progress
+
+# Confidence of a calibration (multifat.eval.calibration_confidence): its findings and summary.
+findings confidence
+
 # Shear-amplitude algorithm choice, the harmonic arrays of a plane history, and the scalar
 # argument of the exact-power helper.
 algorithm cosine sine shear_amplitude_algorithm cos sin x

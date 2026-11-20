@@ -51,12 +51,23 @@ d\beta = \frac{\mathbf G:d\mathbf s + A\,dI_1}{\fm + C\,\mathbf G:(\mathbf s-\bo
 \end{gather}
 Starting from $\boldsymbol\alpha=\mathbf 0$ and $D=0$, the number of cycles to $D=1$ is the life.
 
-\block{Constants and calibration} Paper: $C$, $K$, $L$ are calibrated with Eq.~(25), after Ottosen et al.\
-\cite{ottosen2008}. Repository: this calibration is not implemented. $A$, $C$, $K$, $L$ are required
-constants (\texttt{A\_TVEIT}, \texttt{C\_TVEIT}, \texttt{K\_TVEIT}, \texttt{L\_TVEIT}) read from a
-\texttt{--constants} file; a dataset without them is skipped. The constants hold only with the $\fm$,
-$\tm$ they were calibrated with, so the file may also set \texttt{Sigm1\_TVEIT} and
-\texttt{Taum1\_TVEIT}, which replace the workbook \texttt{Sigm1}, \texttt{Taum1} for this model only.
+\block{Constants and calibration} Paper: $\fm$, $\tm$ from fully reversed tests; $A$ from a fatigue
+limit at a tensile mean stress (Eqs.~22--23), else an estimate (FKM, Eq.~26); $C$, $K$, $L$ by
+Eq.~(25) on three failures of the axial $R=-1$ S--N curve, after Ottosen et al.\ \cite{ottosen2008}.
+Repository: without supplied constants, \texttt{multifat-pipeline} calibrates \texttt{A\_TVEIT},
+\texttt{C\_TVEIT}, \texttt{K\_TVEIT} and \texttt{L\_TVEIT} by this procedure
+(\texttt{eval/tveit2025\_calibration.py}). The limits are the workbook Summary values; $A$ comes, in
+this order, from a mean-stress fatigue limit, a hand-entered value, FKM for a declared material type,
+or Goodman, $A=\fm/S_u$; the three points are the lowest and highest stress levels above $\fm$ and the
+level closest to their geometric mean (the median replicate at each), and they become design rows.
+Uniaxial data do not identify $C$, so Eq.~(25) is profiled over $C$ (8 values per decade) and the grid
+point of lowest error is kept whose closed form has a unique root and whose time-integrated life agrees
+with it within 0.1 decade. Each calibration reports a confidence (high, medium, low) from named
+findings. A \texttt{--constants} file takes precedence; it may also set \texttt{Sigm1\_TVEIT} and
+\texttt{Taum1\_TVEIT}, which replace the workbook \texttt{Sigm1}, \texttt{Taum1} for this model only,
+since the constants hold only with the $\fm$, $\tm$ they were calibrated with. The calibration runs only
+when none of the model's parameters is entered by hand (constants file or Summary); with only some of
+them entered, the model is skipped with the reason.
 
 \block{Life} Native life law: the integration of Eqs.~\eqref{eq:tveit-beta}--\eqref{eq:tveit-dbeta} to
 $D=1$ (\texttt{life\_prediction = "native"}); $N_f=\infty$ when the path is enclosed by the moved

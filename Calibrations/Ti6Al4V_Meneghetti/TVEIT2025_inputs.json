@@ -1,0 +1,6 @@
+{
+ "schema": "multifat/tveit2025-calibration-inputs/2",
+ "material_id": "Ti6Al4V_Meneghetti",
+ "material_type": "titanium alloy",
+ "notes": "No fatigue limit at a mean stress is available and the FKM guideline gives no values for titanium alloys, so A is the Goodman estimate Sigm1/Su, as Tveit et al. (2025, Sect. 4) do where FKM gives none."
+}
