@@ -70,6 +70,9 @@
   the snapshot was not repeated. Full suite 3549 passed, 67 skipped, 128 xfailed; the 8 failures
   were the S-N tests without scipy, which pass (9/9) once scipy 1.15.3 (the locked version) is
   installed; scipy is imported only by `eval/sn_curves.py`, outside the snapshot's default path.
+- 20 November: main `f3f23d5` (#123, Palmgren and Bastenaire S-N models: `eval/sn_curves.py`,
+  its tests and docs only; no revision bump) merged in; lint 6/6; S-N, notation and TVEIT2025
+  tests pass.
 - Evidence (16 November, main `904e1f1` merged in; conflicts only in CHANGELOG and this file):
   full suite 3443 passed, 67 skipped, 128 xfailed; black, ruff, both generators (--check),
   check_docs and check_scientific_reviews pass. Regression snapshot against main `904e1f1` (main
@@ -103,6 +106,19 @@
   (#14); a faster integration (compiled loop or parallel tests) in its own PR, with
   a resolution check (the three points again at twice npts_TVEIT; minor finding when the life
   moves by more than 0.05 decade).
+
+## Issue #38 completion: Palmgren and Bastenaire master-curve models (18 November 2026)
+
+- Branch `feat/sn-palmgren-bastenaire` from `main` (`b3c2da3`, includes PR #122).
+- Implemented Decision d117:
+  - Added Palmgren ($\mathrm{DP} = a(N + B)^b + \mathrm{DP}_\infty$, $p = 4$) and Bastenaire ($N = \frac{A}{\mathrm{DP} - \mathrm{DP}_\infty}\exp[-\alpha(\mathrm{DP} - \mathrm{DP}_\infty)]$, $p = 3$) master-curve models to `multifat.eval.sn_curves`.
+  - Implemented closed-form evaluation of Bastenaire damage parameter $\mathrm{DP}(N)$ using the principal branch of the Lambert $W$ function: $\mathrm{DP}(N) = \mathrm{DP}_\infty + \frac{1}{\alpha} W_0\left(\frac{\alpha A}{N}\right)$, achieving machine-precision round-trip inversion ($< 10^{-15}$).
+  - Supported both bounded nonlinear least squares and Tobit-type censored log-likelihood MLE with design run-outs across all four nonlinear models (`kohout_vechet`, `stromeyer`, `palmgren`, `bastenaire`), maintaining the physical bound $\mathrm{DP}_\infty \le \min(\mathrm{DP}_{\text{failures}}) - 10^{-6}$.
+  - Enforced strict identifiability guards: Palmgren requires $\ge 2p = 8$ tests and low-cycle data to identify the offset $B$; on datasets without low-cycle observations (e.g. AISI 316L HCF data) the fit is rejected with singular covariance or parameter on bound, never silently falling back to Basquin.
+  - Added comprehensive unit tests in `tests/test_sn_curves.py` (all 13 tests passing).
+- Checks: `ruff`, `black`, `tools/generate_method_docs.py --check`, `tools/generate_workbook_docs.py --check`, `tools/check_docs.py`, `pytest tests/test_sn_curves.py tests/test_notation.py -q`.
+- Next action: PR closing Issue #38.
+
 
 ## Issue #57: Relative RMS load error ranking, complexity axis and family-wise selection rule (18 November 2026)
 

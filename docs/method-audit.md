@@ -102,24 +102,30 @@ to life (`multifat.eval.sn_curves`), fitted on ln DP of the uniaxial R = -1 desi
 |---|---|---|---|
 | `basquin` (default) | DP = A N^b | A, b | Basquin; the established fit, bit for bit |
 | `kohout_vechet` | DP = DP_inf (N/(N+C))^b | DP_inf, C, b | Kohout & Vechet (2001), Eq. (H2), doi:10.1016/S0142-1123(00)00082-7 |
-| `stromeyer` | DP = a N^b + DP_inf | a, b, DP_inf | Stromeyer |
+| `stromeyer` | DP = a N^b + DP_inf | a, b, DP_inf | Stromeyer (1914) |
+| `palmgren` | DP = a (N+B)^b + DP_inf | a, b, B, DP_inf | Palmgren (1924, 1945) |
+| `bastenaire` | N = A / (DP - DP_inf) exp[-alpha (DP - DP_inf)] | A, alpha, DP_inf | Bastenaire (1960, 1971); exact inverse DP(N) via Lambert W |
 
 Nonlinear fits use `scipy.optimize.least_squares` (trust-region, bounded) and, when design run-outs
 are present, bounded maximum likelihood with a Tobit-type censored log-likelihood
-(`scipy.optimize.minimize`, L-BFGS-B). Starting points are derived from the Basquin fit. Kohout &
-Vechet and Stromeyer originally formulated their models for uniaxial stress sigma; in multifat the
-master curve maps an arbitrary Damage Parameter DP to life, so the fatigue-limit asymptote is
-DP_inf having the units of the evaluated DP (`sigma_inf` is kept as a backward-compatible alias).
+(`scipy.optimize.minimize`, L-BFGS-B). Starting points are derived from the Basquin fit. Master-curve
+models originally formulated for uniaxial stress sigma map an arbitrary Damage Parameter DP to life
+in multifat, so the fatigue-limit asymptote is DP_inf having the units of the evaluated DP (`sigma_inf`
+is kept as a backward-compatible alias).
 A physical upper bound DP_inf < min(DP_failures) prevents low-stress failures from being predicted
 as infinite lives. A fit is rejected with its reason (the model is then skipped, never silently
-replaced by Basquin) with fewer than 2p design tests, without convergence, with a parameter on a
-search bound (b in [-3, 0), C in [1e2, 1e12]) or with a singular covariance. Below DP_inf the
-predicted life is infinite: it is written as `inf`, counted in the run report and in the
-`n_nonfinite` column of the statistics, and has no life error but a load error. The Kohout &
-Vechet whole-range form (W) is not offered: it needs low-cycle data or the strength sigma_1, which
-has no counterpart for an arbitrary DP. Plane constants (k_FI, k_FS, ...) are still calibrated on
-the Basquin scatter objective, and native life laws (MDC, MMCCM, MOREL, TVEIT2025) and the
-Basquin constants of their own formulations are not affected. Every CSV records `SN_model`, the
+replaced by Basquin) with fewer than 2p design tests (4 for Basquin, 6 for Kohout-Vechet, Stromeyer,
+Bastenaire, 8 for Palmgren), without convergence, with a parameter on a search bound (b in [-3, 0),
+C in [1e2, 1e12], B in [1e-2, 1e8]) or with a singular covariance. Below DP_inf the predicted life
+is infinite: it is written as `inf`, counted in the run report and in the `n_nonfinite` column of the
+statistics, and has no life error but a load error. The Kohout & Vechet whole-range form (W) is not
+offered: it needs low-cycle data or the strength sigma_1, which has no counterpart for an arbitrary DP.
+Palmgren incorporates a cycle offset B rounding the curve towards static strength at N = 0; without
+low-cycle tests B cannot be identified and the fit is rejected. Bastenaire combines hyperbolic behavior
+near DP_inf with exponential acceleration at high stress; its exact inverse DP(N) is computed in closed
+form via the principal branch of the Lambert W function. Plane constants (k_FI, k_FS, ...) are still
+calibrated on the Basquin scatter objective, and native life laws (MDC, MMCCM, MOREL, TVEIT2025) and
+the Basquin constants of their own formulations are not affected. Every CSV records `SN_model`, the
 sidecar `master_curve_model`; `multifat-compare` refuses mixed models.
 
 **Known problems (checked on AISI316L and Al7075_T6, FIN, SWT, CROSSLAND, BP, PCR, MOREL):**

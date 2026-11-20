@@ -48,6 +48,15 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 - Changed numerically: TVEIT2025 now runs, with calibrated constants, in pipeline runs without
   `--constants` (it was skipped for missing constants); no other model changes.
 
+### Palmgren and Bastenaire master-curve models (issue #38, decision d117)
+
+- Added Palmgren ($\mathrm{DP} = a(N + B)^b + \mathrm{DP}_\infty$, $p = 4$) and Bastenaire ($N = \frac{A}{\mathrm{DP} - \mathrm{DP}_\infty}\exp[-\alpha(\mathrm{DP} - \mathrm{DP}_\infty)]$, $p = 3$) master-curve models to `multifat.eval.sn_curves`.
+- Implemented closed-form evaluation of Bastenaire damage parameter $\mathrm{DP}(N)$ using the principal branch of the Lambert $W$ function: $\mathrm{DP}(N) = \mathrm{DP}_\infty + \frac{1}{\alpha} W_0\left(\frac{\alpha A}{N}\right)$, achieving machine-precision round-trip inversion ($< 10^{-15}$).
+- Supported both bounded nonlinear least squares and Tobit-type censored log-likelihood MLE with design run-outs across all four nonlinear models (`kohout_vechet`, `stromeyer`, `palmgren`, `bastenaire`), maintaining the physical bound $\mathrm{DP}_\infty \le \min(\mathrm{DP}_{\text{failures}}) - 10^{-6}$.
+- Enforced strict identifiability guards: Palmgren requires $\ge 2p = 8$ tests and low-cycle data to identify the offset $B$; on datasets without low-cycle observations (e.g. AISI 316L HCF data) the fit is rejected with singular covariance or parameter on bound, never silently falling back to Basquin.
+- Added comprehensive unit tests in `tests/test_sn_curves.py` covering parameter recovery, asymptotic limits, round-trip inverses, survival shifts, unidentifiability diagnostics, and pipeline integration.
+
+
 ### Relative RMS load error ranking, complexity axis and family selection (issue #57, decision d116)
 
 - Established the relative RMS load error against the material median as the cross-material accuracy KPI

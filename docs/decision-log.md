@@ -621,5 +621,18 @@ ledgers.
 * **Rationale:** RMS load error combines bias and scatter in physical ln-load units. Scoring relative to the material median prevents dataset difficulty or sample size from dominating the ranking. Complexity counting by experimental characterisation classes approximates the testing cost of introducing a new material. The 1-SE selection rule provides a principled, reproducible, Occam's-razor criterion for identifying top-performing methods.
 * **Effect:** No numerical changes to existing simulation pipelines or calibrated constants. Registered models expose `fitted_constants` and `input_classes`. Users and review article analyses can generate cross-material rankings and family selections reproducible across pipelines.
 
+### d117
+* **Date:** 2026-11-18
+* **Topic:** Palmgren and Bastenaire master-curve models with Lambert W exact inversion (issue #38)
+* **Status:** Active
+* **Decision:**
+  1. Add `palmgren` ($\mathrm{DP}(N) = a(N + B)^b + \mathrm{DP}_\infty$, $p = 4$) and `bastenaire` ($N(\mathrm{DP}) = \frac{A}{\mathrm{DP} - \mathrm{DP}_\infty} \exp[-\alpha(\mathrm{DP} - \mathrm{DP}_\infty)]$, $p = 3$) to the master-curve suite in `multifat.eval.sn_curves`.
+  2. Implement closed-form evaluation of Bastenaire damage parameter $\mathrm{DP}(N)$ via the principal branch of the Lambert $W$ function: $\mathrm{DP}(N) = \mathrm{DP}_\infty + \frac{1}{\alpha} W_0\left(\frac{\alpha A}{N}\right)$ (reducing to $\mathrm{DP}_\infty + \frac{A}{N}$ as $\alpha \to 0$), achieving machine-precision round-trip inversion ($< 10^{-15}$).
+  3. Support both bounded nonlinear least squares on $\ln\mathrm{DP}$ and Tobit-type censored log-likelihood MLE with design run-outs across all four nonlinear models (`kohout_vechet`, `stromeyer`, `palmgren`, `bastenaire`), maintaining the physical bound $\mathrm{DP}_\infty \le \min(\mathrm{DP}_{\text{failures}}) - 10^{-6}$.
+  4. Enforce identifiability guards: Palmgren requires $\ge 2p = 8$ tests and low-cycle data to identify the offset $B$; on datasets without low-cycle observations (such as AISI 316L HCF data) the fit is rejected with singular covariance or parameter on bound, never silently falling back to Basquin.
+* **Rationale:** Completes the planned master-curve models in Issue #38. Palmgren captures low-cycle curvature towards static strength while retaining a high-cycle endurance limit. Bastenaire captures hyperbolic endurance behavior with exponential acceleration at high stresses, avoiding power-law slope artifacts without numerical root-finding.
+* **Effect:** Default Basquin regression is bit-for-bit unchanged. CLI tools `--sn-model {basquin,kohout_vechet,stromeyer,palmgren,bastenaire}` accept the new models.
+
+
 
 
