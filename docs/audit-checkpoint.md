@@ -16,7 +16,15 @@
   infinite life, because the minus variant cancels (out-of-phase life about 50 times the
   in-phase one at 465 MPa) and its tau_a/sigma_a differs slightly from the group mean. Reported to
   the maintainer as an open point.
-- Next action: regression snapshot main vs branch, full suite, commit, PR.
+- Regression snapshot `main` (`f3f23d5`) vs branch (`11b0129`): no existing output changed. Only
+  the new `BOLCHOUN*` CSVs (Reis, FABEST) differ, together with the appended out-of-phase keys in
+  `<MAT>_calibration.json` and the volatile fields (paths, timestamps, ids, timings).
+  Al7075_T6 has an identifiable out-of-phase curve, but BOLCHOUN is skipped there as
+  `LoadingScopeError`, because the workbook contains tests with a mean stress. The script stage
+  exits 1 for BOLCHOUN without the calibrated out-of-phase constants, as FS/FIN do.
+- Full suite: 3514 passed; the 2 failures were the homepage ranking and the batch-comparison data,
+  which are being regenerated with the commands in their docstrings.
+- Next action: commit the regenerated data, push, PR.
 
 ## Issue #38 completion: Palmgren and Bastenaire master-curve models (18 November 2026)
 
