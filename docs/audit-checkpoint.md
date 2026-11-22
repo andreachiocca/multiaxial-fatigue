@@ -1,5 +1,23 @@
 # Development continuation checkpoint
 
+## BOLCHOUN, roadmap N53 (22 November 2026)
+
+- Branch `feat/bolchoun-criterion` from `main` (`f3f23d5`).
+- Maintainer decisions (22 Nov): out-of-phase curve fitted on the dataset's most populated fully
+  reversed out-of-phase path (its tests are design points); axial and torsion curves = Basquin
+  without knee, Eq. (11) at N_k = 1e6; minus-sign variant of Eq. (15) when out of phase is less
+  damaging; mean stresses out of scope.
+- Implemented `models/integral_methods/bolchoun.py`, `eval/material_fits.out_of_phase_fill`
+  (mean tau_a/sigma_a and phase of the group, not the rounded key), constants fill in
+  `cli/calibrate.py`, suppliable keys in `cli/pipeline.py`, registry, references, notation rows,
+  guide, LaTeX sheet, audit row, catalogue N53, load-histories row, CHANGELOG.
+- Results: runs on 42CrMo4_Reis and 42CrMo4_FABEST only. On the calibration path the model
+  returns the out-of-phase curve exactly (1e-10). Reis: one out-of-phase design test gets an
+  infinite life, because the minus variant cancels (out-of-phase life about 50 times the
+  in-phase one at 465 MPa) and its tau_a/sigma_a differs slightly from the group mean. Reported to
+  the maintainer as an open point.
+- Next action: regression snapshot main vs branch, full suite, commit, PR.
+
 ## Issue #38 completion: Palmgren and Bastenaire master-curve models (18 November 2026)
 
 - Branch `feat/sn-palmgren-bastenaire` from `main` (`b3c2da3`, includes PR #122).

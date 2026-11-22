@@ -152,6 +152,7 @@ constants are missing is skipped and reported; the other models still run.
 | ZHANGYAO | `Sigm1`, `Taum1` | `Su`: needed only when a plane carries a mean normal stress |
 | KUJAWSKI2021 | - | - |
 | BP | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Tau0`: Boehme et al. 2026 Eq. (2); `Su`: only to estimate Sig0 |
+| BOLCHOUN | `b0`, `b_OP`, `b_fat`, `delta_OP`, `lambda_OP`, `sigma_f`, `sigma_f_OP`, `tau_f` | - |
 | CAIM | `Sigm1`, `Taum1` | `Sig0`: Boehme et al. 2026 Eq. (1) from Su and Sigm1; `Tau0`: Boehme et al. 2026 Eq. (2); `Su`: only to estimate Sig0 |
 | SWTD | - | - |
 | OTT | `Sigm1`, `Taum1` | `m_OTT`: m(kappa = Taum1/Sigm1), not allowed to exceed 2.767; `A_OTT`: 2 Sigm1/Sig0 - 1; `Sig0`: Boehme et al. 2026 Eq. (1), obtained from Su and Sigm1; `Su`: used only for estimating Sig0 |

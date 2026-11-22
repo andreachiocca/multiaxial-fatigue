@@ -1,0 +1,89 @@
+% registry: BOLCHOUN
+\methodhead{BOLCHOUN}{Bolchoun, Baumgartner and Kaufmann: substitute amplitude and out-of-phase damage}\label{sheet:BOLCHOUN}
+
+\block{Source} A.~Bolchoun, J.~Baumgartner, H.~Kaufmann, \emph{Int.\ J.\ Fatigue} (2017),
+accepted manuscript \cite{bolchoun2017}, Eqs.~(4)--(15), Sections~2--5 and~8.
+
+\block{Idea and scope} Integral approach with its own life law. A cycle is expressed by one
+substitute amplitude, the integral of the normal stress amplitudes over all planes. Its in-phase
+damage is read on a W\"ohler curve interpolated between the axial and torsion curves by the ratio
+of the largest shear and normal amplitudes. The effect of rotating shear vectors is measured by
+the area they sweep over all planes, $F_{OP}$, and turned into an extra damage calibrated on one
+experimental out-of-phase curve. Proposed for variable-amplitude in-phase and out-of-phase
+loading of thin-walled welded magnesium tubes (notch stress approach, $r_{ref}=0.05$\,mm).
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\mathbf n$ & -- & plane normal on the unit hemisphere, $d\mathbf n=\cos\psi\,d\theta\,d\psi$\\
+$\sigma_{n,a}$ & MPa & normal stress amplitude on the plane, $\sqrt{2\,\mathrm{Var}(\sigma_n)}$\\
+$\boldsymbol\tau_{n,0}(t)$ & MPa & shear stress vector on the plane minus its mean\\
+$\tau_{max,a}$, $\sigma_{max,a}$ & MPa & largest shear and normal stress amplitudes\\
+$\sigma_f,b$; $\tau_f,b_0$ & MPa, -- & Basquin constants of the R $=-1$ axial and torsion curves\\
+$\sigma_{f,OP},b_{OP}$ & MPa, -- & Basquin constants of the out-of-phase curve (axial amplitude)\\
+$\lambda,\delta$ & --, deg & ratio $\tau_a/\sigma_a$ and phase of the out-of-phase path\\
+$\sigma_{a,s}$ & MPa & substitute stress amplitude, Eq.~\eqref{eq:bol-sas}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} Out-of-phase measure (Eq.~9), interpolation factor and curve (Eq.~11) and
+substitute amplitude (Eq.~12):
+\begin{gather}
+F_{OP}=\frac12\int_{t_1}^{t_2}\!\!\iint_{\mathbf n}\bigl\|\boldsymbol\tau_{n,0}\times\dot{\boldsymbol\tau}_{n,0}\bigr\|\,d\mathbf n\,dt,\qquad
+f_I=\frac{\tau_{max,a}}{\sigma_{max,a}},\quad\tfrac12\le f_I\le1,\\
+X=2\Bigl[X_{ax}(1-f_I)+X_{tors}\bigl(f_I-\tfrac12\bigr)\Bigr],\quad X=k,\ N_k,\ L_k,\qquad
+\sigma_{a,s}=\iint_{\mathbf n}\sigma_{n,a}\,d\mathbf n .\label{eq:bol-sas}
+\end{gather}
+The out-of-phase damage (Eq.~14) compares the experimental out-of-phase curve with the in-phase
+curve interpolated at its $f_{I,OP}$; the damage of a cycle is Eq.~(15), or its minus-sign variant
+(Section~8) when out-of-phase loading is less damaging:
+\begin{equation}
+D_{OP}\bigl(F_{OP}(\sigma_{a,s})\bigr)=\sqrt{D_{total}^2-D_{IP}^2},\qquad
+D_{total,C}=\sqrt{D_{IP,C}^2\pm\bigl(D_{OP,C}^{\,k_{I,C}/k_{I,OP}}\bigr)^2}.
+\end{equation}
+For one harmonic, Eq.~(9) is the area of the shear ellipses,
+$F_{OP}=\iint_{\mathbf n}\pi\,\|\boldsymbol\tau_s\times\boldsymbol\tau_c\|\,d\mathbf n$.
+
+\block{Constants and calibration} Axial, torsional and one out-of-phase W\"ohler curve in
+$\sigma_{a,s}$. In the repository the axial and torsion curves are the Basquin fits on the R $=-1$
+failures (workbook values first), converted by the unit factors $2\pi/3$ (tension) and $8/3$
+(torsion). The out-of-phase curve is the Basquin fit on the most populated fully reversed
+out-of-phase tension--torsion path of the dataset (5 tests, 1 decade, slope distinct from 0); its
+tests are design points and the model is skipped without such a path.
+
+\block{Life} Native. Paper: Palmgren--Miner with Haibach's slope $2k-2$ below the knee,
+$N=L_S D_{al}/D_{total}$. Repository: constant amplitude, $N=1/D_{total,C}$.
+
+\block{Repository choices}
+\begin{itemize}
+\item Constant amplitude, one harmonic: no rainflow counting, no Miner sum, no Haibach slope,
+  $D_{al}=1$.
+\item Basquin curves without a knee; Eq.~(11) interpolates $k=-1/b$ and $L_k$ at $N_k=10^6$
+  (maintainer decision).
+\item Out-of-phase curve fitted on the dataset; $D_{OP}(F)$ evaluated exactly on that path at the
+  amplitude with the same $F_{OP}$ (maintainer decision).
+\item Minus-sign variant when $D_{total}<D_{IP}$ on the out-of-phase curve, decided at the
+  amplitude of each cycle; $D_{total,C}^2\le0$ is an infinite life (maintainer decision). On the
+  calibration path Eq.~(15) returns the out-of-phase curve exactly; far above the in-phase curve
+  the two terms nearly cancel and a small change of $f_I$ can give an infinite life.
+\item Mean stresses out of scope, as in the paper (maintainer decision).
+\item $\tau_{max,a}$ is the major semi-axis of the shear ellipse (the Maximum Variance Method
+  value for one harmonic); maxima refined on a $48\times96$ sphere grid, also used for the
+  hemisphere integrals. $f_I<\tfrac12$ uses the axial curve, $f_I>1$ the torsion curve.
+\end{itemize}
+
+\block{Worked example} Illustrative steel: $\sigma_f=1154$\MPa, $b=-0.061$, $\tau_f=940$\MPa,
+$b_0=-0.065$; out-of-phase curve $\sigma_{f,OP}=773$\MPa, $b_{OP}=-0.036$ on a $90^\circ$ path with
+$\lambda=0.577$. At $\sigma_a=500$\MPa: tension $\sigma_{a,s}=1047.2$\MPa, $f_I=0.5$,
+$N=450\,459$; in phase with $\tau_a=0.577\sigma_a$, $\sigma_{a,s}=1244.5$\MPa, $f_I=0.604$,
+$N=25\,784$; at $90^\circ$, $\sigma_{a,s}=1403.2$\MPa, $F_{OP}=356\,172$\,MPa$^2$, $f_I=0.577$,
+$N=90\,113$, the out-of-phase curve itself (minus-sign variant).
+
+\block{Verification} Checked: the unit factors of Eq.~(12); Eq.~(9) against the time integral and
+zero for proportional loading; $f_I$ end points and its proportional closed form; Eq.~(11) end
+points; tension and torsion return their Basquin curves; Eqs.~(14)--(15) return the out-of-phase
+curve on its own path with either sign. The paper tabulates no per-test value for a reproducible
+stress state.

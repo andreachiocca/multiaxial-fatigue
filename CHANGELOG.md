@@ -6,6 +6,22 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### BOLCHOUN: substitute amplitude and out-of-phase damage (roadmap N53)
+
+- Added `BOLCHOUN`, Bolchoun, Baumgartner & Kaufmann (2017), constant-amplitude branch with a native
+  life: substitute amplitude $\sigma_{a,s} = \iint_{\mathbf n}\sigma_{n,a}\,d\mathbf n$ (Eq. 12),
+  out-of-phase measure $F_{OP}$ (Eq. 9, exact ellipse area for one harmonic), Woehler curve
+  interpolation by $f_I = \tau_{max,a}/\sigma_{max,a}$ (Eq. 11), and
+  $D_{total,C}^2 = D_{IP,C}^2 \pm D_{OP,C}^{2k_{I,C}/k_{I,OP}}$ (Eqs. 14-15, minus sign of Section 8 when
+  out-of-phase loading is less damaging).
+- The pipeline fits the out-of-phase Woehler curve on the most populated fully reversed out-of-phase
+  tension-torsion path of a dataset (`eval/material_fits.out_of_phase_fill`, constants `sigma_f_OP`,
+  `b_OP`, `lambda_OP`, `delta_OP`); its tests become design points. Mean stresses are out of scope.
+- Runs on 42CrMo4_Reis and 42CrMo4_FABEST; other datasets skip it (means, or no identifiable path).
+  Existing models' outputs are unchanged.
+- Guide `docs/method-guides/BOLCHOUN.md`, LaTeX sheet, audit row, catalogue N53, tests
+  `tests/methods/test_bolchoun.py`.
+
 ### Palmgren and Bastenaire master-curve models (issue #38, decision d117)
 
 - Added Palmgren ($\mathrm{DP} = a(N + B)^b + \mathrm{DP}_\infty$, $p = 4$) and Bastenaire ($N = \frac{A}{\mathrm{DP} - \mathrm{DP}_\infty}\exp[-\alpha(\mathrm{DP} - \mathrm{DP}_\infty)]$, $p = 3$) master-curve models to `multifat.eval.sn_curves`.

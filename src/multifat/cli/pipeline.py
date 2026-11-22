@@ -399,7 +399,7 @@ def _absent_suppliable_constants(
 ) -> set[str]:
     """Constants a selected model needs, calibration can supply, and the workbook does not have."""
     from multifat.cli.calibrate import CALIBRATED
-    from multifat.eval.material_fits import BASQUIN_KEYS, PLASTIC_KEYS
+    from multifat.eval.material_fits import BASQUIN_KEYS, OP_CURVE_KEYS, PLASTIC_KEYS
     from multifat.models.registry import get_models, stress_only_models
 
     if data is None:
@@ -407,7 +407,7 @@ def _absent_suppliable_constants(
     else:
         material = material_id(workbook.stem)
     params = runmod.build_params(runmod.exp.get_material_properties(data, material))
-    supplied = set(CALIBRATED.values()) | set(BASQUIN_KEYS) | set(PLASTIC_KEYS)
+    supplied = set(CALIBRATED.values()) | set(BASQUIN_KEYS) | set(PLASTIC_KEYS) | set(OP_CURVE_KEYS)
     absent = {name for name in supplied if params.get(name) is None}
     if params.get("E") is None or params.get("nu") is None:  # strain models are skipped anyway
         names = [name for name in names if name in stress_only_models()]
@@ -1046,9 +1046,9 @@ def _evaluate_fatigue_limit(workbook: Path, material: str, requests, dest: Path,
 def _calibratable_keys() -> set[str]:
     """Constants the pipeline can calibrate or fit when a workbook does not provide them."""
     from multifat.cli.calibrate import CALIBRATED
-    from multifat.eval.material_fits import BASQUIN_KEYS, PLASTIC_KEYS
+    from multifat.eval.material_fits import BASQUIN_KEYS, OP_CURVE_KEYS, PLASTIC_KEYS
 
-    return set(CALIBRATED.values()) | set(BASQUIN_KEYS) | set(PLASTIC_KEYS)
+    return set(CALIBRATED.values()) | set(BASQUIN_KEYS) | set(PLASTIC_KEYS) | set(OP_CURVE_KEYS)
 
 
 def _eligibility_status(outcome: Outcome, calibrate: bool) -> str:

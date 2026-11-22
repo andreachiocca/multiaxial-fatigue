@@ -18,7 +18,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | --- | --- | --- | --- | --- | --- |
 | Critical plane | 12 | 1 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Integral and hybrid | 8 | 0 | 1 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
+| **TOTAL** | 47 | 2 | 65 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
@@ -50,7 +50,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [N03](../../METHODS.md#n03) | Papadopoulos, specified 2001 formulation | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N15](../../METHODS.md#n15) | Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N50](../../METHODS.md#n50) | Grubisic–Simbürger formulation | Not implemented | not_tested | Low | Yes |
-| [N53](../../METHODS.md#n53) | Substitute-amplitude/NP-damage method, CA branch | Not implemented | not_tested | Medium | Yes |
+| [N53](../../METHODS.md#n53) | Substitute-amplitude/out-of-phase damage method (Bolchoun-Baumgartner-Kaufmann), CA branch | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [G02](../../METHODS.md#g02) | Papuga–Růžička integral criterion (PI; later PIN) | Fully implemented | reference_examples_reproduced | High | Yes |
 | [G41](../../METHODS.md#g41) | Robert–Fogue–Bahuaud integral life criterion | Fully implemented | reference_examples_reproduced | High | Yes |
 | [L01](../../METHODS.md#l01) | Kenmeugne–Vidal-Salle–Robert–Bahuaud selective integral (Fatigue 1996) | Not implemented | not_tested | Low | unresolved_lead |
@@ -226,36 +226,36 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 ### N53
 
-**Substitute-amplitude/NP-damage method, CA branch** — Alexandre Bolchoun, Jörg Baumgartner, Heinz Kaufmann (2017)
+**Substitute-amplitude/out-of-phase damage method (Bolchoun-Baumgartner-Kaufmann), CA branch** — Alexandre Bolchoun, Jörg Baumgartner, Heinz Kaufmann (2017)
 
 | Field | Evidence / task |
 | --- | --- |
 | Primary / secondary family | Integral and hybrid;  |
-| Record / counting | method_candidate; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
+| Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | A new method for fatigue life evaluation under out-of-phase variable amplitude loadings and its application to thin-walled magnesium welds, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/j.ijfatigue.2017.01.012 |
 | Reference evidence | Exact-title Crossref metadata checked; inherited prior-review method attribution; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Prior-review preliminary; obtain original paper before coding |
-| Principle | Orientation-integrated substitute amplitude plus NP damage factor and interpolated Wöhler response; repeated CA P/NP, L. |
-| Loading scope | Orientation-integrated substitute amplitude plus NP damage factor and interpolated Wöhler response; repeated CA P/NP, L. |
-| Inputs / material parameters | S; axial, torsional and out-of-phase Wöhler curves; mean-stress handling as published. |
-| Output | Orientation-integrated substitute amplitude plus NP damage factor and interpolated Wöhler response; repeated CA P/NP, L. |
-| Implementation / evidence | Not implemented; preliminary_literature_assessment |
-| Validation / evidence | not_tested; See prior feasibility assessment |
-| Python implementation | None;  |
-| Automated tests | None for this candidate |
-| Limitations | Distinguishes intrinsic NP sensitivity from simple amplitude equivalence; validated on magnesium welds, broader transfer needs data. |
+| Formulation evidence | Checked against the accepted manuscript of Bolchoun, Baumgartner & Kaufmann (2017), Eqs. (4)-(15), Sections 2-5 and 8 (2026-11-22); Eq. (15) and its minus-sign variant (Section 8) read from the typeset exponent (k_I,C/k_I,OP) |
+| Principle | sigma_a,s = int_n sigma_n,a dn (Eq. 12); F_OP = 1/2 int_t int_n \|tau_n,0 x dtau_n,0/dt\| dn dt (Eq. 9); f_I = tau_max,a/sigma_max,a interpolates k and L_k between the axial and torsion curves (Eq. 11); D_OP = sqrt(D_total^2 - D_IP^2) calibrated on an out-of-phase curve (Eq. 14); D_total,C^2 = D_IP,C^2 + (D_OP,C^(k_I,C/k_I,OP))^2 (Eq. 15). |
+| Loading scope | Single-harmonic CA, fully reversed (zero mean), proportional and out of phase; mean stresses out of scope as in the paper. |
+| Inputs / material parameters | Axial and torsion Basquin constants (sigma_f, b_fat, tau_f, b0); an out-of-phase R = -1 tension-torsion Woehler curve (sigma_f_OP, b_OP, lambda_OP, delta_OP), fitted by the pipeline on the dataset's most populated out-of-phase path. |
+| Output | Native finite life N = 1/D_total,C from three Basquin curves (axial, torsion, out-of-phase) in sigma_a,s; sigma_a,s reported as the index |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_bolchoun.py: Eq. (12) unit factors 2 pi/3 and 8/3; Eq. (9) equals the ellipse area pi\|tau_s x tau_c\| (time integral) and vanishes for proportional loading; f_I = 1/2 and 1 for tension and torsion, closed form for proportional loading; Eq. (11) end points; uniaxial tension and torsion return their Basquin curves; Eqs. (14)-(15) return the out-of-phase curve on its own path in both signs. The paper prints no per-test value for a reproducible stress state (results are figures for notched magnesium welds). |
+| Python implementation | [src/multifat/models/integral_methods/bolchoun.py](../../src/multifat/models/integral_methods/bolchoun.py); Bolchoun |
+| Automated tests | [tests/methods/test_bolchoun.py](../../tests/methods/test_bolchoun.py) |
+| Limitations | Constant amplitude only (no modified rainflow, Miner sum or Haibach knee); Basquin curves without a knee, Eq. (11) at N_k = 1e6; out-of-phase curve fitted on the dataset (its tests are design points), so the model is skipped without an identifiable out-of-phase path; minus-sign variant of Eq. (15) when the out-of-phase curve lies above the in-phase one, ill-conditioned when it lies far above; no mean-stress treatment. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | no_accessible_source_identified; not integrated or independently validated |
-| Missing tasks | Path/sphere integration, three-curve calibration and original per-cycle life/damage equations. |
+| Missing tasks | Variable-amplitude branch (modified rainflow of Section 4, Haibach slope, D_al); mean-stress extension (open in the paper); validation on the paper's magnesium weld data (not available). |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | available_not_scheduled; Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Path/sphere integration, three-curve calibration and original per-cycle life/damage equations. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. BP sphere quadrature and projection helpers; preserve source-specific weights. |
-| Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / Medium |
-| Provenance / prior status | N53; Already reviewed, not implemented |
+| Feasibility / effort / priority | A / Medium (preliminary; exact scope and data determine effort) / Medium |
+| Provenance / prior status | N53; Already implemented, active |
 | Related catalogue ID | None recorded |
-| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N53+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN53%5D+Substitute-amplitude%2FNP-damage+method%2C+CA+branch) (no live Issue linked) |
+| GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=N53+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BN53%5D+Substitute-amplitude%2Fout-of-phase+damage+method+%28Bolchoun-Baumgartner-Kaufmann%29%2C+CA+branch) (no live Issue linked) |
 
 ### G02
 

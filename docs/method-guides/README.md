@@ -20,7 +20,7 @@ numbers are checked on every CI run.
 
 ## Available guides
 
-All 53 registered criteria have a dedicated guide below, grouped by family.
+All 54 registered criteria have a dedicated guide below, grouped by family.
 
 | Guide | Registry name | Family | Damage parameter (DP) | Material constants |
 | --- | --- | --- | --- | --- |
@@ -73,6 +73,7 @@ All 53 registered criteria have a dedicated guide below, grouped by family.
 | [Papadopoulos](PAPADOPOULOS.md) | `PAPADOPOULOS` | Mesoscopic, integral | $\gamma_N/t_{-1}$, Eq. (41) (index) | `Sigm1`, `Taum1` |
 | [Robert–Fogue–Bahuaud](RFB.md) | `RFB` | Integral | $\frac{1}{s_{-1}}\sqrt{\langle(a\tau_a + b\sigma_{n,a} + d\sigma_{n,m})^2\rangle}$ (index) | `Sigm1`, `Taum1`; `Sig0` or `Su` |
 | [Böhme–Papuga](BP.md) | `BP` | Integral | $\sqrt{\langle a\tau_a^2 + b\sigma_{n,a}^2 + c\tau_a\tau_m + d\sigma_{n,a}\sigma_{n,m}\rangle}/s_{-1}$ (index) | `Sigm1`, `Taum1`, `Sig0`/`Tau0` or `Su` |
+| [Bolchoun–Baumgartner–Kaufmann](BOLCHOUN.md) | `BOLCHOUN` | Integral, native life | $\sigma_{a,s}=\iint\sigma_{n,a}\,d\mathbf n$; $D^2 = D_{IP}^2 \pm D_{OP}^{2k_{I,C}/k_{I,OP}}$ (life) | `sigma_f`, `b_fat`, `tau_f`, `b0`; out-of-phase curve fitted |
 | [CAIM](CAIM.md) | `CAIM` | Critical plane + integral | $\sqrt{\max(a\tau_a^2 + b\sigma_{n,a}^2) + \langle c\tau_a\tau_m + d\sigma_{n,a}\sigma_{n,m}\rangle}/s_{-1}$ (index) | as BP |
 | [Papuga–Růžička PCr](PCR.md) | `PCR` | Critical plane, stress | $\max\sqrt{a_c C_a^2 + b_c(N_a + t_{-1}N_m/f_0)}/f_{-1}$ (index) | `Sigm1`, `Taum1`, `Sig0` or `Su` |
 | [Papuga–Růžička PI](PI.md) | `PI` | Integral | $\sqrt{\langle a_I C_a^2 + b_I(N_a + \kappa N_m)\rangle}/f_{-1}$ (index) | `Sigm1`, `Taum1` |

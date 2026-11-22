@@ -847,7 +847,13 @@ def calibrate_workbook(
     exception), with the one-line "reason"; an infeasible plane fit also records "infeasible"
     (block, parameter, diagnostic).
     """
-    from multifat.eval.material_fits import basquin_fill, strain_life_fill, zhu_k_mgse
+    from multifat.eval.material_fits import (
+        OP_CURVE_KEYS,
+        basquin_fill,
+        out_of_phase_fill,
+        strain_life_fill,
+        zhu_k_mgse,
+    )
 
     fp = Path(fp)
     data = exp.load_material_workbook(fp)
@@ -879,6 +885,17 @@ def calibrate_workbook(
                 else:
                     reason = bf["fits"][key]["reason"]
                     out["unidentified"][name] = f"{key} R = -1 Basquin fit: {reason}"
+        # Out-of-phase Woehler curve of BOLCHOUN: the most populated fully reversed
+        # out-of-phase tension-torsion path, whose tests become design points
+        op = out_of_phase_fill(data, material)
+        out["out_of_phase"] = op["fit"]
+        for name in OP_CURVE_KEYS:
+            if name in op["params"]:
+                out["params"][name] = op["params"][name]
+                out["source"][name] = "Basquin fit on the workbook's out-of-phase R = -1 path"
+                out["design_case_ids"][name] = op["design_case_ids"]
+            else:
+                out["unidentified"][name] = f"out-of-phase R = -1 path: {op['reason']}"
         props = data[material]["material"]
         has_elastic = props["E_MPa"] is not None and props["nu"] is not None
         if has_elastic and all(k in bf["params"] for k in ("sigma_f", "b_fat", "tau_f", "b0")):

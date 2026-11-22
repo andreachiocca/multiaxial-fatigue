@@ -94,6 +94,10 @@ REFERENCES = {
         "Kujawski (2021), An interpretation and modification of the SWT function, Eqs. (9)-(13)",
         "10.1111/ffe.13488",
     ),
+    "BOLCHOUN": (
+        "Bolchoun, Baumgartner & Kaufmann (2017), A new method for fatigue life evaluation under out-of-phase variable amplitude loadings and its application to thin-walled magnesium welds, Eqs. (9), (11)-(15), constant-amplitude branch",
+        "10.1016/j.ijfatigue.2017.01.012",
+    ),
     "SIH": (
         "Zenner, Simbuerger & Liu (2000), On the fatigue limit of ductile metals under complex multiaxial loading, Eqs. (6)-(7), Table 1 (shear stress intensity hypothesis of Zenner, Heidenreich & Richter)",
         "10.1016/S0142-1123(99)00107-3",

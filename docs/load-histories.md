@@ -145,6 +145,7 @@ Matrix of the enabled registered methods (`python -m multifat.history.eligibilit
 | `ZHANGYAO` | no | no | no | yes |  |
 | `KUJAWSKI2021` | yes | no | no | yes |  |
 | `BP` | no | no | no | yes |  |
+| `BOLCHOUN` | no | yes | yes | refused | native life law |
 | `CAIM` | no | no | no | yes |  |
 | `SWTD` | yes | no | no | yes |  |
 | `OTT` | no | no | no | yes |  |
