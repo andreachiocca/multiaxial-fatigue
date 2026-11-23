@@ -16,7 +16,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Critical plane | 13 | 0 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
 | Integral and hybrid | 8 | 0 | 1 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 47 | 2 | 65 | 5 | 119 |
+| **TOTAL** | 48 | 1 | 65 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 

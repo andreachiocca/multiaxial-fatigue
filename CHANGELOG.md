@@ -6,6 +6,28 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### CARSPA: Carpinteri-Spagnoli criterion for hard metals, re-implemented from the source
+
+- `CARSPA` is enabled again, now as a case-level model built from Carpinteri & Spagnoli (2001)
+  Eqs. (22)-(27), the Euler-angle averaging of Carpinteri et al. (1999) and the notation of
+  Carpinteri, Brighenti & Spagnoli (2000). The critical plane is constructed: its normal lies at
+  $\delta = 67.5[1-(\tau_{af}/\sigma_{af})^2]$ deg from the weighted mean direction $\hat 1$
+  ($W = (\sigma_1/\sigma_{af})^{m_\sigma}$ above $c\,\sigma_{af}$, $c = 0.5$), and
+  $\sigma_{eq} = \sqrt{N_{max}^2 + (\sigma_{af}/\tau_{af})^2 C_a^2}$. The archived plane-scan proxy and
+  its `CARSPA_ext` variant are removed.
+- Maintainer decisions (23 Nov 2026): the fixed frame is mirrored before the averaging and the normal
+  mirrored back, so that the folding of the published second reduction does not depend on the sign
+  of the loads; `m_sigma` (new optional constant) falls back to $-1/b$ from `b_fat`, and a case whose
+  weighted principal frames differ raises `MissingParamsError` without either. New optional
+  constant `c_CARSPA`.
+- Scope: hard metals, $1/\sqrt3 \le \tau_{af}/\sigma_{af} \le 1$ (`MaterialScopeError`: GJS600,
+  Al7075-T651 Wang, AISI316L); $N_m < -N_a$ on the critical plane (`LoadingScopeError`).
+- Tables 2-4 of the 2001 paper (30 Nishihara-Kawamoto limits): error index from the printed
+  $\eta_{cal}$ on all rows; $\eta_{cal}$ and end-to-end error index on 27 rows. Three
+  $\beta = 90°$ rows print $\eta_{cal} = 0$ against 2.3-3.5° (strict xfails, unexplained).
+- Guide `docs/method-guides/CARSPA.md`, LaTeX sheet, audit row, catalogue I_CARSPA and R01,
+  notation rows, tests `tests/methods/test_carspa.py`. Existing models' outputs are unchanged.
+
 ### 42CrMo4_FABEST_bar: FABEST mean-stress series (decision d119)
 
 - New dataset `Experimental_Data/19_42CrMo4_FABEST_bar.xlsx`, converted from the FABEST source by

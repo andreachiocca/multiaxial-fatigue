@@ -86,6 +86,12 @@ normal(s) themselves.
 | Woehler curve interpolation factor tau_max,a / sigma_max,a (Bolchoun 2017, Eq. 11) | f_I | `f_I` | - | - |
 | Basquin coefficient and exponent of the out-of-phase calibration curve, sigma_a = sigma_f,OP (2N)^b_OP (axial amplitude) | - | `sigma_f_OP`, `b_OP` | fitted | MPa, - |
 | Shear-to-axial amplitude ratio and phase of the out-of-phase calibration path | lambda, delta | `lambda_OP`, `delta_OP` | fitted | -, degrees |
+| Principal Euler angles, rotations about Z, Y' and the 3-axis (Carpinteri et al. 1999, matrix 2) | phi, theta, psi | `phi`, `theta`, `psi` | - | rad |
+| Principal directions 1, 2, 3 (sigma_1 >= sigma_2 >= sigma_3) as vectors / as the columns of one matrix | 1, 2, 3 | `e1`, `e2`, `e3`, `axes` | - | - |
+| Exponent of the weight function, inverse slope of the R = -1 tension S-N curve (Carpinteri et al. 1999, Eq. 11) | m_sigma | `m_sigma` | m_sigma | - |
+| Weight-function threshold, W = 0 below sigma_1 = c sigma_af (Carpinteri & Spagnoli 2001, Eq. 23) | c | `c`, `c_CARSPA` | c_CARSPA | - |
+| Critical-plane normal of CARSPA and its angle from the mean direction 1^ (Carpinteri & Spagnoli 2001, Eq. 24) | w, delta | `w`, `delta` | - | -, rad |
+| Mean / amplitude of the normal stress and amplitude of the shear stress on a plane (Carpinteri & Spagnoli 2001) | N_m, N_a, C_a | `N_m`, `N_a`, `C_a` | - | MPa |
 
 ## Rules
 

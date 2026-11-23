@@ -9,12 +9,13 @@
  "constants": {
   "42CrMo4_Reis": "Calibrations/42CrMo4_Reis/SSF_published.json"
  },
- "created_utc": "2026-11-23T10:58:01+00:00",
- "git_commit": "d7d90d9f2ca08b255cd73f2e3b1d8cd1f90ff89e",
+ "created_utc": "2026-11-23T17:03:33+00:00",
+ "git_commit": "678862bc2c13e7342a02fab44372bbab36da331a",
  "registered_models": [
   "BOLCHOUN",
   "BP",
   "CAIM",
+  "CARSPA",
   "COIN",
   "CROSSLAND",
   "DANGVAN",
@@ -77,6 +78,7 @@
   "BOLCHOUN",
   "BP",
   "CAIM",
+  "CARSPA",
   "COIN",
   "CROSSLAND",
   "DANGVAN",

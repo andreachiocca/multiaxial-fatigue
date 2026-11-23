@@ -4,7 +4,7 @@ These are research recommendations, not formally agreed WG4.3 commitments. No ne
 
 ## Existing-code evidence and restoration
 
-First resolve LIU2021 Eq. (27), then MGSE_ZHU, MKBM, LI and scalar MSWT scope. Their code is active but completeness remains unestablished. Restore CARSPA plane orientation, Dang Van simultaneous shakedown/shear–hydrostatic history, the bounded OTT reduction/full-model distinction, physically paired SWTD directions and the actual ZHU_EDP work/path model in separate tasks. Prepared briefs specify evidence and acceptance criteria.
+First resolve LIU2021 Eq. (27), then MGSE_ZHU, MKBM, LI and scalar MSWT scope. Their code is active but completeness remains unestablished. Dang Van simultaneous shakedown/shear–hydrostatic history, the bounded OTT reduction/full-model distinction, physically paired SWTD directions and the actual ZHU_EDP work/path model in separate tasks. Prepared briefs specify evidence and acceptance criteria.
 
 ## Why the roadmap is shorter than the catalogue
 

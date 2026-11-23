@@ -147,8 +147,8 @@ was calibrated on one batch and used to predict the tests of another:
 - constants from the **weaker** batch (Santus) misjudge the load of the stronger batches by
   **+27–28 %**, on the safe side;
 - constants from a **stronger** batch predict the Santus tests **non-conservatively**
-  (−10 % from Reis, −15 % from FABEST);
-- the two high-strength batches transfer well into each other (−2 % and +12 %).
+  (−8 % from Reis, −15 % from FABEST);
+- the two high-strength batches transfer well into each other (−2 % and +11 %).
 
 Without tests on the batch, a margin of about 15–25 % on the load is needed. The same analysis
 covers Ti6Al4V (two batches) in the [cross-batch comparison](docs/batch-comparison.md)
@@ -164,7 +164,7 @@ covers Ti6Al4V (two batches) in the [cross-batch comparison](docs/batch-comparis
 
 Browse contribution opportunities by family: [Critical plane](docs/METHOD_INDEX.md#family-critical-plane) · [Energy based](docs/METHOD_INDEX.md#family-energy-based) · [Integral and hybrid](docs/METHOD_INDEX.md#family-integral-and-hybrid) · [Invariant based](docs/METHOD_INDEX.md#family-invariant-based) · [Mesoscopic and damage](docs/METHOD_INDEX.md#family-mesoscopic-and-damage) · [Nonlocal and gradient](docs/METHOD_INDEX.md#family-nonlocal-and-gradient) · [Probabilistic](docs/METHOD_INDEX.md#family-probabilistic) · [Specialized](docs/METHOD_INDEX.md#family-specialized) · [Strain based](docs/METHOD_INDEX.md#family-strain-based) · [Stress based](docs/METHOD_INDEX.md#family-stress-based) · [Tensor and path based](docs/METHOD_INDEX.md#family-tensor-and-path-based). The [method taxonomy](docs/METHOD_TAXONOMY.md) classifies every record by how it reduces the multiaxial history to a scalar (issue #61).
 
-**Available in the current API:** [FS](METHODS.md#i_fs), [FIN](METHODS.md#i_fin), [SWT](METHODS.md#i_swt), [MATAKE](METHODS.md#i_matake), [MCD](METHODS.md#i_mcd), [MGSE_YU](METHODS.md#i_mgse_yu), [MGSE_ZHU](METHODS.md#i_mgse_zhu), [MSWT](METHODS.md#i_mswt), [MKBM](METHODS.md#i_mkbm), [LIU2021](METHODS.md#i_liu2021), [LI](METHODS.md#i_li), [GSE](METHODS.md#i_gse), [GSA](METHODS.md#i_gsa), [BP](METHODS.md#i_bp), [CAIM](METHODS.md#i_caim), [DANGVAN](METHODS.md#i_dangvan), [OTT](METHODS.md#i_ott), [SWTD](METHODS.md#i_swtd), [CROSSLAND](METHODS.md#n01), [SINES](METHODS.md#n02), [PAPADOPOULOS](METHODS.md#n03), [MWCM](METHODS.md#n04), [WANG2022](METHODS.md#n05), [ZHANGYAO](METHODS.md#n06), [GAM](METHODS.md#n08), [MATSUBARA](METHODS.md#n09), [NINIC](METHODS.md#n11), [GOLOS](METHODS.md#n13), [SIH](METHODS.md#n15), [LIUMAHADEVAN](METHODS.md#n16), [WANG2018](METHODS.md#n17), [KHALIJ](METHODS.md#n19), [VHN](METHODS.md#n20), [SSF](METHODS.md#n24), [KUJAWSKI2021](METHODS.md#n26), [MWHS](METHODS.md#n28), [PBP](METHODS.md#n37), [BOLCHOUN](METHODS.md#n53), [TVEIT2025](METHODS.md#c02), [PCR](METHODS.md#g01), [PI](METHODS.md#g02), [KAKUNO](METHODS.md#g04), [MMP](METHODS.md#g05), [MDC](METHODS.md#g06), [MMMH](METHODS.md#g07), [COIN](METHODS.md#g08), [VSE](METHODS.md#g15), [EK](METHODS.md#g16), [MMCCM](METHODS.md#g22), [MOREL](METHODS.md#g23), [RFB](METHODS.md#g41), [LIU2025](METHODS.md#n58), [PDS_SWT](METHODS.md#n59), [PDS_FS](METHODS.md#n60). Each link states the implemented scope and evidence; active does not automatically mean source completeness is established.
+**Available in the current API:** [FS](METHODS.md#i_fs), [FIN](METHODS.md#i_fin), [SWT](METHODS.md#i_swt), [MATAKE](METHODS.md#i_matake), [MCD](METHODS.md#i_mcd), [MGSE_YU](METHODS.md#i_mgse_yu), [MGSE_ZHU](METHODS.md#i_mgse_zhu), [MSWT](METHODS.md#i_mswt), [MKBM](METHODS.md#i_mkbm), [LIU2021](METHODS.md#i_liu2021), [LI](METHODS.md#i_li), [GSE](METHODS.md#i_gse), [GSA](METHODS.md#i_gsa), [BP](METHODS.md#i_bp), [CAIM](METHODS.md#i_caim), [CARSPA](METHODS.md#i_carspa), [DANGVAN](METHODS.md#i_dangvan), [OTT](METHODS.md#i_ott), [SWTD](METHODS.md#i_swtd), [CROSSLAND](METHODS.md#n01), [SINES](METHODS.md#n02), [PAPADOPOULOS](METHODS.md#n03), [MWCM](METHODS.md#n04), [WANG2022](METHODS.md#n05), [ZHANGYAO](METHODS.md#n06), [GAM](METHODS.md#n08), [MATSUBARA](METHODS.md#n09), [NINIC](METHODS.md#n11), [GOLOS](METHODS.md#n13), [SIH](METHODS.md#n15), [LIUMAHADEVAN](METHODS.md#n16), [WANG2018](METHODS.md#n17), [KHALIJ](METHODS.md#n19), [VHN](METHODS.md#n20), [SSF](METHODS.md#n24), [KUJAWSKI2021](METHODS.md#n26), [MWHS](METHODS.md#n28), [PBP](METHODS.md#n37), [BOLCHOUN](METHODS.md#n53), [TVEIT2025](METHODS.md#c02), [PCR](METHODS.md#g01), [PI](METHODS.md#g02), [KAKUNO](METHODS.md#g04), [MMP](METHODS.md#g05), [MDC](METHODS.md#g06), [MMMH](METHODS.md#g07), [COIN](METHODS.md#g08), [VSE](METHODS.md#g15), [EK](METHODS.md#g16), [MMCCM](METHODS.md#g22), [MOREL](METHODS.md#g23), [RFB](METHODS.md#g41), [LIU2025](METHODS.md#n58), [PDS_SWT](METHODS.md#n59), [PDS_FS](METHODS.md#n60). Each link states the implemented scope and evidence; active does not automatically mean source completeness is established.
 
 <!-- METHOD_NAVIGATION_END -->
 
@@ -182,7 +182,7 @@ the calibration, and a worked example whose numbers are checked by the test suit
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Critical plane | 13 | 0 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
 | Integral and hybrid | 8 | 0 | 1 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
@@ -193,7 +193,7 @@ the calibration, and a worked example whose numbers are checked by the test suit
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 47 | 2 | 65 | 5 | 119 |
+| **TOTAL** | 48 | 1 | 65 | 5 | 119 |
 
 <!-- METHOD_PROGRESS_END -->
 

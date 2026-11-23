@@ -16,7 +16,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Critical plane | 13 | 0 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
 | Integral and hybrid | 8 | 0 | 1 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 47 | 2 | 65 | 5 | 119 |
+| **TOTAL** | 48 | 1 | 65 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
@@ -48,7 +48,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | [I_FIN](../../METHODS.md#i_fin) | Findley | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_MATAKE](../../METHODS.md#i_matake) | Matake (tension-only repository adaptation) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_MCD](../../METHODS.md#i_mcd) | McDiarmid (surface-crack repository scope) | Fully implemented | basic_numerical_tests | Existing | Yes |
-| [I_CARSPA](../../METHODS.md#i_carspa) | Carpinteri–Spagnoli | Partially implemented | not_tested | High | Yes |
+| [I_CARSPA](../../METHODS.md#i_carspa) | Carpinteri–Spagnoli | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N04](../../METHODS.md#n04) | Modified Wöhler Curve Method / Susmel–Lazzarin | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N05](../../METHODS.md#n05) | Wang–Sun–Liu–Liu–Shang maximum-shear-plane HCF criterion | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N06](../../METHODS.md#n06) | Zhang–Yao nonlinear critical-plane HCF criterion | Fully implemented | reference_examples_reproduced | High | Yes |
@@ -175,30 +175,30 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 
 | Field | Evidence / task |
 | --- | --- |
-| Primary / secondary family | Critical plane; disabled; source retained, Critical plane |
+| Primary / secondary family | Critical plane; Critical plane |
 | Record / counting | implementation; One identifiable method or scoped formulation; not a claim of independent theoretical novelty. |
 | Reference | Multiaxial high-cycle fatigue criterion for hard metals, International Journal of Fatigue |
 | DOI | https://doi.org/10.1016/s0142-1123(00)00075-x |
 | Reference evidence | Exact-title Crossref work record; implementation attribution subject to audit caveats; saved metadata in docs/research/doi-records.json |
-| Formulation evidence | Inherited repository audit, not repeated |
-| Principle | Carpinteri & Spagnoli (2001), Multiaxial high-cycle fatigue criterion for hard metals |
-| Loading scope | No currently supported executable scope; archived proxy must not be used. |
-| Inputs / material parameters | Physical stress harmonics; Sigm1, Taum1 and published material-dependent orientation parameters |
-| Output | Damage parameter; fitted life where valid |
-| Implementation / evidence | Partially implemented; known_essential_gaps |
-| Validation / evidence | not_tested; tests/test_method_audit.py verifies disabled-name guards only. This is not numerical verification or scientific validation of the archived criterion. Restoration needs original-paper examples. |
+| Formulation evidence | Checked against the PDFs of Carpinteri & Spagnoli (2001) Eqs. (22)-(30) and Tables 1-4, Carpinteri et al. (1999) Eqs. (1)-(9), Fig. 3 and Table 1 (Euler-angle reduction), and Carpinteri, Brighenti & Spagnoli (2000) Fig. 3 and cases (a1)-(c2) (notation) (2026-11-23) |
+| Principle | Weighted mean principal directions from the reduced Euler angles (Eqs. 22-23, W = (sigma_1/sigma_af)^m_sigma for sigma_1 >= c sigma_af); critical-plane normal w at delta = 67.5 [1 - (tau_af/sigma_af)^2] deg from 1^ in the plane 1^3^ (Eq. 24); sqrt(N_max^2 + (sigma_af/tau_af)^2 C_a^2) <= sigma_af, N_max = N_m + N_a, C_a the major semi-axis of the shear ellipse (Eqs. 25-27). |
+| Loading scope | Single-harmonic CA, proportional and out of phase, mean stresses; N_m < -N_a on the critical plane out of scope (source); hard metals 1/sqrt(3) <= tau_af/sigma_af <= 1 (MaterialScopeError outside). |
+| Inputs / material parameters | Sigm1, Taum1; m_sigma (or b_fat) when the principal directions rotate within the weighted window; c_CARSPA = 0.5 by default |
+| Output | Equivalent stress amplitude sigma_eq (Eq. 27) and error index; fitted life through the shared master curve |
+| Implementation / evidence | Fully implemented; complete_for_declared_repository_scope |
+| Validation / evidence | reference_examples_reproduced; tests/methods/test_carspa.py: Tables 2-4 (30 Nishihara-Kawamoto limits): error index I from the printed eta_cal for all 30 rows; eta_cal within 1.5 deg for 27 rows, 3 beta = 90 deg rows with tau_a/sigma_a = 0.2 strict xfail (table prints 0, the procedure gives 2.3-3.5 deg); end-to-end I for the 27 rows; cases (a1)-(c2) of the 2000 paper; mirror invariance; closed forms at tau_af/sigma_af = 1/sqrt(3) and 1. |
 | Python implementation | [src/multifat/models/cp_methods/car_spa.py](../../src/multifat/models/cp_methods/car_spa.py); CarSpa |
-| Automated tests | [tests/test_method_audit.py](../../tests/test_method_audit.py) |
-| Limitations | Missing the published critical-plane orientation construction; maximum-shear/max-damage scans are not that criterion. |
+| Automated tests | [tests/methods/test_carspa.py](../../tests/methods/test_carspa.py) |
+| Limitations | Hard metals only (source scope); mirror-and-return orientation of the fixed frame (repository choice); m_sigma from -1/b_fat when not supplied; right-limit directions at equal principal stresses; peak-instant directions when sigma_1 < c sigma_af everywhere. |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | possible_or_related_source; [EXT06](../../docs/EXTERNAL_IMPLEMENTATIONS.md#ext06); not integrated or independently validated |
-| Missing tasks | Missing the published critical-plane orientation construction; maximum-shear/max-damage scans are not that criterion. Restore only after source-faithful repair and regression/reference checks. |
+| Missing tasks | Unexplained eta_cal = 0 of three beta = 90 deg rows of Tables 2-4; the later ductile-metal extensions (Carpinteri et al. 2003 onwards) are separate methods. |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | repair; Archived implementation has a known essential gap and remains disabled. Missing the published critical-plane orientation construction; maximum-shear/max-damage scans are not that criterion. Restore only after source-faithful repair and regression/reference checks. |
+| Development disposition | available_validate; Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
 | Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / High |
-| Provenance / prior status | I_CARSPA; Previously attempted, disabled |
+| Provenance / prior status | I_CARSPA; Already implemented, active |
 | Related catalogue ID | None recorded |
 | GitHub Issue / prepared brief | [Prepared brief](../../docs/contribution-issues/I_CARSPA.md) · [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=I_CARSPA+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BI_CARSPA%5D+Carpinteri%E2%80%93Spagnoli) (no live Issue linked) |
 
@@ -511,7 +511,7 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | DOI | https://doi.org/10.1016/s0142-1123(00)00075-x |
 | Reference evidence | Crossref metadata verified; R04 is comparator not original; saved metadata in docs/research/doi-records.json |
 | Formulation evidence | Incomplete/incorrect archived code; original needed |
-| Principle | Missing critical-plane orientation construction |
+| Principle | Original Carpinteri-Spagnoli (2001) criterion; implemented as I_CARSPA (registry CARSPA) |
 | Loading scope | CA, source-restricted |
 | Inputs / material parameters | Physical stress cycle and source calibration |
 | Output | Fatigue limit / damage index |
@@ -519,16 +519,16 @@ Browse [contribution opportunities and status/loading/validation views](../../do
 | Validation / evidence | not_tested; Original worked CA cases |
 | Python implementation | None;  |
 | Automated tests | None for this candidate |
-| Limitations | Do not re-enable archived implementation without full source and tests |
+| Limitations | Counted under I_CARSPA |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External source discovery | not_individually_searched; not integrated or independently validated |
-| Missing tasks | Missing critical-plane orientation construction |
+| Missing tasks | None beyond I_CARSPA |
 | Reference retrieval action | DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria. |
-| Development disposition | identity_or_relationship_review; Additional source/scope for I_CARSPA; no additional method count. Missing critical-plane orientation construction |
+| Development disposition | identity_or_relationship_review; Additional source/scope for I_CARSPA; no additional method count. |
 | Roadmap rank | — |
 | Reuse | Physical harmonic tensors; direct FatigueModel interface; original-law-specific postprocessing. Tensor rotations and candidate plane search where the source plane rule permits. |
 | Feasibility / effort / priority | B / Medium (preliminary; exact scope and data determine effort) / High |
-| Provenance / prior status | R01; Already reviewed; archived implementation disabled or modified variant unregistered |
+| Provenance / prior status | R01; Already reviewed; implemented as I_CARSPA |
 | Related catalogue ID | [I_CARSPA](../../METHODS.md#i_carspa) |
 | GitHub Issue / prepared brief | [Search Issues](https://github.com/andreachiocca/multiaxial-fatigue/issues?q=R01+in%3Atitle%2Cbody) · [Propose task](https://github.com/andreachiocca/multiaxial-fatigue/issues/new?template=method.md&title=%5BR01%5D+Original+Carpinteri%E2%80%93Spagnoli) (no live Issue linked) |
 

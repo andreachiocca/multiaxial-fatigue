@@ -41,6 +41,7 @@ TAXONOMY: dict[str, Taxonomy] = {
     "BP": Taxonomy("integral", "stress", "emergent", ()),
     "CAIM": Taxonomy("critical_plane", "stress", "emergent", ()),
     "COIN": Taxonomy("invariant", "stress", "emergent", ()),
+    "CARSPA": Taxonomy("critical_plane", "stress", "emergent", ()),
     "CROSSLAND": Taxonomy("invariant", "stress", "emergent", ()),
     "DANGVAN": Taxonomy("critical_plane", "stress", "emergent", ('mesoscopic',)),
     "EK": Taxonomy("invariant", "energy", "emergent", ()),

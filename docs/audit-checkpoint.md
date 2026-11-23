@@ -1,5 +1,40 @@
 # Development continuation checkpoint
 
+## CARSPA re-implemented from the source (23 November 2026)
+
+- Branch `feat/carspa-criterion` from `main` (`1440c18`).
+- Sources (PDFs from the maintainer): Carpinteri & Spagnoli 2001 (criterion, Tables 1-4),
+  Carpinteri et al. 1999 (Euler angles, two-stage reduction, weight functions), Carpinteri,
+  Brighenti & Spagnoli 2000 (notation: direction 1 = third column of matrix (2); cases (a1)-(c2)).
+- Maintainer decisions (23 Nov): mirror the fixed frame so that direction 1 at the instant of
+  largest weight is in the first octant, mirror the normal back (the published 2nd reduction is a
+  reflection and made tau -> -tau change I from +3.1 % to -1.7 %); `m_sigma` optional, fallback
+  -1/b_fat, MissingParamsError only when the weighted principal frames differ.
+- Own choices, documented: w = cos(delta) 1^ + sin(delta) 3^ (fixed by Tables 2-4); 720 instants;
+  right-limit directions at equal principal stresses; peak-instant directions below the c sigma_af
+  window; MaterialScopeError outside 1/sqrt(3) <= tau_af/sigma_af <= 1 (GJS600, Al7075-T651 Wang,
+  AISI316L skipped); LoadingScopeError for N_m < -N_a.
+- Tables 2-4: I from the printed eta_cal 30/30; eta_cal within 1.5 deg and end-to-end I 27/30.
+  Hard 10, mild 8, cast 6 (beta = 90, tau_a/sigma_a = 0.2) print eta_cal = 0 against 2.3-3.5 deg:
+  strict xfails, unexplained (no time step, threshold or exponent gives these zeros and the 12 deg of
+  hard 11).
+- Files: `models/cp_methods/car_spa.py` (rewritten, case-level), registry, references (removed from
+  DISABLED_METHODS), taxonomy, notation, catalogue I_CARSPA/R01 and generated docs, guide, LaTeX
+  sheet and bib, audit row, bibliography, CHANGELOG, roadmap text, `tests/methods/test_carspa.py`,
+  `tests/data/papers/carpinteri2001_tables2_4.csv`, model count 55.
+- Regression snapshot `main` (`1440c18`) vs branch: no existing output changed; only CARSPA files and
+  the per-material comparison plots/tables that include it differ. CARSPA runs on Reis, FABEST,
+  FABEST_bar, Santus, Berto; MaterialScopeError on Al7075_T651_Wang and AISI316L; MissingParamsError
+  (m_sigma) on Al7075_T6; Meneghetti "master curve not identifiable" in the script stage for every model.
+- Ranking: only CARSPA rows added (FABEST RMS 0.078, Reis 0.156, Santus 0.142, Berto 0.137,
+  FABEST_bar 0.594: series bias +0.37/+0.72/-0.32/-0.79 from N_max = N_m + N_a, as NINIC). Batch
+  comparison regenerated; README medians -8 % (Reis -> Santus) and +11 % (Reis -> FABEST).
+- Marques et al. (2020), doi:10.1111/ffe.13273 (spectral CSV): states the clockwise rotation about 2^,
+  which is the sense fixed by Tables 2-4; cited. It announces no correction; the maintainer is asking
+  the authors which error they meant.
+- Full suite: 3637 passed, 131 xfailed.
+- Next action: PR review; revisit if the authors' correction concerns the 2001 formulation.
+
 ## Method taxonomy, issue #61 (23 November 2026)
 
 - Branch `feat/method-taxonomy` from `main` (`fcdc683`, includes PR #124).

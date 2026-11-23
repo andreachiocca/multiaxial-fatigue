@@ -152,6 +152,7 @@ Matrix of the enabled registered methods (`python -m multifat.history.eligibilit
 | `TVEIT2025` | no | yes | no | refused | native life law |
 | `LIUMAHADEVAN` | no | yes | no | refused | native life law |
 | `DANGVAN` | no | no | no | yes |  |
+| `CARSPA` | no | no | no | yes |  |
 | `CROSSLAND` | no | no | no | yes |  |
 | `SIH` | no | no | no | yes |  |
 | `WANG2018` | no | no | yes | yes |  |
