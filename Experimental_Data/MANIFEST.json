@@ -74,5 +74,9 @@
   "19_42CrMo4_FABEST_bar.xlsx": {
     "sha256": "c7e1f595fce948d99f1f3f7ca1d60175cc80c8f1f54133209dd15753224b1c92",
     "dataset_fingerprint": "efef715ae2249a8c2a1ff8e900b57c54b31a54ee48ed414348db58312a32359c"
+  },
+  "20_34CrNiMo6_Pallares.xlsx": {
+    "sha256": "4df253e5b24696970bfaa53e06334d382a9c70fde50bf090eaf14dc3207cfb68",
+    "dataset_fingerprint": "5b3919d1930a2b075fcd9111bc150a6b054cb2d8cb818ee934391f1e3ff20385"
   }
 }

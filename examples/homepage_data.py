@@ -35,6 +35,7 @@ RANKING_MATERIALS: tuple[str, ...] = (
     "982FA",
     "S65A",
     "Ti6Al4V_Delahay",
+    "34CrNiMo6_Pallares",  # d120
 )
 
 

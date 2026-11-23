@@ -1,8 +1,8 @@
 {
  "csv": "load_error_ranking.csv",
- "csv_sha256": "721ca49a8223c215c3f2b42fa30a9e29240eb3a866ef13d0244453cedc03efd1",
- "created_utc": "2026-11-23T17:14:47+00:00",
- "git_commit": "678862bc2c13e7342a02fab44372bbab36da331a",
+ "csv_sha256": "7e680e21fdfe4e98ec9bb3dfa711aea70a2f7eef78959d3698d0df75e579e937",
+ "created_utc": "2026-11-23T20:51:12+00:00",
+ "git_commit": "8e718255075f4a28a8ca7197b8d49d3281f0a088",
  "implementation_revision": "2026-11-18",
  "registered_models": [
   "BOLCHOUN",
@@ -65,6 +65,7 @@
   "25CrMo4",
   "30NCD16",
   "34Cr4",
+  "34CrNiMo6_Pallares",
   "42CrMo4_FABEST",
   "42CrMo4_FABEST_bar",
   "42CrMo4_Reis",
@@ -82,6 +83,7 @@
   "25CrMo4": "90d514b34f62dfe94352f28c426c98e2c6eb38ad89fe466951e3569d4518418b",
   "30NCD16": "4bb7654fad4039ea053848bf2835e565763cb2d011a4b5bdc80b6cb1e9f82d0f",
   "34Cr4": "9405b4f7cfe776841321f9b6edc056f6996299aeeb2ba4795fcd18592c47911c",
+  "34CrNiMo6_Pallares": "80c44e90b1cc821043cbb408f4f83a51fcee1910ef452c8bba0855a3038bf5c9",
   "42CrMo4_FABEST": "7f9f7d14d4460376ce190ad7de2ce21528450df1fe0b6172129f6a7039c234b8",
   "42CrMo4_FABEST_bar": "efef715ae2249a8c2a1ff8e900b57c54b31a54ee48ed414348db58312a32359c",
   "42CrMo4_Reis": "45f0fd6adcb6f8c86a5cd51c45193ca7ae53eb68993ea7b60de7ebca877c4f7e",

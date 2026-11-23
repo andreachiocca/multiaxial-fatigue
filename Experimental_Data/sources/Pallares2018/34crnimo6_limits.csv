@@ -1,0 +1,18 @@
+# DIN 34CrNiMo6 quenched and tempered steel (Thyssen-Krupp 30 mm forged bars; normalised 900 C, oil quenched, tempered 570 C), smooth hourglass specimens, fatigue strengths at 2e6 cycles.
+# [A] Pallares-Santasmartas L, Albizuri J, Aviles A, Avilés R. Mean stress effect on the axial fatigue strength of DIN 34CrNiMo6 quenched and tempered steel. Metals 2018;8(4):213. doi:10.3390/met8040213 (open access). Table 2 (monotonic properties), Table 3 (axial strengths at 2e6 cycles, R = -2, -1, -0.5, 0.05; Basquin N = alpha sigma_a^beta of the inclined part). Tests at UPV/EHU (Bilbao), axial, 20 Hz, run-out 2e6, failure = 10 % loss of rigidity, 75 specimens.
+# [T] Pallares-Santasmartas L, Albizuri J, Aviles A, Saintier N, Merzeau J. Influence of mean shear stress on the torsional fatigue behaviour of 34CrNiMo6 steel. Int J Fatigue 2018;113:54-68. doi:10.1016/j.ijfatigue.2018.04.008. Table 2 (monotonic properties, same as [A]), Table 3 (torsional strengths at 2e6 cycles, staircase ISO 12107, mean and standard deviation, number of specimens). Tests at ENSAM (Bordeaux), torsion, 50 Hz, run-out 2e6, failure = 10 % loss of rigidity, 83 specimens. [T] uses sigma_-1 = 615 MPa of [A] for the same steel (Section 3 and Table 5).
+# Transcribed 2026-11-23 for decision d120 (multifat). Empty cell: not given by the source.
+kind,source,quantity,R,sigma_m_MPa,sigma_a_MPa,tau_m_MPa,tau_a_MPa,s_MPa,n_specimens,basquin_alpha,basquin_beta,value
+property,A,Sy_MPa,,,,,,,,,,1084
+property,A,Su_MPa,,,,,,,,,,1210
+property,A,A_percent,,,,,,,,,,12.2
+property,A,Z_percent,,,,,,,,,,60.2
+limit,A,axial,-2,-216,647,,,,,1.14e48,-15.000,
+limit,A,axial,-1,0,615,,,,,4.61e42,-13.220,
+limit,A,axial,-0.5,181,542,,,,,1.79e31,-9.338,
+limit,A,axial,0.05,522,472,,,,,6.37e77,-26.889,
+limit,T,torsion,,,,0,432.5,7,15,,,
+limit,T,torsion,,,,150,428.6,5,7,,,
+limit,T,torsion,,,,250,409.1,7,7,,,
+limit,T,torsion,,,,350,394.3,3,7,,,
+limit,T,torsion,,,,500,337.1,5,7,,,

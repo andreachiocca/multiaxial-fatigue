@@ -6,6 +6,19 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### 34CrNiMo6_Pallares: axial and torsional mean-stress fatigue limits (decision d120)
+
+- New fatigue-limit dataset `Experimental_Data/20_34CrNiMo6_Pallares.xlsx`, built by
+  `tools/build_pallares_34crnimo6.py` from the transcription in
+  `Experimental_Data/sources/Pallares2018/`: strengths at 2e6 cycles of one 34CrNiMo6 steel, axial at
+  R = -2, -1, -0.5, 0.05 (Pallares-Santasmartas et al., Metals 2018, doi:10.3390/met8040213) and
+  torsional with a mean shear stress of 0-500 MPa (Int J Fatigue 2018,
+  doi:10.1016/j.ijfatigue.2018.04.008). E and nu are not given and are Null.
+- `tests/test_pallares_dataset.py` reproduces the Crossland errors of the Metals paper (Table 5) and
+  the "no effect" errors of the IJF paper (Table 4; one printed value is a strict xfail).
+- Karolczuk et al. 2015 and Sahadi et al. 2017 are not imported (no per-test data in absolute units;
+  see d120). Existing workbooks and outputs are unchanged.
+
 ### CARSPA: Carpinteri-Spagnoli criterion for hard metals, re-implemented from the source
 
 - `CARSPA` is enabled again, now as a case-level model built from Carpinteri & Spagnoli (2001)

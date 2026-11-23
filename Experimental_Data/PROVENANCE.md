@@ -154,6 +154,55 @@ transverse hole) and fretting curves. Their axial R = -1 strengths at 1e6 cycles
 - Whether the shear stress of the hollow specimens refers to the outer surface or to the mean wall
   radius ("related to net section") is not stated. Values are used as given.
 
+## 20_34CrNiMo6_Pallares.xlsx (Pallares-Santasmartas et al. 2018, added 2026-11-23)
+
+**Sources.** One steel, tested by the same research group in two campaigns:
+
+- [A] Pallares-Santasmartas L, Albizuri J, Aviles A, Aviles R. Mean stress effect on the axial
+  fatigue strength of DIN 34CrNiMo6 quenched and tempered steel. Metals 8 (2018) 213,
+  doi:10.3390/met8040213 (open access): Table 2 (monotonic properties), Table 3 (axial strengths).
+- [T] Pallares-Santasmartas L, Albizuri J, Aviles A, Saintier N, Merzeau J. Influence of mean
+  shear stress on the torsional fatigue behaviour of 34CrNiMo6 steel. Int J Fatigue 113 (2018)
+  54-68, doi:10.1016/j.ijfatigue.2018.04.008: Table 2 (the same properties), Table 3 (torsional
+  strengths).
+
+Both are transcribed in `sources/Pallares2018/34crnimo6_limits.csv`.
+
+**Material.** DIN 34CrNiMo6, Thyssen-Krupp 30 mm forged bars, normalised at 900 C, oil quenched and
+tempered at 570 C (both papers); Su 1210, Sy 1084 MPa. Neither paper gives E or nu (Null). [T]
+uses the axial limit of [A] (sigma_-1 = 615 MPa) for the same steel (Section 3, Table 5).
+
+**Conversion.** `tools/build_pallares_34crnimo6.py` builds the workbook from the transcription;
+`tests/test_pallares_dataset.py` checks that the committed workbook equals the build and that the
+transcription reproduces numbers the papers derive from it: the R printed in [A] Table 3, the
+Crossland column of [A] Table 5 (-1.0, -7.5, -10.5 %, with the registered CROSSLAND), the "no effect"
+column of [T] Table 4, and c = 1145.1 MPa of [T] Table 5.
+
+**Content (decision d120).** Smooth hourglass specimens, strengths at 2e6 cycles, 9 limit states:
+
+| Load | Mean (MPa) | Amplitude (MPa) | R | s (MPa) | Specimens | Role |
+|---|---|---|---|---|---|---|
+| axial [A] | -216 | 647 | -2 | - | - | assessed |
+| axial [A] | 0 | 615 | -1 | - | - | Sigm1 (push-pull), reference |
+| axial [A] | 181 | 542 | -0.5 | - | - | assessed |
+| axial [A] | 522 | 472 | 0.05 | - | - | assessed |
+| torsion [T] | 0 | 432.5 | -1 | 7 | 15 | Taum1, reference |
+| torsion [T] | 150 | 428.6 | | 5 | 7 | assessed |
+| torsion [T] | 250 | 409.1 | | 7 | 7 | assessed |
+| torsion [T] | 350 | 394.3 | | 3 | 7 | assessed |
+| torsion [T] | 500 | 337.1 | | 5 | 7 | assessed |
+
+**Open points.**
+- The two campaigns differ in laboratory (UPV/EHU Bilbao, axial, 20 Hz; ENSAM Bordeaux, torsion,
+  50 Hz) and specimen (two hourglass geometries; [T] reports a stress relief at 190 C for 24 h and
+  surface residual stresses of -30 MPa, [A] does not report residual stresses).
+- The stresses are nominal and elastic. For tau_m = 250, 350 and 500 MPa the maximum shear stress
+  exceeds the torsional yield strength Sy/sqrt(3) = 626 MPa ([T] Section 5.3).
+- The repeated torsion limit tau_0 = 765 MPa ([T] Table 5) is not a tested load case and the R =
+  0.05 axial strength is not an R = 0 limit, so Sig0 and Tau0 are empty.
+- [T] Table 4 prints -28.2 % for tau_m = 500 MPa where the transcribed values give -28.3 % (strict
+  xfail in the test).
+
 ## 19_42CrMo4_FABEST_bar.xlsx (FABEST database, PBS solid bars, added 2026-11-23)
 
 **Source.** As `16_42CrMo4_FABEST.xlsx`: FABEST database FAB_v20261014, doi:10.5281/zenodo.23359038,
