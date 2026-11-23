@@ -187,6 +187,9 @@ assessed tests differ from the design tests only in the mean stress:
   levels), and the torsion value comes from the tube. Criteria that use the ratio are affected: RFB
   and SIH leave their validity range (0.577-0.866) and are skipped; criteria whose mean-stress
   sensitivity follows from the ratio (e.g. GAM, NINIC) show large errors on this dataset.
+- FAB111_2 (R = 0, amplitude and mean 600 MPa) has a maximum stress of 1200 MPa, above Su = 1111
+  MPa, and failed after 19 cycles: a quasi-static failure, kept as supplied. It weighs heavily in
+  the RMS error of the high-cycle criteria on this dataset.
 - No torsion and no multiaxial tests: the dataset assesses the uniaxial mean-stress response only.
 - The other unnotched mean-stress series stay out: CTU R = -3 (FAB010, solid bar v01; a separate
   dataset with FAB001/014/081 as design set is possible) and UNIOVI R = 0.1 (FAB090-093, dog-bone
