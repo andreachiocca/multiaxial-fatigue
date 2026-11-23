@@ -1,5 +1,20 @@
 # Development continuation checkpoint
 
+## Method taxonomy, issue #61 (23 November 2026)
+
+- Branch `feat/method-taxonomy` from `main` (`fcdc683`, includes PR #124).
+- Maintainer decisions (23 Nov): article rule with 5 approach classes; mesoscopic as a tag;
+  explicit NP sensitivity as an attribute; hybrids by their final reduction; additive now.
+- Catalogue fields added to all 164 records, validated in `tools/generate_method_docs.py`;
+  runtime table `models/taxonomy.py` (54 registered models), test `tests/test_taxonomy.py` keeps
+  it equal to the catalogue; generated `docs/METHOD_TAXONOMY.md`; ranking and complexity table
+  grouped by approach.
+- Remaining for #61: `Method_approach`/`Method_quantity` CSV columns appended (needs the
+  regression snapshot), homepage colours by approach without the DANGVAN override, retire the
+  free-text `secondary_classifications`.
+- Full suite: 3525 passed. Model outputs untouched (no model code changed).
+- Next action: PR, then the CSV columns and homepage colours.
+
 ## BOLCHOUN, roadmap N53 (22 November 2026)
 
 - Branch `feat/bolchoun-criterion` from `main` (`f3f23d5`).
