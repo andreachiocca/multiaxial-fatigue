@@ -1,5 +1,34 @@
 # Development continuation checkpoint
 
+## BOLCHOUN, roadmap N53 (22 November 2026)
+
+- Branch `feat/bolchoun-criterion` from `main` (`f3f23d5`).
+- Maintainer decisions (22 Nov): out-of-phase curve fitted on the dataset's most populated fully
+  reversed out-of-phase path (its tests are design points); axial and torsion curves = Basquin
+  without knee, Eq. (11) at N_k = 1e6; minus-sign variant of Eq. (15) when out of phase is less
+  damaging; mean stresses out of scope.
+- Implemented `models/integral_methods/bolchoun.py`, `eval/material_fits.out_of_phase_fill`
+  (mean tau_a/sigma_a and phase of the group, not the rounded key), constants fill in
+  `cli/calibrate.py`, suppliable keys in `cli/pipeline.py`, registry, references, notation rows,
+  guide, LaTeX sheet, audit row, catalogue N53, load-histories row, CHANGELOG.
+- Results: runs on 42CrMo4_Reis and 42CrMo4_FABEST only. On the calibration path the model
+  returns the out-of-phase curve exactly (1e-10). Reis: one out-of-phase design test gets an
+  infinite life, because the minus variant cancels (out-of-phase life about 50 times the
+  in-phase one at 465 MPa) and its tau_a/sigma_a differs slightly from the group mean. Reported to
+  the maintainer as an open point.
+- Regression snapshot `main` (`f3f23d5`) vs branch (`11b0129`): no existing output changed. Only
+  the new `BOLCHOUN*` CSVs (Reis, FABEST) differ, together with the appended out-of-phase keys in
+  `<MAT>_calibration.json` and the volatile fields (paths, timestamps, ids, timings).
+  Al7075_T6 has an identifiable out-of-phase curve, but BOLCHOUN is skipped there as
+  `LoadingScopeError`, because the workbook contains tests with a mean stress. The script stage
+  exits 1 for BOLCHOUN without the calibrated out-of-phase constants, as FS/FIN do.
+- Full suite: 3514 passed; the 2 failures were the homepage ranking and the batch-comparison data,
+  regenerated with the commands in their docstrings. Ranking: only the two BOLCHOUN rows are added
+  (FABEST RMS 0.033 over 18 tests, Reis 0.044 over 8 tests). Batch comparison: the per-cell bias,
+  SD and RMS of the existing models are unchanged. The bootstrap bounds and the two-way residuals
+  move, because they pool all the models. The README median Reis -> FABEST is now +12 % (was +13 %).
+- Next action: open the PR.
+
 ## Issue #38 completion: Palmgren and Bastenaire master-curve models (18 November 2026)
 
 - Branch `feat/sn-palmgren-bastenaire` from `main` (`b3c2da3`, includes PR #122).

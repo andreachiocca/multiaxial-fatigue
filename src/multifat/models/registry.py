@@ -53,6 +53,7 @@ from .cp_methods.gsa import GSA
 
 # Case-level integral and hybrid methods
 from .integral_methods.bohme_papuga import BohmePapuga
+from .integral_methods.bolchoun import Bolchoun
 from .integral_methods.caim import CAIM
 from .energy_based_methods.swtd import SWTD
 from .invariant_methods.ottosen import OttosenReduced
@@ -115,6 +116,7 @@ def available_direct_models():
 
     return {
         "BP": BohmePapuga(),
+        "BOLCHOUN": Bolchoun(),
         "CAIM": CAIM(),
         "SWTD": SWTD(),
         "OTT": OttosenReduced(),

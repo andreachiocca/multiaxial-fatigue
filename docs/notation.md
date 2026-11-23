@@ -81,6 +81,11 @@ normal(s) themselves.
 | Kind of FE analysis (`linear_elastic`, `elastic_plastic`) and role of its steps (`time_sample`, `unit_case`) | - | `analysis_type`, `step_role` | - | - |
 | Per-case inputs of a native life law | - | `aux` | - | model |
 | Fitted constants of a native life law | - | `fit` | - | model |
+| Substitute stress amplitude: hemisphere integral of the normal stress amplitudes (Bolchoun 2017, Eq. 12) | sigma_a,s | `sigma_as` | - | MPa |
+| Out-of-phase measure: area swept by the shear vectors over all planes (Bolchoun 2017, Eq. 9) | F_OP | `F_OP` | - | MPa^2 |
+| Woehler curve interpolation factor tau_max,a / sigma_max,a (Bolchoun 2017, Eq. 11) | f_I | `f_I` | - | - |
+| Basquin coefficient and exponent of the out-of-phase calibration curve, sigma_a = sigma_f,OP (2N)^b_OP (axial amplitude) | - | `sigma_f_OP`, `b_OP` | fitted | MPa, - |
+| Shear-to-axial amplitude ratio and phase of the out-of-phase calibration path | lambda, delta | `lambda_OP`, `delta_OP` | fitted | -, degrees |
 
 ## Rules
 

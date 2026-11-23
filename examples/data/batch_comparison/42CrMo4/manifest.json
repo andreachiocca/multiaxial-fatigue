@@ -9,9 +9,10 @@
  "constants": {
   "42CrMo4_Reis": "Calibrations/42CrMo4_Reis/SSF_published.json"
  },
- "created_utc": "2026-11-17T20:39:30+00:00",
- "git_commit": "4d46d391ed7d4b85ad5eded5bdc6916839748cd8",
+ "created_utc": "2026-11-23T01:03:39+00:00",
+ "git_commit": "942ba712e73bd0391c64a1a76e70cdbcaeeae1de",
  "registered_models": [
+  "BOLCHOUN",
   "BP",
   "CAIM",
   "COIN",
@@ -73,6 +74,7 @@
   "42CrMo4_FABEST": "7f9f7d14d4460376ce190ad7de2ce21528450df1fe0b6172129f6a7039c234b8"
  },
  "methods_with_results": [
+  "BOLCHOUN",
   "BP",
   "CAIM",
   "COIN",

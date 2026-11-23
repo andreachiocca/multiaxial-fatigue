@@ -18,7 +18,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | --- | --- | --- | --- | --- | --- |
 | Critical plane | 12 | 1 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
-| Integral and hybrid | 7 | 0 | 2 | 0 | 9 |
+| Integral and hybrid | 8 | 0 | 1 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
 | Mesoscopic and damage | 2 | 0 | 6 | 0 | 8 |
 | Nonlocal and gradient | 0 | 0 | 7 | 0 | 7 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 46 | 2 | 66 | 5 | 119 |
+| **TOTAL** | 47 | 2 | 65 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
@@ -803,7 +803,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [N03](#n03) | Papadopoulos, specified 2001 formulation | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N15](#n15) | Shear stress intensity hypothesis (SIH), Zenner-Heidenreich-Richter / Liu-Zenner integral criterion | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [N50](#n50) | Grubisic–Simbürger formulation | Not implemented | not_tested | Low | Yes |
-| [N53](#n53) | Substitute-amplitude/NP-damage method, CA branch | Not implemented | not_tested | Medium | Yes |
+| [N53](#n53) | Substitute-amplitude/out-of-phase damage method (Bolchoun-Baumgartner-Kaufmann), CA branch | Fully implemented | reference_examples_reproduced | Medium | Yes |
 | [G02](#g02) | Papuga–Růžička integral criterion (PI; later PIN) | Fully implemented | reference_examples_reproduced | High | Yes |
 | [G41](#g41) | Robert–Fogue–Bahuaud integral life criterion | Fully implemented | reference_examples_reproduced | High | Yes |
 | [L01](#l01) | Kenmeugne–Vidal-Salle–Robert–Bahuaud selective integral (Fatigue 1996) | Not implemented | not_tested | Low | unresolved_lead |
@@ -874,12 +874,12 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 
 ### N53
 
-**Substitute-amplitude/NP-damage method, CA branch** — Alexandre Bolchoun, Jörg Baumgartner, Heinz Kaufmann (2017)
+**Substitute-amplitude/out-of-phase damage method (Bolchoun-Baumgartner-Kaufmann), CA branch** — Alexandre Bolchoun, Jörg Baumgartner, Heinz Kaufmann (2017)
 
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | A new method for fatigue life evaluation under out-of-phase variable amplitude loadings and its application to thin-walled magnesium welds, International Journal of Fatigue; https://doi.org/10.1016/j.ijfatigue.2017.01.012 |
-| WG4.3 completeness / validation | Not implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | no_accessible_source_identified; not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/integral-and-hybrid.md#n53) |

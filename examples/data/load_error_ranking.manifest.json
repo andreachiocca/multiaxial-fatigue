@@ -1,10 +1,11 @@
 {
  "csv": "load_error_ranking.csv",
- "csv_sha256": "c1b46d0aa205bc998d11c75c460e7c5bf8f70f1d7f8126a0605c6f373f12082c",
- "created_utc": "2026-11-18T08:48:26+00:00",
- "git_commit": "e6fa3f745815c3768954754304d9caefd98d7fdd",
+ "csv_sha256": "5db60cf2c1668b1d5554f88afc6e4c0699ff36873f0f55e64adf72a7a9721089",
+ "created_utc": "2026-11-23T00:30:19+00:00",
+ "git_commit": "075b6dbc6de19e1ef32abe0e90917f08c5e859ba",
  "implementation_revision": "2026-11-18",
  "registered_models": [
+  "BOLCHOUN",
   "BP",
   "CAIM",
   "COIN",
@@ -92,6 +93,7 @@
   "Ti6Al4V_Meneghetti": "c3b9a43f4f521b2f5d42196a14b61b824949dbed4b537e6b08d4fd247425871c"
  },
  "methods_with_results": [
+  "BOLCHOUN",
   "BP",
   "CAIM",
   "COIN",

@@ -22,6 +22,10 @@ from multifat.models.utils.fatigue_estimation import (
 
 BASQUIN_KEYS = ("sigma_f", "b_fat", "tau_f", "b0")
 PLASTIC_KEYS = ("epsilon_f", "c_fat", "gamma_f", "c0")
+# Out-of-phase Woehler curve sigma_a = sigma_f_OP (2N)^b_OP of one tension-torsion path
+# tau_a = lambda_OP sigma_a at phase delta_OP (deg), the calibration curve of BOLCHOUN
+OP_CURVE_KEYS = ("sigma_f_OP", "b_OP", "lambda_OP", "delta_OP")
+OP_ZERO_RTOL = 1e-6  # components below this fraction of the largest amplitude are zero
 
 
 def fit_basquin(amplitude, N) -> dict:
@@ -104,6 +108,77 @@ def basquin_fill(data: dict, material: str) -> dict:
         "fits": curve_fits,
         "design_case_ids": design_ids,
     }
+
+
+def out_of_phase_tests(data: dict, material: str) -> dict:
+    """Fully reversed tension-torsion failures out of phase, grouped by path.
+
+    A test qualifies when its mean stress is zero, its only components are the axial normal
+    stress and the axial-hoop shear, both are non-zero and their phase difference is not a
+    multiple of 180 deg. The path key is (tau_a/sigma_a rounded to 0.01, phase rounded to 1 deg);
+    the value lists (case ids, axial amplitudes, lives, tau_a/sigma_a, phases in deg).
+    """
+    groups: dict = {}
+    for case_id, case in data[material]["cases"].items():
+        h = case.get("harmonics") or {}
+        try:
+            S_mean, S_sin, S_cos = (
+                np.asarray(h[k], dtype=float) for k in ("S_mean", "S_sin", "S_cos")
+            )
+        except KeyError:
+            continue
+        scale = max(np.max(np.abs(S_sin)), np.max(np.abs(S_cos)), 1e-300)
+        other = np.abs(np.stack([S_sin, S_cos]))
+        other[:, 1, 1] = other[:, 0, 1] = other[:, 1, 0] = 0.0
+        if np.max(np.abs(S_mean)) > OP_ZERO_RTOL * scale or np.max(other) > OP_ZERO_RTOL * scale:
+            continue
+        sigma = complex(S_sin[1, 1], S_cos[1, 1])
+        tau = complex(S_sin[0, 1], S_cos[0, 1])
+        if abs(sigma) <= OP_ZERO_RTOL * scale or abs(tau) <= OP_ZERO_RTOL * scale:
+            continue
+        delta = float(np.degrees(np.angle(tau / sigma))) % 180.0
+        if min(delta, 180.0 - delta) < 0.5:
+            continue  # proportional (in phase or in counter-phase)
+        key = (round(abs(tau) / abs(sigma), 2), round(delta))
+        ids, amps, lives, ratios, phases = groups.setdefault(key, ([], [], [], [], []))
+        ids.append(int(case_id))
+        amps.append(abs(sigma))
+        lives.append(float(case["meta"]["Nf_cycles"]))
+        ratios.append(abs(tau) / abs(sigma))
+        phases.append(delta)
+    return groups
+
+
+def out_of_phase_fill(data: dict, material: str) -> dict:
+    """Woehler curve of the most populated out-of-phase path (OP_CURVE_KEYS), if identifiable.
+
+    Ties between paths go to the one whose lives span more decades. The curve is retained under
+    the rule of ``fit_basquin`` (5 tests, 1 decade, slope distinct from 0); its tests are then
+    design points of the models that use it.
+    """
+    groups = out_of_phase_tests(data, material)
+    if not groups:
+        return {"params": {}, "fit": None, "design_case_ids": [], "reason": "no out-of-phase "
+                "fully reversed tension-torsion failures"}  # fmt: skip
+
+    def rank(item):
+        _, (ids, _, lives, _, _) = item
+        return (len(ids), float(np.log10(max(lives) / min(lives))))
+
+    _, (ids, amps, lives, ratios, phases) = max(groups.items(), key=rank)
+    # the path itself: the mean of the group (the rounded key only groups the tests)
+    lambda_op, delta = float(np.mean(ratios)), float(np.mean(phases))
+    fit = fit_basquin(amps, lives)
+    fit = {**fit, "case_ids": ids, "lambda_OP": lambda_op, "delta_OP": delta}
+    if not fit["identifiable"]:
+        return {"params": {}, "fit": fit, "design_case_ids": [], "reason": fit["reason"]}
+    params = {
+        "sigma_f_OP": fit["coef"],
+        "b_OP": fit["exp"],
+        "lambda_OP": lambda_op,
+        "delta_OP": delta,
+    }
+    return {"params": params, "fit": fit, "design_case_ids": ids, "reason": ""}
 
 
 def strain_life_fill(Su: float | None, E: float | None) -> dict:
