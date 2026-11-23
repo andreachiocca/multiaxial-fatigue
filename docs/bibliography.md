@@ -98,6 +98,10 @@ Carpinteri & Spagnoli (2001), Multiaxial high-cycle fatigue criterion for hard m
 
 Original article: https://doi.org/10.1016/S0142-1123(00)00075-X
 
+Averaging of the principal directions: Carpinteri, Macha, Brighenti & Spagnoli (1999), Expected principal stress directions under multiaxial random loading. Part I: theoretical aspects of the weight function method, https://doi.org/10.1016/S0142-1123(98)00046-2
+
+Notation of the Euler angles: Carpinteri, Brighenti & Spagnoli (2000), A fracture plane approach in multiaxial high-cycle fatigue of metals, https://doi.org/10.1046/j.1460-2695.2000.00265.x
+
 ## DANGVAN
 
 Dang Van (1973), Sur la résistance à la fatigue des métaux, Sciences et Technique de l'Armement 47, 647–722.

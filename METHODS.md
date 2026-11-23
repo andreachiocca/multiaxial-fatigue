@@ -16,7 +16,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 
 | Primary family | Fully implemented¹ | Partial | Missing | Requires review | Total |
 | --- | --- | --- | --- | --- | --- |
-| Critical plane | 12 | 1 | 7 | 0 | 20 |
+| Critical plane | 13 | 0 | 7 | 0 | 20 |
 | Energy based | 7 | 1 | 12 | 3 | 23 |
 | Integral and hybrid | 8 | 0 | 1 | 0 | 9 |
 | Invariant based | 8 | 0 | 5 | 0 | 13 |
@@ -27,7 +27,7 @@ CA = constant amplitude; P/NP = proportional/non-proportional. Repeating arbitra
 | Strain based | 4 | 0 | 9 | 2 | 15 |
 | Stress based | 5 | 0 | 8 | 0 | 13 |
 | Tensor and path based | 1 | 0 | 2 | 0 | 3 |
-| **TOTAL** | 47 | 2 | 65 | 5 | 119 |
+| **TOTAL** | 48 | 1 | 65 | 5 | 119 |
 
 ¹Complete only for the explicitly declared scope. Primary families are counted once; secondary tags do not change totals. Counts refer to identifiable method/scoped-candidate records, not a proof of independent theoretical novelty.
 
@@ -59,7 +59,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | [I_FIN](#i_fin) | Findley | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_MATAKE](#i_matake) | Matake (tension-only repository adaptation) | Fully implemented | basic_numerical_tests | Existing | Yes |
 | [I_MCD](#i_mcd) | McDiarmid (surface-crack repository scope) | Fully implemented | basic_numerical_tests | Existing | Yes |
-| [I_CARSPA](#i_carspa) | Carpinteri–Spagnoli | Partially implemented | not_tested | High | Yes |
+| [I_CARSPA](#i_carspa) | Carpinteri–Spagnoli | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N04](#n04) | Modified Wöhler Curve Method / Susmel–Lazzarin | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N05](#n05) | Wang–Sun–Liu–Liu–Shang maximum-shear-plane HCF criterion | Fully implemented | reference_examples_reproduced | High | Yes |
 | [N06](#n06) | Zhang–Yao nonlinear critical-plane HCF criterion | Fully implemented | reference_examples_reproduced | High | Yes |
@@ -124,7 +124,7 @@ Browse [contribution opportunities and status/loading/validation views](docs/MET
 | Field | Evidence / task |
 | --- | --- |
 | Reference / DOI | Multiaxial high-cycle fatigue criterion for hard metals, International Journal of Fatigue; https://doi.org/10.1016/s0142-1123(00)00075-x |
-| WG4.3 completeness / validation | Partially implemented; not_tested |
+| WG4.3 completeness / validation | Fully implemented; reference_examples_reproduced |
 | Current FABER phase | Plain/smooth CA candidate or scoped point formulation; original loading, material and response requirements still apply. |
 | External sources | possible_or_related_source; [EXT06](docs/EXTERNAL_IMPLEMENTATIONS.md#ext06); not integrated or independently validated |
 | Complete scientific and implementation record | [Inputs, formulation, scope, code, tests, validation, missing work and Issues](docs/methods/critical-plane.md#i_carspa) |

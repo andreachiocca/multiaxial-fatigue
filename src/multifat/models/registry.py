@@ -59,6 +59,7 @@ from .energy_based_methods.swtd import SWTD
 from .invariant_methods.ottosen import OttosenReduced
 from .invariant_methods.tveit2025 import Tveit2025
 from .cp_methods.dangvan import DangVan
+from .cp_methods.car_spa import CarSpa
 from .invariant_methods.crossland import Crossland
 from .invariant_methods.goncalves_araujo_mamiya import GoncalvesAraujoMamiya
 from .invariant_methods.golos import Golos
@@ -122,6 +123,7 @@ def available_direct_models():
         "OTT": OttosenReduced(),
         "TVEIT2025": Tveit2025(),
         "DANGVAN": DangVan(),
+        "CARSPA": CarSpa(),
         "CROSSLAND": Crossland(),
         "WANG2018": Wang2018(),
         "WANG2022": Wang2022(),

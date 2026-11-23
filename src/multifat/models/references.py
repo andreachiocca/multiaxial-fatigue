@@ -228,7 +228,6 @@ REFERENCES = {
     ),
 }
 DISABLED_METHODS = {
-    "CARSPA": "Missing the published critical-plane orientation construction; maximum-shear/max-damage scans are not that criterion.",
     "ZHU_EDP": "Eq. (23) needs the measured non-proportional factor F_NP (Eq. 22, stabilised stress amplitudes) and the uniaxial elastoplastic work dW_0 (cyclic-curve constants H_c, h_c); the workbook has elastic tensors only. The Eq. (19)-(23) kernel is implemented with explicit inputs.",
 }
 

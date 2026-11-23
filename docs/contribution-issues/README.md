@@ -9,7 +9,7 @@ These versioned briefs are ready for maintainer review and posting. **No live Is
 | I_MKBM | Li modified Kandil–Brown–Miller | Requires review | [I_MKBM](I_MKBM.md) |
 | I_LIU2021 | Liu et al. (2021) modified shear amplitude | Requires review | [I_LIU2021](I_LIU2021.md) |
 | I_LI | Li et al. (2021) improved strain energy density | Requires review | [I_LI](I_LI.md) |
-| I_CARSPA | Carpinteri–Spagnoli | Partially implemented | [I_CARSPA](I_CARSPA.md) |
+| I_CARSPA | Carpinteri–Spagnoli | Fully implemented | [I_CARSPA](I_CARSPA.md) |
 | I_DANGVAN | Dang Van | Fully implemented | [I_DANGVAN](I_DANGVAN.md) |
 | I_OTT | Ottosen/Tveit proportional reduction (archived scope) | Fully implemented | [I_OTT](I_OTT.md) |
 | I_SWTD | Deviatoric SWT | Fully implemented | [I_SWTD](I_SWTD.md) |

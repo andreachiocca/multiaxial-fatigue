@@ -46,12 +46,12 @@ Broader workstreams are excluded from the narrow method-progress denominator bec
 | --- | --- |
 | application_comparison | 1 |
 | available_not_scheduled | 48 |
-| available_validate | 48 |
+| available_validate | 49 |
 | broader_workstream | 10 |
 | deferred_major_extension | 9 |
 | identity_or_relationship_review | 30 |
 | prioritized_addition | 6 |
-| repair | 3 |
+| repair | 2 |
 | scope_deferred | 2 |
 | source_review | 7 |
 
@@ -76,7 +76,7 @@ Use the catalogue link for full references, loading/data scope and scientific li
 | [I_GSA](../METHODS.md#i_gsa) — Ince–Glinka generalized strain amplitude | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [I_BP](../METHODS.md#i_bp) — Böhme–Papuga | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [I_CAIM](../METHODS.md#i_caim) — Critical–integral approach (CAIM) | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
-| [I_CARSPA](../METHODS.md#i_carspa) — Carpinteri–Spagnoli | implementation | Yes | Partially implemented | repair | Archived implementation has a known essential gap and remains disabled. Missing the published critical-plane orientation construction; maximum-shear/max-damage scans are not that criterion. Restore only after source-faithful repair and regression/reference checks. |
+| [I_CARSPA](../METHODS.md#i_carspa) — Carpinteri–Spagnoli | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [I_DANGVAN](../METHODS.md#i_dangvan) — Dang Van | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [I_OTT](../METHODS.md#i_ott) — Ottosen/Tveit proportional reduction (archived scope) | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
 | [I_SWTD](../METHODS.md#i_swtd) — Deviatoric SWT | implementation | Yes | Fully implemented | available_validate | Already complete within the named repository scope; contributions should improve independent validation or explicitly extend the scope. |
@@ -138,7 +138,7 @@ Use the catalogue link for full references, loading/data scope and scientific li
 | [N55](../METHODS.md#n55) — Gradient-corrected local evaluator with externally supplied gradients | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. New gradient input fields, projection rules, units and correction functions. No gradient recovery or FE solver included. |
 | [N56](../METHODS.md#n56) — Chu-modified SWT, exact referenced variant | unresolved_lead | No | Not implemented | identity_or_relationship_review | Exact Chu-modified SWT identity not established. Identify original Chu citation and test algebraic equivalence to active SWT/MSWT before a new registration. |
 | [N57](../METHODS.md#n57) — Combined deviatoric strain amplitudes | method_candidate | Yes | Not implemented | available_not_scheduled | Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Source-defined strain-amplitude geometry and native life solver; measured plastic strains if relevant. |
-| [R01](../METHODS.md#r01) — Original Carpinteri–Spagnoli | related_publication | No | Not implemented | identity_or_relationship_review | Additional source/scope for I_CARSPA; no additional method count. Missing critical-plane orientation construction |
+| [R01](../METHODS.md#r01) — Original Carpinteri–Spagnoli | related_publication | No | Not implemented | identity_or_relationship_review | Additional source/scope for I_CARSPA; no additional method count. |
 | [R02](../METHODS.md#r02) — Dang Van elastic-shakedown CA formulation | related_publication | No | Not implemented | identity_or_relationship_review | Additional source/scope for I_DANGVAN; no additional method count. Physical shear/hydrostatic simultaneity lost in archived code; original 1973 reference has no verified DOI |
 | [R03](../METHODS.md#r03) — Deviatoric SWT | related_publication | No | Not implemented | identity_or_relationship_review | Additional source/scope for I_SWTD; no additional method count. Archived stress/strain eigen-directions were not physically paired |
 | [R04](../METHODS.md#r04) — Modified Carpinteri–Spagnoli (reviewed comparison) | related_scope | No | Not implemented | identity_or_relationship_review | Restoration/variant note, not a separate confirmed implementation. Comparator describes a variant; exact variant origin requires original verification |

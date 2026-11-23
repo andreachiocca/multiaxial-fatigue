@@ -1,0 +1,76 @@
+% registry: CARSPA
+\methodhead{CARSPA}{Carpinteri and Spagnoli (2001): critical-plane criterion for hard metals}\label{sheet:CARSPA}
+
+\block{Source} A.~Carpinteri, A.~Spagnoli, \emph{Int.\ J.\ Fatigue} 23 (2001) 135--145
+\cite{carpinteri2001}, Eqs.~(22)--(30), Tables~1--4; averaging of the principal directions from
+\cite{carpinteri1999}, Eqs.~(1)--(9), Fig.~3, Table~1; notation of \cite{carpinteri2000}.
+
+\block{Idea and scope} The fatigue fracture plane follows the weighted mean direction $\hat 1$ of
+the maximum principal stress. The critical plane is rotated from it by an angle $\delta$ that
+depends on $\tm/\fm$ only, and the maximum normal stress and the shear amplitude acting on it are
+combined quadratically. Proposed for the fatigue limits of hard metals,
+$1/\sqrt3\le\tm/\fm\le1$, under in-phase and out-of-phase sinusoidal loading with mean stresses.
+
+\block{Inputs}
+\begin{center}\small
+\begin{tabular}{@{}llp{100mm}@{}}
+\toprule
+Symbol & Unit & Meaning\\\midrule
+$\sigma_{af}=\fm$, $\tau_{af}=\tm$ & MPa & fully reversed axial (or bending) and torsion limits\\
+$\phi,\theta,\psi$ & rad & principal Euler angles of the directions 1, 2, 3 at $t_k$\\
+$m_\sigma$ & -- & inverse slope of the R $=-1$ tension S--N curve\\
+$c$ & -- & threshold of the weight function, 0.5 in the paper's tables\\
+$\delta$ & deg & angle between $\hat 1$ and the critical-plane normal $\mathbf w$\\
+$N_m$, $N_a$, $C_a$ & MPa & mean and amplitude of the normal stress, shear amplitude on $\mathbf w$\\
+$\sigma_{eq}$ & MPa & equivalent stress; $\sigma_{eq}\le\fm$ means no failure\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\block{Formulation} With direction 1 at $(\cos\phi\sin\theta,\ \sin\phi\sin\theta,\ \cos\theta)$
+and the angles reduced to $0\le\phi,\theta\le\pi/2$, $-\pi/2<\psi\le\pi/2$ (two-stage procedure
+of \cite{carpinteri1999}),
+\begin{gather}
+\hat\phi=\frac1W\sum_k W(t_k)\,\phi(t_k)\ \ (\hat\theta,\hat\psi\ \text{alike}),\qquad
+W(t_k)=\begin{cases}0 & \sigma_1(t_k)<c\,\fm\\ \bigl(\sigma_1(t_k)/\fm\bigr)^{m_\sigma} & \text{else}\end{cases}
+\label{eq:carspa-avg}\\
+\delta = 45\cdot\tfrac32\bigl[1-(\tm/\fm)^2\bigr]\ \text{deg},\qquad
+\mathbf w=\cos\delta\,\hat 1+\sin\delta\,\hat 3 , \label{eq:carspa-delta}\\
+\sigma_{eq}=\sqrt{(N_m+N_a)^2+(\fm/\tm)^2C_a^2}\le\fm . \label{eq:carspa}
+\end{gather}
+$C_a$ is the major semi-axis of the ellipse of the shear stress vector on $\mathbf w$. For
+$\tm/\fm=1/\sqrt3$, $\delta=45^\circ$ and Eq.~\eqref{eq:carspa} becomes $N_{max}^2+3C_a^2\le\fm^2$;
+for $\tm=\fm$, $\delta=0$. The error index is $I=100(\sigma_{eq}-\fm)/\fm$.
+
+\block{Constants and calibration} None fitted. $m_\sigma$ comes from the tension S--N curve
+(\texttt{m\_sigma}, or $-1/b$ from \texttt{b\_fat}).
+
+\block{Life} The paper gives none; finite lives use the master curve on $\sigma_{eq}$
+(Section~\ref{sec:mastercurve}), a repository extension.
+
+\block{Repository choices}
+\begin{itemize}
+\item Case-level model, one harmonic sampled at 720 instants; no plane search.
+\item First reduction by enumerating the column-sign changes with $\det=+1$; second reduction by
+  Table~1 of \cite{carpinteri1999}. This reproduces the plane-stress cases (a1)--(c2) of
+  \cite{carpinteri2000}.
+\item Mirror and return (maintainer decision): the second reduction mirrors directions into the
+  first octant of the fixed frame. The fixed axes are mirrored so that direction 1 at the instant
+  of largest weight lies there, and $\mathbf w$ is mirrored back. A load and its mirror image then
+  give the same $\sigma_{eq}$; the published tests are unchanged.
+\item The sense of rotation in Eq.~\eqref{eq:carspa-delta} is not printed; it is the one that
+  reproduces Tables~2--4.
+\item Right-limit directions where two principal stresses are equal; peak-instant directions
+  when $\sigma_1<c\fm$ at every instant.
+\item $m_\sigma$ is needed only when the weighted instants have different principal frames.
+\item $\tm/\fm$ outside $[1/\sqrt3,1]$ is out of scope (material), and $N_m<-N_a$ (loading).
+\end{itemize}
+
+\block{Worked example} Table~2, Swedish hard steel ($\fm=313.9$, $\tm=196.2\MPa$, $\delta=41.13^\circ$),
+in-phase test~3 ($\sigma_a=255.1$, $\tau_a=127.5\MPa$): $\hat 1$ at $\eta=22.5^\circ$ from the axis,
+$N_{max}=151.8$, $C_a=178.7\MPa$, $\sigma_{eq}=\sqrt{151.8^2+(313.9/196.2)^2\,178.7^2}=323.7\MPa$,
+$I=+3.1\,\%$ (printed $+3$).
+
+\block{Verification} Tables~2--4 (30 limits): $I$ from the printed $\eta_{cal}$ for all rows;
+$\eta_{cal}$ within $1.5^\circ$ and the end-to-end $I$ for 27 rows. Three $\beta=90^\circ$ rows with
+$\tau_a/\sigma_a=0.2$ print $\eta_{cal}=0$ where the procedure gives 2.3--3.5$^\circ$, unexplained.

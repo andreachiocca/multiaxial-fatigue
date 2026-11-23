@@ -158,6 +158,7 @@ constants are missing is skipped and reported; the other models still run.
 | OTT | `Sigm1`, `Taum1` | `m_OTT`: m(kappa = Taum1/Sigm1), not allowed to exceed 2.767; `A_OTT`: 2 Sigm1/Sig0 - 1; `Sig0`: Boehme et al. 2026 Eq. (1), obtained from Su and Sigm1; `Su`: used only for estimating Sig0 |
 | TVEIT2025 | `A_TVEIT`, `C_TVEIT`, `K_TVEIT`, `L_TVEIT` | `Sigm1_TVEIT`: Sigm1 of the workbook; `Taum1_TVEIT`: Taum1 of the workbook; `npts_TVEIT`: 1001; `min_blocks_TVEIT`: 400; `max_blocks_TVEIT`: 60000; `tol_alpha_TVEIT`: 0.01; `tol_damage_TVEIT`: 0.001 |
 | DANGVAN | `Sigm1`, `Taum1` | - |
+| CARSPA | `Sigm1`, `Taum1` | `m_sigma`: -1/b_fat; needed only when the principal directions rotate within the window; `b_fat`: only to estimate m_sigma; `c_CARSPA`: 0.5 (Tables 2-4 of the source) |
 | CROSSLAND | `Sigm1`, `Taum1` | - |
 | WANG2018 | `Sigm1`, `Taum1` | `Sig0`: Eq. (19): sqrt(2) Sigm1; `Tau0`: Eq. (19): 4 Taum1 / (2 Sigm1 / Sig0 + 1) |
 | WANG2022 | `Sigm1`, `Sy`, `Taum1` | - |
