@@ -25,7 +25,7 @@ TAXONOMY_TAGS = [
     "damage_accumulation",
     "application_specific",
 ]
-TAXONOMY_BASES = ["code", "catalogue_principle", "partial", "undetermined"]
+TAXONOMY_BASES = ["code", "source", "catalogue_principle", "partial", "undetermined"]
 STATUSES = ["fully_implemented", "partially_implemented", "not_implemented", "requires_review"]
 LABEL = dict(
     zip(
@@ -819,7 +819,7 @@ def taxonomy(entries):
         "alone.\n"
         "- **Tags**: " + ", ".join(f"`{x}`" for x in TAXONOMY_TAGS) + ". Mesoscopic is a tag, not "
         "a class: Dang Van, Papadopoulos (2001) and Morel take a maximum over planes.\n"
-        "- **Basis**: `code` (registered, read from the module), `catalogue_principle` (from the "
+        "- **Basis**: `code` (registered, read from the module), `source` (from the reviewed original paper), `catalogue_principle` (from the "
         "catalogue entry, source not reviewed), `partial` (approach not determinable from the "
         "entry), `undetermined`.\n\n"
     )

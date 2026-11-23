@@ -1279,7 +1279,7 @@
             "np_sensitivity": "emergent",
             "taxonomy_tags": [],
             "taxonomy_basis": "code",
-            "taxonomy_note": "Disabled in the registry; source not available."
+            "taxonomy_note": "Source reviewed (Carpinteri & Spagnoli 2001, Eqs. 22-25): critical plane at delta(tau_af/sigma_af) from the weighted mean first principal direction; C_a is the major semi-axis of the elliptic shear path (Eqs. 12-13). The averaging procedure is in Carpinteri et al. (1999), doi:10.1016/S0142-1123(98)00046-2; the phase angle is deliberately not a parameter."
         },
         {
             "id": "I_DANGVAN",
@@ -2739,12 +2739,12 @@
             "development_track": "available_not_scheduled",
             "development_reason": "Retained contribution candidate outside the initial dependency-aware, cross-family sequence; priority is advisory and contributors may propose it. Full cycle path and weighting calculation; correct range extraction for even one cycle.",
             "reference_action": "DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria.",
-            "approach": "path",
+            "approach": "invariant",
             "quantity": "stress",
             "np_sensitivity": "explicit",
             "taxonomy_tags": [],
-            "taxonomy_basis": "catalogue_principle",
-            "taxonomy_note": ""
+            "taxonomy_basis": "source",
+            "taxonomy_note": "Source reviewed (Mei & Dong 2016, Eq. 5): the damage is the effective range of the proportional reference path in the sigma-sqrt(beta) tau plane times (1 + alpha g_NP); the moment of the load path enters only through g_NP."
         },
         {
             "id": "N23",
@@ -3235,8 +3235,8 @@
             "quantity": "strain",
             "np_sensitivity": "explicit",
             "taxonomy_tags": [],
-            "taxonomy_basis": "catalogue_principle",
-            "taxonomy_note": ""
+            "taxonomy_basis": "source",
+            "taxonomy_note": "Source reviewed (Deng et al. 2023, Eqs. 44-45): a critical-plane strain parameter multiplied by a non-proportionality factor; f_NP = 1 - plane average of the squared Pearson correlation of epsilon_n and gamma_s."
         },
         {
             "id": "N32",
@@ -3285,12 +3285,12 @@
             "development_track": "source_review",
             "development_reason": "Maintainer decision 2026-11-06: postponed; the critical-plane reference is chosen by minimum prediction error against the experimental lives, up to 9 coefficients per material are fitted on the validation tests, and no per-test values are printed.",
             "reference_action": "DOI/publication identity is recorded; obtain the original full text, applicable version/errata and numerical examples. Metadata identity does not establish complete equations or independence from related criteria.",
-            "approach": "path",
-            "quantity": null,
-            "np_sensitivity": null,
+            "approach": "invariant",
+            "quantity": "stress",
+            "np_sensitivity": "explicit",
             "taxonomy_tags": [],
-            "taxonomy_basis": "catalogue_principle",
-            "taxonomy_note": ""
+            "taxonomy_basis": "source",
+            "taxonomy_note": "Source reviewed (Lu & Martinez-Esnaola 2021, Eqs. 12-20): P1 and P2 are the in-plane Mohr-circle radius and centre (invariants of the plane state); P3 adds the rotation of the Mohr circle, the only term that depends on the reference direction, which the authors pick between two candidates by the lower prediction error."
         },
         {
             "id": "N33",
@@ -4726,7 +4726,7 @@
             "np_sensitivity": null,
             "taxonomy_tags": [],
             "taxonomy_basis": "catalogue_principle",
-            "taxonomy_note": ""
+            "taxonomy_note": "Source reviewed (Carpinteri & Spagnoli 2001, Eqs. 22-25): critical plane at delta(tau_af/sigma_af) from the weighted mean first principal direction; C_a is the major semi-axis of the elliptic shear path (Eqs. 12-13). The averaging procedure is in Carpinteri et al. (1999), doi:10.1016/S0142-1123(98)00046-2; the phase angle is deliberately not a parameter."
         },
         {
             "id": "R02",
