@@ -36,7 +36,10 @@ Repository choices:
     the critical-plane normal is mirrored back afterwards. For the published tests (positive
     shear) the mirror is the identity and the tables are unchanged;
   - w = cos(delta) 1^ + sin(delta) 3^, a rotation in the plane 1^3^. The 2001 paper gives only
-    the angle; this direction reproduces Tables 2-4, the opposite one gives errors down to -15 %;
+    the angle; this direction reproduces Tables 2-4, the opposite one gives errors down to -15 %.
+    It is the clockwise rotation about 2^ stated by Marques, Benasciutti, Carpinteri & Spagnoli
+    (2020), Fatigue Fract Engng Mater Struct 43:1978-1993, doi:10.1111/ffe.13273, Section 3.1, for
+    the spectral CSV version (same frame: 1^ = Z', 2^ = X', 3^ = Y');
   - c = 0.5 as in Tables 2-4 (``c_CARSPA``). m_sigma = -1/m is the inverse slope of the R = -1
     tension S-N curve (``m_sigma``); without it, -1/b_fat of the Basquin fit is used. It only
     matters when the weighted instants have different principal directions: if neither is

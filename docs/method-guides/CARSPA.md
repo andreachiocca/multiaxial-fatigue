@@ -85,7 +85,9 @@ describes (Eqs. 9–13). The mean shear stress does not enter. The paper exclude
   identity.
 - **Rotation sense:** $\mathbf w = \cos\delta\,\hat 1 + \sin\delta\,\hat 3$, in the plane
   $\hat 1\hat 3$. The paper gives the angle only; this sense reproduces Tables 2–4, the opposite
-  one gives errors down to −15 %.
+  one gives errors down to −15 %. It is the clockwise rotation about $\hat 2$ that Marques et al.
+  (2020, Section 3.1) state for the spectral Carpinteri–Spagnoli–Vantadori version
+  (<https://doi.org/10.1111/ffe.13273>).
 - **Sampling:** 720 instants per period. Where two principal stresses are equal the directions of
   the right limit in time are used. When $\sigma_1 < c\,\sigma_{af}$ at every instant (loads far
   below the limit, e.g. in a load-scaling search), the instants of largest $\sigma_1$ are used:
