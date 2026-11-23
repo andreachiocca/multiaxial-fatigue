@@ -23,8 +23,11 @@
   `LoadingScopeError`, because the workbook contains tests with a mean stress. The script stage
   exits 1 for BOLCHOUN without the calibrated out-of-phase constants, as FS/FIN do.
 - Full suite: 3514 passed; the 2 failures were the homepage ranking and the batch-comparison data,
-  which are being regenerated with the commands in their docstrings.
-- Next action: commit the regenerated data, push, PR.
+  regenerated with the commands in their docstrings. Ranking: only the two BOLCHOUN rows are added
+  (FABEST RMS 0.033 over 18 tests, Reis 0.044 over 8 tests). Batch comparison: the per-cell bias,
+  SD and RMS of the existing models are unchanged. The bootstrap bounds and the two-way residuals
+  move, because they pool all the models. The README median Reis -> FABEST is now +12 % (was +13 %).
+- Next action: open the PR.
 
 ## Issue #38 completion: Palmgren and Bastenaire master-curve models (18 November 2026)
 
