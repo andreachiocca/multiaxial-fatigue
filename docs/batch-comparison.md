@@ -253,6 +253,22 @@ The yardstick, from the FABEST database (`fabest_summary.csv`; one material batc
 | Axial, one drawing (tube 8.1/7 mm) | 7 | 3 | 561–655 | 0.063 | 0.15 |
 | Torsion, all unnotched | 3 | 2 | 397–432 | 0.046 | 0.09 |
 
+Split by laboratory (`fabest_laboratories.csv`): a one-way random-effects analysis of variance
+of ln S between the axial series, with the laboratory as group. On one specimen drawing the
+geometry and the finish are fixed, so the between-laboratory part is the laboratory effect
+(machine, alignment, control, operator):
+
+| Axial series | Laboratories (series) | SD between series of one laboratory | SD between laboratories | One series, any laboratory |
+| --- | --- | --- | --- | --- |
+| One drawing (tube 8.1/7 mm) | CTU (2), PBS (2), PSI (3) | 0.031 | 0.062 | 0.070 |
+| All unnotched | CTU (20), PBS (3), PSI (3), TUO (1) | 0.061 | 0.079 | 0.100 |
+
+- **The laboratory weighs twice as much as the series.** On the same drawing, CTU tests about
+  12 % weaker than PBS and PSI. With three laboratories the estimate is rough (two degrees of
+  freedom), but it agrees with the spread of all 27 series.
+- Over all series, the within-laboratory part includes the specimen types that CTU varied on
+  purpose (solid and hollow, hourglass and dog-bone, turned and ground).
+
 Variance split (`reference_components.csv`). The variance of ln S between the datasets is the
 sum of a material-batch part and a test-series part; the latter is taken from FABEST:
 
@@ -398,7 +414,10 @@ skipped on Santus, whose torsion tests with a mean shear are outside its R = −
 
 ## Open questions
 
-1. **More FABEST series.** Importing the other unnotched FABEST series
-   ([#65](https://github.com/andreachiocca/multiaxial-fatigue/issues/65)) would let the
-   series scatter be estimated per laboratory and specimen type, and would firm up the torsion
-   yardstick, which rests on three series.
+1. **More FABEST series.** The laboratory split above is computed from all the unnotched
+   fully reversed series of the source file, without importing them. Importing the other
+   unnotched series as datasets ([#65](https://github.com/andreachiocca/multiaxial-fatigue/issues/65))
+   would add assessed tests only where a laboratory also tested mean stresses (PBS: R = 0, 0.3,
+   -2 and -5 on the same tube; UNIOVI: R = 0.1 on solid specimens, without fully reversed
+   design tests). The torsion yardstick still rests on three series: FABEST has no other unnotched
+   torsion series.
