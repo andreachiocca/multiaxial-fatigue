@@ -32,6 +32,7 @@ Repository choices:
 
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
 
@@ -360,6 +361,42 @@ def variance_components(series: pd.DataFrame, fabest_summary: pd.DataFrame) -> p
     return pd.DataFrame(rows)
 
 
+def laboratory_components(table: pd.DataFrame) -> pd.DataFrame:
+    """Split the scatter of ln S(N_REF) between FABEST series into laboratory and series parts.
+
+    One-way random-effects analysis of variance with the laboratory as group, on the fully
+    reversed axial unnotched series (FABEST is one material batch): s_series is the pooled
+    standard deviation between the series of one laboratory, s_lab = sqrt(max((MSB - MSW)/n0, 0))
+    the standard deviation between laboratory means, with n0 the effective group size of an
+    unbalanced design. Two groups: the series of one drawing (v07, the hollow 8.1/7 mm hourglass,
+    tested in three laboratories), so that geometry and finish do not enter the laboratory part,
+    and all series. Extrapolated strengths are left out.
+    """
+    ok = table[(table["skipped"] == "") & ~table["extrapolated"].astype(bool)]
+    ok = ok[ok["Load"] == "Axial"]
+    rows = []
+    for name, sub in (
+        ("drawing v07 (hollow 8.1/7 mm hourglass)", ok[ok["Drawing"].astype(str) == "v07"]),
+        ("all unnotched series", ok),
+    ):
+        groups = [np.log(g["S_ref"].to_numpy(float)) for _, g in sub.groupby("Lab")]
+        k, n = len(groups), sum(len(g) for g in groups)
+        if k < 2 or n <= k:
+            continue
+        ns = np.array([len(g) for g in groups], float)
+        grand = np.concatenate(groups).mean()
+        msw = sum(float(((g - g.mean()) ** 2).sum()) for g in groups) / (n - k)
+        msb = float((ns * (np.array([g.mean() for g in groups]) - grand) ** 2).sum()) / (k - 1)
+        n0 = (n - float((ns**2).sum()) / n) / (k - 1)
+        s_series, s_lab = math.sqrt(msw), math.sqrt(max((msb - msw) / n0, 0.0))
+        rows.append(
+            dict(group=name, laboratories=k, series=n, sd_series_within_lab=s_series,
+                 sd_between_labs=s_lab, sd_one_series_any_lab=math.hypot(s_series, s_lab),
+                 labs=", ".join(f"{lab} ({len(g)})" for lab, g in sub.groupby("Lab")))
+        )  # fmt: skip
+    return pd.DataFrame(rows)
+
+
 def write_reference(dest: Path, batches, *, fabest: bool = False) -> dict:
     """Write the method-free tables of a family into `dest`; returns them."""
     write = dict(index=False, float_format="%.5g")
@@ -375,6 +412,8 @@ def write_reference(dest: Path, batches, *, fabest: bool = False) -> dict:
         out["fabest"], out["fabest_summary"] = fabest_benchmark()
         out["fabest"].to_csv(dest / "fabest_series.csv", **write)
         out["fabest_summary"].to_csv(dest / "fabest_summary.csv", **write)
+        out["fabest_labs"] = laboratory_components(out["fabest"])
+        out["fabest_labs"].to_csv(dest / "fabest_laboratories.csv", **write)
         out["components"] = variance_components(out["series"], out["fabest_summary"])
         out["components"].to_csv(dest / "reference_components.csv", **write)
     return out

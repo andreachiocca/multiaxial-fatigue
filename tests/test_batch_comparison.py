@@ -188,6 +188,41 @@ def test_variance_components_subtract_the_series_scatter():
     assert out.loc["raw", "datasets_sd_hi"] > 3 * out.loc["raw", "datasets_sd"]  # 2 dof
 
 
+def test_laboratory_components_split_lab_and_series():
+    """One-way random effects: within-lab series SD and between-lab SD (unbalanced design)."""
+    ln = {"L1": [0.0, 0.02], "L2": [0.2, 0.22], "L3": [0.1, 0.12, 0.11]}
+    rows = [
+        dict(Curve=f"F{lab}{i}", Load="Axial", Lab=lab, Drawing="v07", S_ref=float(np.exp(v)),
+             skipped="", extrapolated=False)
+        for lab, vals in ln.items() for i, v in enumerate(vals)
+    ]  # fmt: skip
+    rows.append(
+        dict(
+            Curve="FX",
+            Load="Axial",
+            Lab="L4",
+            Drawing="v01",
+            S_ref=1.0,
+            skipped="",
+            extrapolated=True,
+        )
+    )  # extrapolated: left out
+    out = br.laboratory_components(pd.DataFrame(rows)).set_index("group")
+    v07 = out.loc["drawing v07 (hollow 8.1/7 mm hourglass)"]
+    groups = [np.array(v) for v in ln.values()]
+    msw = sum(((g - g.mean()) ** 2).sum() for g in groups) / (7 - 3)
+    assert v07["sd_series_within_lab"] == pytest.approx(np.sqrt(msw))
+    assert v07["laboratories"] == 3 and v07["series"] == 7
+    ns = np.array([2, 2, 3])
+    means = np.array([g.mean() for g in groups])
+    msb = (ns * (means - np.concatenate(groups).mean()) ** 2).sum() / 2
+    n0 = (7 - (ns**2).sum() / 7) / 2
+    assert v07["sd_between_labs"] == pytest.approx(np.sqrt((msb - msw) / n0))
+    assert v07["sd_one_series_any_lab"] == pytest.approx(
+        np.hypot(np.sqrt(msw), v07["sd_between_labs"])
+    )
+
+
 @pytest.mark.parametrize(
     "p, df, expected",
     [  # reference quantiles (standard tables)

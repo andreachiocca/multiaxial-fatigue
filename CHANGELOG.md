@@ -6,6 +6,14 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### FABEST scatter by laboratory (issue #71 open question)
+
+- `examples/batch_reference.laboratory_components` splits the scatter of the fully reversed axial
+  strength between FABEST series into a within-laboratory and a between-laboratory part (one-way
+  random effects). On one specimen drawing: 0.031 and 0.062 in ln S (three laboratories, seven
+  series). Written to `fabest_laboratories.csv` of the 42CrMo4 batch comparison; documented in
+  `docs/batch-comparison.md`. No model output changes.
+
 ### Method taxonomy: approach, quantity, non-proportionality (issue #61)
 
 - Every catalogue record gains `approach` (`invariant`, `critical_plane`, `integral`,
