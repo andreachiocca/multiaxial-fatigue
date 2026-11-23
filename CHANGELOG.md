@@ -6,6 +6,14 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### Ranking: torsion limits are a reference; MATSUBARA input count (decision d118)
+
+- In the fatigue-limit block of the load-error ranking the pure R = -1 torsion limit states are a
+  reference, like the pure axial ones: they are tau_-1, an input of most limit criteria, which
+  reproduced them with zero error. The limit rows of `examples/data/load_error_ranking.csv`
+  change (Ti6Al4V_Delahay drops out, two assessed states left); the life rows are identical.
+- MATSUBARA declares the static strength (sigma_T = 1.84 Su) as input: p_in = 1.
+
 ### FABEST scatter by laboratory (issue #71 open question)
 
 - `examples/batch_reference.laboratory_components` splits the scatter of the fully reversed axial

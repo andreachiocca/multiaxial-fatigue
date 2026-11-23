@@ -148,6 +148,8 @@ def unified_equivalent_shear(S_mean, S_sin, S_cos, sigma_T: float) -> float:
 
 class Matsubara:
     name = "MATSUBARA"
+    # sigma_T = 1.84 Su needs the static strength unless sigma_T is supplied (complexity, d118)
+    input_classes = ("static strength",)
     optional_params = {
         "sigma_T": "true fracture strength; default 1.84 Su for 400 <= Su <= 1000 MPa (ref. [23])",
         "Su": "used only to estimate sigma_T",

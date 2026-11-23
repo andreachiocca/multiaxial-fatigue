@@ -1,7 +1,7 @@
 """Fatigue-limit datasets in the load-error ranking (decision d110).
 
-A limit state enters with Error_load = ln(1 + FI_load); the pure R = -1 axial limit states are
-the reference and are left out, as the design failures of a life dataset are.
+A limit state enters with Error_load = ln(1 + FI_load); the pure R = -1 axial and torsion limit
+states (sigma_-1, tau_-1) are the reference and are left out (d118, revising d110).
 """
 
 import sys
@@ -33,13 +33,14 @@ def _case(mean=0.0, axial=0.0, shear=0.0, cos_shear=0.0):
     [
         (_case(axial=652.0), True),
         (_case(mean=300.0, axial=630.0), False),  # axial limit with a mean stress: assessed
-        (_case(shear=411.0), False),  # torsion: assessed, as torsion failures are
+        (_case(shear=411.0), True),  # tau_-1: an input of the limit criteria (d118)
+        (_case(mean=100.0, shear=380.0), False),  # torsion with a mean stress: assessed
         (_case(axial=442.0, shear=255.0), False),
         (_case(axial=567.0, cos_shear=328.0), False),  # 90 deg
     ],
 )
-def test_only_pure_reversed_axial_limits_are_the_reference(case, expected):
-    assert br.is_axial_reference(case) is expected
+def test_only_pure_reversed_axial_and_torsion_limits_are_the_reference(case, expected):
+    assert br.is_reference(case) is expected
 
 
 def test_limit_error_is_the_log_of_the_load_factor(tmp_path):
@@ -57,8 +58,8 @@ def test_limit_error_is_the_log_of_the_load_factor(tmp_path):
 
 def test_delahay_reference_is_the_plane_bending_limit():
     data, mat = runmod.load_material("Ti6Al4V_Delahay")
-    flags = [br.is_axial_reference(c) for c in data[mat]["runouts"].values()]
-    assert sum(flags) == 1  # plane bending 652 MPa; torsion and the two combined limits assessed
+    flags = [br.is_reference(c) for c in data[mat]["runouts"].values()]
+    assert sum(flags) == 2  # plane bending 652 MPa and torsion 411 MPa; the two combined assessed
 
 
 def test_runout_fingerprint_is_opt_in():
