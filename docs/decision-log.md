@@ -645,3 +645,14 @@ ledgers.
   2. Without the optional constant `sigma_T`, the criterion uses $\sigma_T = 1.84\,S_u$, so it needs $S_u$. Its empty `required_params` gave $p_{in} = 0$.
 * **Effect:** The limit-dataset rows of `examples/data/load_error_ranking.csv` change; the life rows and every model output are unchanged. The complexity table changes for MATSUBARA only.
 
+### d119
+* **Date:** 2026-11-23
+* **Topic:** FABEST mean-stress series as a dataset of their own (#65, #71)
+* **Status:** Active
+* **Decision:** Maintainer:
+  - The PBS solid-bar series of FABEST form the new dataset `19_42CrMo4_FABEST_bar`, with FAB110 (R = -1) as design set and FAB111-FAB114 (R = 0, 0.3, -2, -5) as assessed tests.
+  - Taum1 is the torsion strength of the PBS tube curves of the same batch.
+  - The tube dataset `16_42CrMo4_FABEST` is unchanged.
+* **Rationale:** The mean-stress series are on 6 mm solid bars, not on the tube, which is about 25 % stronger at 1e6 cycles. Adding them to the tube dataset would mix the specimen effect with the mean-stress effect, because the design curve comes from the tube. A bar dataset designed on the bar's own fully reversed curve isolates the mean stress. FABEST has no torsion curve on the bar.
+* **Effect:** A new finite-life dataset with 51 failures (38 assessed mean-stress failures). The ratio Taum1/Sigm1 = 0.89 is high and affects the criteria that use it (`Experimental_Data/PROVENANCE.md`). Existing workbooks and outputs are unchanged.
+

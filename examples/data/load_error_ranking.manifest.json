@@ -1,8 +1,8 @@
 {
  "csv": "load_error_ranking.csv",
- "csv_sha256": "575ce5e0192795ff5884fcac0c8e9f9d0b9bbd36f74b68fff71b96301f49fa60",
- "created_utc": "2026-11-23T12:05:07+00:00",
- "git_commit": "67d92d7b6183b8199e14891548ba17cd011a078d",
+ "csv_sha256": "fb48be04e196cf7ed5cd7473f8b7811b2ecbd284360fbc6e818992282ee8ece6",
+ "created_utc": "2026-11-23T12:19:13+00:00",
+ "git_commit": "ed0a5b79c90cef9bdb83513c50b469c64f7b7ce5",
  "implementation_revision": "2026-11-18",
  "registered_models": [
   "BOLCHOUN",
@@ -65,6 +65,7 @@
   "30NCD16",
   "34Cr4",
   "42CrMo4_FABEST",
+  "42CrMo4_FABEST_bar",
   "42CrMo4_Reis",
   "42CrMo4_Santus",
   "982FA",
@@ -81,6 +82,7 @@
   "30NCD16": "4bb7654fad4039ea053848bf2835e565763cb2d011a4b5bdc80b6cb1e9f82d0f",
   "34Cr4": "9405b4f7cfe776841321f9b6edc056f6996299aeeb2ba4795fcd18592c47911c",
   "42CrMo4_FABEST": "7f9f7d14d4460376ce190ad7de2ce21528450df1fe0b6172129f6a7039c234b8",
+  "42CrMo4_FABEST_bar": "efef715ae2249a8c2a1ff8e900b57c54b31a54ee48ed414348db58312a32359c",
   "42CrMo4_Reis": "45f0fd6adcb6f8c86a5cd51c45193ca7ae53eb68993ea7b60de7ebca877c4f7e",
   "42CrMo4_Santus": "50fcebd49c4006212a50d303f4549cf0351c59047b2f0e9bcdebf3323aec15a3",
   "982FA": "ce647e918afd652e9fb0c21b88c3f7c46069030489b1af78e7ed4c5d7d5f8098",

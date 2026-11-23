@@ -276,7 +276,8 @@ The CSVs in `Results/archive/pre-audit/` predate the numerical audit and are kep
 October 2026 set (upstream 71eaac3, 15 workbooks, of which 7 fatigue-limit sets and 2 notched-only), plus `16_42CrMo4_FABEST` from the FABEST database (doi:10.5281/zenodo.23359038) and the fatigue-limit
 set `17_Ti6Al4V_Delahay`, built from Delahay & Palin-Luc 2006 (doi:10.1016/j.ijfatigue.2005.06.048),
 and the life set `18_Al7075_T651_Wang` (52 tension-torsion tests with mean stresses), built from
-Wang et al. 2018 (doi:10.1016/j.tafmec.2017.10.007).
+Wang et al. 2018 (doi:10.1016/j.tafmec.2017.10.007), and the life set `19_42CrMo4_FABEST_bar`
+(the FABEST mean-stress series on solid bars, R = 0, 0.3, -2, -5).
 The provenance of each workbook, with its open questions, is in
 [Experimental_Data/PROVENANCE.md](Experimental_Data/PROVENANCE.md).
 

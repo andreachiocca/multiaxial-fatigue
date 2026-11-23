@@ -20,6 +20,7 @@ RANKING_CSV = DATA_DIR / "load_error_ranking.csv"
 
 RANKING_MATERIALS: tuple[str, ...] = (
     "42CrMo4_FABEST",
+    "42CrMo4_FABEST_bar",
     "Al7075_T651_Wang",
     "42CrMo4_Santus",
     "42CrMo4_Reis",
