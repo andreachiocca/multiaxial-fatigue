@@ -23,8 +23,9 @@ files, run in the same results folder:
 A limit state has the same load-equivalent error: FI_load = 1/s - 1 is the stress-scaled fatigue
 index (multifat.eval.endurance), so Error_load = ln(1/s) = ln(1 + FI_load), exactly and for any
 damage parameter. As the R = -1 uniaxial tension failures of a life dataset are its design set,
-the pure R = -1 axial limit states of a limit dataset are its reference and are left out; the
-torsion limits are assessed, as the torsion failures are. The column Assessment tells the two
+the pure R = -1 axial and torsion limit states of a limit dataset are its reference and are left
+out: they are sigma_-1 and tau_-1, inputs of most limit criteria, which would reproduce them
+exactly (decision d118, revising d110). The column Assessment tells the two
 kinds apart (fatigue_life, fatigue_limit), since a limit dataset rests on 3-48 limit states.
 
 Only base methods are kept (no _ext variants). Methods with fewer than 3 finite errors on a
@@ -79,13 +80,28 @@ def _row(material: str, method: str, errors: np.ndarray, assessment: str) -> dic
 
 def is_axial_reference(case: dict, tol: float = 1e-9) -> bool:
     """True for a pure uniaxial R = -1 axial limit state (no mean, axial amplitude only)."""
+    return _pure_reversed(case, (1, 1), tol)
+
+
+def is_torsion_reference(case: dict, tol: float = 1e-9) -> bool:
+    """True for a pure R = -1 torsion limit state (no mean, axial-hoop shear amplitude only)."""
+    return _pure_reversed(case, (0, 1), tol)
+
+
+def is_reference(case: dict, tol: float = 1e-9) -> bool:
+    """Reference limit state of the ranking: sigma_-1 or tau_-1 itself (d118)."""
+    return is_axial_reference(case, tol) or is_torsion_reference(case, tol)
+
+
+def _pure_reversed(case: dict, slot: tuple[int, int], tol: float) -> bool:
     h = case["harmonics"]
     amplitude = np.hypot(np.asarray(h["S_sin"], float), np.asarray(h["S_cos"], float))
     others = amplitude.copy()
-    others[1, 1] = 0.0
+    i, j = slot
+    others[i, j] = others[j, i] = 0.0
     return bool(
         float(np.abs(np.asarray(h["S_mean"], float)).max()) <= tol
-        and amplitude[1, 1] > tol
+        and amplitude[i, j] > tol
         and float(others.max()) <= tol
     )
 
@@ -108,9 +124,7 @@ def _limit_states(material: str) -> tuple[list[bool], list[str]]:
 
     data, resolved = runmod.load_material(material)
     cases = list(data[resolved]["runouts"].values())
-    return [is_axial_reference(c) for c in cases], [
-        str(c["meta"].get("specimen_id", "")) for c in cases
-    ]
+    return [is_reference(c) for c in cases], [str(c["meta"].get("specimen_id", "")) for c in cases]
 
 
 def build(results_dir: Path) -> pd.DataFrame:

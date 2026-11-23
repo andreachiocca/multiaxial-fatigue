@@ -559,7 +559,7 @@ ledgers.
 ### d110
 * **Date:** 2026-11-11
 * **Topic:** Fatigue-limit datasets in the load-error ranking (#37)
-* **Status:** Active
+* **Status:** Revised by [d118](#d118) (torsion limits are now a reference)
 * **Decision:** Maintainer: add the fatigue-limit datasets to the homepage ranking as a separate block of columns with its own mean rank; leave the cross-batch comparison (#71) unchanged; leave out CX18 and GGG60 until #24 resolves their data. A limit state enters with $e_L = \ln(1/s) = \ln(1 + FI_{load})$. The pure R = -1 axial limit states are the reference of the fatigue index and are left out, as the design failures of a life dataset; torsion and multiaxial limits are assessed. Methods need at least 3 assessed limit states on a material.
 * **Rationale:** $FI_{load} = 1/s - 1$ (`eval/endurance.py`, d063) and $e_L = \ln(1/s^*)$ (`eval/load_error.py`) are the same load factor, so the conversion is exact for any damage parameter and needs no new method. The cross-batch comparison cannot use the limit datasets: no material has two limit batches, and Ti6Al4V_Delahay shares no load path with the Ti6Al4V life batches. A limit dataset has 3 to 40 assessed states against 4 to 76 failures, so its columns are not pooled into the life mean rank. CX18 (Summary limits of 30NCD16) and GGG60 (axial amplitudes about twice the Summary limit) give RMS errors of 0.78-0.85 for every method alike, which would measure the data error, not the criteria.
 * **Implementation:** `examples/build_load_error_ranking.py` (reads `FatigueLimit/*_FI.csv`, column `Assessment` appended), `examples/plot_load_error_ranking.py` (two blocks), `examples/homepage_data.py` (limit materials; their fingerprint includes the run-outs through the new opt-in `dataset_fingerprint(block, runouts=True)`, since a limit dataset has no failures). The life rows of the CSV are unchanged.
@@ -633,6 +633,15 @@ ledgers.
 * **Rationale:** Completes the planned master-curve models in Issue #38. Palmgren captures low-cycle curvature towards static strength while retaining a high-cycle endurance limit. Bastenaire captures hyperbolic endurance behavior with exponential acceleration at high stresses, avoiding power-law slope artifacts without numerical root-finding.
 * **Effect:** Default Basquin regression is bit-for-bit unchanged. CLI tools `--sn-model {basquin,kohout_vechet,stromeyer,palmgren,bastenaire}` accept the new models.
 
-
-
+### d118
+* **Date:** 2026-11-23
+* **Topic:** Reference limit states of the ranking and the complexity count of MATSUBARA
+* **Status:** Active
+* **Decision:** Maintainer:
+  1. In the fatigue-limit block of the load-error ranking, the pure R = -1 torsion limit states are a reference, as the pure R = -1 axial ones already are, and are left out of the assessment (revises d110).
+  2. MATSUBARA declares the static strength as a characterisation input ($p_{in} = 1$).
+* **Rationale:**
+  1. $\sigma_{-1}$ and $\tau_{-1}$ are inputs of most limit criteria, which reproduce the pure torsion limit exactly. Assessing it gave those criteria an error of zero by construction and biased the ranking towards them. With three limit states, a bootstrap draw of zeros only also made $\ln(\mathrm{RMS})$ undefined. In life datasets the torsion failures stay assessed: the master curve is fitted on tension only.
+  2. Without the optional constant `sigma_T`, the criterion uses $\sigma_T = 1.84\,S_u$, so it needs $S_u$. Its empty `required_params` gave $p_{in} = 0$.
+* **Effect:** The limit-dataset rows of `examples/data/load_error_ranking.csv` change; the life rows and every model output are unchanged. The complexity table changes for MATSUBARA only.
 

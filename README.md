@@ -125,10 +125,12 @@ so this is a like-for-like comparison, not an independent validation
   tests are torsional. Ti6Al4V_Meneghetti is not shown: only MOREL, which has its own life law, is
   scored there, because its design tests (6 axial failures over 0.39 decades of life) do not
   identify a master curve ([issue #74](https://github.com/andreachiocca/multiaxial-fatigue/issues/74)).
-- **Fatigue-limit datasets** (right block, decision d110): a limit state has the same error,
-  $e_L = \ln(1 + FI_{load})$, where $FI_{load} = 1/s - 1$ is the stress-scaled fatigue index. The
-  pure R = -1 axial limits are the reference and are left out; torsion and multiaxial limits are
-  assessed. These datasets rest on 3 to 40 limit states, so the block has its own mean rank.
+- **Fatigue-limit datasets** (right block, decisions d110 and d118): a limit state has the same
+  error, $e_L = \ln(1 + FI_{load})$, where $FI_{load} = 1/s - 1$ is the stress-scaled fatigue index.
+  The pure R = -1 axial and torsion limits are $\sigma_{-1}$ and $\tau_{-1}$, inputs of the limit
+  criteria, so they are left out; multiaxial and mean-stress limits are assessed. These datasets
+  rest on 7 to 39 assessed limit states, so the block has its own mean rank. Ti6Al4V_Delahay
+  keeps only two assessed limit states and is not shown.
   CX18 and GGG60 are left out until their data errors are resolved
   ([issue #24](https://github.com/andreachiocca/multiaxial-fatigue/issues/24)).
 

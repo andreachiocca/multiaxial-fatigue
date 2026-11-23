@@ -31,6 +31,7 @@ def test_model_complexity_definitions():
         "MMCCM": (3, 4),
         # Invariant
         "MMMH": (2, 2),
+        "MATSUBARA": (1, 2),  # static strength for sigma_T = 1.84 Su (d118)
         "GAM": (2, 2),
         "VHN": (3, 2),
         "TVEIT2025": (0, 4),
