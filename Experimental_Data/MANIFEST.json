@@ -70,5 +70,9 @@
   "18_Al7075_T651_Wang.xlsx": {
     "sha256": "7ae0c8cc2f40a3ec00e5eb667ea21ab50bd017f84e4b0c408618e84ae2dcb0e1",
     "dataset_fingerprint": "a5dac85f0f32b65b5eccfce17e49ce0253e892619c94d83b0b995d8129052e3d"
+  },
+  "19_42CrMo4_FABEST_bar.xlsx": {
+    "sha256": "c7e1f595fce948d99f1f3f7ca1d60175cc80c8f1f54133209dd15753224b1c92",
+    "dataset_fingerprint": "efef715ae2249a8c2a1ff8e900b57c54b31a54ee48ed414348db58312a32359c"
   }
 }

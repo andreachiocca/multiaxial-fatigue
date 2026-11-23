@@ -126,7 +126,8 @@ the database, so the design set and the assessed tests share lab, geometry and f
 | FAB065, FAB075 | axial + torsion, 90 deg out of phase, R = -1 | 21 | 2 |
 | **Total** | | **79** | **10** |
 
-**Not converted yet.** The other 54 curves of the database: axial curves on other sizes, geometries,
+**Not converted yet.** The other 54 curves of the database (the PBS bar series FAB110-114 are now
+`19_42CrMo4_FABEST_bar`): axial curves on other sizes, geometries,
 finishes and labs, the mean-stress series (R = 0.1, 0, 0.3, -2, -3, -5), notched curves (V-notches,
 transverse hole) and fretting curves. Their axial R = -1 strengths at 1e6 cycles range from 302 to
 566 MPa, so pooling them would mix size and surface effects. They are left for later workbooks
@@ -152,6 +153,44 @@ transverse hole) and fretting curves. Their axial R = -1 strengths at 1e6 cycles
   `sigma_f` and `b_fat` from the Summary (e.g. MDC) use them instead of a fit to the HCF data.
 - Whether the shear stress of the hollow specimens refers to the outer surface or to the mean wall
   radius ("related to net section") is not stated. Values are used as given.
+
+## 19_42CrMo4_FABEST_bar.xlsx (FABEST database, PBS solid bars, added 2026-11-23)
+
+**Source.** As `16_42CrMo4_FABEST.xlsx`: FABEST database FAB_v20261014, doi:10.5281/zenodo.23359038,
+CC BY 4.0, same SHA-256. Converted by `tools/convert_fabest.py --bar` (`convert_bar`), with the
+same reading rules; `tests/test_fabest_conversion.py` checks the committed workbook.
+
+**Scope (maintainer decision d119, 2026-11-23).** The PBS mean-stress series of the database are on
+solid hourglass bars (drawing v05, d = 6 mm, turned), not on the tube of `16_42CrMo4_FABEST`. They
+form a dataset of their own, with the fully reversed curve of the same bar as design set, so that the
+assessed tests differ from the design tests only in the mean stress:
+
+| Curve | Loading | Failures | Run-outs |
+|---|---|---|---|
+| FAB110 | axial, R = -1 (design set) | 13 | 3 |
+| FAB111 | axial, R = 0 | 10 | 3 |
+| FAB112 | axial, R = 0.3 | 8 | 1 |
+| FAB113 | axial, R = -2 | 10 | 0 |
+| FAB114 | axial, R = -5 | 10 | 1 |
+| **Total** | | **51** | **8** |
+
+**Summary.**
+- E, nu, Su, Sy and the strain-life constants: as `16_42CrMo4_FABEST` (same material batch).
+- Sigm1 = 412.3 MPa: the authors' Basquin strength of FAB110 at 1e6 cycles (`SN_FL`).
+- Taum1 = 366.5 MPa: the torsion strength of the PBS tube curves FAB062/FAB072, as in
+  `16_42CrMo4_FABEST`. FABEST has no torsion curve on the bar; the value is from another specimen of
+  the same batch and laboratory (maintainer decision d119).
+
+**Open points.**
+- **Taum1/Sigm1 = 0.89 is high for a steel** (the tube gives 0.71). The bar is weaker than the tube in
+  axial loading (412 against 517 MPa at 1e6 cycles, both Basquin extrapolations below the run-out
+  levels), and the torsion value comes from the tube. Criteria that use the ratio are affected: RFB
+  and SIH leave their validity range (0.577-0.866) and are skipped; criteria whose mean-stress
+  sensitivity follows from the ratio (e.g. GAM, NINIC) show large errors on this dataset.
+- No torsion and no multiaxial tests: the dataset assesses the uniaxial mean-stress response only.
+- The other unnotched mean-stress series stay out: CTU R = -3 (FAB010, solid bar v01; a separate
+  dataset with FAB001/014/081 as design set is possible) and UNIOVI R = 0.1 (FAB090-093, dog-bone
+  bars, no fully reversed curve to design on).
 
 ## 18_Al7075_T651_Wang.xlsx (Wang, Shang, Sun & Chen 2018, added 2026-11-16)
 

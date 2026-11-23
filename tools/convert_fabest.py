@@ -23,7 +23,10 @@ four PBS tensile tests; Sigm1 and Taum1 are the authors' Basquin strengths at N 
 SN_NFL) of the axial and torsion curves, averaged per load type (a finite-life strength, not a
 staircase limit); sigma_f, b_fat, epsilon_f, c_fat are the strain-life constants of sheet FAB501.
 
-Usage: uv run python tools/convert_fabest.py [source.xlsm] [output.xlsx]
+A second workbook, 19_42CrMo4_FABEST_bar, holds the PBS solid-bar series with mean stresses
+(``convert_bar``, ``--bar``; see the block above it).
+
+Usage: uv run python tools/convert_fabest.py [source.xlsm] [output.xlsx] [--bar]
 """
 
 from __future__ import annotations
@@ -82,8 +85,8 @@ def _value(rows, key):
     raise KeyError(key)
 
 
-def curve_points(ws) -> list[dict]:
-    """Test points of one curve sheet (failures and run-outs)."""
+def curve_points(ws, *, allow_mean: bool = False) -> list[dict]:
+    """Test points of one curve sheet (failures and run-outs); means only with ``allow_mean``."""
     rows = list(ws.iter_rows(values_only=True))
     two = rows[0][11] == "load channel No. 2"
     ch1 = rows[1][7]
@@ -117,7 +120,7 @@ def curve_points(ws) -> list[dict]:
             p.update(ta=float(r[11]), tm=float(r[12] or 0.0), phase=float(r[14] or 0.0))
             if r[13] != r[9]:
                 raise ValueError(f"{pid}: channels at different frequencies")
-        if p["sm"] or p["tm"]:
+        if (p["sm"] or p["tm"]) and not allow_mean:
             raise ValueError(f"{pid}: mean stress outside the R = -1 scope")
         out.append(p)
     return out
@@ -179,16 +182,81 @@ def convert(source: Path = SOURCE, output: Path = OUTPUT) -> dict:
     )
 
 
+# ---- PBS solid bars, mean-stress series (maintainer decision 2026-11-23, d119) -------------------
+# Solid hourglass bars of drawing v05 (6 mm, turned), tested at PBS: the fully reversed curve FAB110
+# is the design set; FAB111-FAB114 (R = 0, 0.3, -2, -5) are the assessed mean-stress tests. One
+# laboratory and one specimen, so only the mean-stress effect is tested. Same material batch as the
+# tube dataset: E, nu, Su, ReL and the strain-life constants are the same; tau_-1 is the torsion
+# strength of the PBS tube curves FAB062/FAB072 (same batch and laboratory, another specimen).
+BAR_OUTPUT = ROOT / "Experimental_Data" / "19_42CrMo4_FABEST_bar.xlsx"
+BAR_MATERIAL = "42CrMo4_FABEST_bar"
+BAR_DESIGN = ("FAB110",)
+BAR_MEAN = ("FAB111", "FAB112", "FAB113", "FAB114")
+BAR_D = 6.0  # mm, drawing v05 (Master Index)
+
+
+def convert_bar(source: Path = SOURCE, output: Path = BAR_OUTPUT) -> dict:
+    """Workbook of the PBS solid-bar series: fully reversed design curve and mean-stress curves."""
+    if sha256(source) != SHA256:
+        raise ValueError(f"{source}: SHA-256 differs from FAB_v20261014 ({SHA256})")
+    wb = openpyxl.load_workbook(source, read_only=True, data_only=True, keep_vba=False)
+    tens = list(wb["Tensile test"].iter_rows(values_only=True))
+    avg = next(r for r in tens if r and r[0] == "averaged")
+    ReL, Rm, E, nu = avg[2], avg[3], avg[5], avg[6]
+    rows = {c: list(wb[c].iter_rows(values_only=True)) for c in BAR_DESIGN + TORSION}
+    if {_value(rows[c], "SN_NFL") for c in rows} != {1000000}:
+        raise ValueError("SN_NFL is not 1e6 for every curve")
+    sigm1 = sum(_value(rows[c], "SN_FL") for c in BAR_DESIGN) / len(BAR_DESIGN)
+    taum1 = sum(_value(rows[c], "SN_FL") for c in TORSION) / len(TORSION)
+    sl = list(wb["FAB501"].iter_rows(values_only=True))[3]
+    sigma_f, b_fat, eps_f, c_fat = sl[4], sl[5], sl[7], sl[8]
+
+    out = openpyxl.Workbook()
+    summary = out.active
+    summary.title = "Summary"
+    summary.append(SUMMARY_HEADERS)
+    summary.append([REFERENCE, AUTHORS, YEAR, BAR_MATERIAL, E, nu, Rm, ReL, sigm1, taum1, 1e6, -1,
+                    "push-pull", sigma_f, b_fat, eps_f, c_fat])  # fmt: skip
+    summary.append([None] * 3 + ["Average", E, nu, Rm, ReL, sigm1, taum1, 1e6, -1, "push-pull",
+                    sigma_f, b_fat, eps_f, c_fat])  # fmt: skip
+    ds = out.create_sheet("Dataset")
+    ds.append(DATASET_HEADERS)
+    counts = {}
+    for curve in BAR_DESIGN + BAR_MEAN:
+        points = curve_points(wb[curve], allow_mean=curve in BAR_MEAN)
+        if any(p["ta"] for p in points):
+            raise ValueError(f"{curve}: torsion in an axial bar series")
+        counts[curve] = (sum(not p["runout"] for p in points), sum(p["runout"] for p in points))
+        for p in points:
+            ds.append([
+                AUTHORS, YEAR, REFERENCE, p["id"], p["N"], "Yes" if p["runout"] else "No",
+                "complete rupture", "cylindrical", "No", BAR_D, None, curve,
+                "Null", 0, "Null", "Null", p["freq"], "Null",
+                0, 0, p["sm"], p["sa"], "AXIAL", 0, 0,
+                "run-out" if p["runout"] else "failure",
+            ])  # fmt: skip
+    out.save(output)
+    return dict(Sigm1=sigm1, Taum1=taum1, E=E, nu=nu, Su=Rm, Sy=ReL, counts=counts,
+                rows=ds.max_row - 1)  # fmt: skip
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("source", nargs="?", type=Path, default=SOURCE)
     parser.add_argument("output", nargs="?", type=Path, default=OUTPUT)
+    parser.add_argument(
+        "--bar", action="store_true", help="convert the PBS solid-bar series instead"
+    )
     return parser
 
 
 def main() -> None:
     args = build_parser().parse_args()
-    info = convert(args.source, args.output)
+    if args.bar:
+        out = BAR_OUTPUT if args.output == OUTPUT else args.output
+        info = convert_bar(args.source, out)
+    else:
+        info = convert(args.source, args.output)
     for k, v in info.items():
         print(f"{k}: {v}")
     assert math.isfinite(info["Sigm1"]) and math.isfinite(info["Taum1"])

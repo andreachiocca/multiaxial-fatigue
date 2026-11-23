@@ -46,3 +46,35 @@ def test_imported_dataset():
     phases = {c["meta"].get("phase_tor_deg") for c in block["cases"].values()}
     assert {0.0, 90.0} <= phases
     assert block["material"]["E_MPa"] == pytest.approx(206362.0)
+
+
+BAR = ROOT / "Experimental_Data/19_42CrMo4_FABEST_bar.xlsx"
+
+
+def test_committed_bar_workbook_is_the_conversion(tmp_path):
+    """PBS solid-bar series (d119): FAB110 design set, FAB111-114 mean stresses."""
+    import sys
+
+    sys.path.insert(0, str(ROOT / "tools"))
+    from convert_fabest import convert_bar
+
+    info = convert_bar(SOURCE, tmp_path / "bar.xlsx")
+    for sheet in ("Summary", "Dataset"):
+        assert _rows(tmp_path / "bar.xlsx", sheet) == _rows(BAR, sheet)
+    assert info["rows"] == 59
+    assert info["counts"]["FAB110"] == (13, 3)
+    assert info["Taum1"] == pytest.approx((368.11606 + 364.89692) / 2, abs=1e-4)
+
+
+def test_bar_dataset_mean_stresses():
+    from multifat.imp.experimental_data import load_material_workbook
+
+    block = load_material_workbook(BAR)["42CrMo4_FABEST_bar"]
+    assert (len(block["cases"]), len(block["runouts"])) == (51, 8)
+    ratios = set()
+    for c in block["cases"].values():
+        h = c["harmonics"]
+        m, a = float(h["S_mean"][1, 1]), float(abs(complex(h["S_sin"][1, 1], h["S_cos"][1, 1])))
+        ratios.add(round((m - a) / (m + a), 1))
+        assert float(abs(h["S_sin"][0, 1]) + abs(h["S_cos"][0, 1])) == 0.0  # axial only
+    assert ratios == {-5.0, -2.0, -1.0, 0.0, 0.3}

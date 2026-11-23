@@ -6,6 +6,15 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### 42CrMo4_FABEST_bar: FABEST mean-stress series (decision d119)
+
+- New dataset `Experimental_Data/19_42CrMo4_FABEST_bar.xlsx`, converted from the FABEST source by
+  `tools/convert_fabest.py --bar`. It holds the PBS solid-bar series: FAB110 (R = -1) is the design
+  set, and FAB111-FAB114 (R = 0, 0.3, -2, -5) are 38 assessed mean-stress failures. Taum1 is taken
+  from the PBS tube of the same batch (ratio 0.89, see `PROVENANCE.md`).
+- The dataset is added to the homepage ranking. The tube dataset and every existing output are
+  unchanged.
+
 ### Ranking: torsion limits are a reference; MATSUBARA input count (decision d118)
 
 - In the fatigue-limit block of the load-error ranking the pure R = -1 torsion limit states are a

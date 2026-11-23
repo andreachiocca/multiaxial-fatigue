@@ -5,7 +5,7 @@ Error_load = ln(1/s*) on the assessed failures (Flag = 1), and the fraction with
 the load. Regenerate after any model or dataset change:
 
     uv run multifat-pipeline --material 42CrMo4_Santus --material 42CrMo4_Reis --material AISI316L \
-        --material Al7075_T6 --material Al7075_T651_Wang --material Ti6Al4V_Meneghetti --material Ti6Al4V_Berto --material 42CrMo4_FABEST \
+        --material Al7075_T6 --material Al7075_T651_Wang --material Ti6Al4V_Meneghetti --material Ti6Al4V_Berto --material 42CrMo4_FABEST --material 42CrMo4_FABEST_bar \
         --models all \
         --jobs 4 --results-dir <tmp_dir>
     uv run python examples/build_load_error_ranking.py <tmp_dir>
