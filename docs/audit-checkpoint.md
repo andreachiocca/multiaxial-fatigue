@@ -1,5 +1,19 @@
 # Development continuation checkpoint
 
+## 34CrNiMo6_Pallares dataset, decision d120 (23 November 2026)
+
+- Branch `data/34crnimo6-pallares`, stacked on `feat/carspa-criterion` (PR #129).
+- Maintainer request: import the data of the papers of the review's former Table 2. Imported:
+  Pallares-Santasmartas et al. 2018 (Metals 8:213 axial, IJF 113:54-68 torsion), 9 strengths at
+  2e6 cycles, `20_34CrNiMo6_Pallares.xlsx` from `tools/build_pallares_34crnimo6.py`. Not imported:
+  Karolczuk 2015 (figures only), Sahadi 2017 (normalised stresses, R = 0.05 only), Benedetti 2022
+  plain GJS (defect-driven).
+- Test reproduces the Crossland column of the Metals Table 5 with the registered CROSSLAND and the
+  no-effect column of the IJF Table 4 (tau_m = 500 printed -28.2 vs -28.30: strict xfail).
+- Homepage ranking: 25 rows added (new material), existing rows unchanged. No source code changed,
+  so existing model outputs are unchanged by construction.
+- Next action: full suite, PR (base `feat/carspa-criterion`).
+
 ## CARSPA re-implemented from the source (23 November 2026)
 
 - Branch `feat/carspa-criterion` from `main` (`1440c18`).

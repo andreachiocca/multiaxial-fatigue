@@ -278,6 +278,9 @@ set `17_Ti6Al4V_Delahay`, built from Delahay & Palin-Luc 2006 (doi:10.1016/j.ijf
 and the life set `18_Al7075_T651_Wang` (52 tension-torsion tests with mean stresses), built from
 Wang et al. 2018 (doi:10.1016/j.tafmec.2017.10.007), and the life set `19_42CrMo4_FABEST_bar`
 (the FABEST mean-stress series on solid bars, R = 0, 0.3, -2, -5).
+The fatigue-limit set `20_34CrNiMo6_Pallares` (axial and torsional strengths with mean stresses at
+2e6 cycles) is built from Pallares-Santasmartas et al. 2018 (doi:10.3390/met8040213 and
+doi:10.1016/j.ijfatigue.2018.04.008).
 The provenance of each workbook, with its open questions, is in
 [Experimental_Data/PROVENANCE.md](Experimental_Data/PROVENANCE.md).
 

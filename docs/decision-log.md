@@ -656,3 +656,15 @@ ledgers.
 * **Rationale:** The mean-stress series are on 6 mm solid bars, not on the tube, which is about 25 % stronger at 1e6 cycles. Adding them to the tube dataset would mix the specimen effect with the mean-stress effect, because the design curve comes from the tube. A bar dataset designed on the bar's own fully reversed curve isolates the mean stress. FABEST has no torsion curve on the bar.
 * **Effect:** A new finite-life dataset with 51 failures (38 assessed mean-stress failures). The ratio Taum1/Sigm1 = 0.89 is high and affects the criteria that use it (`Experimental_Data/PROVENANCE.md`). Existing workbooks and outputs are unchanged.
 
+### d120
+* **Date:** 2026-11-23
+* **Topic:** New fatigue-limit dataset from Pallares-Santasmartas et al. 2018 (34CrNiMo6); the other candidates of the review's former Table 2
+* **Status:** Active
+* **Decision:** Maintainer request: import the experimental data of the papers listed in the former Table 2 of the WG4.3 review. Result:
+  - `20_34CrNiMo6_Pallares`: 9 fatigue strengths at 2e6 cycles of one 34CrNiMo6 steel, 4 axial with mean stress (Metals 8 (2018) 213, doi:10.3390/met8040213, Table 3) and 5 torsional with mean shear stress (Int J Fatigue 113 (2018) 54-68, doi:10.1016/j.ijfatigue.2018.04.008, Table 3). Sigm1 = 615 and Taum1 = 432.5 MPa are the R = -1 rows; E and nu are Null (not given).
+  - Karolczuk, Kurek & Lagoda 2015 (EN AW-6082-T6, doi:10.15632/jtam-pl.53.2.421) is not imported: the paper gives no per-test stresses or lives, only figures, and the combined-loading amplitudes are not reported.
+  - Sahadi et al. 2017 (Waspaloy, doi:10.1016/j.ijfatigue.2017.01.019) is not imported: Table 1 gives stresses normalised by an undisclosed reference stress (the uniaxial data are Rolls-Royce's), all tests are at R = 0.05 with first-cycle yielding, and there is no fully reversed test to calibrate on.
+  - The plain EN-GJS-600-3 tests of Benedetti et al. 2022 are not imported: in ductile cast iron the fatigue strength of plain specimens is controlled by internal defects.
+* **Rationale:** Only tabulated data in absolute units, with the fully reversed reference strengths of the same material, can be assessed without reconstructing values from figures.
+* **Effect:** A new fatigue-limit dataset (7 assessed limit states: 3 axial with mean stress, 4 torsional with mean shear stress). Existing workbooks and outputs are unchanged.
+
