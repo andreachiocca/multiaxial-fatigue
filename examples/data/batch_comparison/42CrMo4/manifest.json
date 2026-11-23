@@ -9,8 +9,8 @@
  "constants": {
   "42CrMo4_Reis": "Calibrations/42CrMo4_Reis/SSF_published.json"
  },
- "created_utc": "2026-11-23T01:03:39+00:00",
- "git_commit": "942ba712e73bd0391c64a1a76e70cdbcaeeae1de",
+ "created_utc": "2026-11-23T10:58:01+00:00",
+ "git_commit": "d7d90d9f2ca08b255cd73f2e3b1d8cd1f90ff89e",
  "registered_models": [
   "BOLCHOUN",
   "BP",

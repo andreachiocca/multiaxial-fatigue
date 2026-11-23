@@ -6,8 +6,8 @@
  ],
  "notes": "Ti6Al4V_Meneghetti: Meneghetti 2018 failures (10); the Summary keeps the Meneghetti properties only (overlay, d108) and the 4 Delahay 2006 rows are removed (d109). Ti6Al4V_Berto: Berto 2015 (48 failures). All assessed tests are torsional. Batch names follow the author or project (d112).",
  "constants": {},
- "created_utc": "2026-11-23T01:07:41+00:00",
- "git_commit": "942ba712e73bd0391c64a1a76e70cdbcaeeae1de",
+ "created_utc": "2026-11-23T11:01:30+00:00",
+ "git_commit": "d7d90d9f2ca08b255cd73f2e3b1d8cd1f90ff89e",
  "registered_models": [
   "BOLCHOUN",
   "BP",
