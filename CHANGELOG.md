@@ -6,6 +6,30 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### Method taxonomy: approach, quantity, non-proportionality (issue #61)
+
+- Every catalogue record gains `approach` (`invariant`, `critical_plane`, `integral`,
+  `incremental`, `path`: the step that reduces the history to a scalar, after the review
+  article's families i-v), `quantity` (`stress`, `strain`, `energy`), `np_sensitivity`
+  (`emergent`, `explicit`), `taxonomy_tags`, `taxonomy_basis` and `taxonomy_note`. The generator
+  validates the vocabulary; `primary_family` is unchanged.
+- Maintainer decisions (23 Nov 2026): mesoscopic is a tag, not a class; an explicit
+  non-proportionality factor is an attribute, not a family; hybrids take the class of their final
+  reduction. Hence DANGVAN, MOREL and PAPADOPOULOS (2001 form, maximum over planes) are
+  `critical_plane`, PCR is `critical_plane` and PI `integral`, TVEIT2025 is `incremental`.
+- The 56 registry-backed records are classified from their code; the others from the catalogue
+  principle (`catalogue_principle`), or left `partial`/`undetermined` when the entry does not
+  decide.
+- Records whose original paper was reviewed carry the basis `source`: Mei & Dong (2016) and
+  Lu & Martinez-Esnaola (2021) are `invariant` with an explicit non-proportionality term (their path
+  measure multiplies or adds to an in-plane equivalent range), Deng et al. (2023) is
+  `critical_plane` with an explicit factor; the CARSPA note cites the plane construction of the 2001
+  paper and its averaging reference.
+- New `multifat.models.taxonomy` and generated `docs/METHOD_TAXONOMY.md`. `multifat-rank` and
+  `registry.complexity_table()` group by approach instead of the code directory: energy
+  critical-plane methods move from "Energy" to "Critical plane", PCR and MOREL from "Integral" to
+  "Critical plane". Model outputs are unchanged.
+
 ### BOLCHOUN: substitute amplitude and out-of-phase damage (roadmap N53)
 
 - Added `BOLCHOUN`, Bolchoun, Baumgartner & Kaufmann (2017), constant-amplitude branch with a native

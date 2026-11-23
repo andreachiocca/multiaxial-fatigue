@@ -302,20 +302,12 @@ def model_complexity(model):
 def complexity_table() -> list[dict[str, Any]]:
     """Return the complexity summary records across all base models."""
     from .complexity import get_model_complexity
-
-    family_map = {
-        "cp_methods": "Critical plane",
-        "invariant_methods": "Invariant",
-        "integral_methods": "Integral",
-        "energy_based_methods": "Energy",
-    }
+    from .taxonomy import approach_label
 
     rows: list[dict[str, Any]] = []
     for name, model in base_models().items():
         comp = get_model_complexity(model)
-        inner = getattr(model, "_m", model)
-        pkg = type(inner).__module__.split(".")[2]
-        fam = family_map.get(pkg, pkg)
+        fam = approach_label(name)
         rows.append(
             {
                 "Method": name,

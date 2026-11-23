@@ -22,13 +22,6 @@ from multifat.models.complexity import get_model_complexity
 
 LN11 = math.log(1.1)
 
-FAMILY_MAP: dict[str, str] = {
-    "cp_methods": "Critical plane",
-    "invariant_methods": "Invariant",
-    "integral_methods": "Integral",
-    "energy_based_methods": "Energy",
-}
-
 
 @dataclass(frozen=True)
 class RankingResult:
@@ -42,19 +35,10 @@ class RankingResult:
 
 
 def _get_model_family(method_name: str) -> str:
-    """Return the display family name for a method."""
-    from multifat.models.registry import available_cp_methods, available_direct_models
+    """Return the family of a method: its approach in the issue #61 taxonomy."""
+    from multifat.models.taxonomy import approach_label
 
-    cp_dict = available_cp_methods()
-    direct_dict = available_direct_models()
-    clean_name = method_name.removesuffix("_ext")
-    if clean_name in cp_dict:
-        return "Critical plane"
-    if clean_name in direct_dict:
-        inner = direct_dict[clean_name]
-        pkg = type(inner).__module__.split(".")[2]
-        return FAMILY_MAP.get(pkg, pkg)
-    return "Unknown"
+    return approach_label(method_name)
 
 
 def compute_cell_stats(
