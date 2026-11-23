@@ -22,7 +22,18 @@
   DISABLED_METHODS), taxonomy, notation, catalogue I_CARSPA/R01 and generated docs, guide, LaTeX
   sheet and bib, audit row, bibliography, CHANGELOG, roadmap text, `tests/methods/test_carspa.py`,
   `tests/data/papers/carpinteri2001_tables2_4.csv`, model count 55.
-- Next action: regression snapshot main vs branch, homepage ranking and batch comparison, PR.
+- Regression snapshot `main` (`1440c18`) vs branch: no existing output changed; only CARSPA files and
+  the per-material comparison plots/tables that include it differ. CARSPA runs on Reis, FABEST,
+  FABEST_bar, Santus, Berto; MaterialScopeError on Al7075_T651_Wang and AISI316L; MissingParamsError
+  (m_sigma) on Al7075_T6; Meneghetti "master curve not identifiable" in the script stage for every model.
+- Ranking: only CARSPA rows added (FABEST RMS 0.078, Reis 0.156, Santus 0.142, Berto 0.137,
+  FABEST_bar 0.594: series bias +0.37/+0.72/-0.32/-0.79 from N_max = N_m + N_a, as NINIC). Batch
+  comparison regenerated; README medians -8 % (Reis -> Santus) and +11 % (Reis -> FABEST).
+- Marques et al. (2020), doi:10.1111/ffe.13273 (spectral CSV): states the clockwise rotation about 2^,
+  which is the sense fixed by Tables 2-4; cited. It announces no correction; the maintainer is asking
+  the authors which error they meant.
+- Full suite: 3637 passed, 131 xfailed.
+- Next action: PR review; revisit if the authors' correction concerns the 2001 formulation.
 
 ## Method taxonomy, issue #61 (23 November 2026)
 
