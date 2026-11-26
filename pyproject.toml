@@ -10,7 +10,12 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
-authors = [{ name = "Andrea Chiocca" }, { name = "Tommaso Grossi" }]
+authors = [
+    { name = "Andrea Chiocca" },
+    { name = "Michele Sgamma" },
+    { name = "Tommaso Grossi" },
+    { name = "A. Arda Akay" },
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
