@@ -11,8 +11,12 @@ abstract: >-
 authors:
   - family-names: Chiocca
     given-names: Andrea
+  - family-names: Sgamma
+    given-names: Michele
   - family-names: Grossi
     given-names: Tommaso
+  - family-names: Akay
+    given-names: A. Arda
 license: MIT
 repository-code: "https://github.com/andreachiocca/multiaxial-fatigue"
 keywords:

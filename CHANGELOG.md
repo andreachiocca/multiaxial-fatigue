@@ -6,6 +6,11 @@ Finding IDs (F, U, P, N) refer to the audit ledgers kept with the carry-forward 
 
 ## [Unreleased] (carry-forward of October 2026)
 
+### Citation: authors
+
+- `CITATION.cff` and `pyproject.toml` list Michele Sgamma and A. Arda Akay as authors, with Andrea
+  Chiocca and Tommaso Grossi. The licence and its copyright line are unchanged.
+
 ### 34CrNiMo6_Pallares: axial and torsional mean-stress fatigue limits (decision d120)
 
 - New fatigue-limit dataset `Experimental_Data/20_34CrNiMo6_Pallares.xlsx`, built by
